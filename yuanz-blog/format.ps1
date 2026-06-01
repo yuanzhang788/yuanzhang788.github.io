@@ -10,19 +10,19 @@ foreach ($file in $files) {
     Write-Host "[$i/$total] 清理文件: $($file.Name)"
 
     $content = Get-Content $file.FullName -Raw -Encoding UTF8
+    $oldContent = $content
 
-    # 1️⃣ 删除 <font ...> 标签（包括 style）
+    # 1️⃣ 删除 <font ...>
     $content = $content -replace '<font[^>]*>', ''
     $content = $content -replace '</font>', ''
 
-#    # 2️⃣ 删除多余 HTML style 属性（保险）
-#    $content = $content -replace 'style="[^"]*"', ''
-#
-#    # 3️⃣ 清理多余空格（可选优化）
-#    $content = $content -replace '\s{2,}', ' '
-
-    # 保存
-    Set-Content -Path $file.FullName -Value $content -Encoding UTF8
+    # ✔ 关键：只有发生变化才写入
+    if ($content -ne $oldContent) {
+        Set-Content -Path $file.FullName -Value $content -Encoding UTF8
+        Write-Host "  已修改并保存"
+    } else {
+        Write-Host "  无需修改"
+    }
 
     $i++
 }
