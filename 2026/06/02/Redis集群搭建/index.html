@@ -1,0 +1,370 @@
+<!DOCTYPE html><html lang="cn" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>Redis集群搭建 | Yuanz</title><meta name="author" content="Yuanz"><meta name="copyright" content="Yuanz"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="4. Redis集群4.1 redis集群形式4.1.1 数据分区方案 优点: 不使用 第三方中间件， 分区逻辑 可控， 配置 简单， 节点之间无关联， 容易 线性扩展， 灵活性强。   缺点: **客户端 无法 动态增删 服务节点， 客户端需要自行维护 分发逻辑， 客户端之间 无连接共享，会造成 连接浪费。 ** 4.1.2 代理分区 代理分区常用方案有 Twemproxy 和 Codis,类似">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Redis集群搭建">
+<meta property="og:url" content="https://yuanzhang788.github.io/2026/06/02/Redis%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA/index.html">
+<meta property="og:site_name" content="Yuanz">
+<meta property="og:description" content="4. Redis集群4.1 redis集群形式4.1.1 数据分区方案 优点: 不使用 第三方中间件， 分区逻辑 可控， 配置 简单， 节点之间无关联， 容易 线性扩展， 灵活性强。   缺点: **客户端 无法 动态增删 服务节点， 客户端需要自行维护 分发逻辑， 客户端之间 无连接共享，会造成 连接浪费。 ** 4.1.2 代理分区 代理分区常用方案有 Twemproxy 和 Codis,类似">
+<meta property="og:locale">
+<meta property="og:image" content="https://yuanzhang788.github.io/img/butterfly-icon.png">
+<meta property="article:published_time" content="2026-06-01T23:56:36.000Z">
+<meta property="article:modified_time" content="2026-06-02T08:14:10.249Z">
+<meta property="article:author" content="Yuanz">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://yuanzhang788.github.io/img/butterfly-icon.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Redis集群搭建",
+  "url": "https://yuanzhang788.github.io/2026/06/02/Redis%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA/",
+  "image": "https://yuanzhang788.github.io/img/butterfly-icon.png",
+  "datePublished": "2026-06-01T23:56:36.000Z",
+  "dateModified": "2026-06-02T08:14:10.249Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "Yuanz",
+      "url": "https://yuanzhang788.github.io"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://yuanzhang788.github.io/2026/06/02/Redis%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=5.5.5-b1"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: 'Copy Successful',
+    error: 'Copy Failed',
+    noSupport: 'Browser Not Supported'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: 'Just now',
+    min: 'minutes ago',
+    hour: 'hours ago',
+    day: 'days ago',
+    month: 'months ago'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.0/dist/infinitegrid.min.js',
+    buttonText: 'Load More'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Redis集群搭建',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><meta name="generator" content="Hexo 8.1.2"></head><body><div class="post" id="body-wrap"><header class="post-bg" id="page-header"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">Yuanz</span></a><a class="nav-page-title" href="/"><span class="site-name">Redis集群搭建</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  Back to Home</span></span></a></span><div id="menus"></div></nav><div id="post-info"><h1 class="post-title">Redis集群搭建</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2026-06-01T23:56:36.000Z" title="Created 2026-06-02 07:56:36">2026-06-02</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2026-06-02T08:14:10.249Z" title="Updated 2026-06-02 16:14:10">2026-06-02</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">Post Views:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><h2 id="4-Redis集群"><a href="#4-Redis集群" class="headerlink" title="4. Redis集群"></a>4. Redis集群</h2><h3 id="4-1-redis集群形式"><a href="#4-1-redis集群形式" class="headerlink" title="4.1 redis集群形式"></a>4.1 redis集群形式</h3><h4 id="4-1-1-数据分区方案"><a href="#4-1-1-数据分区方案" class="headerlink" title="4.1.1 数据分区方案"></a>4.1.1 数据分区方案</h4><p><img src="/assets/Redis%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA/40836c5cae91b2aab56780abaa0a4917.png" alt="image-20220208104809029"></p>
+<p><strong>优点:</strong></p>
+<p><strong>不使用 第三方中间件， 分区逻辑 可控， 配置 简单， 节点之间无关联， 容易 线性扩展， 灵活性强。</strong>  </p>
+<p><strong>缺点:</strong></p>
+<p>**客户端 无法 动态增删 服务节点， 客户端需要自行维护 分发逻辑， 客户端之间 无连接共享，会造成 连接浪费。 **</p>
+<h4 id="4-1-2-代理分区"><a href="#4-1-2-代理分区" class="headerlink" title="4.1.2 代理分区"></a>4.1.2 代理分区</h4><p><img src="/assets/Redis%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA/48ab631dd0451864d90fa6f9395cea1c.png" alt="image-20220208105104155"></p>
+<p>代理分区常用方案有 Twemproxy 和 Codis,<strong>类似于mysql的sharding proxy</strong>。  </p>
+<h4 id="4-1-3-redis-cluster"><a href="#4-1-3-redis-cluster" class="headerlink" title="4.1.3 redis-cluster"></a>4.1.3 redis-cluster</h4><p><img src="/assets/Redis%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA/b2bde3b6ba901eaaea4a56e9bb8afb2e.png" alt="image-20220208105551709"></p>
+<p>Redis Cluster 是 Redis 原生的数据分片实现，可以自动在多个节点上分布数据，不需要依赖任何外部的工具。</p>
+<p><strong>优点:</strong></p>
+<ol>
+<li><code>高性能</code><ul>
+<li>Redis Cluster 的性能与单节点部署是同级别的。</li>
+</ul>
+</li>
+<li><code>高可用</code><ul>
+<li>Redis Cluster 支持标准的 <code>master-replica</code> 配置来保障高可用和高可靠。</li>
+<li>Redis Cluster 也实现了一个类似 Raft 的共识方式，来保障整个集群的可用性。</li>
+</ul>
+</li>
+<li><code>易扩展</code><ul>
+<li>向 Redis Cluster 中添加新节点，或者移除节点，都是透明的，不需要停机。水平、垂直方向都非常容易扩展。</li>
+</ul>
+</li>
+<li><code>原生</code><ul>
+<li>部署 Redis Cluster 不需要其他的代理或者工具，而且 Redis Cluster 和单机 Redis 几乎完全兼容。</li>
+</ul>
+</li>
+</ol>
+<p><strong>缺点(限制):</strong></p>
+<ol>
+<li><p><code>需要客户端支持</code></p>
+<ul>
+<li>客户端需要修改，以便支持 Redis Cluster。虽然 Redis Cluster 已经发布有几年时间了，但仍然有些客户端是不支持的，所以需要到 Redis 官网去查询一下。</li>
+</ul>
+</li>
+<li><p><code>只支持一个数据库</code></p>
+<ul>
+<li>不像单机Redis，Redis Cluster 只支持一个数据库（database 0），<code>select</code> 命令就不能用了，但实际也很少有人使用多数据库，所以这个限制并没<strong>什么影响</strong>。</li>
+</ul>
+</li>
+<li><p>Multi-Key 操作受限</p>
+<ul>
+<li><p>Redis Cluster 要求，只有这些 key 都在同一个 slot 时才能执行。</p>
+<ul>
+<li><p>例如，有2个key，key1 和 key2。</p>
+<p>key1 是映射到 5500 这个 slot 上，存储在 Node A。</p>
+<p>key2 是映射到 5501 这个 slot 上，存储在 Node B。</p>
+<p>那么就不能对 key1 和 key2 做事务操作。</p>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ol>
+<h5 id="4-1-3-1-Multi-Key-限制的处理"><a href="#4-1-3-1-Multi-Key-限制的处理" class="headerlink" title="4.1.3.1 Multi-Key 限制的处理"></a>4.1.3.1 Multi-Key 限制的处理</h5><p>对于多key场景，需要做好数据空间的设计，Redis Cluster 提供了一个 <code>hash tag</code> 的机制，可以让我们把一组key 映射到同一个 slot。</p>
+<p>例如：<code>user1000.following</code> 这个 key 保存用户 user1000 关注的用户；<code>user1000.followers</code> 保存用户 user1000 的粉丝。</p>
+<p>这两个 key 有一个共同的部分 <code>user1000</code>，可以指定对这个共同的部分做 slot 映射计算，这样他们就可以在同一个槽中了。</p>
+<p>使用方式：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;user1000&#125;.following 和 &#123;user1000&#125;.followers</span><br></pre></td></tr></table></figure>
+
+
+<p>就是把共同的部分使用 <code>{ }</code> 包起来，计算 slot 值时，如果发现了花括号，就会只对其中的部分进行计算。</p>
+<p>Multi-Key 这一点是 Redis Cluster 对于我们日常使用中最大的限制，一定要注意，如果多key不在同一个 slot 中就会报错，例如：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(error) CROSSSLOT Keys in request don&#x27;t hash to the same slot</span><br></pre></td></tr></table></figure>
+
+
+<p>需要使用 <code>hash tag</code> 设计好 key 的空间。</p>
+<h3 id="4-2-高可用方式"><a href="#4-2-高可用方式" class="headerlink" title="4.2 高可用方式"></a>4.2 高可用方式</h3><h4 id="4-2-1-Sentinel（-哨兵机制）-支持高可用"><a href="#4-2-1-Sentinel（-哨兵机制）-支持高可用" class="headerlink" title="4.2.1 Sentinel（ 哨兵机制） 支持高可用"></a>4.2.1 Sentinel（ 哨兵机制） 支持高可用</h4><p>前面介绍了主从机制， 但是从运维角度来看， 主节点出现了问题我们还需要通过人工干预的方式把从节点设为主节点， 还要通知应用程序更新主节点地址， 这种方式非常繁琐笨重， 而且主节点的读写能力都十分有限， 有没有较好的办法解决这两个问题， 哨兵机制就是针对第一个问题的有效解决方案， 第二个问题则有赖于集群！ 哨兵的作用就是监控 Redis 系统的运行状况， 其功能主要是包括以下三个：</p>
+<ul>
+<li><code>监控(Monitoring)</code>: 哨兵(sentinel) 会不断地检查你的 Master 和 Slave 是否运作正常。</li>
+<li><code>提醒(Notification)</code>: 当被监控的某个 Redis 出现问题时, 哨兵(sentinel) 可以通过 API向管理员或者其他应用程序发送通知。</li>
+<li><code>自动故障迁移(Automatic failover)</code>: 当主数据库出现故障时自动将从数据库转换为主数据库。</li>
+</ul>
+<p><img src="/assets/Redis%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA/6aeb6b75eded93adccda7c500237e449.png" alt="image-20220208113907371"></p>
+<p>4.2.1.1  哨兵原理</p>
+<p>Redis 哨兵的三个定时任务， Redis 哨兵判定一个 Redis 节点故障不可达主要就是通过三个定时监控任务来完成的：  </p>
+<ul>
+<li>每隔 10 秒每个哨兵节点会向主节点和从节点发送”info replication” 命令来获取最新的拓扑结构</li>
+</ul>
+<p><img src="/assets/Redis%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA/0a55ec8c5e69f7e8ec9e465b8effccce.png" alt="image-20220208114041526"></p>
+<ul>
+<li><p>每隔 2 秒每个哨兵节点会向 Redis 节点的_sentinel_:hello 频道发送自己对主节点是否故障的判断以及自身的节点信息， 并且其他的哨兵节点也会订阅这个频道来了解其他哨兵节点的信息以及对主节点的判断</p>
+</li>
+<li><p>每隔 1 秒每个哨兵会向主节点、 从节点、 其他的哨兵节点发送一个 “ping” 命令来做心跳检测</p>
+</li>
+</ul>
+<p><img src="/assets/Redis%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA/fa174f00473d0ea52002887a1536ba02.png" alt="image-20220208114111461"></p>
+<p>如果在定时 Job3 检测不到节点的心跳， 会判断为**“主观下线”<strong>。 如果该节点还是主节点那么还会通知到其他的哨兵对该主节点进行心跳检测， 这时主观下线的票数超过了<quorum>数时， 那么这个主节点确实就可能是故障不可达了， 这时就由原来的主观下线变为了</strong>“客观下线”**。</p>
+<p>故障转移和 Leader 选举<br>如果主节点被判定为客观下线之后， 就要选取一个哨兵节点来完成后面的故障转移工作， 选举出一个 leader， 这里面采用的选举<strong>算法为 Raft</strong>。 选举出来的哨兵 leader 就要来完成故障转移工作， 也就是在从节点中选出一个节点来当新的主节点， 这部分的具体流程可参考引用  </p>
+<h4 id="4-2-2-Redis-Cluster"><a href="#4-2-2-Redis-Cluster" class="headerlink" title="4.2.2 Redis-Cluster"></a>4.2.2 Redis-Cluster</h4><p><img src="/assets/Redis%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA/b2bde3b6ba901eaaea4a56e9bb8afb2e.png" alt="image-20220208105551709"></p>
+<p><a target="_blank" rel="noopener" href="https://redis.io/topics/cluster-tutorial/">https://redis.io/topics/cluster-tutorial/</a><br>Redis 的官方多机部署方案， Redis Cluster。 一组 Redis Cluster 是由多个 Redis 实例组成， 官方推荐我们使用 6 实例， 其中 3 个为主节点， 3 个为从结点。 一旦有主节点发生故障的时候，Redis Cluster 可以选举出对应的从结点成为新的主节点， 继续对外服务， 从而保证服务的高可用性。那么对于客户端来说， 知道知道对应的 key 是要路由到哪一个节点呢？ Redis Cluster把所有的数据划分为 16384 个不同的槽位， 可以根据机器的性能把不同的槽位分配给不同的 Redis 实例， 对于 Redis 实例来说， 他们只会存储部分的 Redis 数据， 当然， 槽的数据是可以迁移的， 不同的实例之间， 可以通过一定的协议， 进行数据迁移。  </p>
+<h5 id="4-2-2-1-槽"><a href="#4-2-2-1-槽" class="headerlink" title="4.2.2.1 槽"></a>4.2.2.1 槽</h5><p><img src="/assets/Redis%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA/710b26170e2c4c654f1efef8d5e8beb7.png" alt="image-20220209115002413"></p>
+<p>Redis 集群的功能限制； Redis 集群相对 单机 在功能上存在一些限制， 需要 开发人员 提前了解， 在使用时做好规避。 [JAVA CRC16 校验算法](<a target="_blank" rel="noopener" href="https://blog.csdn.net/key_xyes/article/details/93614373?depth_1-utm_source=distribute.pc_relevant.none-task&utm_source=distribute.pc_relevant.none-task">JAVA CRC16校验算法_Levent的博客-CSDN博客_javacrc16校验</a>)</p>
+<ul>
+<li><p><strong>key 批量操作 支持有限。</strong></p>
+<ul>
+<li>类似 mset、 mget 操作， <strong>目前只支持对具有相同 slot 值的 key 执行 批量操作</strong>。对于 映射为不同 slot 值的 key 由于执行 mget、 mget 等操作可能存在于多个节点上， 因此不被支持。</li>
+</ul>
+</li>
+<li><p><strong>key 事务操作 支持有限。</strong></p>
+<ul>
+<li>只支持 多 key 在 同一 节点上 的 事务操作， <strong>当多个 key 分布在 不同 的节点上时 无法 使用事务功能</strong>。</li>
+</ul>
+</li>
+<li><p><strong>key 作为 数据分区 的最小粒度</strong></p>
+</li>
+<li><p><strong>不能将一个 大的键值 对象如 hash、 list 等映射到 不同的节点。</strong></p>
+</li>
+<li><p><strong>不支持 多数据库空间</strong></p>
+<ul>
+<li>单机 下的 Redis 可以支持 16 个数据库（db0 ~ db15） ， <strong>集群模式 下只能使用 一个 数据库空间， 即 db0。</strong></li>
+</ul>
+</li>
+<li><p><strong>复制结构 只支持一层</strong></p>
+<ul>
+<li>从节点 只能复制 主节点， 不支持 嵌套树状复制 结构。</li>
+</ul>
+</li>
+<li><p><strong>命令大多会重定向， 耗时多</strong></p>
+</li>
+</ul>
+<p><img src="/assets/Redis%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA/ddf9341a0020ed9fa94f3077dc5a8d39.png" alt="image-20220209115446487"></p>
+<h5 id="4-2-2-2-一致性-hash"><a href="#4-2-2-2-一致性-hash" class="headerlink" title="4.2.2.2 一致性 hash"></a>4.2.2.2 一致性 hash</h5><p>一致哈希 是一种特殊的哈希算法。在使用一致哈希算法后，哈希表槽位数（大小）的改变平均只需要对 K&#x2F;n 个关键字重新映射，其中K是关键字的数量， n是槽位数量。然而在传统的哈希表中，添加或删除一个槽位的几乎需要对所有关键字进行重新映射。</p>
+<p><img src="/assets/Redis%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA/1e44ffc252f7a2f2573100e07016b1ee.png" alt="image-20220209115600911"></p>
+<blockquote>
+<p>对一致性哈希的理解</p>
+<p>原文链接：<a target="_blank" rel="noopener" href="https://juejin.cn/post/6844903750860013576">https://juejin.cn/post/6844903750860013576</a></p>
+</blockquote>
+<p>简单的说，一致性哈希是将整个哈希值空间组织成一个虚拟的圆环，如假设哈希函数H的值空间为0-2^32-1（哈希值是32位无符号整形），整个哈希空间环如下：</p>
+<p><img src="/assets/Redis%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA/cfea2cf8696cf02b071b393d520d0e04.png" alt="1545916990776"></p>
+<p>整个空间按顺时针方向组织，0和2^32-1在零点中方向重合。</p>
+<p>接下来，把服务器按照IP或主机名作为关键字进行哈希，这样就能确定其在哈希环的位置。</p>
+<p><img src="/assets/Redis%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA/4028c13e206f05c2790a2d78c15e0e43.png" alt="1545917087577"></p>
+<p>然后，我们就可以使用哈希函数H计算值为key的数据在哈希环的具体位置h，根据h确定在环中的具体位置，从此位置沿顺时针滚动，遇到的第一台服务器就是其应该定位到的服务器。</p>
+<p>例如我们有A、B、C、D四个数据对象，经过哈希计算后，在环空间上的位置如下：</p>
+<p><img src="/assets/Redis%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA/48e40318b8a1cac969945a4acbe84923.png" alt="1545917163991"></p>
+<p>根据一致性哈希算法，数据A会被定为到Server 1上，数据B被定为到Server 2上，而C、D被定为到Server 3上。</p>
+<h6 id="4-2-2-2-1-一致性hash-hash倾斜问题"><a href="#4-2-2-2-1-一致性hash-hash倾斜问题" class="headerlink" title="4.2.2.2.1 一致性hash,hash倾斜问题"></a>4.2.2.2.1 一致性hash,hash倾斜问题</h6><p>如果节点很少， 容易出现倾斜， 负载不均衡问题。 一致性哈希算法， 引入了虚拟节点， 在整个环上， 均衡增加若干个节点。 比如 a1， a2， b1， b2， c1， c2， a1 和 a2 都是属于 A 节点的。 解决 hash 倾斜问题  </p>
+<blockquote>
+<p>具体做法</p>
+</blockquote>
+<p>具体做法可以在服务器IP或主机名的后面增加编号来实现，例如上面的情况，可以为每个服务节点增加三个虚拟节点，于是可以分为 RedisService1#1、 RedisService1#2、 RedisService1#3、 RedisService2#1、 RedisService2#2、 RedisService2#3，具体位置如下图所示：</p>
+<p><img src="/assets/Redis%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA/d5101180eae7699612c9d51a981fad91.png" alt="1545978062568"></p>
+<p>对于数据定位的hash算法仍然不变，只是增加了虚拟节点到实际节点的映射。例如，数据C保存到虚拟节点Redis1#2，实际上数据保存到Redis1中。这样，就能解决服务节点少时数据不平均的问题。在实际应用中，通常将虚拟节点数设置为<strong>32甚至更大</strong>，因此即使<strong>很少的服务节点</strong>也能做到相对<strong>均匀的数据分布</strong>。</p>
+<h4 id="4-2-3-部署Cluster"><a href="#4-2-3-部署Cluster" class="headerlink" title="4.2.3 部署Cluster"></a>4.2.3 部署Cluster</h4><p><img src="/assets/Redis%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA/b2e648bbdeadddabd6529c497b8874b5.png" alt="image-20220214113959175"></p>
+<h5 id="4-2-3-1-创建6个redis节点-3-主-3-从方式，从为了同步备份，主进行-slot-数据分片"><a href="#4-2-3-1-创建6个redis节点-3-主-3-从方式，从为了同步备份，主进行-slot-数据分片" class="headerlink" title="4.2.3.1 创建6个redis节点(3 主 3 从方式，从为了同步备份，主进行 slot 数据分片 )"></a>4.2.3.1 创建6个redis节点(3 主 3 从方式，从为了同步备份，主进行 slot 数据分片 )</h5><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">for port in $(seq 7001 7006); \</span><br><span class="line">do \</span><br><span class="line">mkdir -p /mydata/redis/node-$&#123;port&#125;/conf</span><br><span class="line">touch /mydata/redis/node-$&#123;port&#125;/conf/redis.conf</span><br><span class="line">cat &lt;&lt; EOF &gt;/mydata/redis/node-$&#123;port&#125;/conf/redis.conf</span><br><span class="line">port $&#123;port&#125;</span><br><span class="line">cluster-enabled yes</span><br><span class="line">cluster-config-file nodes.conf</span><br><span class="line">cluster-node-timeout 5000</span><br><span class="line">cluster-announce-ip 192.168.157.128</span><br><span class="line">cluster-announce-port $&#123;port&#125;</span><br><span class="line">cluster-announce-bus-port 1$&#123;port&#125;</span><br><span class="line">appendonly yes</span><br><span class="line">EOF</span><br><span class="line">docker run -p $&#123;port&#125;:$&#123;port&#125; -p 1$&#123;port&#125;:1$&#123;port&#125; --name redis-$&#123;port&#125; \</span><br><span class="line">-v /mydata/redis/node-$&#123;port&#125;/data:/data \</span><br><span class="line">-v /mydata/redis/node-$&#123;port&#125;/conf/redis.conf:/etc/redis/redis.conf \</span><br><span class="line">-d redis:5.0.7 redis-server /etc/redis/redis.conf; \</span><br><span class="line">done</span><br></pre></td></tr></table></figure>
+
+
+<ul>
+<li><code>port</code>：节点端口；</li>
+<li><code>requirepass</code>：添加访问认证；</li>
+<li><code>masterauth</code>：如果主节点开启了访问认证，从节点访问主节点需要认证；</li>
+<li><code>protected-mode</code>：保护模式，默认值 yes，即开启。开启保护模式以后，需配置 <code>bind ip</code> 或者设置访问密码；关闭保护模式，外部网络可以直接访问；</li>
+<li><code>daemonize</code>：是否以守护线程的方式启动（后台启动），默认 no；</li>
+<li><code>appendonly</code>：是否开启 AOF 持久化模式，默认 no；</li>
+<li><code>cluster-enabled</code>：是否开启集群模式，默认 no；</li>
+<li><code>cluster-config-file</code>：集群节点信息文件；</li>
+<li><code>cluster-node-timeout</code>：集群节点连接超时时间；</li>
+<li><code>cluster-announce-ip</code>：集群节点 IP，填写宿主机的 IP；</li>
+<li><code>cluster-announce-port</code>：集群节点映射端口；</li>
+<li><code>cluster-announce-bus-port</code>：集群节点总线端口。</li>
+</ul>
+<p><img src="/assets/Redis%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA/cc9855e48f88809d89092fc7a2caf9b7.png" alt="image-20220214095327251"></p>
+<p><img src="/assets/Redis%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA/bace381a95cd4e7e1d64db37c1f9057c.png" alt="image-20220214095408169"></p>
+<blockquote>
+<p>如想停用或删除所有节点</p>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">#</span><span class="language-bash">停用所有节点</span></span><br><span class="line">docker stop $(docker ps -a |grep redis-700 | awk &#x27;&#123; print $1&#125;&#x27;)</span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">删除所有容器</span></span><br><span class="line">docker rm $(docker ps -a |grep redis-700 | awk &#x27;&#123; print $1&#125;&#x27;)</span><br></pre></td></tr></table></figure>
+
+
+
+
+<h5 id="4-2-3-2-使用redis建立集群"><a href="#4-2-3-2-使用redis建立集群" class="headerlink" title="4.2.3.2 使用redis建立集群"></a>4.2.3.2 使用redis建立集群</h5><p>这里我们将redis-7001作为主节点</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">#</span><span class="language-bash">进入redis-7001容器</span></span><br><span class="line">docker exec -it redis-7001 bash</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">创建一个集群,拉入集群成员</span></span><br><span class="line">redis-cli --cluster create 192.168.157.128:7001 192.168.157.128:7002 192.168.157.128:7003 192.168.157.128:7004 192.168.157.128:7005 192.168.157.128:7006 --cluster-replicas 1</span><br></pre></td></tr></table></figure>
+
+
+<blockquote>
+<p>redis-cluster会为我们自动分配节点</p>
+</blockquote>
+<p><img src="/assets/Redis%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA/b2fd4db03d37190e5d09910dda994adf.png" alt="image-20220214100631506"></p>
+<h5 id="4-2-3-3-测试集群效果"><a href="#4-2-3-3-测试集群效果" class="headerlink" title="4.2.3.3 测试集群效果"></a>4.2.3.3 测试集群效果</h5><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">#</span><span class="language-bash">随便进入一个redis容器</span></span><br><span class="line">docker exec -it redis-7002 /bin/bash</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">使用 redis-cli 的 cluster 方式进行连接(get/set命令可以对其他节点进行操作)</span></span><br><span class="line">redis-cli -c -h 192.168.157.128 -p 7006</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">获取节点信息</span></span><br><span class="line">cluster info</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">获取集群节点</span></span><br><span class="line">cluster nodes</span><br></pre></td></tr></table></figure>
+
+
+
+
+<p><img src="/assets/Redis%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA/74c003062177306cfe587eb4d38a80f5.png" alt="image-20220214105108219"></p>
+<blockquote>
+<p>之前set了一个key为hello的数据,被重定向到7001,使用redis-manager连上7001及7001的从机7006看看</p>
+</blockquote>
+<p><img src="/assets/Redis%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA/a7a153dad866d22cad646ac05f18cec1.png" alt="image-20220214111753406"></p>
+<p><img src="/assets/Redis%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA/c2792776716413aebef05a0f3df14801.png" alt="image-20220214105621181"></p>
+<p><img src="/assets/Redis%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA/72c4f08a99cbfb24f3ddeace0ab3a72d.png" alt="image-20220214111812085"></p>
+<h6 id="4-2-3-3-1-模拟主节点宕机"><a href="#4-2-3-3-1-模拟主节点宕机" class="headerlink" title="4.2.3.3.1 模拟主节点宕机"></a>4.2.3.3.1 模拟主节点宕机</h6><blockquote>
+<p>关闭主节点7001</p>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker stop redis-7001</span><br></pre></td></tr></table></figure>
+
+
+
+
+<blockquote>
+<p>查看节点信息<br>7001节点失去连接,其从节点7006变为主节点</p>
+</blockquote>
+<p><img src="/assets/Redis%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA/57f35bb245ca53d134a71fa2c9b938b0.png" alt="image-20220214113624684"></p>
+<blockquote>
+<p>重启7001,查看节点信息<br>7001变为7006的从节点</p>
+</blockquote>
+<p><img src="/assets/Redis%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA/b6200fb6cfa280a47afc0e00407a9423.png" alt="image-20220214113847548"></p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>Author: </span><span class="post-copyright-info"><a href="https://yuanzhang788.github.io">Yuanz</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>Link: </span><span class="post-copyright-info"><a href="https://yuanzhang788.github.io/2026/06/02/Redis%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA/">https://yuanzhang788.github.io/2026/06/02/Redis%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>Copyright Notice: </span><span class="post-copyright-info">All articles on this blog are licensed under <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless otherwise stated.</span></div></div><div class="tag_share"><div class="post-share"><div class="social-share" data-image="/img/butterfly-icon.png" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2026/06/02/mysql%E9%9B%86%E7%BE%A4/" title="mysql集群"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info"><div class="info-1"><div class="info-item-1">Previous</div><div class="info-item-2">mysql集群</div></div><div class="info-2"><div class="info-item-1">3. mysql集群3.1 企业中常用的数据库解决方案 3.2 mysql常见的几种集群方式3.2.1 MYSQl-MMM(Master-Master Replication Manager for MySQLMySQL-MMM 是 Master-Master Replication Manager for MySQL（mysql 主主复制管理器） 的简称， 是 Google 的开源项目（Perl 脚本） 。  MMM 基于 MySQL Replication 做的扩展架构， 主要用来监控 mysql 主主复制并做失败转移。 其原理是将真实数据库节点的IP（RIP） 映射为虚拟 IP（VIP） 集。mysql-mmm 的监管端会提供多个虚拟 IP（VIP） ， 包括一个可写 VIP，多个可读 VIP， 通过监管的管理， 这些 IP 会绑定在可用 mysql 之上， 当某一台 mysql 宕机时， 监管会将 VIP迁移至其他 mysql。在整个监管过程中， 需要在 mysql 中添加相关授权用户， 以便让 mysql 可以支持监理机的维护。 授权的用户包括一个mmm_monitor...</div></div></div></a><a class="pagination-related" href="/2026/06/02/ElasticSearch%E9%9B%86%E7%BE%A4/" title="ElasticSearch集群"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">Next</div><div class="info-item-2">ElasticSearch集群</div></div><div class="info-2"><div class="info-item-1">5. ElasticSearch集群5.1 ElasticSearch集群原理集群内的原理 | Elasticsearch: 权威指南 | Elastic elasticsearch 是天生支持集群的， 他不需要依赖其他的服务发现和注册的组件， 如 zookeeper这些， 因为他内置了一个名字叫 ZenDiscovery 的模块， 是 elasticsearch 自己实现的一套用于节点发现和选主等功能的组件， 所以 elasticsearch 做起集群来非常简单， 不需要太多额外的配置和安装额外的第三方组件。   5.1.1 单节点 一个运行中的 Elasticsearch 实例称为一个节点， 而集群是由一个或者多个拥有相同cluster.name 配置的节点组成， 它们共同承担数据和负载的压力。 当有节点加入集群中或者从集群中移除节点时， 集群将会重新平均分布所有的数据。 当一个节点被选举成为 主节点时， 它将负责管理集群范围内的所有变更， 例如增加、删除索引， 或者增加、 删除节点等。 **而主节点并不需要涉及到文档级别的变更和搜索等操作， 所以当集群只拥有一个主节点的情况...</div></div></div></a></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/butterfly-icon.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">Yuanz</div><div class="author-info-description">Yuanz的个人博客</div><div class="site-data"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">176</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">0</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">0</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>Announcement</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>Contents</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#4-Redis%E9%9B%86%E7%BE%A4"><span class="toc-number">1.</span> <span class="toc-text">4. Redis集群</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#4-1-redis%E9%9B%86%E7%BE%A4%E5%BD%A2%E5%BC%8F"><span class="toc-number">1.1.</span> <span class="toc-text">4.1 redis集群形式</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#4-1-1-%E6%95%B0%E6%8D%AE%E5%88%86%E5%8C%BA%E6%96%B9%E6%A1%88"><span class="toc-number">1.1.1.</span> <span class="toc-text">4.1.1 数据分区方案</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4-1-2-%E4%BB%A3%E7%90%86%E5%88%86%E5%8C%BA"><span class="toc-number">1.1.2.</span> <span class="toc-text">4.1.2 代理分区</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4-1-3-redis-cluster"><span class="toc-number">1.1.3.</span> <span class="toc-text">4.1.3 redis-cluster</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#4-1-3-1-Multi-Key-%E9%99%90%E5%88%B6%E7%9A%84%E5%A4%84%E7%90%86"><span class="toc-number">1.1.3.1.</span> <span class="toc-text">4.1.3.1 Multi-Key 限制的处理</span></a></li></ol></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-2-%E9%AB%98%E5%8F%AF%E7%94%A8%E6%96%B9%E5%BC%8F"><span class="toc-number">1.2.</span> <span class="toc-text">4.2 高可用方式</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#4-2-1-Sentinel%EF%BC%88-%E5%93%A8%E5%85%B5%E6%9C%BA%E5%88%B6%EF%BC%89-%E6%94%AF%E6%8C%81%E9%AB%98%E5%8F%AF%E7%94%A8"><span class="toc-number">1.2.1.</span> <span class="toc-text">4.2.1 Sentinel（ 哨兵机制） 支持高可用</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4-2-2-Redis-Cluster"><span class="toc-number">1.2.2.</span> <span class="toc-text">4.2.2 Redis-Cluster</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#4-2-2-1-%E6%A7%BD"><span class="toc-number">1.2.2.1.</span> <span class="toc-text">4.2.2.1 槽</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#4-2-2-2-%E4%B8%80%E8%87%B4%E6%80%A7-hash"><span class="toc-number">1.2.2.2.</span> <span class="toc-text">4.2.2.2 一致性 hash</span></a><ol class="toc-child"><li class="toc-item toc-level-6"><a class="toc-link" href="#4-2-2-2-1-%E4%B8%80%E8%87%B4%E6%80%A7hash-hash%E5%80%BE%E6%96%9C%E9%97%AE%E9%A2%98"><span class="toc-number">1.2.2.2.1.</span> <span class="toc-text">4.2.2.2.1 一致性hash,hash倾斜问题</span></a></li></ol></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4-2-3-%E9%83%A8%E7%BD%B2Cluster"><span class="toc-number">1.2.3.</span> <span class="toc-text">4.2.3 部署Cluster</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#4-2-3-1-%E5%88%9B%E5%BB%BA6%E4%B8%AAredis%E8%8A%82%E7%82%B9-3-%E4%B8%BB-3-%E4%BB%8E%E6%96%B9%E5%BC%8F%EF%BC%8C%E4%BB%8E%E4%B8%BA%E4%BA%86%E5%90%8C%E6%AD%A5%E5%A4%87%E4%BB%BD%EF%BC%8C%E4%B8%BB%E8%BF%9B%E8%A1%8C-slot-%E6%95%B0%E6%8D%AE%E5%88%86%E7%89%87"><span class="toc-number">1.2.3.1.</span> <span class="toc-text">4.2.3.1 创建6个redis节点(3 主 3 从方式，从为了同步备份，主进行 slot 数据分片 )</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#4-2-3-2-%E4%BD%BF%E7%94%A8redis%E5%BB%BA%E7%AB%8B%E9%9B%86%E7%BE%A4"><span class="toc-number">1.2.3.2.</span> <span class="toc-text">4.2.3.2 使用redis建立集群</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#4-2-3-3-%E6%B5%8B%E8%AF%95%E9%9B%86%E7%BE%A4%E6%95%88%E6%9E%9C"><span class="toc-number">1.2.3.3.</span> <span class="toc-text">4.2.3.3 测试集群效果</span></a><ol class="toc-child"><li class="toc-item toc-level-6"><a class="toc-link" href="#4-2-3-3-1-%E6%A8%A1%E6%8B%9F%E4%B8%BB%E8%8A%82%E7%82%B9%E5%AE%95%E6%9C%BA"><span class="toc-number">1.2.3.3.1.</span> <span class="toc-text">4.2.3.3.1 模拟主节点宕机</span></a></li></ol></li></ol></li></ol></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Posts</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/06/02/hello-world/" title="Hello World">Hello World</a><time datetime="2026-06-02T07:15:27.184Z" title="Created 2026-06-02 15:15:27">2026-06-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/06/02/%E8%B0%B7%E7%B2%92%E5%95%86%E5%9F%8E--%E6%B3%A8%E5%86%8C%E4%B8%AD%E5%BF%83%E9%85%8D%E7%BD%AE%E4%B8%AD%E5%BF%83%E5%8F%8A%E7%BD%91%E5%85%B3--%E7%AC%94%E8%AE%B0%E4%BA%8C/" title="谷粒商城--注册中心配置中心及网关--笔记二">谷粒商城--注册中心配置中心及网关--笔记二</a><time datetime="2026-06-01T23:59:20.000Z" title="Created 2026-06-02 07:59:20">2026-06-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/06/02/%E8%B0%B7%E7%B2%92%E5%95%86%E5%9F%8E--%E5%89%8D%E7%AB%AF%E5%9F%BA%E7%A1%80--es6--%E7%AC%94%E8%AE%B0%E4%B8%89/" title="谷粒商城--前端基础--es6--笔记三">谷粒商城--前端基础--es6--笔记三</a><time datetime="2026-06-01T23:59:13.000Z" title="Created 2026-06-02 07:59:13">2026-06-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/06/02/%E8%B0%B7%E7%B2%92%E5%95%86%E5%9F%8E-vue-%E7%AC%94%E8%AE%B0%E5%9B%9B/" title="谷粒商城-vue-笔记四">谷粒商城-vue-笔记四</a><time datetime="2026-06-01T23:59:06.000Z" title="Created 2026-06-02 07:59:06">2026-06-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/06/02/%E8%B0%B7%E7%B2%92%E5%95%86%E5%9F%8E-%E6%A0%91%E5%BD%A2%E7%9B%AE%E5%BD%95%E5%BC%80%E5%8F%91-%E7%AC%94%E8%AE%B0%E4%BA%94/" title="谷粒商城-树形目录开发-笔记五">谷粒商城-树形目录开发-笔记五</a><time datetime="2026-06-01T23:58:59.000Z" title="Created 2026-06-02 07:58:59">2026-06-02</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2025 - 2026 By Yuanz</span><span class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 8.1.2</a><span class="footer-separator">|</span><span>Theme </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.5.5-b1</a></span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="Reading Mode"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="Toggle Between Light and Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle Between Single-column and Double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="Settings"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="Table of Contents"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="Back to Top"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.5.5-b1"></script><script src="/js/main.js?v=5.5.5-b1"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>

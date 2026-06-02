@@ -1,0 +1,172 @@
+<!DOCTYPE html><html lang="cn" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>Yuanz - 个人博客</title><meta name="author" content="Yuanz"><meta name="copyright" content="Yuanz"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="Yuanz的个人博客">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Yuanz">
+<meta property="og:url" content="https://yuanzhang788.github.io/page/8/index.html">
+<meta property="og:site_name" content="Yuanz">
+<meta property="og:description" content="Yuanz的个人博客">
+<meta property="og:locale">
+<meta property="og:image" content="https://yuanzhang788.github.io/img/butterfly-icon.png">
+<meta property="article:author" content="Yuanz">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://yuanzhang788.github.io/img/butterfly-icon.png"><script type="application/ld+json"></script><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://yuanzhang788.github.io/page/8/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=5.5.5-b1"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: 'Copy Successful',
+    error: 'Copy Failed',
+    noSupport: 'Browser Not Supported'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: 'Just now',
+    min: 'minutes ago',
+    hour: 'hours ago',
+    day: 'days ago',
+    month: 'months ago'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.0/dist/infinitegrid.min.js',
+    buttonText: 'Load More'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Yuanz',
+  isHighlightShrink: false,
+  isToc: false,
+  pageType: 'home'
+}</script><meta name="generator" content="Hexo 8.1.2"></head><body><div class="page" id="body-wrap"><header class="full_page" id="page-header"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">Yuanz</span></a></span><div id="menus"></div></nav><div id="site-info"><h1 id="site-title">Yuanz</h1></div><div id="scroll-down"><i class="fas fa-angle-down scroll-down-effects"></i></div></header><main class="layout" id="content-inner"><div class="recent-posts nc" id="recent-posts"><div class="recent-post-items"><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2026/06/02/Spring%20Cloud%20Gateway%20%E6%95%B4%E5%90%88knife4j%20%E8%81%9A%E5%90%88%E5%BE%AE%E6%9C%8D%E5%8A%A1swagger3/" title="Spring Cloud Gateway 整合knife4j 聚合微服务swagger3">Spring Cloud Gateway 整合knife4j 聚合微服务swagger3</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">Created</span><time datetime="2026-06-01T23:51:18.000Z" title="Created 2026-06-02 07:51:18">2026-06-02</time></span></div><div class="content">1. 搭建单服务swagger1.1 引入依赖123456&lt;!--swagger3--&gt;&lt;dependency&gt;    &lt;groupId&gt;io.springfox&lt;/groupId&gt;    &lt;artifactId&gt;springfox-boot-starter&lt;/artifactId&gt;    &lt;version&gt;3.0.0&lt;/version&gt;&lt;/dependency&gt;   1.2 application启用swagger1@EnableOpenApi   1.3 新增swagger配置类1234567891011121314151617181920212223242526272829303132333435363738package com.admin.config;import io.swagger.annotations.ApiOperation;import org.springframework.context.annotation.Bean;import org.sp...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2026/06/02/%E4%BD%BF%E7%94%A8%E5%8F%8D%E5%B0%84%E9%87%8D%E6%96%B0%E6%89%A7%E8%A1%8C%E4%B8%8D%E5%90%8C%E7%9A%84%E6%96%B9%E6%B3%95/" title="使用反射重新执行不同的方法">使用反射重新执行不同的方法</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">Created</span><time datetime="2026-06-01T23:51:11.000Z" title="Created 2026-06-02 07:51:11">2026-06-02</time></span></div><div class="content">0. 用到的技术 反射 获取正在执行的方法名称 Class[]数组的获取  1. 为什么要这样做?情况如下:  当我调用sendCommands方法发送请求时可能会收到errorCode为403也就是代码中的MDS_ERROR,就是当token(mds)失效了这种情况,我们就需要重新刷新token,并且重新执行该方法 假设还有100个sendCommands类似的方法都需要做这种处理,那么我就需要对这个100个方法做相同的处理.所以想到了用反射来帮我重新执行方法   2. 反射改造改造如下:   使用redo方法的好处就是以后其他方法只要有类似操作只需要调用redo方法即可,不需要再去写一次相同代码,并且是通过反射自动完成的 如果有除了MDS_ERROR以外的errorCode也需要统一处理只需要在else if即可    此处有个坑,我本来想用methodParam 然后map后toArray的但是会爆Object转Class异常 最后我就只有用for循环一个一个装,反正参数个数也不多  redo方法代码如下:  redo方法就是我抽取的公共重做方法  methodName 方...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2026/06/02/JUC%E9%AB%98%E7%BA%A7%E4%B9%9D-Synchronized%E4%B8%8E%E9%94%81%E5%8D%87%E7%BA%A7/" title="JUC高级九-Synchronized与锁升级">JUC高级九-Synchronized与锁升级</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">Created</span><time datetime="2026-06-01T23:51:05.000Z" title="Created 2026-06-02 07:51:05">2026-06-02</time></span></div><div class="content">1. synchronized 锁优化的背景 用锁能够实现数据的安全性，但是会带来性能下降。 无锁能够基于线程并行提升程序性能，但是会带来安全性下降。   为求平衡将synchronized优化为不在是无所和重锁两个状态,新增偏向锁和轻量级锁来平衡安全性和性能问题   synchronized锁：由对象头中的Mark Word根据锁标志位的不同而被复用及锁升级策略  2. Synchronized的性能变化2.1 java5以前-重量级锁只有Synchronized，这个是操作系统级别的重量级操作,重量级锁，假如锁的竞争比较激烈的话，性能急剧下降 2.1.1 重量级锁为什么比较消耗性能?&#x3D;&#x3D;重量级锁涉及到用户态和内核态之间的切换&#x3D;&#x3D;   java的线程是映射到操作系统原生线程之上的，如果要阻塞或唤醒一个线程就需要操作系统介入，需要在户态与核心态之间切换，&#x3D;&#x3D;这种切换会消耗大量的系统资源&#x3D;&#x3D;，因为用户态与内核态都有各自专用的内存空间，专用的寄存器等，用户态切换至内核态需要传递给许多变量、参数给内核，内核...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2026/06/02/JUC%E9%AB%98%E7%BA%A7%E5%8D%81-%E5%B9%B6%E5%8F%91%E5%8A%A0%E9%94%81%E5%8E%9F%E7%90%86%E4%B9%8BAbstractQueuedSynchronizer(AQS)/" title="JUC高级十-并发加锁原理之AbstractQueuedSynchronizer(AQS)">JUC高级十-并发加锁原理之AbstractQueuedSynchronizer(AQS)</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">Created</span><time datetime="2026-06-01T23:50:58.000Z" title="Created 2026-06-02 07:50:58">2026-06-02</time></span></div><div class="content">1. 前置知识 公平锁和非公平锁 可重入锁 自旋锁 LockSupport 数据结构之双向链表 设计模式之模板设计模式   AQS重要性 JAVA   ——&gt;JVM AQS   ——&gt;AQS  2. AQS入门级别理论知识2.1 是什么?2.1.1 字面意思Abstract Queued Synchronizer—-抽象的队列同步器 源码位置:  AbstractQueuedSynchronizer和AbstractQueuedLongSynchronizer是AbstractOwnableSynchronizer的子类   并且是一个抽象类:  2.1.2 技术解释  是用来构建锁或者其它同步器组件的重量级基础框架及整个JUC体系的基石,主要用于解决锁分配给”谁”的问题 通过内置的FIFO队列来完成资源获取线程的排队工作，并通过一个int类变量表示持有锁的状态   CLH队列(FIFO) CLH：Craig、Landin and Hagersten 队列，是一个单向链表，&#x3D;&#x3D;AQS中的队列是CLH变体的虚拟双向队列FIFO&#x3D;&#x3D;...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2026/06/02/JUC%E9%AB%98%E7%BA%A7%E5%8D%81%E4%BA%8C-ReentrantLock%E3%80%81ReentrantReadWriteLock%E3%80%81StampedLock/" title="JUC高级十二-ReentrantLock、ReentrantReadWriteLock、StampedLock">JUC高级十二-ReentrantLock、ReentrantReadWriteLock、StampedLock</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">Created</span><time datetime="2026-06-01T23:50:51.000Z" title="Created 2026-06-02 07:50:51">2026-06-02</time></span></div><div class="content"> 无锁→独占锁→读写锁→邮戳锁  1. 关于锁的大厂面试题 你知道Java里面有哪些锁? 你说你用过读写锁，锁饥饿问题是什么？ 有没有比读写锁更快的锁？ StampedLock知道吗?(邮戳锁&#x2F;票据锁) ReentrantReadWriteLock有锁降级机制策略你知道吗？  2.  读写锁 &#x3D;&#x3D;读写锁定义为一个资源能够被多个读线程访问，或者被一个写线程访问，但是不能同时存在读写线程。&#x3D;&#x3D;  2.1 ReentrantReadWriteLock分析由ReentrantLock与ReentrantReadWriteLock的对比  ReentrantLock实现的是Lock接口 ReentrantReadWriteLock实现的是ReadWriteLock接口    ReadWriteLock接口  有一个读锁一个写锁    2. 读写锁演变 无锁无序-&gt;加锁-&gt;读写锁    无锁时期一旦多线程,肯定会出现线程安全问题 加锁时期读读操作也只能单线程操作—–解决了线程安全问题但是性能太低 读写锁时期:高并发的情况下大部分的...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2026/06/02/vue2%E5%AE%9E%E7%8E%B0%E9%AB%98%E5%BE%B7%E5%9C%B0%E5%9B%BE%20JSAPI%202.0%E8%BD%A8%E8%BF%B9%E5%9B%9E%E6%94%BE%E7%BB%84%E4%BB%B6(MoveAnimation)/" title="vue2实现高德地图 JSAPI 2.0轨迹回放组件(MoveAnimation)">vue2实现高德地图 JSAPI 2.0轨迹回放组件(MoveAnimation)</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">Created</span><time datetime="2026-06-01T23:50:44.000Z" title="Created 2026-06-02 07:50:44">2026-06-02</time></span></div><div class="content">vue2实现高德地图 JSAPI 2.0轨迹回放组件(MoveAnimation)&#x3D;&#x3D;声明: 本人是做java后端的,组件抽取不是很规范请大家见谅&#x3D;&#x3D;  &#x3D;&#x3D;前提: 需要注册高德开放平台,之后创建应用并且开通Web端(JS API)平台,然后拿到securityJsCode和key&#x3D;&#x3D;  实现效果: ![image-20230504111101438](&#x2F;assets&#x2F;vue2实现高德地图 JSAPI 2.0轨迹回放组件(MoveAnimation)&#x2F;383888737fef45f8565ae9269acee324.png) 1. 基础抽取 注意:  将securityJsCode和key修改为自己的即可 v-show=&quot;true&quot;是控制面板显示的,我基础抽取的时候设置我true,就会一直显示   组件代码: 123456789101112131415161718192021222324252627282930313233343536373839404...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2026/06/02/vue2%E5%AE%9E%E7%8E%B0%E9%AB%98%E5%BE%B7%E5%9C%B0%E5%9B%BE%20JSAPI%202.0%E6%B5%B7%E9%87%8F%E7%82%B9%E6%A0%87%E8%AE%B0(%E6%A0%87%E6%B3%A8%E5%92%8C%E6%A0%87%E6%B3%A8%E5%9B%BE%E5%B1%82)-%EF%BC%9E%E8%87%AA%E5%AE%9A%E4%B9%89%E7%82%B9%E4%BD%8D-%EF%BC%9E%E5%AE%9A%E6%97%B6%E5%88%B7%E6%96%B0%E7%82%B9%E4%BD%8D/" title="vue2实现高德地图 JSAPI 2.0海量点标记(标注和标注图层)-＞自定义点位-＞定时刷新点位">vue2实现高德地图 JSAPI 2.0海量点标记(标注和标注图层)-＞自定义点位-＞定时刷新点位</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">Created</span><time datetime="2026-06-01T23:50:37.000Z" title="Created 2026-06-02 07:50:37">2026-06-02</time></span></div><div class="content"> &#x3D;&#x3D;前提: 需要注册高德开放平台,之后创建应用并且开通Web端(JS API)平台,然后拿到securityJsCode和key&#x3D;&#x3D;  1. 基础抽取(还原示例)1.1 组件代码 代码说明:  需要修改securityJsCode和key为自己的 allowCollision为标注是否避让marker,默认为false不避让 markers为地图上的标记数组 layer为一个标注层,可以理解为一个图层 流程其实就是将markers装载到layer再将layer装载到map就可以实现了 this.map.setFitView(null, false, [100, 150, 10,10]); 根据地图上添加的覆盖物分布情况，自动缩放地图到合适的视野级别，参数均可缺省。overlayList为覆盖物数组，缺省时为当前地图上添加的所有覆盖物图层，immediately代表是否需要动画过程，avoid代表上下左右的像素避让宽度，maxZoom代表fitView之后的最大级 参数说明: setFitView(overlays, immediately...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2026/06/02/Netty%E6%A0%B8%E5%BF%83%E6%8A%80%E6%9C%AF%E4%B8%80--Netty%E4%BB%8B%E7%BB%8D%E5%92%8C%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF/" title="Netty核心技术一--Netty介绍和应用场景">Netty核心技术一--Netty介绍和应用场景</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">Created</span><time datetime="2026-06-01T23:50:30.000Z" title="Created 2026-06-02 07:50:30">2026-06-02</time></span></div><div class="content">1. 学习要求要求已经掌握了   Java 编程， 主要技术构成： Java OOP 编程、Java 多线程编程、JavaIO 编程 、Java 网络编程、常用的Java 设计模式(比如观察者模式，命令模式，职责链模式 )、常用的数据结构(比如 链表)  2 Netty的介绍 Netty 是由 JBOSS 提供的一个 Java 开源框架，现为Github上的独立项目。  Netty 是一个&#x3D;&#x3D;异步的&#x3D;&#x3D;、&#x3D;&#x3D;基于事件驱动&#x3D;&#x3D;的&#x3D;&#x3D;网络应用框架&#x3D;&#x3D;，用以快速开发高性能、高可靠性的网络 IO 程序。  利用Ajax技术对异步进行理解  左图为没有使用Ajax的B&#x2F;S,右图为使用Ajax的B&#x2F;S 左图解析:客户通过浏览器访问服务器的流程是固定阻塞的,必须是1-&gt;2-&gt;3,浏览器想继续向下执行必须等待服务器的响应 右图解析:客户通过浏览器访问服务器,浏览器想继续向下执行不用等待服务器的响应可以继续执行代码,等到服务器响应后再回调执行   ...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2026/06/02/Netty%E6%A0%B8%E5%BF%83%E6%8A%80%E6%9C%AF%E4%BA%8C--BIO%E7%BC%96%E7%A8%8B/" title="Netty核心技术二--BIO编程">Netty核心技术二--BIO编程</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">Created</span><time datetime="2026-06-01T23:50:24.000Z" title="Created 2026-06-02 07:50:24">2026-06-02</time></span></div><div class="content">1. I&#x2F;O模型 I&#x2F;O 模型简单的理解：就是用什么样的通道进行数据的发送和接收，很大程度上决定了程序通信的性能  Java共支持3种网络编程模型&#x2F;IO模式：BIO、NIO、AIO  Java BIO ：&#x3D;&#x3D;同步并阻塞(传统阻塞型)&#x3D;&#x3D;，服务器实现模式为一个连接一个线程，即客户端有连接请求时服务器端就需要启动一个线程进行处理，如果这个连接不做任何事情会造成不必要的线程开销     Java NIO：&#x3D;&#x3D;同步非阻塞&#x3D;&#x3D;，服务器实现模式为一个线程处理多个请求(连接)，即客户端发送的连接请求都会注册到多路复用器上，多路复用器轮询到连接有I&#x2F;O请求就进行处理    Java AIO(NIO.2) ：&#x3D;&#x3D;异步非阻塞&#x3D;&#x3D;，AIO 引入异步通道的概念，采用了Proactor 模式，简化了程序编写，有效的请求才启动线程，它的特点是先由操作系统完成后才通知服务端程,一般适用于连接数较多,连接时间较长的应用  2. BIO,NIO,AIO适用...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2026/06/02/Netty%E6%A0%B8%E5%BF%83%E6%8A%80%E6%9C%AF%E4%B8%89--NIO%E7%BC%96%E7%A8%8B/" title="Netty核心技术三--NIO编程">Netty核心技术三--NIO编程</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">Created</span><time datetime="2026-06-01T23:50:18.000Z" title="Created 2026-06-02 07:50:18">2026-06-02</time></span></div><div class="content">1. JAVA NIO基本介绍 Java NIO 全称 java non-blocking IO，是指 JDK 提供的新API。从 JDK1.4 开始，Java 提供了一系列改进的输入&#x2F;输出的新特性，被统称为 NIO(即 New IO)，是同步非阻塞的  NIO 相关类都被放在 java.nio 包及子包下，并且对原java.io 包中的很多类进行改写。  NIO 有三大核心部分：Channel(通道)，Buffer(缓冲区), Selector(选择器)  NIO是 面向缓冲区 ，或者面向块编程的。&#x3D;&#x3D;数据读取到一个它稍后处理的缓冲区，需要时可在缓冲区中前后移动，这就增加了处理过程中的灵活性&#x3D;&#x3D;，使用它可以提供非阻塞式的高伸缩性网络  Java NIO的非阻塞模式，使一个线程从某通道发送请求或者读取数据，但是它仅能得到目前可用的数据，如果目前没有数据可用时，就什么都不会获取，而不是保持线程阻塞，所以直至数据变的可以读取之前，该线程可以继续做其他的事情。非阻塞写也是如此，一个线程请求写入一些数据到某通道，但不需要等待它完全写入，这...</div></div></div></div><nav id="pagination"><div class="pagination"><a class="extend prev" rel="prev" href="/page/7/#content-inner"><i class="fas fa-chevron-left fa-fw"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/7/#content-inner">7</a><span class="page-number current">8</span><a class="page-number" href="/page/9/#content-inner">9</a><span class="space">&hellip;</span><a class="page-number" href="/page/18/#content-inner">18</a><a class="extend next" rel="next" href="/page/9/#content-inner"><i class="fas fa-chevron-right fa-fw"></i></a></div></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/butterfly-icon.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">Yuanz</div><div class="author-info-description">Yuanz的个人博客</div><div class="site-data"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">176</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">0</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">0</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>Announcement</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Posts</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/06/02/hello-world/" title="Hello World">Hello World</a><time datetime="2026-06-02T07:15:27.184Z" title="Created 2026-06-02 15:15:27">2026-06-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/06/02/%E8%B0%B7%E7%B2%92%E5%95%86%E5%9F%8E--%E6%B3%A8%E5%86%8C%E4%B8%AD%E5%BF%83%E9%85%8D%E7%BD%AE%E4%B8%AD%E5%BF%83%E5%8F%8A%E7%BD%91%E5%85%B3--%E7%AC%94%E8%AE%B0%E4%BA%8C/" title="谷粒商城--注册中心配置中心及网关--笔记二">谷粒商城--注册中心配置中心及网关--笔记二</a><time datetime="2026-06-01T23:59:20.000Z" title="Created 2026-06-02 07:59:20">2026-06-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/06/02/%E8%B0%B7%E7%B2%92%E5%95%86%E5%9F%8E--%E5%89%8D%E7%AB%AF%E5%9F%BA%E7%A1%80--es6--%E7%AC%94%E8%AE%B0%E4%B8%89/" title="谷粒商城--前端基础--es6--笔记三">谷粒商城--前端基础--es6--笔记三</a><time datetime="2026-06-01T23:59:13.000Z" title="Created 2026-06-02 07:59:13">2026-06-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/06/02/%E8%B0%B7%E7%B2%92%E5%95%86%E5%9F%8E-vue-%E7%AC%94%E8%AE%B0%E5%9B%9B/" title="谷粒商城-vue-笔记四">谷粒商城-vue-笔记四</a><time datetime="2026-06-01T23:59:06.000Z" title="Created 2026-06-02 07:59:06">2026-06-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/06/02/%E8%B0%B7%E7%B2%92%E5%95%86%E5%9F%8E-%E6%A0%91%E5%BD%A2%E7%9B%AE%E5%BD%95%E5%BC%80%E5%8F%91-%E7%AC%94%E8%AE%B0%E4%BA%94/" title="谷粒商城-树形目录开发-笔记五">谷粒商城-树形目录开发-笔记五</a><time datetime="2026-06-01T23:58:59.000Z" title="Created 2026-06-02 07:58:59">2026-06-02</time></div></div></div></div><div class="card-widget card-archives">
+    <div class="item-headline">
+      <i class="fas fa-archive"></i>
+      <span>Archives</span>
+      
+    </div>
+  
+    <ul class="card-archive-list">
+      
+        <li class="card-archive-list-item">
+          <a class="card-archive-list-link" href="/archives/2026/06/">
+            <span class="card-archive-list-date">
+              June 2026
+            </span>
+            <span class="card-archive-list-count">174</span>
+          </a>
+        </li>
+      
+        <li class="card-archive-list-item">
+          <a class="card-archive-list-link" href="/archives/2026/05/">
+            <span class="card-archive-list-date">
+              May 2026
+            </span>
+            <span class="card-archive-list-count">2</span>
+          </a>
+        </li>
+      
+    </ul>
+  </div><div class="card-widget card-webinfo"><div class="item-headline"><i class="fas fa-chart-line"></i><span>Website Info</span></div><div class="webinfo"><div class="webinfo-item"><div class="item-name">Article Count :</div><div class="item-count">176</div></div><div class="webinfo-item"><div class="item-name">Unique Visitors :</div><div class="item-count" id="busuanzi_value_site_uv"><i class="fa-solid fa-spinner fa-spin"></i></div></div><div class="webinfo-item"><div class="item-name">Page Views :</div><div class="item-count" id="busuanzi_value_site_pv"><i class="fa-solid fa-spinner fa-spin"></i></div></div><div class="webinfo-item"><div class="item-name">Last Update :</div><div class="item-count" id="last-push-date" data-lastPushDate="2026-06-02T10:34:58.394Z"><i class="fa-solid fa-spinner fa-spin"></i></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2025 - 2026 By Yuanz</span><span class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 8.1.2</a><span class="footer-separator">|</span><span>Theme </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.5.5-b1</a></span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="darkmode" type="button" title="Toggle Between Light and Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle Between Single-column and Double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="Settings"><i class="fas fa-cog fa-spin"></i></button><button id="go-up" type="button" title="Back to Top"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.5.5-b1"></script><script src="/js/main.js?v=5.5.5-b1"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>

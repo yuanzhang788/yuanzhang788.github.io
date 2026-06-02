@@ -1,0 +1,222 @@
+<!DOCTYPE html><html lang="cn" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>谷粒商城--nginx--高级篇笔记四 | Yuanz</title><meta name="author" content="Yuanz"><meta name="copyright" content="Yuanz"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="谷粒商城–nginx–高级篇笔记四1. nginx搭建域名访问 (反向代理)1.1 动静分离 1.2 正向代理与反向代理 正向代理隐藏客户端 反向代理隐藏服务端   1.3 nginx与windows搭建域名访问环境 为什么能够通过修改host文件来实现域名访问?  众所周知域名解析是通过dns来解析的,但是在通过网络的dns解析之前需要找到本机的host文件查询是否有对应的域名映射,如果有就通过">
+<meta property="og:type" content="article">
+<meta property="og:title" content="谷粒商城--nginx--高级篇笔记四">
+<meta property="og:url" content="https://yuanzhang788.github.io/2026/06/02/%E8%B0%B7%E7%B2%92%E5%95%86%E5%9F%8E--nginx--%E9%AB%98%E7%BA%A7%E7%AF%87%E7%AC%94%E8%AE%B0%E5%9B%9B/index.html">
+<meta property="og:site_name" content="Yuanz">
+<meta property="og:description" content="谷粒商城–nginx–高级篇笔记四1. nginx搭建域名访问 (反向代理)1.1 动静分离 1.2 正向代理与反向代理 正向代理隐藏客户端 反向代理隐藏服务端   1.3 nginx与windows搭建域名访问环境 为什么能够通过修改host文件来实现域名访问?  众所周知域名解析是通过dns来解析的,但是在通过网络的dns解析之前需要找到本机的host文件查询是否有对应的域名映射,如果有就通过">
+<meta property="og:locale">
+<meta property="og:image" content="https://yuanzhang788.github.io/img/butterfly-icon.png">
+<meta property="article:published_time" content="2026-06-01T23:57:47.000Z">
+<meta property="article:modified_time" content="2026-06-02T08:16:32.084Z">
+<meta property="article:author" content="Yuanz">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://yuanzhang788.github.io/img/butterfly-icon.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "谷粒商城--nginx--高级篇笔记四",
+  "url": "https://yuanzhang788.github.io/2026/06/02/%E8%B0%B7%E7%B2%92%E5%95%86%E5%9F%8E--nginx--%E9%AB%98%E7%BA%A7%E7%AF%87%E7%AC%94%E8%AE%B0%E5%9B%9B/",
+  "image": "https://yuanzhang788.github.io/img/butterfly-icon.png",
+  "datePublished": "2026-06-01T23:57:47.000Z",
+  "dateModified": "2026-06-02T08:16:32.084Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "Yuanz",
+      "url": "https://yuanzhang788.github.io"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://yuanzhang788.github.io/2026/06/02/%E8%B0%B7%E7%B2%92%E5%95%86%E5%9F%8E--nginx--%E9%AB%98%E7%BA%A7%E7%AF%87%E7%AC%94%E8%AE%B0%E5%9B%9B/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=5.5.5-b1"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: 'Copy Successful',
+    error: 'Copy Failed',
+    noSupport: 'Browser Not Supported'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: 'Just now',
+    min: 'minutes ago',
+    hour: 'hours ago',
+    day: 'days ago',
+    month: 'months ago'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.0/dist/infinitegrid.min.js',
+    buttonText: 'Load More'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '谷粒商城--nginx--高级篇笔记四',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><meta name="generator" content="Hexo 8.1.2"></head><body><div class="post" id="body-wrap"><header class="post-bg" id="page-header"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">Yuanz</span></a><a class="nav-page-title" href="/"><span class="site-name">谷粒商城--nginx--高级篇笔记四</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  Back to Home</span></span></a></span><div id="menus"></div></nav><div id="post-info"><h1 class="post-title">谷粒商城--nginx--高级篇笔记四</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2026-06-01T23:57:47.000Z" title="Created 2026-06-02 07:57:47">2026-06-02</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2026-06-02T08:16:32.084Z" title="Updated 2026-06-02 16:16:32">2026-06-02</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">Post Views:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><h1 id="谷粒商城–nginx–高级篇笔记四"><a href="#谷粒商城–nginx–高级篇笔记四" class="headerlink" title="谷粒商城–nginx–高级篇笔记四"></a>谷粒商城–nginx–高级篇笔记四</h1><h2 id="1-nginx搭建域名访问-反向代理"><a href="#1-nginx搭建域名访问-反向代理" class="headerlink" title="1. nginx搭建域名访问 (反向代理)"></a>1. nginx搭建域名访问 (反向代理)</h2><h3 id="1-1-动静分离"><a href="#1-1-动静分离" class="headerlink" title="1.1 动静分离"></a>1.1 动静分离</h3><p><img src="/assets/%E8%B0%B7%E7%B2%92%E5%95%86%E5%9F%8E--nginx--%E9%AB%98%E7%BA%A7%E7%AF%87%E7%AC%94%E8%AE%B0%E5%9B%9B/f5e37cdd9c85475cc4ce249b67312c7d.png" alt="image-20211027173750215"></p>
+<h3 id="1-2-正向代理与反向代理"><a href="#1-2-正向代理与反向代理" class="headerlink" title="1.2 正向代理与反向代理"></a>1.2 正向代理与反向代理</h3><ul>
+<li>正向代理隐藏客户端</li>
+<li>反向代理隐藏服务端</li>
+</ul>
+<p><img src="/assets/%E8%B0%B7%E7%B2%92%E5%95%86%E5%9F%8E--nginx--%E9%AB%98%E7%BA%A7%E7%AF%87%E7%AC%94%E8%AE%B0%E5%9B%9B/92eba77b0a9ba30161201f41dc3c186b.png" alt="image-20211027174337185"></p>
+<h3 id="1-3-nginx与windows搭建域名访问环境"><a href="#1-3-nginx与windows搭建域名访问环境" class="headerlink" title="1.3 nginx与windows搭建域名访问环境"></a>1.3 nginx与windows搭建域名访问环境</h3><blockquote>
+<p>为什么能够通过修改host文件来实现域名访问?</p>
+</blockquote>
+<p>众所周知域名解析是通过dns来解析的,但是在通过网络的dns解析之前需要找到本机的host文件查询是否有对应的域名映射,如果有就通过映射的域名地址访问,如果没有再访问dns</p>
+<h4 id="1-3-1-通过改host文件的方法就可以实现"><a href="#1-3-1-通过改host文件的方法就可以实现" class="headerlink" title="1.3.1 通过改host文件的方法就可以实现"></a>1.3.1 通过改host文件的方法就可以实现</h4><p>host文件地址<strong>C:\Windows\System32\drivers\etc</strong></p>
+<p><img src="/assets/%E8%B0%B7%E7%B2%92%E5%95%86%E5%9F%8E--nginx--%E9%AB%98%E7%BA%A7%E7%AF%87%E7%AC%94%E8%AE%B0%E5%9B%9B/a1b8b984b20d707c796b7100d2f21a88.png" alt="image-20211027180003586"></p>
+<p>也可以使用工具SwitchHosts</p>
+<p><strong>注意:启动SwitchHosts必须以管理员身份启动</strong></p>
+<p><img src="/assets/%E8%B0%B7%E7%B2%92%E5%95%86%E5%9F%8E--nginx--%E9%AB%98%E7%BA%A7%E7%AF%87%E7%AC%94%E8%AE%B0%E5%9B%9B/647458c5fe299502db9160f535c1b622.png" alt="image-20211027175808170"></p>
+<h4 id="1-3-2-配置host"><a href="#1-3-2-配置host" class="headerlink" title="1.3.2 配置host"></a>1.3.2 配置host</h4><blockquote>
+<p>新建本地方案,IP地址为虚拟机地址</p>
+<p><strong>192.168.157.128 gulimall.com</strong></p>
+</blockquote>
+<p><img src="/assets/%E8%B0%B7%E7%B2%92%E5%95%86%E5%9F%8E--nginx--%E9%AB%98%E7%BA%A7%E7%AF%87%E7%AC%94%E8%AE%B0%E5%9B%9B/7a68cf657640a05331c6bf14a761fad1.png" alt="image-20211027182343822"></p>
+<h4 id="1-3-3-域名测试"><a href="#1-3-3-域名测试" class="headerlink" title="1.3.3 域名测试"></a>1.3.3 域名测试</h4><blockquote>
+<p>之前虚拟机配置的nginx的index.html页面显示出来了,域名访问配置成功</p>
+</blockquote>
+<p><img src="/assets/%E8%B0%B7%E7%B2%92%E5%95%86%E5%9F%8E--nginx--%E9%AB%98%E7%BA%A7%E7%AF%87%E7%AC%94%E8%AE%B0%E5%9B%9B/cf67851d69f5ac10369be4addfb3cd45.png" alt="image-20211027182454167"></p>
+<h4 id="1-1-4-nginx搭建域名访问-nginx转发网关"><a href="#1-1-4-nginx搭建域名访问-nginx转发网关" class="headerlink" title="1.1.4 nginx搭建域名访问(nginx转发网关)"></a>1.1.4 nginx搭建域名访问(nginx转发网关)</h4><h5 id="1-1-4-1-实现"><a href="#1-1-4-1-实现" class="headerlink" title="1.1.4.1 实现"></a>1.1.4.1 实现</h5><p><img src="/assets/%E8%B0%B7%E7%B2%92%E5%95%86%E5%9F%8E--nginx--%E9%AB%98%E7%BA%A7%E7%AF%87%E7%AC%94%E8%AE%B0%E5%9B%9B/42503952923bf1aea2c5e6dcd8680aa8.png" alt="image-20211029112224117"></p>
+<h5 id="1-1-4-1-nginx配置文件结构"><a href="#1-1-4-1-nginx配置文件结构" class="headerlink" title="1.1.4.1 nginx配置文件结构"></a>1.1.4.1 nginx配置文件结构</h5><p><img src="/assets/%E8%B0%B7%E7%B2%92%E5%95%86%E5%9F%8E--nginx--%E9%AB%98%E7%BA%A7%E7%AF%87%E7%AC%94%E8%AE%B0%E5%9B%9B/bae2e546b4722baee710bc9d9c7d55b5.png" alt="image-20211029112527346"></p>
+<p><img src="/assets/%E8%B0%B7%E7%B2%92%E5%95%86%E5%9F%8E--nginx--%E9%AB%98%E7%BA%A7%E7%AF%87%E7%AC%94%E8%AE%B0%E5%9B%9B/78d090c48fefeefb5745e7e44ec83fbb.png" alt="image-20211029112737733"></p>
+<blockquote>
+<p>nginx.config文件对应的http块</p>
+</blockquote>
+<p><img src="/assets/%E8%B0%B7%E7%B2%92%E5%95%86%E5%9F%8E--nginx--%E9%AB%98%E7%BA%A7%E7%AF%87%E7%AC%94%E8%AE%B0%E5%9B%9B/aeffc4cc279487598ceae1e7c088b828.png" alt="image-20211029113416553"></p>
+<blockquote>
+<p>conf.d下的default.conf对应真实的server块</p>
+</blockquote>
+<p><img src="/assets/%E8%B0%B7%E7%B2%92%E5%95%86%E5%9F%8E--nginx--%E9%AB%98%E7%BA%A7%E7%AF%87%E7%AC%94%E8%AE%B0%E5%9B%9B/ee8ff4142945df9c00051378a926065d.png" alt="image-20211029113607705"></p>
+<h5 id="1-1-4-2-http块配置上游服务器"><a href="#1-1-4-2-http块配置上游服务器" class="headerlink" title="1.1.4.2 http块配置上游服务器"></a>1.1.4.2 http块配置上游服务器</h5><p><img src="/assets/%E8%B0%B7%E7%B2%92%E5%95%86%E5%9F%8E--nginx--%E9%AB%98%E7%BA%A7%E7%AF%87%E7%AC%94%E8%AE%B0%E5%9B%9B/ee5ddd55f8ec1f25b7a3bbd375f22dd7.png" alt="image-20211031173925935"></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">http &#123;</span><br><span class="line">    upstream gulimall&#123;</span><br><span class="line">      server 192.168.157.128:88      #配置网关为上游服务器</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+
+
+
+<h5 id="1-1-4-3-server块配置域名监听并转发"><a href="#1-1-4-3-server块配置域名监听并转发" class="headerlink" title="1.1.4.3 server块配置域名监听并转发"></a>1.1.4.3 server块配置域名监听并转发</h5><p><img src="/assets/%E8%B0%B7%E7%B2%92%E5%95%86%E5%9F%8E--nginx--%E9%AB%98%E7%BA%A7%E7%AF%87%E7%AC%94%E8%AE%B0%E5%9B%9B/f0d5ff2da771760b9f83c16f90e90536.png" alt="image-20211031173828419"></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">server &#123;</span><br><span class="line">    listen       80;</span><br><span class="line">    server_name  gulimall.com;</span><br><span class="line"></span><br><span class="line">    #charset koi8-r;</span><br><span class="line">    #access_log  /var/log/nginx/log/host.access.log  main;</span><br><span class="line">    </span><br><span class="line"><span class="meta prompt_">	#</span><span class="language-bash">配置域名转发到上游服务器</span></span><br><span class="line">    location / &#123;</span><br><span class="line">        proxy_pass http://gulimall;</span><br><span class="line">    &#125;</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">下面配置为默认配置</span></span><br></pre></td></tr></table></figure>
+
+
+
+
+<h5 id="1-1-4-4-网关服务配置"><a href="#1-1-4-4-网关服务配置" class="headerlink" title="1.1.4.4 网关服务配置"></a>1.1.4.4 网关服务配置</h5><blockquote>
+<p>gulimall-gateway&#x2F;src&#x2F;main&#x2F;resources&#x2F;application.yml</p>
+</blockquote>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">- id: gulimall_host_route</span><br><span class="line">  uri: lb://gulimall-product</span><br><span class="line">  predicates:</span><br><span class="line">    - Host=gulimall.com,item.gulimall.com</span><br></pre></td></tr></table></figure>
+
+
+
+
+<h5 id="1-1-4-5-nginx反向代理host信息丢失问题"><a href="#1-1-4-5-nginx反向代理host信息丢失问题" class="headerlink" title="1.1.4.5 nginx反向代理host信息丢失问题"></a>1.1.4.5 nginx反向代理host信息丢失问题</h5><blockquote>
+<p>解决 server块新增<code>proxy_set_header Host $host;</code>配置</p>
+</blockquote>
+<p><img src="/assets/%E8%B0%B7%E7%B2%92%E5%95%86%E5%9F%8E--nginx--%E9%AB%98%E7%BA%A7%E7%AF%87%E7%AC%94%E8%AE%B0%E5%9B%9B/35d4bd9ecd4c05169cfdc557e4920185.png" alt="image-20211031174503308"></p>
+<p>重启nginx 访问gulimall.com</p>
+<p><img src="/assets/%E8%B0%B7%E7%B2%92%E5%95%86%E5%9F%8E--nginx--%E9%AB%98%E7%BA%A7%E7%AF%87%E7%AC%94%E8%AE%B0%E5%9B%9B/7ebdf174a312846ad426feee333f8d88.png" alt="image-20211031174550705"></p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>Author: </span><span class="post-copyright-info"><a href="https://yuanzhang788.github.io">Yuanz</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>Link: </span><span class="post-copyright-info"><a href="https://yuanzhang788.github.io/2026/06/02/%E8%B0%B7%E7%B2%92%E5%95%86%E5%9F%8E--nginx--%E9%AB%98%E7%BA%A7%E7%AF%87%E7%AC%94%E8%AE%B0%E5%9B%9B/">https://yuanzhang788.github.io/2026/06/02/%E8%B0%B7%E7%B2%92%E5%95%86%E5%9F%8E--nginx--%E9%AB%98%E7%BA%A7%E7%AF%87%E7%AC%94%E8%AE%B0%E5%9B%9B/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>Copyright Notice: </span><span class="post-copyright-info">All articles on this blog are licensed under <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless otherwise stated.</span></div></div><div class="tag_share"><div class="post-share"><div class="social-share" data-image="/img/butterfly-icon.png" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2026/06/02/%E8%B0%B7%E7%B2%92%E5%95%86%E5%9F%8E--%E5%95%86%E5%9F%8E%E4%B8%BB%E9%A1%B5(%E7%B1%BB%E7%9B%AE)--%E9%AB%98%E7%BA%A7%E7%AF%87%E7%AC%94%E8%AE%B0%E4%B8%89/" title="谷粒商城--商城主页(类目)--高级篇笔记三"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info"><div class="info-1"><div class="info-item-1">Previous</div><div class="info-item-2">谷粒商城--商城主页(类目)--高级篇笔记三</div></div><div class="info-2"><div class="info-item-1">谷粒商城–商城主页(类目)–高级篇笔记三1. 首页代码 2. 导入thymeleaf依赖 gulimall-product&#x2F;pom.xml  12345&lt;!--模板引擎thymeleaf--&gt;       &lt;dependency&gt;           &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;           &lt;artifactId&gt;spring-boot-starter-thymeleaf&lt;/artifactId&gt;       &lt;/dependency&gt;     3. 首页与静态资源复制  4. 重启gulimall-product服务 访问gulimall-product服务    此页面为静态有页面  5. 编写查询一级目录列表接口 因为使用的thymeleaf,所以直接返回的页面,新建一个web包,用来专门存储thymeleaf相关controller 将原来的controller包修改为app包    新增gulimall-pro...</div></div></div></a><a class="pagination-related" href="/2026/06/02/%E8%B0%B7%E7%B2%92%E5%95%86%E5%9F%8E--%E6%90%9C%E7%B4%A2%E6%9C%8D%E5%8A%A1--%E9%AB%98%E7%BA%A7%E7%AF%87%E7%AC%94%E8%AE%B0%E5%85%AD/" title="谷粒商城--搜索服务--高级篇笔记六"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">Next</div><div class="info-item-2">谷粒商城--搜索服务--高级篇笔记六</div></div><div class="info-2"><div class="info-item-1">谷粒商城–搜索服务–高级篇笔记六1 搜索页面搭建1.1 添加依赖1234567891011&lt;!--devtools--&gt;      &lt;dependency&gt;          &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;          &lt;artifactId&gt;spring-boot-devtools&lt;/artifactId&gt;          &lt;optional&gt;true&lt;/optional&gt;      &lt;/dependency&gt;      &lt;!--Spring Cache--&gt;      &lt;dependency&gt;          &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;          &lt;artifactId&gt;spring-boot-starter-cache&lt;/artifactId&gt;      &lt;/...</div></div></div></a></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/butterfly-icon.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">Yuanz</div><div class="author-info-description">Yuanz的个人博客</div><div class="site-data"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">176</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">0</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">0</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>Announcement</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>Contents</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E8%B0%B7%E7%B2%92%E5%95%86%E5%9F%8E%E2%80%93nginx%E2%80%93%E9%AB%98%E7%BA%A7%E7%AF%87%E7%AC%94%E8%AE%B0%E5%9B%9B"><span class="toc-number">1.</span> <span class="toc-text">谷粒商城–nginx–高级篇笔记四</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-nginx%E6%90%AD%E5%BB%BA%E5%9F%9F%E5%90%8D%E8%AE%BF%E9%97%AE-%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86"><span class="toc-number">1.1.</span> <span class="toc-text">1. nginx搭建域名访问 (反向代理)</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-1-%E5%8A%A8%E9%9D%99%E5%88%86%E7%A6%BB"><span class="toc-number">1.1.1.</span> <span class="toc-text">1.1 动静分离</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-2-%E6%AD%A3%E5%90%91%E4%BB%A3%E7%90%86%E4%B8%8E%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86"><span class="toc-number">1.1.2.</span> <span class="toc-text">1.2 正向代理与反向代理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-3-nginx%E4%B8%8Ewindows%E6%90%AD%E5%BB%BA%E5%9F%9F%E5%90%8D%E8%AE%BF%E9%97%AE%E7%8E%AF%E5%A2%83"><span class="toc-number">1.1.3.</span> <span class="toc-text">1.3 nginx与windows搭建域名访问环境</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-3-1-%E9%80%9A%E8%BF%87%E6%94%B9host%E6%96%87%E4%BB%B6%E7%9A%84%E6%96%B9%E6%B3%95%E5%B0%B1%E5%8F%AF%E4%BB%A5%E5%AE%9E%E7%8E%B0"><span class="toc-number">1.1.3.1.</span> <span class="toc-text">1.3.1 通过改host文件的方法就可以实现</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#1-3-2-%E9%85%8D%E7%BD%AEhost"><span class="toc-number">1.1.3.2.</span> <span class="toc-text">1.3.2 配置host</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#1-3-3-%E5%9F%9F%E5%90%8D%E6%B5%8B%E8%AF%95"><span class="toc-number">1.1.3.3.</span> <span class="toc-text">1.3.3 域名测试</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#1-1-4-nginx%E6%90%AD%E5%BB%BA%E5%9F%9F%E5%90%8D%E8%AE%BF%E9%97%AE-nginx%E8%BD%AC%E5%8F%91%E7%BD%91%E5%85%B3"><span class="toc-number">1.1.3.4.</span> <span class="toc-text">1.1.4 nginx搭建域名访问(nginx转发网关)</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#1-1-4-1-%E5%AE%9E%E7%8E%B0"><span class="toc-number">1.1.3.4.1.</span> <span class="toc-text">1.1.4.1 实现</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#1-1-4-1-nginx%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6%E7%BB%93%E6%9E%84"><span class="toc-number">1.1.3.4.2.</span> <span class="toc-text">1.1.4.1 nginx配置文件结构</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#1-1-4-2-http%E5%9D%97%E9%85%8D%E7%BD%AE%E4%B8%8A%E6%B8%B8%E6%9C%8D%E5%8A%A1%E5%99%A8"><span class="toc-number">1.1.3.4.3.</span> <span class="toc-text">1.1.4.2 http块配置上游服务器</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#1-1-4-3-server%E5%9D%97%E9%85%8D%E7%BD%AE%E5%9F%9F%E5%90%8D%E7%9B%91%E5%90%AC%E5%B9%B6%E8%BD%AC%E5%8F%91"><span class="toc-number">1.1.3.4.4.</span> <span class="toc-text">1.1.4.3 server块配置域名监听并转发</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#1-1-4-4-%E7%BD%91%E5%85%B3%E6%9C%8D%E5%8A%A1%E9%85%8D%E7%BD%AE"><span class="toc-number">1.1.3.4.5.</span> <span class="toc-text">1.1.4.4 网关服务配置</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#1-1-4-5-nginx%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86host%E4%BF%A1%E6%81%AF%E4%B8%A2%E5%A4%B1%E9%97%AE%E9%A2%98"><span class="toc-number">1.1.3.4.6.</span> <span class="toc-text">1.1.4.5 nginx反向代理host信息丢失问题</span></a></li></ol></li></ol></li></ol></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Posts</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/06/02/hello-world/" title="Hello World">Hello World</a><time datetime="2026-06-02T07:15:27.184Z" title="Created 2026-06-02 15:15:27">2026-06-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/06/02/%E8%B0%B7%E7%B2%92%E5%95%86%E5%9F%8E--%E6%B3%A8%E5%86%8C%E4%B8%AD%E5%BF%83%E9%85%8D%E7%BD%AE%E4%B8%AD%E5%BF%83%E5%8F%8A%E7%BD%91%E5%85%B3--%E7%AC%94%E8%AE%B0%E4%BA%8C/" title="谷粒商城--注册中心配置中心及网关--笔记二">谷粒商城--注册中心配置中心及网关--笔记二</a><time datetime="2026-06-01T23:59:20.000Z" title="Created 2026-06-02 07:59:20">2026-06-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/06/02/%E8%B0%B7%E7%B2%92%E5%95%86%E5%9F%8E--%E5%89%8D%E7%AB%AF%E5%9F%BA%E7%A1%80--es6--%E7%AC%94%E8%AE%B0%E4%B8%89/" title="谷粒商城--前端基础--es6--笔记三">谷粒商城--前端基础--es6--笔记三</a><time datetime="2026-06-01T23:59:13.000Z" title="Created 2026-06-02 07:59:13">2026-06-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/06/02/%E8%B0%B7%E7%B2%92%E5%95%86%E5%9F%8E-vue-%E7%AC%94%E8%AE%B0%E5%9B%9B/" title="谷粒商城-vue-笔记四">谷粒商城-vue-笔记四</a><time datetime="2026-06-01T23:59:06.000Z" title="Created 2026-06-02 07:59:06">2026-06-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/06/02/%E8%B0%B7%E7%B2%92%E5%95%86%E5%9F%8E-%E6%A0%91%E5%BD%A2%E7%9B%AE%E5%BD%95%E5%BC%80%E5%8F%91-%E7%AC%94%E8%AE%B0%E4%BA%94/" title="谷粒商城-树形目录开发-笔记五">谷粒商城-树形目录开发-笔记五</a><time datetime="2026-06-01T23:58:59.000Z" title="Created 2026-06-02 07:58:59">2026-06-02</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2025 - 2026 By Yuanz</span><span class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 8.1.2</a><span class="footer-separator">|</span><span>Theme </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.5.5-b1</a></span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="Reading Mode"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="Toggle Between Light and Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle Between Single-column and Double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="Settings"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="Table of Contents"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="Back to Top"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.5.5-b1"></script><script src="/js/main.js?v=5.5.5-b1"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>

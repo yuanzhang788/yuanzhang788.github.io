@@ -1,0 +1,205 @@
+<!DOCTYPE html><html lang="cn" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>JVM上篇：内存与垃圾回收篇六--运行时数据区-本地方法&amp;本地方法栈 | Yuanz</title><meta name="author" content="Yuanz"><meta name="copyright" content="Yuanz"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="JVM上篇：内存与垃圾回收篇六–运行时数据区-本地方法&amp;本地方法栈1. 本地方法接口 1.1 什么是本地方法(接口)简单地讲，一个Native Methodt是一个Java调用非Java代码的接囗。一个Native Method是这样一个Java方法：该方法的实现由非Java语言实现，比如C。这个特征并非Java所特有，很多其它的编程语言都有这一机制，比如在C++中，你可以用extern">
+<meta property="og:type" content="article">
+<meta property="og:title" content="JVM上篇：内存与垃圾回收篇六--运行时数据区-本地方法&amp;本地方法栈">
+<meta property="og:url" content="https://yuanzhang788.github.io/2026/06/02/JVM%E4%B8%8A%E7%AF%87%EF%BC%9A%E5%86%85%E5%AD%98%E4%B8%8E%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E7%AF%87%E5%85%AD--%E8%BF%90%E8%A1%8C%E6%97%B6%E6%95%B0%E6%8D%AE%E5%8C%BA-%E6%9C%AC%E5%9C%B0%E6%96%B9%E6%B3%95&%E6%9C%AC%E5%9C%B0%E6%96%B9%E6%B3%95%E6%A0%88/index.html">
+<meta property="og:site_name" content="Yuanz">
+<meta property="og:description" content="JVM上篇：内存与垃圾回收篇六–运行时数据区-本地方法&amp;本地方法栈1. 本地方法接口 1.1 什么是本地方法(接口)简单地讲，一个Native Methodt是一个Java调用非Java代码的接囗。一个Native Method是这样一个Java方法：该方法的实现由非Java语言实现，比如C。这个特征并非Java所特有，很多其它的编程语言都有这一机制，比如在C++中，你可以用extern">
+<meta property="og:locale">
+<meta property="og:image" content="https://yuanzhang788.github.io/img/butterfly-icon.png">
+<meta property="article:published_time" content="2026-06-01T23:54:41.000Z">
+<meta property="article:modified_time" content="2026-06-02T08:11:39.165Z">
+<meta property="article:author" content="Yuanz">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://yuanzhang788.github.io/img/butterfly-icon.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "JVM上篇：内存与垃圾回收篇六--运行时数据区-本地方法&本地方法栈",
+  "url": "https://yuanzhang788.github.io/2026/06/02/JVM%E4%B8%8A%E7%AF%87%EF%BC%9A%E5%86%85%E5%AD%98%E4%B8%8E%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E7%AF%87%E5%85%AD--%E8%BF%90%E8%A1%8C%E6%97%B6%E6%95%B0%E6%8D%AE%E5%8C%BA-%E6%9C%AC%E5%9C%B0%E6%96%B9%E6%B3%95&%E6%9C%AC%E5%9C%B0%E6%96%B9%E6%B3%95%E6%A0%88/",
+  "image": "https://yuanzhang788.github.io/img/butterfly-icon.png",
+  "datePublished": "2026-06-01T23:54:41.000Z",
+  "dateModified": "2026-06-02T08:11:39.165Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "Yuanz",
+      "url": "https://yuanzhang788.github.io"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://yuanzhang788.github.io/2026/06/02/JVM%E4%B8%8A%E7%AF%87%EF%BC%9A%E5%86%85%E5%AD%98%E4%B8%8E%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E7%AF%87%E5%85%AD--%E8%BF%90%E8%A1%8C%E6%97%B6%E6%95%B0%E6%8D%AE%E5%8C%BA-%E6%9C%AC%E5%9C%B0%E6%96%B9%E6%B3%95&amp;%E6%9C%AC%E5%9C%B0%E6%96%B9%E6%B3%95%E6%A0%88/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=5.5.5-b1"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: 'Copy Successful',
+    error: 'Copy Failed',
+    noSupport: 'Browser Not Supported'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: 'Just now',
+    min: 'minutes ago',
+    hour: 'hours ago',
+    day: 'days ago',
+    month: 'months ago'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.0/dist/infinitegrid.min.js',
+    buttonText: 'Load More'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'JVM上篇：内存与垃圾回收篇六--运行时数据区-本地方法&本地方法栈',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><meta name="generator" content="Hexo 8.1.2"></head><body><div class="post" id="body-wrap"><header class="post-bg" id="page-header"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">Yuanz</span></a><a class="nav-page-title" href="/"><span class="site-name">JVM上篇：内存与垃圾回收篇六--运行时数据区-本地方法&amp;本地方法栈</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  Back to Home</span></span></a></span><div id="menus"></div></nav><div id="post-info"><h1 class="post-title">JVM上篇：内存与垃圾回收篇六--运行时数据区-本地方法&amp;本地方法栈</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2026-06-01T23:54:41.000Z" title="Created 2026-06-02 07:54:41">2026-06-02</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2026-06-02T08:11:39.165Z" title="Updated 2026-06-02 16:11:39">2026-06-02</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">Post Views:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><h1 id="JVM上篇：内存与垃圾回收篇六–运行时数据区-本地方法-本地方法栈"><a href="#JVM上篇：内存与垃圾回收篇六–运行时数据区-本地方法-本地方法栈" class="headerlink" title="JVM上篇：内存与垃圾回收篇六–运行时数据区-本地方法&amp;本地方法栈"></a>JVM上篇：内存与垃圾回收篇六–运行时数据区-本地方法&amp;本地方法栈</h1><h2 id="1-本地方法接口"><a href="#1-本地方法接口" class="headerlink" title="1. 本地方法接口"></a>1. 本地方法接口</h2><p><img src="/assets/JVM%E4%B8%8A%E7%AF%87%EF%BC%9A%E5%86%85%E5%AD%98%E4%B8%8E%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E7%AF%87%E5%85%AD--%E8%BF%90%E8%A1%8C%E6%97%B6%E6%95%B0%E6%8D%AE%E5%8C%BA-%E6%9C%AC%E5%9C%B0%E6%96%B9%E6%B3%95&%E6%9C%AC%E5%9C%B0%E6%96%B9%E6%B3%95%E6%A0%88/d20a715730f01a3de43b80a7225d27e3.png" alt="image-20200706164139252"></p>
+<h3 id="1-1-什么是本地方法-接口"><a href="#1-1-什么是本地方法-接口" class="headerlink" title="1.1 什么是本地方法(接口)"></a>1.1 什么是本地方法(接口)</h3><p>简单地讲，<strong>一个Native Methodt是一个Java调用非Java代码的接囗</strong>。一个Native Method是这样一个Java方法：该方法的实现由非Java语言实现，比如C。这个特征并非Java所特有，很多其它的编程语言都有这一机制，比如在C++中，你可以用extern “c” 告知c++编译器去调用一个c的函数。</p>
+<p>“A native method is a Java method whose implementation is provided by non-java code.”（<strong>本地方法是一个非Java的方法，它的具体实现是非Java代码的实现</strong>）</p>
+<p>在定义一个native method时，并不提供实现体（有些像定义一个Java interface），因为其实现体是由非java语言在外面实现的。</p>
+<p>本地接口的作用是融合不同的编程语言为Java所用，它的<strong>初衷是融合C&#x2F;C++程序</strong>。</p>
+<h4 id="1-1-1-代码举例本地方法编写"><a href="#1-1-1-代码举例本地方法编写" class="headerlink" title="1.1.1 代码举例本地方法编写"></a>1.1.1 代码举例本地方法编写</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">IhaveNatives</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">native</span> <span class="keyword">void</span> <span class="title function_">Native1</span><span class="params">(<span class="type">int</span> x)</span>;</span><br><span class="line">    <span class="keyword">native</span> <span class="keyword">static</span> <span class="keyword">public</span> <span class="type">long</span> <span class="title function_">Native2</span><span class="params">()</span>;</span><br><span class="line">    <span class="keyword">native</span> <span class="keyword">synchronized</span> <span class="keyword">private</span> <span class="type">float</span> <span class="title function_">Native3</span><span class="params">(Object o)</span>;</span><br><span class="line">    <span class="keyword">native</span> <span class="keyword">void</span> <span class="title function_">Natives</span><span class="params">(<span class="type">int</span>[] ary)</span> <span class="keyword">throws</span> Exception;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<blockquote>
+<p>需要注意的是：标识符native可以与其它java标识符连用，但是abstract除外</p>
+</blockquote>
+<h3 id="1-2-为什么使用Native-Method？"><a href="#1-2-为什么使用Native-Method？" class="headerlink" title="1.2 为什么使用Native Method？"></a>1.2 为什么使用Native Method？</h3><p>Java使用起来非常方便，然而有些<strong>层次的任务用Java实现起来不容易，或者我们对程序的效率很在意时</strong>，问题就来了。</p>
+<h4 id="1-2-1-与Java环境的交互"><a href="#1-2-1-与Java环境的交互" class="headerlink" title="1.2.1 与Java环境的交互"></a>1.2.1 与Java环境的交互</h4><p>**有时Java应用需要与Java外面的环境交互，这是本地方法存在的主要原因。**你可以想想Java需要与一些底层系统，如操作系统或某些硬件交换信息时的情况。本地方法正是这样一种交流机制：它为我们提供了一个非常简洁的接口，而且我们无需去了解Java应用之外的繁琐的细节。</p>
+<h4 id="1-2-2-与操作系统的交互"><a href="#1-2-2-与操作系统的交互" class="headerlink" title="1.2.2 与操作系统的交互"></a>1.2.2 与操作系统的交互</h4><p>JVM支持着Java语言本身和运行时库，它是Java程序赖以生存的平台，它由一个解释器（解释字节码）和一些连接到本地代码的库组成。然而不管怎样，它毕竟不是一个完整的系统，它经常依赖于一底层系统的支持。这些底层系统常常是强大的操作系统。**通过使用本地方法，我们得以用Java实现了jre的与底层系统的交互，甚至JVM的一些部分就是用c写的。**还有，如果我们要使用一些Java语言本身没有提供封装的操作系统的特性时，我们也需要使用本地方法。</p>
+<h4 id="1-2-3-Sun’s-Java"><a href="#1-2-3-Sun’s-Java" class="headerlink" title="1.2.3 Sun’s Java"></a>1.2.3 Sun’s Java</h4><p>**Sun的解释器是用C实现的，这使得它能像一些普通的C一样与外部交互。**jre大部分是用Java实现的，它也通过一些本地方法与外界交互。例如：类java.lang.Thread的setpriority（）方法是用Java实现的，但是它实现调用的是该类里的本地方法setpriorityo（）。这个本地方法是用C实现的，并被植入JVM内部，在Windows 95的平台上，这个本地方法最终将调用Win32 setpriority（）ApI。这是一个本地方法的具体实现由JVM直接提供，更多的情况是本地方法由外部的动态链接库（external dynamic link library）提供，然后被JVM调用。</p>
+<h3 id="1-3-现状"><a href="#1-3-现状" class="headerlink" title="1.3 现状"></a>1.3 现状</h3><p><strong>目前该方法使用的越来越少了，除非是与硬件有关的应用</strong>，比如通过Java程序驱动打印机或者Java系统管理生产设备，在企业级应用中已经比较少见。因为<strong>现在的异构领域间的通信很发达，比如可以使用Socket通信，也可以使用Web Service等等</strong>，不多做介绍。</p>
+<h2 id="2-本地方法栈"><a href="#2-本地方法栈" class="headerlink" title="2. 本地方法栈"></a>2. 本地方法栈</h2><p><img src="/assets/JVM%E4%B8%8A%E7%AF%87%EF%BC%9A%E5%86%85%E5%AD%98%E4%B8%8E%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E7%AF%87%E5%85%AD--%E8%BF%90%E8%A1%8C%E6%97%B6%E6%95%B0%E6%8D%AE%E5%8C%BA-%E6%9C%AC%E5%9C%B0%E6%96%B9%E6%B3%95&%E6%9C%AC%E5%9C%B0%E6%96%B9%E6%B3%95%E6%A0%88/bfa9836b139d52e1aa680f0720e1a1a2.png" alt="image-20200706174708418"></p>
+<ul>
+<li><p><strong>Java虚拟机栈于管理Java方法的调用，而本地方法栈用于管理本地方法的调用</strong>。</p>
+</li>
+<li><p>本地方法栈，<strong>也是线程私有的</strong>。</p>
+</li>
+<li><p><strong>允许被实现成固定或者是可动态扩展的内存大小</strong>。（在内存溢出方面是相同的）</p>
+<ul>
+<li>如果线程请求分配的栈容量超过本地方法栈允许的最大容量，Java虚拟机将会抛出一个<code>stackoverflowError 异常</code>。</li>
+<li>如果本地方法栈可以动态扩展，并且在尝试扩展的时候无法申请到足够的内存，或者在创建新的线程时没有足够的内存去创建对应的本地方法栈，那么Java虚拟机将会抛出一个<code>outofMemoryError异常</code>。</li>
+</ul>
+</li>
+<li><p>本地方法是<strong>使用C语言实现的</strong>。</p>
+</li>
+<li><p>它的具体做法是Native Method Stack中<code>登记</code>native方法，在Execution Engine 执行时<code>加载本地方法库</code>。</p>
+</li>
+<li><p><strong>当某个线程调用一个本地方法时，它就进入了一个全新的并且不再受虚拟机限制的世界。它和虚拟机拥有同样的权限。</strong></p>
+<ul>
+<li>本地方法可以通过本地方法接口来<strong>访问虚拟机内部的运行时数据区</strong>。</li>
+<li>它甚至可以<strong>直接使用本地处理器中的寄存器</strong></li>
+<li><strong>直接从本地内存的堆中分配任意数量的内存</strong>。</li>
+</ul>
+</li>
+<li><p>**并不是所有的JVM都支持本地方法。因为Java虚拟机规范并没有明确要求本地方法栈的使用语言、具体实现方式、数据结构等。**如果JVM产品不打算支持native方法，也可以无需实现本地方法栈。</p>
+</li>
+<li><p><strong>在Hotspot JVM中，直接将本地方法栈和虚拟机栈合二为一</strong>。</p>
+</li>
+</ul>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>Author: </span><span class="post-copyright-info"><a href="https://yuanzhang788.github.io">Yuanz</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>Link: </span><span class="post-copyright-info"><a href="https://yuanzhang788.github.io/2026/06/02/JVM%E4%B8%8A%E7%AF%87%EF%BC%9A%E5%86%85%E5%AD%98%E4%B8%8E%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E7%AF%87%E5%85%AD--%E8%BF%90%E8%A1%8C%E6%97%B6%E6%95%B0%E6%8D%AE%E5%8C%BA-%E6%9C%AC%E5%9C%B0%E6%96%B9%E6%B3%95&amp;%E6%9C%AC%E5%9C%B0%E6%96%B9%E6%B3%95%E6%A0%88/">https://yuanzhang788.github.io/2026/06/02/JVM%E4%B8%8A%E7%AF%87%EF%BC%9A%E5%86%85%E5%AD%98%E4%B8%8E%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E7%AF%87%E5%85%AD--%E8%BF%90%E8%A1%8C%E6%97%B6%E6%95%B0%E6%8D%AE%E5%8C%BA-%E6%9C%AC%E5%9C%B0%E6%96%B9%E6%B3%95&amp;%E6%9C%AC%E5%9C%B0%E6%96%B9%E6%B3%95%E6%A0%88/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>Copyright Notice: </span><span class="post-copyright-info">All articles on this blog are licensed under <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless otherwise stated.</span></div></div><div class="tag_share"><div class="post-share"><div class="social-share" data-image="/img/butterfly-icon.png" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2026/06/02/JVM%E4%B8%8A%E7%AF%87%EF%BC%9A%E5%86%85%E5%AD%98%E4%B8%8E%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E7%AF%87%E4%BA%94--%E8%BF%90%E8%A1%8C%E6%97%B6%E6%95%B0%E6%8D%AE%E5%8C%BA-%E8%99%9A%E6%8B%9F%E6%9C%BA%E6%A0%88/" title="JVM上篇：内存与垃圾回收篇五--运行时数据区-虚拟机栈"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info"><div class="info-1"><div class="info-item-1">Previous</div><div class="info-item-2">JVM上篇：内存与垃圾回收篇五--运行时数据区-虚拟机栈</div></div><div class="info-2"><div class="info-item-1">JVM上篇：内存与垃圾回收篇五–运行时数据区-虚拟机栈1. 虚拟机栈概述1.1 虚拟机栈出现的背景由于跨平台性的设计，Java的指令都是根据栈来设计的。不同平台CPU架构不同，所以不能设计为基于寄存器的。优点是跨平台，指令集小，编译器容易实现，缺点是性能下降，实现同样的功能需要更多的指令。 1.2 初步印象有不少Java开发人员一提到Java内存结构，就会非常粗粒度地将JVM中的内存区理解为仅有Java堆（heap）和Java战（stack）？为什么？ 栈是运行时的单位，而堆是存储的单位  栈解决程序的运行问题，即程序如何执行，或者说如何处理数据。 堆解决的是数据存储的问题，即数据怎么放，放哪里   1.3 虚拟机栈基本内容Java虚拟机栈（Java Virtual Machine Stack），早期也叫Java栈。每个线程在创建时都会创建一个虚拟机栈，其内部保存一个个的栈帧（Stack Frame），对应着一次次的Java方法调用。是线程私有的。 1.3.1 生命周期生命周期与线程一致 1.3.2 作用主管Java程序的运行，它保存方法的局部变量、部分结果，并参与方法的调用和返...</div></div></div></a><a class="pagination-related" href="/2026/06/02/JVM%E4%B8%8A%E7%AF%87%EF%BC%9A%E5%86%85%E5%AD%98%E4%B8%8E%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E7%AF%87%E4%B8%83--%E8%BF%90%E8%A1%8C%E6%97%B6%E6%95%B0%E6%8D%AE%E5%8C%BA-%E5%A0%86/" title="JVM上篇：内存与垃圾回收篇七--运行时数据区-堆"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">Next</div><div class="info-item-2">JVM上篇：内存与垃圾回收篇七--运行时数据区-堆</div></div><div class="info-2"><div class="info-item-1">JVM上篇：内存与垃圾回收篇七–运行时数据区-堆1. 堆的核心概述堆针对一个JVM进程来说是唯一的，也就是一个进程只有一个JVM，但是进程包含多个线程，他们是共享同一堆空间的。   一个JVM实例只存在一个堆内存，堆也是Java内存管理的核心区域。 Java堆区在JVM启动的时候即被创建，其空间大小也就确定了。是JVM管理的最大一块内存空间。 堆内存的大小是可以调节的。 -Xms10m：最小堆内存 -Xmx10m：最大堆内存     《Java虚拟机规范》规定，堆可以处于物理上不连续的内存空间中，但在逻辑上它应该被视为连续的。 所有的线程共享Java堆，在这里还可以划分线程私有的缓冲区（Thread Local Allocation Buffer，TLAB）。 《Java虚拟机规范》中对Java堆的描述是：所有的对象实例以及数组都应当在运行时分配在堆上。（The heap is the run-time data area from which memory for all class instances and arrays is allocated） 我要说的是：“几乎”所有...</div></div></div></a></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/butterfly-icon.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">Yuanz</div><div class="author-info-description">Yuanz的个人博客</div><div class="site-data"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">176</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">0</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">0</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>Announcement</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>Contents</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#JVM%E4%B8%8A%E7%AF%87%EF%BC%9A%E5%86%85%E5%AD%98%E4%B8%8E%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E7%AF%87%E5%85%AD%E2%80%93%E8%BF%90%E8%A1%8C%E6%97%B6%E6%95%B0%E6%8D%AE%E5%8C%BA-%E6%9C%AC%E5%9C%B0%E6%96%B9%E6%B3%95-%E6%9C%AC%E5%9C%B0%E6%96%B9%E6%B3%95%E6%A0%88"><span class="toc-number">1.</span> <span class="toc-text">JVM上篇：内存与垃圾回收篇六–运行时数据区-本地方法&amp;本地方法栈</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E6%9C%AC%E5%9C%B0%E6%96%B9%E6%B3%95%E6%8E%A5%E5%8F%A3"><span class="toc-number">1.1.</span> <span class="toc-text">1. 本地方法接口</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-1-%E4%BB%80%E4%B9%88%E6%98%AF%E6%9C%AC%E5%9C%B0%E6%96%B9%E6%B3%95-%E6%8E%A5%E5%8F%A3"><span class="toc-number">1.1.1.</span> <span class="toc-text">1.1 什么是本地方法(接口)</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-1-1-%E4%BB%A3%E7%A0%81%E4%B8%BE%E4%BE%8B%E6%9C%AC%E5%9C%B0%E6%96%B9%E6%B3%95%E7%BC%96%E5%86%99"><span class="toc-number">1.1.1.1.</span> <span class="toc-text">1.1.1 代码举例本地方法编写</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-2-%E4%B8%BA%E4%BB%80%E4%B9%88%E4%BD%BF%E7%94%A8Native-Method%EF%BC%9F"><span class="toc-number">1.1.2.</span> <span class="toc-text">1.2 为什么使用Native Method？</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-2-1-%E4%B8%8EJava%E7%8E%AF%E5%A2%83%E7%9A%84%E4%BA%A4%E4%BA%92"><span class="toc-number">1.1.2.1.</span> <span class="toc-text">1.2.1 与Java环境的交互</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#1-2-2-%E4%B8%8E%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E7%9A%84%E4%BA%A4%E4%BA%92"><span class="toc-number">1.1.2.2.</span> <span class="toc-text">1.2.2 与操作系统的交互</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#1-2-3-Sun%E2%80%99s-Java"><span class="toc-number">1.1.2.3.</span> <span class="toc-text">1.2.3 Sun’s Java</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-3-%E7%8E%B0%E7%8A%B6"><span class="toc-number">1.1.3.</span> <span class="toc-text">1.3 现状</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E6%9C%AC%E5%9C%B0%E6%96%B9%E6%B3%95%E6%A0%88"><span class="toc-number">1.2.</span> <span class="toc-text">2. 本地方法栈</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Posts</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/06/02/hello-world/" title="Hello World">Hello World</a><time datetime="2026-06-02T07:15:27.184Z" title="Created 2026-06-02 15:15:27">2026-06-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/06/02/%E8%B0%B7%E7%B2%92%E5%95%86%E5%9F%8E--%E6%B3%A8%E5%86%8C%E4%B8%AD%E5%BF%83%E9%85%8D%E7%BD%AE%E4%B8%AD%E5%BF%83%E5%8F%8A%E7%BD%91%E5%85%B3--%E7%AC%94%E8%AE%B0%E4%BA%8C/" title="谷粒商城--注册中心配置中心及网关--笔记二">谷粒商城--注册中心配置中心及网关--笔记二</a><time datetime="2026-06-01T23:59:20.000Z" title="Created 2026-06-02 07:59:20">2026-06-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/06/02/%E8%B0%B7%E7%B2%92%E5%95%86%E5%9F%8E--%E5%89%8D%E7%AB%AF%E5%9F%BA%E7%A1%80--es6--%E7%AC%94%E8%AE%B0%E4%B8%89/" title="谷粒商城--前端基础--es6--笔记三">谷粒商城--前端基础--es6--笔记三</a><time datetime="2026-06-01T23:59:13.000Z" title="Created 2026-06-02 07:59:13">2026-06-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/06/02/%E8%B0%B7%E7%B2%92%E5%95%86%E5%9F%8E-vue-%E7%AC%94%E8%AE%B0%E5%9B%9B/" title="谷粒商城-vue-笔记四">谷粒商城-vue-笔记四</a><time datetime="2026-06-01T23:59:06.000Z" title="Created 2026-06-02 07:59:06">2026-06-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/06/02/%E8%B0%B7%E7%B2%92%E5%95%86%E5%9F%8E-%E6%A0%91%E5%BD%A2%E7%9B%AE%E5%BD%95%E5%BC%80%E5%8F%91-%E7%AC%94%E8%AE%B0%E4%BA%94/" title="谷粒商城-树形目录开发-笔记五">谷粒商城-树形目录开发-笔记五</a><time datetime="2026-06-01T23:58:59.000Z" title="Created 2026-06-02 07:58:59">2026-06-02</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2025 - 2026 By Yuanz</span><span class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 8.1.2</a><span class="footer-separator">|</span><span>Theme </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.5.5-b1</a></span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="Reading Mode"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="Toggle Between Light and Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle Between Single-column and Double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="Settings"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="Table of Contents"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="Back to Top"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.5.5-b1"></script><script src="/js/main.js?v=5.5.5-b1"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>

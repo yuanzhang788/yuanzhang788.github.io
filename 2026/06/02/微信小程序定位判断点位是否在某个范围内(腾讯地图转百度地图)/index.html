@@ -1,0 +1,169 @@
+<!DOCTYPE html><html lang="cn" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>微信小程序定位判断点位是否在某个范围内(腾讯地图转百度地图) | Yuanz</title><meta name="author" content="Yuanz"><meta name="copyright" content="Yuanz"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="业务:比较微信小程序定位是否在系统设置的某个位置的某个范围内 问题:微信小程序的定位是拿的腾讯地图的经纬度(假设为点A),系统设置的某个位置是百度地图的经纬度(假设为点B),需要判断点A是否在点B的Range(米)范围内 解决方案:将腾讯点A的经纬度转换为百度地图的经纬度后再进行比较  1234567891011121314151617181920212223242526272829303132">
+<meta property="og:type" content="article">
+<meta property="og:title" content="微信小程序定位判断点位是否在某个范围内(腾讯地图转百度地图)">
+<meta property="og:url" content="https://yuanzhang788.github.io/2026/06/02/%E5%BE%AE%E4%BF%A1%E5%B0%8F%E7%A8%8B%E5%BA%8F%E5%AE%9A%E4%BD%8D%E5%88%A4%E6%96%AD%E7%82%B9%E4%BD%8D%E6%98%AF%E5%90%A6%E5%9C%A8%E6%9F%90%E4%B8%AA%E8%8C%83%E5%9B%B4%E5%86%85(%E8%85%BE%E8%AE%AF%E5%9C%B0%E5%9B%BE%E8%BD%AC%E7%99%BE%E5%BA%A6%E5%9C%B0%E5%9B%BE)/index.html">
+<meta property="og:site_name" content="Yuanz">
+<meta property="og:description" content="业务:比较微信小程序定位是否在系统设置的某个位置的某个范围内 问题:微信小程序的定位是拿的腾讯地图的经纬度(假设为点A),系统设置的某个位置是百度地图的经纬度(假设为点B),需要判断点A是否在点B的Range(米)范围内 解决方案:将腾讯点A的经纬度转换为百度地图的经纬度后再进行比较  1234567891011121314151617181920212223242526272829303132">
+<meta property="og:locale">
+<meta property="og:image" content="https://yuanzhang788.github.io/img/butterfly-icon.png">
+<meta property="article:published_time" content="2026-06-01T23:45:49.000Z">
+<meta property="article:modified_time" content="2026-06-02T07:45:49.627Z">
+<meta property="article:author" content="Yuanz">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://yuanzhang788.github.io/img/butterfly-icon.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "微信小程序定位判断点位是否在某个范围内(腾讯地图转百度地图)",
+  "url": "https://yuanzhang788.github.io/2026/06/02/%E5%BE%AE%E4%BF%A1%E5%B0%8F%E7%A8%8B%E5%BA%8F%E5%AE%9A%E4%BD%8D%E5%88%A4%E6%96%AD%E7%82%B9%E4%BD%8D%E6%98%AF%E5%90%A6%E5%9C%A8%E6%9F%90%E4%B8%AA%E8%8C%83%E5%9B%B4%E5%86%85(%E8%85%BE%E8%AE%AF%E5%9C%B0%E5%9B%BE%E8%BD%AC%E7%99%BE%E5%BA%A6%E5%9C%B0%E5%9B%BE)/",
+  "image": "https://yuanzhang788.github.io/img/butterfly-icon.png",
+  "datePublished": "2026-06-01T23:45:49.000Z",
+  "dateModified": "2026-06-02T07:45:49.627Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "Yuanz",
+      "url": "https://yuanzhang788.github.io"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://yuanzhang788.github.io/2026/06/02/%E5%BE%AE%E4%BF%A1%E5%B0%8F%E7%A8%8B%E5%BA%8F%E5%AE%9A%E4%BD%8D%E5%88%A4%E6%96%AD%E7%82%B9%E4%BD%8D%E6%98%AF%E5%90%A6%E5%9C%A8%E6%9F%90%E4%B8%AA%E8%8C%83%E5%9B%B4%E5%86%85(%E8%85%BE%E8%AE%AF%E5%9C%B0%E5%9B%BE%E8%BD%AC%E7%99%BE%E5%BA%A6%E5%9C%B0%E5%9B%BE)/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=5.5.5-b1"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: 'Copy Successful',
+    error: 'Copy Failed',
+    noSupport: 'Browser Not Supported'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: 'Just now',
+    min: 'minutes ago',
+    hour: 'hours ago',
+    day: 'days ago',
+    month: 'months ago'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.0/dist/infinitegrid.min.js',
+    buttonText: 'Load More'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '微信小程序定位判断点位是否在某个范围内(腾讯地图转百度地图)',
+  isHighlightShrink: false,
+  isToc: false,
+  pageType: 'post'
+}</script><meta name="generator" content="Hexo 8.1.2"></head><body><div class="post" id="body-wrap"><header class="post-bg" id="page-header"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">Yuanz</span></a><a class="nav-page-title" href="/"><span class="site-name">微信小程序定位判断点位是否在某个范围内(腾讯地图转百度地图)</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  Back to Home</span></span></a></span><div id="menus"></div></nav><div id="post-info"><h1 class="post-title">微信小程序定位判断点位是否在某个范围内(腾讯地图转百度地图)</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2026-06-01T23:45:49.000Z" title="Created 2026-06-02 07:45:49">2026-06-02</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2026-06-02T07:45:49.627Z" title="Updated 2026-06-02 15:45:49">2026-06-02</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">Post Views:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><blockquote>
+<p>业务:比较微信小程序定位是否在系统设置的某个位置的某个范围内</p>
+<p>问题:微信小程序的定位是拿的腾讯地图的经纬度(假设为点A),系统设置的某个位置是百度地图的经纬度(假设为点B),需要判断点A是否在点B的Range(米)范围内</p>
+<p>解决方案:将腾讯点A的经纬度转换为百度地图的经纬度后再进行比较</p>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.applets.manager.core.util;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> lombok.AllArgsConstructor;</span><br><span class="line"><span class="keyword">import</span> lombok.Data;</span><br><span class="line"><span class="keyword">import</span> lombok.NoArgsConstructor;</span><br><span class="line"><span class="keyword">import</span> lombok.extern.slf4j.Slf4j;</span><br><span class="line"><span class="keyword">import</span> org.geotools.referencing.GeodeticCalculator;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> zr 2024/5/11</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@Slf4j</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">GeoUtil</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 判断一个点是否在某个圆形范围内(startingPoint为腾讯地图点位,endPoint为百度地图点位)</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> startingPoint</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> endPoint</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> range</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span>转换</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="type">boolean</span> <span class="title function_">inDistanceWithConversion</span><span class="params">(MyPoint startingPoint , MyPoint endPoint , Integer range)</span>&#123;</span><br><span class="line">        <span class="type">MyPoint</span> <span class="variable">myPoint</span> <span class="operator">=</span> qqMapTransBMap(startingPoint);</span><br><span class="line">        <span class="keyword">return</span> inDistance(myPoint,endPoint,range);</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 判断一个点是否在某个圆形范围内</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> startingPoint</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> endPoint</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> Range</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="type">boolean</span> <span class="title function_">inDistance</span><span class="params">(MyPoint startingPoint , MyPoint endPoint , Integer Range)</span> &#123;</span><br><span class="line">        <span class="comment">// 84坐标系构造GeodeticCalculator</span></span><br><span class="line">        <span class="type">GeodeticCalculator</span> <span class="variable">geodeticCalculator</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">GeodeticCalculator</span>();</span><br><span class="line">        <span class="comment">// 起点经纬度</span></span><br><span class="line">        geodeticCalculator.setStartingGeographicPoint(startingPoint.getLongitude(), startingPoint.getLatitude());</span><br><span class="line">        <span class="comment">// 末点经纬度</span></span><br><span class="line">        geodeticCalculator.setDestinationGeographicPoint( endPoint.getLatitude(),endPoint.getLongitude());</span><br><span class="line">        <span class="comment">// 计算距离，单位：米</span></span><br><span class="line">        <span class="type">double</span> <span class="variable">orthodromicDistance</span> <span class="operator">=</span> geodeticCalculator.getOrthodromicDistance();</span><br><span class="line">        <span class="keyword">if</span> (orthodromicDistance &lt; Range)&#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">        &#125;<span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 腾讯地图经纬度转百度地图经纬度</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> myPoint</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> MyPoint <span class="title function_">qqMapTransBMap</span><span class="params">(MyPoint myPoint)</span> &#123;</span><br><span class="line">        <span class="type">double</span> <span class="variable">x_pi</span> <span class="operator">=</span> <span class="number">3.14159265358979324</span> * <span class="number">3000.0</span> / <span class="number">180.0</span>;</span><br><span class="line">        <span class="type">double</span> <span class="variable">x</span> <span class="operator">=</span>  myPoint.getLatitude();</span><br><span class="line">        <span class="type">double</span> <span class="variable">y</span> <span class="operator">=</span>  myPoint.getLongitude();</span><br><span class="line">        <span class="type">double</span> <span class="variable">z</span> <span class="operator">=</span> Math.sqrt(x * x + y * y) + <span class="number">0.00002</span> * Math.sin(y * x_pi);</span><br><span class="line">        <span class="type">double</span> <span class="variable">theta</span> <span class="operator">=</span> Math.atan2(y, x) + <span class="number">0.000003</span> * Math.cos(x * x_pi);</span><br><span class="line">        <span class="type">double</span> <span class="variable">lngs</span> <span class="operator">=</span> z * Math.cos(theta) + <span class="number">0.0065</span>;</span><br><span class="line">        <span class="type">double</span> <span class="variable">lats</span> <span class="operator">=</span> z * Math.sin(theta) + <span class="number">0.006</span>;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">MyPoint</span>(lngs, lats);</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="meta">@Data</span></span><br><span class="line">    <span class="meta">@AllArgsConstructor</span></span><br><span class="line">    <span class="meta">@NoArgsConstructor</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">class</span> <span class="title class_">MyPoint</span> &#123;</span><br><span class="line">        <span class="keyword">public</span> <span class="type">double</span> longitude;</span><br><span class="line">        <span class="keyword">public</span> <span class="type">double</span> latitude;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>Author: </span><span class="post-copyright-info"><a href="https://yuanzhang788.github.io">Yuanz</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>Link: </span><span class="post-copyright-info"><a href="https://yuanzhang788.github.io/2026/06/02/%E5%BE%AE%E4%BF%A1%E5%B0%8F%E7%A8%8B%E5%BA%8F%E5%AE%9A%E4%BD%8D%E5%88%A4%E6%96%AD%E7%82%B9%E4%BD%8D%E6%98%AF%E5%90%A6%E5%9C%A8%E6%9F%90%E4%B8%AA%E8%8C%83%E5%9B%B4%E5%86%85(%E8%85%BE%E8%AE%AF%E5%9C%B0%E5%9B%BE%E8%BD%AC%E7%99%BE%E5%BA%A6%E5%9C%B0%E5%9B%BE)/">https://yuanzhang788.github.io/2026/06/02/%E5%BE%AE%E4%BF%A1%E5%B0%8F%E7%A8%8B%E5%BA%8F%E5%AE%9A%E4%BD%8D%E5%88%A4%E6%96%AD%E7%82%B9%E4%BD%8D%E6%98%AF%E5%90%A6%E5%9C%A8%E6%9F%90%E4%B8%AA%E8%8C%83%E5%9B%B4%E5%86%85(%E8%85%BE%E8%AE%AF%E5%9C%B0%E5%9B%BE%E8%BD%AC%E7%99%BE%E5%BA%A6%E5%9C%B0%E5%9B%BE)/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>Copyright Notice: </span><span class="post-copyright-info">All articles on this blog are licensed under <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless otherwise stated.</span></div></div><div class="tag_share"><div class="post-share"><div class="social-share" data-image="/img/butterfly-icon.png" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2026/06/02/Springboot%E8%8E%B7%E5%8F%96%E5%BE%AE%E4%BF%A1%E4%B8%8D%E9%99%90%E5%88%B6%E7%9A%84%E5%B0%8F%E7%A8%8B%E5%BA%8F%E7%A0%81(%E6%8B%89%E6%96%B0%E4%BA%8C%E7%BB%B4%E7%A0%81)/" title="Springboot获取微信不限制的小程序码(拉新二维码)"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info"><div class="info-1"><div class="info-item-1">Previous</div><div class="info-item-2">Springboot获取微信不限制的小程序码(拉新二维码)</div></div><div class="info-2"><div class="info-item-1">微信不限制的小程序码官方文档地址 注意事项 如果调用成功，会直接返回图片二进制内容，如果请求失败，会返回 JSON 格式的数据。 POST 参数需要转成 JSON 字符串，不支持 form 表单提交。 调用分钟频率受限（5000次&#x2F;分钟），如需大量小程序码，建议预生成  获取 scene 值 scene 字段的值会作为 query 参数传递给小程序&#x2F;小游戏。用户扫描该码进入小程序&#x2F;小游戏后，开发者可以获取到二维码中的 scene 值，再做处理逻辑。 调试阶段可以使用开发工具的条件编译自定义参数 scene&#x3D;xxxx 进行模拟，开发工具模拟时的 scene 的参数值需要进行 encodeURIComponent   配置文件 envVersion为要打开的小程序版本。正式版为 “release”，体验版为 “trial”，开发版为 “develop”。默认是正式版。  1234wx:  appId: wxfdf3xxxxx  appSecret: 758ac1cxxxxxx  envVersion: release     生成微信不限制的小...</div></div></div></a><a class="pagination-related" href="/2026/06/02/Springboot&amp;Mybatis-Plus%E5%AE%9E%E7%8E%B0%E4%B8%9A%E5%8A%A1%E6%92%A4%E9%94%80%E5%9B%9E%E6%BB%9A%E5%8A%9F%E8%83%BD/" title="Springboot&amp;Mybatis-Plus实现业务撤销回滚功能"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">Next</div><div class="info-item-2">Springboot&Mybatis-Plus实现业务撤销回滚功能</div></div><div class="info-2"><div class="info-item-1">操作记录表12345678910111213CREATE TABLE `operation_record` (  `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT &#x27;自增id&#x27;,  `check_id` bigint(20) NOT NULL COMMENT &#x27;检测id&#x27;,  `status` varchar(64) DEFAULT NULL COMMENT &#x27;检测old状态-检测new状态&#x27;,  `operation` varchar(255) NOT NULL COMMENT &#x27;操作事件&#x27;,  `deleted` tinyint(1) DEFAULT &#x27;0&#x27; COMMENT &#x27;是否删除&#x27;,  `created_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT &#x27;创建时间&#x27;,  `created_by_id` bigint(20) DEFAULT ...</div></div></div></a></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/butterfly-icon.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">Yuanz</div><div class="author-info-description">Yuanz的个人博客</div><div class="site-data"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">176</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">0</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">0</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>Announcement</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Posts</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/06/02/hello-world/" title="Hello World">Hello World</a><time datetime="2026-06-02T07:15:27.184Z" title="Created 2026-06-02 15:15:27">2026-06-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/06/02/%E8%B0%B7%E7%B2%92%E5%95%86%E5%9F%8E--%E6%B3%A8%E5%86%8C%E4%B8%AD%E5%BF%83%E9%85%8D%E7%BD%AE%E4%B8%AD%E5%BF%83%E5%8F%8A%E7%BD%91%E5%85%B3--%E7%AC%94%E8%AE%B0%E4%BA%8C/" title="谷粒商城--注册中心配置中心及网关--笔记二">谷粒商城--注册中心配置中心及网关--笔记二</a><time datetime="2026-06-01T23:59:20.000Z" title="Created 2026-06-02 07:59:20">2026-06-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/06/02/%E8%B0%B7%E7%B2%92%E5%95%86%E5%9F%8E--%E5%89%8D%E7%AB%AF%E5%9F%BA%E7%A1%80--es6--%E7%AC%94%E8%AE%B0%E4%B8%89/" title="谷粒商城--前端基础--es6--笔记三">谷粒商城--前端基础--es6--笔记三</a><time datetime="2026-06-01T23:59:13.000Z" title="Created 2026-06-02 07:59:13">2026-06-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/06/02/%E8%B0%B7%E7%B2%92%E5%95%86%E5%9F%8E-vue-%E7%AC%94%E8%AE%B0%E5%9B%9B/" title="谷粒商城-vue-笔记四">谷粒商城-vue-笔记四</a><time datetime="2026-06-01T23:59:06.000Z" title="Created 2026-06-02 07:59:06">2026-06-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/06/02/%E8%B0%B7%E7%B2%92%E5%95%86%E5%9F%8E-%E6%A0%91%E5%BD%A2%E7%9B%AE%E5%BD%95%E5%BC%80%E5%8F%91-%E7%AC%94%E8%AE%B0%E4%BA%94/" title="谷粒商城-树形目录开发-笔记五">谷粒商城-树形目录开发-笔记五</a><time datetime="2026-06-01T23:58:59.000Z" title="Created 2026-06-02 07:58:59">2026-06-02</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2025 - 2026 By Yuanz</span><span class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 8.1.2</a><span class="footer-separator">|</span><span>Theme </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.5.5-b1</a></span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="Reading Mode"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="Toggle Between Light and Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle Between Single-column and Double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="Settings"><i class="fas fa-cog fa-spin"></i></button><button id="go-up" type="button" title="Back to Top"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.5.5-b1"></script><script src="/js/main.js?v=5.5.5-b1"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>

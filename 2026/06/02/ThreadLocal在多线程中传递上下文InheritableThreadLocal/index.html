@@ -1,0 +1,269 @@
+<!DOCTYPE html><html lang="cn" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>ThreadLocal在多线程中传递上下文InheritableThreadLocal | Yuanz</title><meta name="author" content="Yuanz"><meta name="copyright" content="Yuanz"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="深入理解 InheritableThreadLocal：在多线程中传递上下文在 Java 多线程编程中，ThreadLocal 作为一个重要的工具，允许每个线程维护独立的变量副本。然而，默认的 ThreadLocal不会被子线程继承，这在一些场景下会带来问题。 为了解决这个问题，Java 提供了 InheritableThreadLocal，它允许 子线程自动继承父线程的变量。本文将深入探讨 In">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ThreadLocal在多线程中传递上下文InheritableThreadLocal">
+<meta property="og:url" content="https://yuanzhang788.github.io/2026/06/02/ThreadLocal%E5%9C%A8%E5%A4%9A%E7%BA%BF%E7%A8%8B%E4%B8%AD%E4%BC%A0%E9%80%92%E4%B8%8A%E4%B8%8B%E6%96%87InheritableThreadLocal/index.html">
+<meta property="og:site_name" content="Yuanz">
+<meta property="og:description" content="深入理解 InheritableThreadLocal：在多线程中传递上下文在 Java 多线程编程中，ThreadLocal 作为一个重要的工具，允许每个线程维护独立的变量副本。然而，默认的 ThreadLocal不会被子线程继承，这在一些场景下会带来问题。 为了解决这个问题，Java 提供了 InheritableThreadLocal，它允许 子线程自动继承父线程的变量。本文将深入探讨 In">
+<meta property="og:locale">
+<meta property="og:image" content="https://yuanzhang788.github.io/img/butterfly-icon.png">
+<meta property="article:published_time" content="2026-06-01T23:43:43.000Z">
+<meta property="article:modified_time" content="2026-06-02T07:43:43.325Z">
+<meta property="article:author" content="Yuanz">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://yuanzhang788.github.io/img/butterfly-icon.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "ThreadLocal在多线程中传递上下文InheritableThreadLocal",
+  "url": "https://yuanzhang788.github.io/2026/06/02/ThreadLocal%E5%9C%A8%E5%A4%9A%E7%BA%BF%E7%A8%8B%E4%B8%AD%E4%BC%A0%E9%80%92%E4%B8%8A%E4%B8%8B%E6%96%87InheritableThreadLocal/",
+  "image": "https://yuanzhang788.github.io/img/butterfly-icon.png",
+  "datePublished": "2026-06-01T23:43:43.000Z",
+  "dateModified": "2026-06-02T07:43:43.325Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "Yuanz",
+      "url": "https://yuanzhang788.github.io"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://yuanzhang788.github.io/2026/06/02/ThreadLocal%E5%9C%A8%E5%A4%9A%E7%BA%BF%E7%A8%8B%E4%B8%AD%E4%BC%A0%E9%80%92%E4%B8%8A%E4%B8%8B%E6%96%87InheritableThreadLocal/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=5.5.5-b1"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: 'Copy Successful',
+    error: 'Copy Failed',
+    noSupport: 'Browser Not Supported'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: 'Just now',
+    min: 'minutes ago',
+    hour: 'hours ago',
+    day: 'days ago',
+    month: 'months ago'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.0/dist/infinitegrid.min.js',
+    buttonText: 'Load More'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'ThreadLocal在多线程中传递上下文InheritableThreadLocal',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><meta name="generator" content="Hexo 8.1.2"></head><body><div class="post" id="body-wrap"><header class="post-bg" id="page-header"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">Yuanz</span></a><a class="nav-page-title" href="/"><span class="site-name">ThreadLocal在多线程中传递上下文InheritableThreadLocal</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  Back to Home</span></span></a></span><div id="menus"></div></nav><div id="post-info"><h1 class="post-title">ThreadLocal在多线程中传递上下文InheritableThreadLocal</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2026-06-01T23:43:43.000Z" title="Created 2026-06-02 07:43:43">2026-06-02</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2026-06-02T07:43:43.325Z" title="Updated 2026-06-02 15:43:43">2026-06-02</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">Post Views:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><h3 id="深入理解-InheritableThreadLocal：在多线程中传递上下文"><a href="#深入理解-InheritableThreadLocal：在多线程中传递上下文" class="headerlink" title="深入理解 InheritableThreadLocal：在多线程中传递上下文"></a><strong>深入理解 InheritableThreadLocal：在多线程中传递上下文</strong></h3><p>在 Java 多线程编程中，<code>ThreadLocal</code> 作为一个重要的工具，允许每个线程维护独立的变量副本。然而，默认的 <code>ThreadLocal</code><strong>不会被子线程继承</strong>，这在一些场景下会带来问题。</p>
+<p>为了解决这个问题，Java 提供了 <code>InheritableThreadLocal</code>，它允许 <strong>子线程自动继承父线程的变量</strong>。本文将深入探讨 <code>InheritableThreadLocal</code> 的使用场景、实现原理及注意事项。</p>
+<hr>
+<h2 id="1-为什么需要-InheritableThreadLocal？"><a href="#1-为什么需要-InheritableThreadLocal？" class="headerlink" title="1. 为什么需要 InheritableThreadLocal？"></a><strong>1. 为什么需要 InheritableThreadLocal？</strong></h2><p>在实际开发中，我们可能会遇到 <strong>父线程中设置了一些上下文数据，希望子线程也能使用</strong> 的情况，例如：</p>
+<ul>
+<li><strong>日志跟踪</strong>（每个请求的唯一 ID 需要在多个线程之间共享）</li>
+<li><strong>用户上下文</strong>（用户身份信息需要在子线程中保持一致）</li>
+<li><strong>事务管理</strong>（跨线程传递事务信息）</li>
+</ul>
+<h3 id="示例：普通-ThreadLocal-不会被子线程继承"><a href="#示例：普通-ThreadLocal-不会被子线程继承" class="headerlink" title="示例：普通 ThreadLocal 不会被子线程继承"></a><strong>示例：普通 ThreadLocal 不会被子线程继承</strong></h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">ThreadLocalExample</span> &#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> ThreadLocal&lt;String&gt; threadLocal = <span class="keyword">new</span> <span class="title class_">ThreadLocal</span>&lt;&gt;();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">        threadLocal.set(<span class="string">&quot;父线程的数据&quot;</span>);</span><br><span class="line"></span><br><span class="line">        <span class="type">Thread</span> <span class="variable">childThread</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Thread</span>(() -&gt; &#123;</span><br><span class="line">            System.out.println(<span class="string">&quot;子线程读取的值: &quot;</span> + threadLocal.get()); <span class="comment">// 预期：父线程的数据，实际：null</span></span><br><span class="line">        &#125;);</span><br><span class="line"></span><br><span class="line">        childThread.start();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<p><strong>输出：</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">子线程读取的值: null</span><br></pre></td></tr></table></figure>
+
+
+<p>可以看到，<code>ThreadLocal</code> 变量并 <strong>不会被子线程继承</strong>，这导致子线程无法获取父线程的数据。</p>
+<hr>
+<h2 id="2-InheritableThreadLocal-让子线程继承变量"><a href="#2-InheritableThreadLocal-让子线程继承变量" class="headerlink" title="2. InheritableThreadLocal 让子线程继承变量"></a><strong>2. <strong><code>InheritableThreadLocal</code></strong> 让子线程继承变量</strong></h2><p><code>InheritableThreadLocal</code> 是 <code>ThreadLocal</code> 的子类，<strong>它会自动将父线程的值拷贝到子线程</strong>，从而让子线程可以访问到父线程的数据。</p>
+<h3 id="示例：使用InheritableThreadLocal"><a href="#示例：使用InheritableThreadLocal" class="headerlink" title="示例：使用InheritableThreadLocal"></a><strong>示例：使用</strong><code>InheritableThreadLocal</code></h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">InheritableThreadLocalExample</span> &#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> InheritableThreadLocal&lt;String&gt; inheritableThreadLocal = <span class="keyword">new</span> <span class="title class_">InheritableThreadLocal</span>&lt;&gt;();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">        inheritableThreadLocal.set(<span class="string">&quot;父线程的数据&quot;</span>);</span><br><span class="line"></span><br><span class="line">        <span class="type">Thread</span> <span class="variable">childThread</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Thread</span>(() -&gt; &#123;</span><br><span class="line">            System.out.println(<span class="string">&quot;子线程读取的值: &quot;</span> + inheritableThreadLocal.get());</span><br><span class="line">        &#125;);</span><br><span class="line"></span><br><span class="line">        childThread.start();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<p><strong>输出：</strong></p>
+<figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">子线程读取的值: 父线程的数据</span></span><br></pre></td></tr></table></figure>
+
+
+<p>可以看到，子线程 <strong>成功继承了</strong> 父线程的 <code>InheritableThreadLocal</code> 变量的值。</p>
+<hr>
+<h2 id="3-InheritableThreadLocal-的工作原理"><a href="#3-InheritableThreadLocal-的工作原理" class="headerlink" title="3. InheritableThreadLocal 的工作原理"></a><strong>3. <strong><code>InheritableThreadLocal</code></strong> 的工作原理</strong></h2><p>在 <code>ThreadLocal</code> 变量存储的本质是 <code>Thread</code> 对象中的 <code>ThreadLocalMap</code>，每个线程都有自己的 <code>ThreadLocalMap</code>，它存储了 <code>ThreadLocal</code> 变量及其对应的值。</p>
+<h3 id="普通-ThreadLocal-的存储方式"><a href="#普通-ThreadLocal-的存储方式" class="headerlink" title="普通 ThreadLocal 的存储方式"></a><strong>普通 <strong><code>ThreadLocal</code></strong> 的存储方式</strong></h3><p>普通的 <code>ThreadLocal</code> 只在当前线程的 <code>ThreadLocalMap</code> 里存储数据：</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Thread <span class="punctuation">-&gt;</span> ThreadLocalMap <span class="punctuation">-&gt;</span> (ThreadLocal, value)</span><br></pre></td></tr></table></figure>
+
+
+<p>当子线程启动时，它的 <code>ThreadLocalMap</code><strong>是空的</strong>，所以获取 <code>ThreadLocal</code> 值时会返回 <code>null</code>。</p>
+<h3 id="InheritableThreadLocal-的存储方式"><a href="#InheritableThreadLocal-的存储方式" class="headerlink" title="InheritableThreadLocal** 的存储方式**"></a><code>InheritableThreadLocal</code>** 的存储方式**</h3><p><code>InheritableThreadLocal</code> 在 **创建子线程时，会自动拷贝父线程的 <code>ThreadLocalMap</code>，因此子线程可以访问父线程的数据：</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">父线程 <span class="punctuation">-&gt;</span> ThreadLocalMap <span class="punctuation">-&gt;</span> (InheritableThreadLocal, value)</span><br><span class="line">↓</span><br><span class="line">复制到子线程的 ThreadLocalMap</span><br></pre></td></tr></table></figure>
+
+
+<p>当 <code>Thread.start()</code> 被调用时，Java 会执行 <code>Thread.init()</code> 方法，它会检查是否存在 <code>InheritableThreadLocal</code> 并进行复制。</p>
+<hr>
+<h2 id="4-InheritableThreadLocal-的应用场景"><a href="#4-InheritableThreadLocal-的应用场景" class="headerlink" title="4. InheritableThreadLocal 的应用场景"></a><strong>4. <strong><code>InheritableThreadLocal</code></strong> 的应用场景</strong></h2><h3 id="1-日志追踪"><a href="#1-日志追踪" class="headerlink" title="(1) 日志追踪"></a><strong>(1) 日志追踪</strong></h3><p>在分布式系统或微服务架构中，我们通常需要在不同线程中追踪同一个请求的日志。例如，每个请求都会有一个 <code>traceId</code>，在所有的日志中都能找到它：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">LogTraceExample</span> &#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> InheritableThreadLocal&lt;String&gt; traceIdThreadLocal = <span class="keyword">new</span> <span class="title class_">InheritableThreadLocal</span>&lt;&gt;();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">        traceIdThreadLocal.set(<span class="string">&quot;TRACE-ID-12345&quot;</span>);</span><br><span class="line"></span><br><span class="line">        <span class="type">Thread</span> <span class="variable">childThread</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Thread</span>(() -&gt; &#123;</span><br><span class="line">            System.out.println(<span class="string">&quot;子线程日志 traceId: &quot;</span> + traceIdThreadLocal.get());</span><br><span class="line">        &#125;);</span><br><span class="line"></span><br><span class="line">        childThread.start();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<p>这样，我们可以在所有的子线程中 <strong>保持相同的</strong><code>traceId</code>，确保日志能够正确追踪。</p>
+<hr>
+<h3 id="2-Spring-中的用户上下文"><a href="#2-Spring-中的用户上下文" class="headerlink" title="(2) Spring 中的用户上下文"></a><strong>(2) Spring 中的用户上下文</strong></h3><p>在 <strong>Spring Boot</strong> 中，我们经常需要在多线程环境下共享用户信息，比如 <code>UserContext</code>：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">UserContext</span> &#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> InheritableThreadLocal&lt;String&gt; userThreadLocal = <span class="keyword">new</span> <span class="title class_">InheritableThreadLocal</span>&lt;&gt;();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">setUser</span><span class="params">(String user)</span> &#123;</span><br><span class="line">        userThreadLocal.set(user);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> String <span class="title function_">getUser</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> userThreadLocal.get();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">clear</span><span class="params">()</span> &#123;</span><br><span class="line">        userThreadLocal.remove();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<p>然后在 Controller 里使用：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@RestController</span></span><br><span class="line"><span class="meta">@RequestMapping(&quot;/user&quot;)</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">UserController</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@GetMapping(&quot;/info&quot;)</span></span><br><span class="line">    <span class="keyword">public</span> String <span class="title function_">getUserInfo</span><span class="params">(<span class="meta">@RequestParam</span> String username)</span> &#123;</span><br><span class="line">        UserContext.setUser(username);</span><br><span class="line">        <span class="keyword">new</span> <span class="title class_">Thread</span>(() -&gt; &#123;</span><br><span class="line">            System.out.println(<span class="string">&quot;子线程访问用户: &quot;</span> + UserContext.getUser());</span><br><span class="line">        &#125;).start();</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;主线程访问用户: &quot;</span> + UserContext.getUser();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<p>这样，子线程也能访问用户信息，实现跨线程的数据共享。</p>
+<hr>
+<h2 id="5-InheritableThreadLocal-的注意事项"><a href="#5-InheritableThreadLocal-的注意事项" class="headerlink" title="5. InheritableThreadLocal 的注意事项"></a><strong>5. <strong><code>InheritableThreadLocal</code></strong> 的注意事项</strong></h2><ol>
+<li><strong>子线程继承的是拷贝值，而不是引用</strong><ul>
+<li>这意味着如果 <strong>父线程之后修改了值，子线程不会感知到</strong>。</li>
+</ul>
+</li>
+<li><strong>内存泄漏风险</strong><ul>
+<li>一定要在 <strong>线程执行完后调用 <strong><code>remove()</code></strong> 清理数据</strong>，否则可能导致内存泄漏：</li>
+</ul>
+</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">clear</span><span class="params">()</span> &#123;</span><br><span class="line">    userThreadLocal.remove();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<ol start="3">
+<li><strong>线程池中的问题</strong><ul>
+<li><code>InheritableThreadLocal</code><strong>不会自动清理线程池中的数据</strong>，因为线程池中的线程会被复用。可以使用 <code>TransmittableThreadLocal</code> 解决。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h2 id="6-TransmittableThreadLocal-解决线程池问题"><a href="#6-TransmittableThreadLocal-解决线程池问题" class="headerlink" title="6. TransmittableThreadLocal 解决线程池问题"></a><strong>6. <strong><code>TransmittableThreadLocal</code></strong> 解决线程池问题</strong></h2><p>当使用 <code>InheritableThreadLocal</code> 时，在 <strong>线程池</strong> 中创建的线程不会自动继承新的值，因为线程池会复用线程。<br><a target="_blank" rel="noopener" href="https://github.com/alibaba/transmittable-thread-local">Alibaba 开源的 TransmittableThreadLocal</a> 可以解决这个问题：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">TransmittableThreadLocal&lt;String&gt; threadLocal = <span class="keyword">new</span> <span class="title class_">TransmittableThreadLocal</span>&lt;&gt;();</span><br></pre></td></tr></table></figure>
+
+
+<p>它可以 <strong>在父线程修改值后，确保线程池的子线程也能正确获取最新的值</strong>。</p>
+<hr>
+<h2 id="7-总结"><a href="#7-总结" class="headerlink" title="7. 总结"></a><strong>7. 总结</strong></h2><table>
+<thead>
+<tr>
+<th><strong>方案</strong></th>
+<th><strong>是否继承到子线程</strong></th>
+<th><strong>适用场景</strong></th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>ThreadLocal</code></td>
+<td>❌ 不继承</td>
+<td>每个线程独立变量</td>
+</tr>
+<tr>
+<td><code>InheritableThreadLocal</code></td>
+<td>✅ 继承但不会动态更新</td>
+<td>继承父线程变量，如日志追踪、用户上下文</td>
+</tr>
+<tr>
+<td><code>TransmittableThreadLocal</code></td>
+<td>✅ 适用于线程池</td>
+<td>线程池中的上下文传递</td>
+</tr>
+</tbody></table>
+<p><strong>最佳实践</strong>：<br>✅ <strong>优先使用</strong><code>ThreadLocal</code>，仅在确实需要跨线程传递变量时才使用 <code>InheritableThreadLocal</code>。<br>✅ <strong>如果使用线程池，考虑</strong><code>TransmittableThreadLocal</code>。</p>
+<p><code>InheritableThreadLocal</code> 是一个 <strong>简单而强大的工具</strong>，但要注意 <strong>内存泄漏和线程池问题</strong>，合理使用才能发挥最大作用！ 🚀</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>Author: </span><span class="post-copyright-info"><a href="https://yuanzhang788.github.io">Yuanz</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>Link: </span><span class="post-copyright-info"><a href="https://yuanzhang788.github.io/2026/06/02/ThreadLocal%E5%9C%A8%E5%A4%9A%E7%BA%BF%E7%A8%8B%E4%B8%AD%E4%BC%A0%E9%80%92%E4%B8%8A%E4%B8%8B%E6%96%87InheritableThreadLocal/">https://yuanzhang788.github.io/2026/06/02/ThreadLocal%E5%9C%A8%E5%A4%9A%E7%BA%BF%E7%A8%8B%E4%B8%AD%E4%BC%A0%E9%80%92%E4%B8%8A%E4%B8%8B%E6%96%87InheritableThreadLocal/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>Copyright Notice: </span><span class="post-copyright-info">All articles on this blog are licensed under <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless otherwise stated.</span></div></div><div class="tag_share"><div class="post-share"><div class="social-share" data-image="/img/butterfly-icon.png" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2026/06/02/%E9%98%BF%E9%87%8C%E4%BA%91%E4%BA%91%E6%95%88%E6%B5%81%E6%B0%B4%E7%BA%BF%E8%87%AA%E6%9C%89%E4%B8%BB%E6%9C%BA%E5%8D%B8%E8%BD%BDRunner/" title="阿里云云效流水线自有主机卸载Runner"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info"><div class="info-1"><div class="info-item-1">Previous</div><div class="info-item-2">阿里云云效流水线自有主机卸载Runner</div></div><div class="info-2"><div class="info-item-1"> 问题: 我想切换一台主机的到另外一个主机组  只有将主机上的 Runner 卸载后，才可以更换主机组 。 之前已经安装过了,想要更换主机组,没卸载之前的Runner,执行其他主机组的命令时如下图所示     全局配置中删除主机组的示例时会弹出以下提示,让我们手动卸载Runner   手动卸载Runner官网地址  123systemctl stop runner-&#123;版本&#125;-&#123;租户名称&#125;.servicerm -rf /etc/systemd/system/runner-&#123;版本&#125;-&#123;租户名称&#125;.servicerm -rf /root/yunxiao/&#123;租户名称&#125;/runner/config    官网上的示例很笼统,拿我自己之前安装的命令为例 -v 后面的为版本 -t 后面为租户名称    替换为自己的版本和租户名称   123systemctl stop runner-v0.2.2-be-sazxxxxxxxxxxxxxxxxxxxxxx.servicerm -rf /etc/sy...</div></div></div></a><a class="pagination-related" href="/2026/06/02/%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%A3%81%E7%9B%98%E5%8D%A0%E7%94%A8%E7%8E%87%E8%BF%87%E9%AB%98%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88/" title="服务器磁盘占用率过高解决方案"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">Next</div><div class="info-item-2">服务器磁盘占用率过高解决方案</div></div><div class="info-2"><div class="info-item-1">问题描述 收到阿里云的短信提示磁盘占用过高提示  【阿里云】尊敬的xxxxxx99xxxx - 1608479907179704 , 华东1(杭州)的云服务器ECS  发生告警  ， 实例：ap-pinggu-server-pro-01&#x2F;xxx.xx.xxx.xxx[{instanceId&#x3D;i-bp17xxxxxxxxxxxxxx, userId&#x3D;160847990xxxxxxxx, device&#x3D;&#x2F;dev&#x2F;vda1}] ，(Agent)disk.usage.utilization_device平均值&gt;95%  当前值: 95.04%  告警规则SystemDefault_acs_ecs_dashboard_diskusage_utilization 解决方案 查看磁盘使用情况    1df -h     发现&#x2F;dev&#x2F;vda1占用超过百分之90,和短信中的device&#x3D;&#x2F;dev&#x2F;vda1一致    如果 /dev/vda1 这个磁盘的使用率过高，继续检查占用空间大...</div></div></div></a></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/butterfly-icon.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">Yuanz</div><div class="author-info-description">Yuanz的个人博客</div><div class="site-data"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">176</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">0</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">0</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>Announcement</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>Contents</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3-InheritableThreadLocal%EF%BC%9A%E5%9C%A8%E5%A4%9A%E7%BA%BF%E7%A8%8B%E4%B8%AD%E4%BC%A0%E9%80%92%E4%B8%8A%E4%B8%8B%E6%96%87"><span class="toc-number">1.</span> <span class="toc-text">深入理解 InheritableThreadLocal：在多线程中传递上下文</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E4%B8%BA%E4%BB%80%E4%B9%88%E9%9C%80%E8%A6%81-InheritableThreadLocal%EF%BC%9F"><span class="toc-number">2.</span> <span class="toc-text">1. 为什么需要 InheritableThreadLocal？</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%A4%BA%E4%BE%8B%EF%BC%9A%E6%99%AE%E9%80%9A-ThreadLocal-%E4%B8%8D%E4%BC%9A%E8%A2%AB%E5%AD%90%E7%BA%BF%E7%A8%8B%E7%BB%A7%E6%89%BF"><span class="toc-number">2.1.</span> <span class="toc-text">示例：普通 ThreadLocal 不会被子线程继承</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-InheritableThreadLocal-%E8%AE%A9%E5%AD%90%E7%BA%BF%E7%A8%8B%E7%BB%A7%E6%89%BF%E5%8F%98%E9%87%8F"><span class="toc-number">3.</span> <span class="toc-text">2. InheritableThreadLocal 让子线程继承变量</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%A4%BA%E4%BE%8B%EF%BC%9A%E4%BD%BF%E7%94%A8InheritableThreadLocal"><span class="toc-number">3.1.</span> <span class="toc-text">示例：使用InheritableThreadLocal</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-InheritableThreadLocal-%E7%9A%84%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86"><span class="toc-number">4.</span> <span class="toc-text">3. InheritableThreadLocal 的工作原理</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%99%AE%E9%80%9A-ThreadLocal-%E7%9A%84%E5%AD%98%E5%82%A8%E6%96%B9%E5%BC%8F"><span class="toc-number">4.1.</span> <span class="toc-text">普通 ThreadLocal 的存储方式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#InheritableThreadLocal-%E7%9A%84%E5%AD%98%E5%82%A8%E6%96%B9%E5%BC%8F"><span class="toc-number">4.2.</span> <span class="toc-text">InheritableThreadLocal** 的存储方式**</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-InheritableThreadLocal-%E7%9A%84%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="toc-number">5.</span> <span class="toc-text">4. InheritableThreadLocal 的应用场景</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E6%97%A5%E5%BF%97%E8%BF%BD%E8%B8%AA"><span class="toc-number">5.1.</span> <span class="toc-text">(1) 日志追踪</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-Spring-%E4%B8%AD%E7%9A%84%E7%94%A8%E6%88%B7%E4%B8%8A%E4%B8%8B%E6%96%87"><span class="toc-number">5.2.</span> <span class="toc-text">(2) Spring 中的用户上下文</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-InheritableThreadLocal-%E7%9A%84%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9"><span class="toc-number">6.</span> <span class="toc-text">5. InheritableThreadLocal 的注意事项</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-TransmittableThreadLocal-%E8%A7%A3%E5%86%B3%E7%BA%BF%E7%A8%8B%E6%B1%A0%E9%97%AE%E9%A2%98"><span class="toc-number">7.</span> <span class="toc-text">6. TransmittableThreadLocal 解决线程池问题</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#7-%E6%80%BB%E7%BB%93"><span class="toc-number">8.</span> <span class="toc-text">7. 总结</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Posts</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/06/02/hello-world/" title="Hello World">Hello World</a><time datetime="2026-06-02T07:15:27.184Z" title="Created 2026-06-02 15:15:27">2026-06-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/06/02/%E8%B0%B7%E7%B2%92%E5%95%86%E5%9F%8E--%E6%B3%A8%E5%86%8C%E4%B8%AD%E5%BF%83%E9%85%8D%E7%BD%AE%E4%B8%AD%E5%BF%83%E5%8F%8A%E7%BD%91%E5%85%B3--%E7%AC%94%E8%AE%B0%E4%BA%8C/" title="谷粒商城--注册中心配置中心及网关--笔记二">谷粒商城--注册中心配置中心及网关--笔记二</a><time datetime="2026-06-01T23:59:20.000Z" title="Created 2026-06-02 07:59:20">2026-06-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/06/02/%E8%B0%B7%E7%B2%92%E5%95%86%E5%9F%8E--%E5%89%8D%E7%AB%AF%E5%9F%BA%E7%A1%80--es6--%E7%AC%94%E8%AE%B0%E4%B8%89/" title="谷粒商城--前端基础--es6--笔记三">谷粒商城--前端基础--es6--笔记三</a><time datetime="2026-06-01T23:59:13.000Z" title="Created 2026-06-02 07:59:13">2026-06-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/06/02/%E8%B0%B7%E7%B2%92%E5%95%86%E5%9F%8E-vue-%E7%AC%94%E8%AE%B0%E5%9B%9B/" title="谷粒商城-vue-笔记四">谷粒商城-vue-笔记四</a><time datetime="2026-06-01T23:59:06.000Z" title="Created 2026-06-02 07:59:06">2026-06-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/06/02/%E8%B0%B7%E7%B2%92%E5%95%86%E5%9F%8E-%E6%A0%91%E5%BD%A2%E7%9B%AE%E5%BD%95%E5%BC%80%E5%8F%91-%E7%AC%94%E8%AE%B0%E4%BA%94/" title="谷粒商城-树形目录开发-笔记五">谷粒商城-树形目录开发-笔记五</a><time datetime="2026-06-01T23:58:59.000Z" title="Created 2026-06-02 07:58:59">2026-06-02</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2025 - 2026 By Yuanz</span><span class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 8.1.2</a><span class="footer-separator">|</span><span>Theme </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.5.5-b1</a></span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="Reading Mode"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="Toggle Between Light and Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle Between Single-column and Double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="Settings"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="Table of Contents"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="Back to Top"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.5.5-b1"></script><script src="/js/main.js?v=5.5.5-b1"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>

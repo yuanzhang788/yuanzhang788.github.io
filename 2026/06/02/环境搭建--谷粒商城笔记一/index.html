@@ -1,0 +1,261 @@
+<!DOCTYPE html><html lang="cn" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>环境搭建--谷粒商城笔记一 | Yuanz</title><meta name="author" content="Yuanz"><meta name="copyright" content="Yuanz"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="环境搭建–谷粒商城笔记一由于vagrant与virtualbox搭建linux不成功,所以我选择VMware搭建centos7系统 centos7阿里云镜像下载 VMware安装centos7 修改CentOS默认yum源为国内yum镜像源  首先备份系统自带yum源配置文件&#x2F;etc&#x2F;yum.repos.d&#x2F;CentOS-Base.repo    1[root@loc">
+<meta property="og:type" content="article">
+<meta property="og:title" content="环境搭建--谷粒商城笔记一">
+<meta property="og:url" content="https://yuanzhang788.github.io/2026/06/02/%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA--%E8%B0%B7%E7%B2%92%E5%95%86%E5%9F%8E%E7%AC%94%E8%AE%B0%E4%B8%80/index.html">
+<meta property="og:site_name" content="Yuanz">
+<meta property="og:description" content="环境搭建–谷粒商城笔记一由于vagrant与virtualbox搭建linux不成功,所以我选择VMware搭建centos7系统 centos7阿里云镜像下载 VMware安装centos7 修改CentOS默认yum源为国内yum镜像源  首先备份系统自带yum源配置文件&#x2F;etc&#x2F;yum.repos.d&#x2F;CentOS-Base.repo    1[root@loc">
+<meta property="og:locale">
+<meta property="og:image" content="https://yuanzhang788.github.io/img/butterfly-icon.png">
+<meta property="article:published_time" content="2026-06-01T23:57:26.000Z">
+<meta property="article:modified_time" content="2026-06-02T08:16:07.699Z">
+<meta property="article:author" content="Yuanz">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://yuanzhang788.github.io/img/butterfly-icon.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "环境搭建--谷粒商城笔记一",
+  "url": "https://yuanzhang788.github.io/2026/06/02/%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA--%E8%B0%B7%E7%B2%92%E5%95%86%E5%9F%8E%E7%AC%94%E8%AE%B0%E4%B8%80/",
+  "image": "https://yuanzhang788.github.io/img/butterfly-icon.png",
+  "datePublished": "2026-06-01T23:57:26.000Z",
+  "dateModified": "2026-06-02T08:16:07.699Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "Yuanz",
+      "url": "https://yuanzhang788.github.io"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://yuanzhang788.github.io/2026/06/02/%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA--%E8%B0%B7%E7%B2%92%E5%95%86%E5%9F%8E%E7%AC%94%E8%AE%B0%E4%B8%80/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=5.5.5-b1"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: 'Copy Successful',
+    error: 'Copy Failed',
+    noSupport: 'Browser Not Supported'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: 'Just now',
+    min: 'minutes ago',
+    hour: 'hours ago',
+    day: 'days ago',
+    month: 'months ago'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.0/dist/infinitegrid.min.js',
+    buttonText: 'Load More'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '环境搭建--谷粒商城笔记一',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><meta name="generator" content="Hexo 8.1.2"></head><body><div class="post" id="body-wrap"><header class="post-bg" id="page-header"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">Yuanz</span></a><a class="nav-page-title" href="/"><span class="site-name">环境搭建--谷粒商城笔记一</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  Back to Home</span></span></a></span><div id="menus"></div></nav><div id="post-info"><h1 class="post-title">环境搭建--谷粒商城笔记一</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2026-06-01T23:57:26.000Z" title="Created 2026-06-02 07:57:26">2026-06-02</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2026-06-02T08:16:07.699Z" title="Updated 2026-06-02 16:16:07">2026-06-02</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">Post Views:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><h1 id="环境搭建–谷粒商城笔记一"><a href="#环境搭建–谷粒商城笔记一" class="headerlink" title="环境搭建–谷粒商城笔记一"></a>环境搭建–谷粒商城笔记一</h1><p>由于vagrant与virtualbox搭建linux不成功,所以我选择VMware搭建centos7系统</p>
+<p><a target="_blank" rel="noopener" href="http://mirrors.aliyun.com/centos/7/isos/x86_64/">centos7阿里云镜像下载</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.runoob.com/w3cnote/vmware-install-centos7.html">VMware安装centos7</a></p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/inslow/article/details/54177191">修改CentOS默认yum源为国内yum镜像源</a></p>
+<ol>
+<li>首先备份系统自带yum源配置文件&#x2F;etc&#x2F;yum.repos.d&#x2F;CentOS-Base.repo</li>
+</ol>
+  <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost ~] # mv /etc/yum.repos.d/CentOS-Base.repo /etc/yum.repos.d/CentOS-Base.repo.backup</span><br></pre></td></tr></table></figure>
+
+
+<ol start="2">
+<li>进入yum源配置文件所在的文件夹</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost ~] # cd /etc/yum.repos.d/</span><br></pre></td></tr></table></figure>
+
+
+<ol start="3">
+<li>下载163的yum源配置文件到上面那个文件夹内  CentOS7</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost yum.repos.d] # wget http://mirrors.163.com/.help/CentOS7-Base-163.repo</span><br></pre></td></tr></table></figure>
+
+
+<ol start="4">
+<li>运行yum makecache生成缓存</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost yum.repos.d] # yum makecache</span><br></pre></td></tr></table></figure>
+
+
+
+
+<h2 id="1-修改CentOS默认yum源为国内yum镜像源"><a href="#1-修改CentOS默认yum源为国内yum镜像源" class="headerlink" title="1.修改CentOS默认yum源为国内yum镜像源"></a>1.修改CentOS默认yum源为国内yum镜像源</h2><p><a target="_blank" rel="noopener" href="https://blog.csdn.net/inslow/article/details/54177191">修改CentOS默认yum源为国内yum镜像源</a></p>
+<h2 id="2-CentOS安装docker"><a href="#2-CentOS安装docker" class="headerlink" title="2.CentOS安装docker"></a>2.CentOS安装docker</h2><p><a target="_blank" rel="noopener" href="https://docs.docker.com/engine/install/centos/">CentOS安装docker</a></p>
+<h2 id="3-docker常用命令"><a href="#3-docker常用命令" class="headerlink" title="3.docker常用命令"></a>3.docker常用命令</h2><p><a target="_blank" rel="noopener" href="https://docs.docker.com/engine/reference/commandline/docker/">docker常用命令</a></p>
+<h2 id="4-配置-docker-镜像加速"><a href="#4-配置-docker-镜像加速" class="headerlink" title="4.配置 docker 镜像加速"></a>4.配置 docker 镜像加速</h2><p><a target="_blank" rel="noopener" href="https://cr.console.aliyun.com/cn-hangzhou/instances/mirrors?accounttraceid=ce9e1963ec334993a67faa7b6c8dbe1aqyac">配置 docker 镜像加速</a></p>
+<h2 id="5-docker安装mysql5-7"><a href="#5-docker安装mysql5-7" class="headerlink" title="5.docker安装mysql5.7"></a>5.docker安装mysql5.7</h2><h4 id="1-下载镜像文件"><a href="#1-下载镜像文件" class="headerlink" title="1.下载镜像文件"></a>1.下载镜像文件</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker pull mysql:5.7</span><br></pre></td></tr></table></figure>
+
+
+<h4 id="2-创建实例并启动"><a href="#2-创建实例并启动" class="headerlink" title="2.创建实例并启动"></a>2.创建实例并启动</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">docker run -p 3306:3306 --name mysql \</span><br><span class="line">-v /mydata/mysql/log:/var/log/mysql \</span><br><span class="line">-v /mydata/mysql/data:/var/lib/mysql \</span><br><span class="line">-v /mydata/mysql/conf:/etc/mysql \</span><br><span class="line">-e MYSQL_ROOT_PASSWORD=root \</span><br><span class="line">-d mysql:5.7</span><br></pre></td></tr></table></figure>
+
+
+<ul>
+<li>参数说明<br>-p 3306:3306： 将容器的 3306 端口映射到主机的 3306 端口<br>-v &#x2F;mydata&#x2F;mysql&#x2F;conf:&#x2F;etc&#x2F;mysql： 将配置文件夹挂载到主机<br>-v &#x2F;mydata&#x2F;mysql&#x2F;log:&#x2F;var&#x2F;log&#x2F;mysql： 将日志文件夹挂载到主机<br>-v &#x2F;mydata&#x2F;mysql&#x2F;data:&#x2F;var&#x2F;lib&#x2F;mysql&#x2F;： 将配置文件夹挂载到主机<br>-e MYSQL_ROOT_PASSWORD&#x3D;root： 初始化 root 用户的密码</li>
+</ul>
+<h4 id="3-mysql配置"><a href="#3-mysql配置" class="headerlink" title="3.mysql配置"></a>3.mysql配置</h4><p>vi &#x2F;mydata&#x2F;mysql&#x2F;conf&#x2F;my.cnf</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">[root@hadoop-104 conf]# cat my.cnf</span><br><span class="line">[client]</span><br><span class="line">default-character-set=utf8</span><br><span class="line">[mysql]</span><br><span class="line">default-character-set=utf8</span><br><span class="line">[mysqld]</span><br><span class="line">init_connect=&#x27;SET collation_connection = utf8_unicode_ci&#x27;</span><br><span class="line">init_connect=&#x27;SET NAMES utf8&#x27;</span><br><span class="line">character-set-server=utf8</span><br><span class="line">collation-server=utf8_unicode_ci</span><br><span class="line">skip-character-set-client-handshake</span><br><span class="line">skip-name-resolve</span><br></pre></td></tr></table></figure>
+
+
+<ul>
+<li>注意： 解决 MySQL 连接慢的问题<br>在配置文件中加入如下， 并重启 mysql<br>[mysqld]<br>skip-name-resolve<br>解释：<br>skip-name-resolve： 跳过域名解析</li>
+</ul>
+<h4 id="4-通过容器的-mysql-命令行工具连接"><a href="#4-通过容器的-mysql-命令行工具连接" class="headerlink" title="4.通过容器的 mysql 命令行工具连接"></a>4.通过容器的 mysql 命令行工具连接</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker exec -it mysql mysql -uroot -proot</span><br></pre></td></tr></table></figure>
+
+
+<h4 id="5-设置-root-远程访问"><a href="#5-设置-root-远程访问" class="headerlink" title="5.设置 root 远程访问"></a>5.设置 root 远程访问</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">grant all privileges on *.* to &#x27;root&#x27;@&#x27;%&#x27; identified by &#x27;root&#x27; with grant option;</span><br><span class="line">flush privileges;</span><br></pre></td></tr></table></figure>
+
+
+<h4 id="6-进入容器文件系统"><a href="#6-进入容器文件系统" class="headerlink" title="6.进入容器文件系统"></a>6.进入容器文件系统</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker exec -it mysql /bin/bash</span><br></pre></td></tr></table></figure>
+
+
+<h4 id="7-设置启动docker时，即运行mysql"><a href="#7-设置启动docker时，即运行mysql" class="headerlink" title="7.设置启动docker时，即运行mysql"></a>7.设置启动docker时，即运行mysql</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker update mysql --restart=always</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="6-docker安装redis"><a href="#6-docker安装redis" class="headerlink" title="6.docker安装redis"></a>6.docker安装redis</h2><h4 id="1-下载镜像文件-1"><a href="#1-下载镜像文件-1" class="headerlink" title="1.下载镜像文件"></a>1.下载镜像文件</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker pull redis</span><br></pre></td></tr></table></figure>
+
+
+<h4 id="2-创建实例并启动-1"><a href="#2-创建实例并启动-1" class="headerlink" title="2.创建实例并启动"></a>2.创建实例并启动</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">mkdir -p /mydata/redis/conf</span><br><span class="line">touch /mydata/redis/conf/redis.conf</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">docker run -p 6379:6379 --name redis -v /mydata/redis/data:/data \</span><br><span class="line">-v /mydata/redis/conf/redis.conf:/etc/redis/redis.conf \</span><br><span class="line">-d redis redis-server /etc/redis/redis.conf</span><br></pre></td></tr></table></figure>
+
+
+<h4 id="3-使用-redis-镜像执行-redis-cli-命令连接"><a href="#3-使用-redis-镜像执行-redis-cli-命令连接" class="headerlink" title="3.使用 redis 镜像执行 redis-cli 命令连接"></a>3.使用 redis 镜像执行 redis-cli 命令连接</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker exec -it redis redis-cli</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="7-开发环境统一"><a href="#7-开发环境统一" class="headerlink" title="7.开发环境统一"></a>7.开发环境统一</h2><h4 id="1-Maven"><a href="#1-Maven" class="headerlink" title="1.Maven"></a>1.Maven</h4><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">配置阿里云镜像</span><br><span class="line"><span class="tag">&lt;<span class="name">mirrors</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">mirror</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">id</span>&gt;</span>nexus-aliyun<span class="tag">&lt;/<span class="name">id</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">mirrorOf</span>&gt;</span>central<span class="tag">&lt;/<span class="name">mirrorOf</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">name</span>&gt;</span>Nexus aliyun<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">url</span>&gt;</span>http://maven.aliyun.com/nexus/content/groups/public<span class="tag">&lt;/<span class="name">url</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="name">mirror</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">mirrors</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">配置 jdk1.8 编译项目</span><br><span class="line"><span class="tag">&lt;<span class="name">profiles</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">profile</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">id</span>&gt;</span>jdk-1.8<span class="tag">&lt;/<span class="name">id</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">activation</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">activeByDefault</span>&gt;</span>true<span class="tag">&lt;/<span class="name">activeByDefault</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">jdk</span>&gt;</span>1.8<span class="tag">&lt;/<span class="name">jdk</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">activation</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">properties</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">maven.compiler.source</span>&gt;</span>1.8<span class="tag">&lt;/<span class="name">maven.compiler.source</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">maven.compiler.target</span>&gt;</span>1.8<span class="tag">&lt;/<span class="name">maven.compiler.target</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">maven.compiler.compilerVersion</span>&gt;</span>1.8<span class="tag">&lt;/<span class="name">maven.compiler.compilerVersion</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">properties</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="name">profile</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">profiles</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+
+<h4 id="2-IdeaVsCode"><a href="#2-IdeaVsCode" class="headerlink" title="2.IdeaVsCode"></a>2.IdeaVsCode</h4><ul>
+<li>idea 安装 lombok、 mybatisx 插件</li>
+<li>Vscode 安装开发必备插件 Vetur —— 语法高亮、 智能感知、 Emmet 等 包含格式化功能， Alt+Shift+F （ 格式化全文） ， Ctrl+K Ctrl+F（ 格式化选中代码， 两个 Ctrl需要同时按着）<br>EsLint —— 语法纠错<br>Auto Close Tag —— 自动闭合 HTML&#x2F;XML 标签<br>Auto Rename Tag —— 自动完成另一侧标签的同步修改<br>JavaScript(ES6) code snippets — — ES6 语 法 智 能 提 示 以 及 快 速 输 入 ， 除 js 外 还 支<br>持.ts， .jsx， .tsx， .html， .vue， 省去了配置其支持各种包含 js 代码文件的时间<br>HTML CSS Support —— 让 html 标签上写 class 智能提示当前项目所支持的样式<br>HTML Snippets —— html 快速自动补全<br>Open in browser —— 浏览器快速打开<br>Live Server —— 以内嵌服务器方式打开<br>Chinese (Simplified) Language Pack for Visual Studio Code —— 中文语言包</li>
+</ul>
+<p><img src="/assets/%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA--%E8%B0%B7%E7%B2%92%E5%95%86%E5%9F%8E%E7%AC%94%E8%AE%B0%E4%B8%80/d68465752b1df7f1e0c0a277285904ce.png" alt="image-20210924172303342"></p>
+<h4 id="3-安装配置git"><a href="#3-安装配置git" class="headerlink" title="3.安装配置git"></a>3.安装配置git</h4><ol>
+<li><a target="_blank" rel="noopener" href="https://git-scm.com/">下载 git</a>；</li>
+<li>配置 git， 进入 git bash</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">配置用户名</span></span><br><span class="line">git config --global user.name &quot;username&quot; //（名字）</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">配置邮箱</span></span><br><span class="line">git config --global user.email &quot;username@email.com&quot; //(注册账号时用的邮箱)</span><br></pre></td></tr></table></figure>
+
+
+<ol start="3">
+<li>配置 ssh 免密登录</li>
+</ol>
+<p><a target="_blank" rel="noopener" href="https://gitee.com/help/articles/4181#article-header0">官方教程</a></p>
+<ul>
+<li>进入 git bash； 使用： ssh-keygen -t rsa -C “<a href="mailto:&#x78;&#x78;&#x78;&#120;&#120;&#64;&#120;&#x78;&#120;&#120;&#120;&#46;&#x63;&#x6f;&#109;">xxxxx@xxxxx.com</a>“命令。 连续三次回车。<br>一般用户目录下会有</li>
+</ul>
+<p><img src="/assets/%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA--%E8%B0%B7%E7%B2%92%E5%95%86%E5%9F%8E%E7%AC%94%E8%AE%B0%E4%B8%80/e3e267f7dcf49edabc78b6880e7da13b.png" alt="image-20210924173206200"></p>
+<ul>
+<li>或者 cat ~&#x2F;.ssh&#x2F;id_rsa.pub<br>登录进入 gitee， 在设置里面找到 SSH KEY 将.pub 文件的内容粘贴进去<br>使用 ssh -T <a href="mailto:&#x67;&#x69;&#x74;&#64;&#103;&#105;&#x74;&#x65;&#x65;&#46;&#x63;&#111;&#x6d;">git@gitee.com</a> 测试是否成功即可</li>
+</ul>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>Author: </span><span class="post-copyright-info"><a href="https://yuanzhang788.github.io">Yuanz</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>Link: </span><span class="post-copyright-info"><a href="https://yuanzhang788.github.io/2026/06/02/%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA--%E8%B0%B7%E7%B2%92%E5%95%86%E5%9F%8E%E7%AC%94%E8%AE%B0%E4%B8%80/">https://yuanzhang788.github.io/2026/06/02/%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA--%E8%B0%B7%E7%B2%92%E5%95%86%E5%9F%8E%E7%AC%94%E8%AE%B0%E4%B8%80/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>Copyright Notice: </span><span class="post-copyright-info">All articles on this blog are licensed under <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless otherwise stated.</span></div></div><div class="tag_share"><div class="post-share"><div class="social-share" data-image="/img/butterfly-icon.png" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2026/06/02/%E8%B0%B7%E7%B2%92%E5%95%86%E5%9F%8E--%E5%BC%82%E6%AD%A5&amp;%E7%BA%BF%E7%A8%8B%E6%B1%A0%20--%E9%AB%98%E7%BA%A7%E7%AF%87%E7%AC%94%E8%AE%B0%E4%B8%83/" title="谷粒商城--异步&amp;线程池 --高级篇笔记七"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info"><div class="info-1"><div class="info-item-1">Previous</div><div class="info-item-2">谷粒商城--异步&线程池 --高级篇笔记七</div></div><div class="info-2"><div class="info-item-1">谷粒商城–异步&amp;线程池 –高级篇笔记七0.测试代码地址ThreadTest 1. 初始化线程的4种方式1.1 继承 Thread123456789101112131415161718192021222324package site.zhourui.gilimall.search.thread;/** * @author zr * @date 2021/11/22 22:46 */public class ThreadTest &#123;    public static void main(String[] args) &#123;        System.out.println(&quot;main......start...&quot;);        Thread01 thread01 = new Thread01();        thread01.start();        System.out.println(&quot;main......end...&quot;);    &#125;    public static class Threa...</div></div></div></a><a class="pagination-related" href="/2026/06/02/%E8%B0%B7%E7%B2%92%E5%95%86%E5%9F%8E--%E8%AE%A4%E8%AF%81%E4%B8%AD%E5%BF%83--%E9%AB%98%E7%BA%A7%E7%AF%87%E7%AC%94%E8%AE%B0%E5%85%AB/" title="谷粒商城--认证中心--高级篇笔记八"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">Next</div><div class="info-item-2">谷粒商城--认证中心--高级篇笔记八</div></div><div class="info-2"><div class="info-item-1">谷粒商城–认证中心–高级篇笔记八 1. 环境搭建1.1 新建模块gulimall-auth-server  1.2 pom文件上面没选好直接复制下面的pom文件,记得排除gulimall-common包的mybatis-plus 12345678910111213141516171819202122232425262728293031323334353637383940414243444546474849505152535455565758596061626364656667686970717273747576777879808182838485868788899091929394&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&lt;project xmlns=&quot;http://maven.apache.org/POM/4.0.0&quot; xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;		 xsi:schem...</div></div></div></a></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/butterfly-icon.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">Yuanz</div><div class="author-info-description">Yuanz的个人博客</div><div class="site-data"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">176</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">0</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">0</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>Announcement</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>Contents</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA%E2%80%93%E8%B0%B7%E7%B2%92%E5%95%86%E5%9F%8E%E7%AC%94%E8%AE%B0%E4%B8%80"><span class="toc-number">1.</span> <span class="toc-text">环境搭建–谷粒商城笔记一</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E4%BF%AE%E6%94%B9CentOS%E9%BB%98%E8%AE%A4yum%E6%BA%90%E4%B8%BA%E5%9B%BD%E5%86%85yum%E9%95%9C%E5%83%8F%E6%BA%90"><span class="toc-number">1.1.</span> <span class="toc-text">1.修改CentOS默认yum源为国内yum镜像源</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-CentOS%E5%AE%89%E8%A3%85docker"><span class="toc-number">1.2.</span> <span class="toc-text">2.CentOS安装docker</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-docker%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4"><span class="toc-number">1.3.</span> <span class="toc-text">3.docker常用命令</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-%E9%85%8D%E7%BD%AE-docker-%E9%95%9C%E5%83%8F%E5%8A%A0%E9%80%9F"><span class="toc-number">1.4.</span> <span class="toc-text">4.配置 docker 镜像加速</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-docker%E5%AE%89%E8%A3%85mysql5-7"><span class="toc-number">1.5.</span> <span class="toc-text">5.docker安装mysql5.7</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-%E4%B8%8B%E8%BD%BD%E9%95%9C%E5%83%8F%E6%96%87%E4%BB%B6"><span class="toc-number">1.5.1.</span> <span class="toc-text">1.下载镜像文件</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-%E5%88%9B%E5%BB%BA%E5%AE%9E%E4%BE%8B%E5%B9%B6%E5%90%AF%E5%8A%A8"><span class="toc-number">1.5.2.</span> <span class="toc-text">2.创建实例并启动</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-mysql%E9%85%8D%E7%BD%AE"><span class="toc-number">1.5.3.</span> <span class="toc-text">3.mysql配置</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4-%E9%80%9A%E8%BF%87%E5%AE%B9%E5%99%A8%E7%9A%84-mysql-%E5%91%BD%E4%BB%A4%E8%A1%8C%E5%B7%A5%E5%85%B7%E8%BF%9E%E6%8E%A5"><span class="toc-number">1.5.4.</span> <span class="toc-text">4.通过容器的 mysql 命令行工具连接</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#5-%E8%AE%BE%E7%BD%AE-root-%E8%BF%9C%E7%A8%8B%E8%AE%BF%E9%97%AE"><span class="toc-number">1.5.5.</span> <span class="toc-text">5.设置 root 远程访问</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#6-%E8%BF%9B%E5%85%A5%E5%AE%B9%E5%99%A8%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F"><span class="toc-number">1.5.6.</span> <span class="toc-text">6.进入容器文件系统</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#7-%E8%AE%BE%E7%BD%AE%E5%90%AF%E5%8A%A8docker%E6%97%B6%EF%BC%8C%E5%8D%B3%E8%BF%90%E8%A1%8Cmysql"><span class="toc-number">1.5.7.</span> <span class="toc-text">7.设置启动docker时，即运行mysql</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-docker%E5%AE%89%E8%A3%85redis"><span class="toc-number">1.6.</span> <span class="toc-text">6.docker安装redis</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-%E4%B8%8B%E8%BD%BD%E9%95%9C%E5%83%8F%E6%96%87%E4%BB%B6-1"><span class="toc-number">1.6.1.</span> <span class="toc-text">1.下载镜像文件</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-%E5%88%9B%E5%BB%BA%E5%AE%9E%E4%BE%8B%E5%B9%B6%E5%90%AF%E5%8A%A8-1"><span class="toc-number">1.6.2.</span> <span class="toc-text">2.创建实例并启动</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-%E4%BD%BF%E7%94%A8-redis-%E9%95%9C%E5%83%8F%E6%89%A7%E8%A1%8C-redis-cli-%E5%91%BD%E4%BB%A4%E8%BF%9E%E6%8E%A5"><span class="toc-number">1.6.3.</span> <span class="toc-text">3.使用 redis 镜像执行 redis-cli 命令连接</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#7-%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%E7%BB%9F%E4%B8%80"><span class="toc-number">1.7.</span> <span class="toc-text">7.开发环境统一</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-Maven"><span class="toc-number">1.7.1.</span> <span class="toc-text">1.Maven</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-IdeaVsCode"><span class="toc-number">1.7.2.</span> <span class="toc-text">2.IdeaVsCode</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-%E5%AE%89%E8%A3%85%E9%85%8D%E7%BD%AEgit"><span class="toc-number">1.7.3.</span> <span class="toc-text">3.安装配置git</span></a></li></ol></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Posts</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/06/02/hello-world/" title="Hello World">Hello World</a><time datetime="2026-06-02T07:15:27.184Z" title="Created 2026-06-02 15:15:27">2026-06-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/06/02/%E8%B0%B7%E7%B2%92%E5%95%86%E5%9F%8E--%E6%B3%A8%E5%86%8C%E4%B8%AD%E5%BF%83%E9%85%8D%E7%BD%AE%E4%B8%AD%E5%BF%83%E5%8F%8A%E7%BD%91%E5%85%B3--%E7%AC%94%E8%AE%B0%E4%BA%8C/" title="谷粒商城--注册中心配置中心及网关--笔记二">谷粒商城--注册中心配置中心及网关--笔记二</a><time datetime="2026-06-01T23:59:20.000Z" title="Created 2026-06-02 07:59:20">2026-06-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/06/02/%E8%B0%B7%E7%B2%92%E5%95%86%E5%9F%8E--%E5%89%8D%E7%AB%AF%E5%9F%BA%E7%A1%80--es6--%E7%AC%94%E8%AE%B0%E4%B8%89/" title="谷粒商城--前端基础--es6--笔记三">谷粒商城--前端基础--es6--笔记三</a><time datetime="2026-06-01T23:59:13.000Z" title="Created 2026-06-02 07:59:13">2026-06-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/06/02/%E8%B0%B7%E7%B2%92%E5%95%86%E5%9F%8E-vue-%E7%AC%94%E8%AE%B0%E5%9B%9B/" title="谷粒商城-vue-笔记四">谷粒商城-vue-笔记四</a><time datetime="2026-06-01T23:59:06.000Z" title="Created 2026-06-02 07:59:06">2026-06-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/06/02/%E8%B0%B7%E7%B2%92%E5%95%86%E5%9F%8E-%E6%A0%91%E5%BD%A2%E7%9B%AE%E5%BD%95%E5%BC%80%E5%8F%91-%E7%AC%94%E8%AE%B0%E4%BA%94/" title="谷粒商城-树形目录开发-笔记五">谷粒商城-树形目录开发-笔记五</a><time datetime="2026-06-01T23:58:59.000Z" title="Created 2026-06-02 07:58:59">2026-06-02</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2025 - 2026 By Yuanz</span><span class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 8.1.2</a><span class="footer-separator">|</span><span>Theme </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.5.5-b1</a></span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="Reading Mode"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="Toggle Between Light and Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle Between Single-column and Double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="Settings"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="Table of Contents"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="Back to Top"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.5.5-b1"></script><script src="/js/main.js?v=5.5.5-b1"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>

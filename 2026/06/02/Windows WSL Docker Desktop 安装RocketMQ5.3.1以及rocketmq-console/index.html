@@ -1,0 +1,264 @@
+<!DOCTYPE html><html lang="cn" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>Windows WSL Docker Desktop 安装RocketMQ5.3.1以及rocketmq-console | Yuanz</title><meta name="author" content="Yuanz"><meta name="copyright" content="Yuanz"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="🙅问题🔷起因 Windows WSL Docker Desktop 搭建RocketMQ 出现问题,发现生产者发送不了消息  ![](&#x2F;assets&#x2F;Windows WSL Docker Desktop 安装RocketMQ5.3.1以及rocketmq-console&#x2F;477534278d5a6f49ebb20cec0d3e0210.png) 🔷排查 打开ro">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Windows WSL Docker Desktop 安装RocketMQ5.3.1以及rocketmq-console">
+<meta property="og:url" content="https://yuanzhang788.github.io/2026/06/02/Windows%20WSL%20Docker%20Desktop%20%E5%AE%89%E8%A3%85RocketMQ5.3.1%E4%BB%A5%E5%8F%8Arocketmq-console/index.html">
+<meta property="og:site_name" content="Yuanz">
+<meta property="og:description" content="🙅问题🔷起因 Windows WSL Docker Desktop 搭建RocketMQ 出现问题,发现生产者发送不了消息  ![](&#x2F;assets&#x2F;Windows WSL Docker Desktop 安装RocketMQ5.3.1以及rocketmq-console&#x2F;477534278d5a6f49ebb20cec0d3e0210.png) 🔷排查 打开ro">
+<meta property="og:locale">
+<meta property="og:image" content="https://yuanzhang788.github.io/img/butterfly-icon.png">
+<meta property="article:published_time" content="2026-06-01T23:42:05.000Z">
+<meta property="article:modified_time" content="2026-06-02T08:15:06.771Z">
+<meta property="article:author" content="Yuanz">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://yuanzhang788.github.io/img/butterfly-icon.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Windows WSL Docker Desktop 安装RocketMQ5.3.1以及rocketmq-console",
+  "url": "https://yuanzhang788.github.io/2026/06/02/Windows%20WSL%20Docker%20Desktop%20%E5%AE%89%E8%A3%85RocketMQ5.3.1%E4%BB%A5%E5%8F%8Arocketmq-console/",
+  "image": "https://yuanzhang788.github.io/img/butterfly-icon.png",
+  "datePublished": "2026-06-01T23:42:05.000Z",
+  "dateModified": "2026-06-02T08:15:06.771Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "Yuanz",
+      "url": "https://yuanzhang788.github.io"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://yuanzhang788.github.io/2026/06/02/Windows%20WSL%20Docker%20Desktop%20%E5%AE%89%E8%A3%85RocketMQ5.3.1%E4%BB%A5%E5%8F%8Arocketmq-console/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=5.5.5-b1"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: 'Copy Successful',
+    error: 'Copy Failed',
+    noSupport: 'Browser Not Supported'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: 'Just now',
+    min: 'minutes ago',
+    hour: 'hours ago',
+    day: 'days ago',
+    month: 'months ago'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.0/dist/infinitegrid.min.js',
+    buttonText: 'Load More'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Windows WSL Docker Desktop 安装RocketMQ5.3.1以及rocketmq-console',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><meta name="generator" content="Hexo 8.1.2"></head><body><div class="post" id="body-wrap"><header class="post-bg" id="page-header"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">Yuanz</span></a><a class="nav-page-title" href="/"><span class="site-name">Windows WSL Docker Desktop 安装RocketMQ5.3.1以及rocketmq-console</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  Back to Home</span></span></a></span><div id="menus"></div></nav><div id="post-info"><h1 class="post-title">Windows WSL Docker Desktop 安装RocketMQ5.3.1以及rocketmq-console</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2026-06-01T23:42:05.000Z" title="Created 2026-06-02 07:42:05">2026-06-02</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2026-06-02T08:15:06.771Z" title="Updated 2026-06-02 16:15:06">2026-06-02</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">Post Views:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><h1 id="🙅问题"><a href="#🙅问题" class="headerlink" title="🙅问题"></a>🙅问题</h1><h2 id="🔷起因"><a href="#🔷起因" class="headerlink" title="🔷起因"></a>🔷起因</h2><blockquote>
+<p>Windows WSL Docker Desktop 搭建RocketMQ 出现问题,发现生产者发送不了消息</p>
+</blockquote>
+<p>![](&#x2F;assets&#x2F;Windows WSL Docker Desktop 安装RocketMQ5.3.1以及rocketmq-console&#x2F;477534278d5a6f49ebb20cec0d3e0210.png)</p>
+<h2 id="🔷排查"><a href="#🔷排查" class="headerlink" title="🔷排查"></a>🔷排查</h2><blockquote>
+<p>打开rocketmq-console发现</p>
+<ol>
+<li><font style="color:rgb(0, 0, 0);">RocketMQ Broker 在容器网络中的地址是 </font><code>172.17.0.3:10911</code></li>
+<li><font style="color:rgb(0, 0, 0);">而我的宿主机的 IP 地址是 </font><code>192.168.2.32</code></li>
+</ol>
+</blockquote>
+<p>![](&#x2F;assets&#x2F;Windows WSL Docker Desktop 安装RocketMQ5.3.1以及rocketmq-console&#x2F;1be4c460c0c41612d0c957b0fcfd1b9f.png)</p>
+<h2 id="👉-排查结论"><a href="#👉-排查结论" class="headerlink" title="👉 排查结论"></a>👉 排查结论</h2><ul>
+<li><font style="color:rgb(0, 0, 0);">发现是一个常见的 RocketMQ 配置问题：当外部客户端尝试连接 RocketMQ 时，nameserver 会返回 broker 的内部地址（172.18.0.4:10911），但这个地址在宿主机网络或外部网络中是无法直接访问的。</font></li>
+<li><font style="color:rgb(0, 0, 0);">在Windows环境中，Docker Desktop默认使用</font><strong><font style="color:rgb(0, 0, 0);">host.docker.internal</font></strong><font style="color:rgb(0, 0, 0);">作为宿主机访问地址，而非</font><code>localhost</code><font style="color:rgb(0, 0, 0);">。</font></li>
+</ul>
+<h1 id="解决方案："><a href="#解决方案：" class="headerlink" title="解决方案："></a><font style="color:rgb(0, 0, 0);">解决方案：</font></h1><h2 id="✅使用宿主机的IP地址配置brokerIP1。"><a href="#✅使用宿主机的IP地址配置brokerIP1。" class="headerlink" title="✅使用宿主机的IP地址配置brokerIP1。"></a>✅<font style="color:rgb(0, 0, 0);">使用宿主机的IP地址配置brokerIP1。</font></h2><ol>
+<li><font style="color:rgb(0, 0, 0);">Windows使用ipconfig查看自己的ip地址</font></li>
+</ol>
+<p>![](&#x2F;assets&#x2F;Windows WSL Docker Desktop 安装RocketMQ5.3.1以及rocketmq-console&#x2F;a6645f950d2525aab8be1a8080240d6d.png)</p>
+<ol start="2">
+<li><font style="color:rgb(0, 0, 0);">创建broker.conf文件</font></li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">brokerClusterName=DefaultCluster</span><br><span class="line">brokerName=broker-a</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">修改brokerIP1为宿主机地址</span></span><br><span class="line">brokerIP1=192.168.2.32</span><br><span class="line">brokerRole=ASYNC_MASTER</span><br><span class="line">listenPort=10911</span><br><span class="line">namesrvAddr=rmqnamesrv:9876</span><br><span class="line">autoCreateTopicEnable=true</span><br></pre></td></tr></table></figure>
+
+
+<ol start="3">
+<li><font style="color:rgb(0, 0, 0);">创建docker-compose.yml：</font></li>
+</ol>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">version:</span> <span class="string">&#x27;3.8&#x27;</span></span><br><span class="line"><span class="attr">services:</span></span><br><span class="line">  <span class="attr">namesrv:</span></span><br><span class="line">    <span class="attr">image:</span> <span class="string">apache/rocketmq:5.3.1</span></span><br><span class="line">    <span class="attr">container_name:</span> <span class="string">rmqnamesrv</span></span><br><span class="line">    <span class="attr">ports:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="number">9876</span><span class="string">:9876</span></span><br><span class="line">    <span class="attr">networks:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">rocketmq</span></span><br><span class="line">    <span class="attr">command:</span> <span class="string">sh</span> <span class="string">mqnamesrv</span></span><br><span class="line">  <span class="attr">broker:</span></span><br><span class="line">    <span class="attr">image:</span> <span class="string">apache/rocketmq:5.3.1</span></span><br><span class="line">    <span class="attr">container_name:</span> <span class="string">rmqbroker</span></span><br><span class="line">    <span class="attr">ports:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="number">10909</span><span class="string">:10909</span></span><br><span class="line">      <span class="bullet">-</span> <span class="number">10911</span><span class="string">:10911</span></span><br><span class="line">      <span class="bullet">-</span> <span class="number">10912</span><span class="string">:10912</span></span><br><span class="line">    <span class="attr">volumes:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">./broker.conf:/home/rocketmq/rocketmq-5.3.1/conf/broker.conf</span></span><br><span class="line">    <span class="attr">environment:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">NAMESRV_ADDR=rmqnamesrv:9876</span></span><br><span class="line">    <span class="attr">depends_on:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">namesrv</span></span><br><span class="line">    <span class="attr">networks:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">rocketmq</span></span><br><span class="line">    <span class="attr">command:</span> <span class="string">sh</span> <span class="string">mqbroker</span> <span class="string">-c</span> <span class="string">/home/rocketmq/rocketmq-5.3.1/conf/broker.conf</span></span><br><span class="line">  <span class="attr">proxy:</span></span><br><span class="line">    <span class="attr">image:</span> <span class="string">apache/rocketmq:5.3.1</span></span><br><span class="line">    <span class="attr">container_name:</span> <span class="string">rmqproxy</span></span><br><span class="line">    <span class="attr">networks:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">rocketmq</span></span><br><span class="line">    <span class="attr">depends_on:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">broker</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">namesrv</span></span><br><span class="line">    <span class="attr">ports:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="number">8080</span><span class="string">:8080</span></span><br><span class="line">      <span class="bullet">-</span> <span class="number">8081</span><span class="string">:8081</span></span><br><span class="line">    <span class="attr">restart:</span> <span class="string">on-failure</span></span><br><span class="line">    <span class="attr">environment:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">NAMESRV_ADDR=rmqnamesrv:9876</span></span><br><span class="line">    <span class="attr">command:</span> <span class="string">sh</span> <span class="string">mqproxy</span></span><br><span class="line">  <span class="attr">dashboard:</span></span><br><span class="line">    <span class="attr">image:</span> <span class="string">apacherocketmq/rocketmq-dashboard:latest</span></span><br><span class="line">    <span class="attr">container_name:</span> <span class="string">rmqdashboard</span></span><br><span class="line">    <span class="attr">ports:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="number">9090</span><span class="string">:8082</span>  <span class="comment"># 修改宿主机端口为9090，容器内端口保持8082不变</span></span><br><span class="line">    <span class="attr">environment:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">JAVA_OPTS=-Drocketmq.namesrv.addr=rmqnamesrv:9876</span></span><br><span class="line">    <span class="attr">depends_on:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">namesrv</span></span><br><span class="line">    <span class="attr">networks:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">rocketmq</span></span><br><span class="line"></span><br><span class="line"><span class="attr">networks:</span></span><br><span class="line">  <span class="attr">rocketmq:</span></span><br><span class="line">    <span class="attr">driver:</span> <span class="string">bridge</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+<ol start="4">
+<li><font style="color:rgb(0, 0, 0);">docker-compose.yml和broker.conf放在同一目录下</font></li>
+</ol>
+<p>![](&#x2F;assets&#x2F;Windows WSL Docker Desktop 安装RocketMQ5.3.1以及rocketmq-console&#x2F;21a456a45c7c63323148c1eab1289011.png)</p>
+<ol start="5">
+<li>目录切换到<font style="color:rgb(0, 0, 0);">docker-compose.yml目录下使用如下命令</font></li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker-compose up -d</span><br></pre></td></tr></table></figure>
+
+
+<p>![](&#x2F;assets&#x2F;Windows WSL Docker Desktop 安装RocketMQ5.3.1以及rocketmq-console&#x2F;14f7cebecf9a6d169f200d84cfbbb1f3.png)</p>
+<ol start="6">
+<li>启动成功</li>
+</ol>
+<p>![](&#x2F;assets&#x2F;Windows WSL Docker Desktop 安装RocketMQ5.3.1以及rocketmq-console&#x2F;d7e76cc511b986376e505d2828fc752e.png)</p>
+<ol start="7">
+<li>访问dashboard查看<font style="color:rgb(0, 0, 0);">broker地址是否是宿主机地址</font></li>
+</ol>
+<ul>
+<li><a target="_blank" rel="noopener" href="http://localhost:9090/">http://localhost:9090/</a></li>
+<li>发现<font style="color:rgba(0, 0, 0, 0.88);background-color:rgb(250, 250, 250);">broker</font>地址是宿主机地址了</li>
+</ul>
+<p>![](&#x2F;assets&#x2F;Windows WSL Docker Desktop 安装RocketMQ5.3.1以及rocketmq-console&#x2F;01bc16b7b768257c326c05f030de6aae.png)</p>
+<h2 id="🔶测试"><a href="#🔶测试" class="headerlink" title="🔶测试"></a>🔶测试</h2><h3 id="🧩RocketMQ基本概念"><a href="#🧩RocketMQ基本概念" class="headerlink" title="🧩RocketMQ基本概念"></a>🧩RocketMQ基本概念</h3><ul>
+<li><code>Producer</code>：消息的发送者；举例：发件者</li>
+<li><code>Consumer</code>：消息接收者；举例：收件人</li>
+<li><code>Consumer Group</code>：消费组；每一个 consumer 实例都属于一个 consumer group，每一条消息只会被同一个 consumer group 里的一个 consumer 实例消费。（不同consumer group可以同时消费同一条消息）</li>
+<li><code>Broker</code>：暂存和传输消息；举例：快递公司</li>
+<li><code>NameServer</code>：管理 Broker；举例：快递公司的管理机构</li>
+<li><code>Topic</code>：区分消息的种类；一个发送者可以发送消息给一个或者多个 Topic；一个消息的接收者可以订阅一个或者多个 Topic 消息</li>
+<li><code>Message Queue</code>：相当于是 Topic 的分区；用于并行发送和接收消息</li>
+</ul>
+<h3 id="✅发送接收测试"><a href="#✅发送接收测试" class="headerlink" title="✅发送接收测试"></a>✅发送接收测试</h3><blockquote>
+<p>生产者 RocketMQProducerExample</p>
+</blockquote>
+<p>消息发送者步骤分析：</p>
+<ol>
+<li>创建消息生产者 <code>producer</code>，并指定生产者组名</li>
+<li>指定 <code>Nameserver</code> 地址</li>
+<li>启动 <code>producer</code></li>
+<li>创建消息对象，指定主题 <code>Topic</code>、<code>Tag</code> 和消息体</li>
+<li>发送消息</li>
+<li>关闭生产者 <code>producer</code></li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.zr.producer;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> org.apache.rocketmq.client.exception.MQBrokerException;</span><br><span class="line"><span class="keyword">import</span> org.apache.rocketmq.client.exception.MQClientException;</span><br><span class="line"><span class="keyword">import</span> org.apache.rocketmq.client.producer.DefaultMQProducer;</span><br><span class="line"><span class="keyword">import</span> org.apache.rocketmq.client.producer.SendResult;</span><br><span class="line"><span class="keyword">import</span> org.apache.rocketmq.common.message.Message;</span><br><span class="line"><span class="keyword">import</span> org.apache.rocketmq.remoting.exception.RemotingException;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Author</span>: zr</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Date</span>: 2025/10/24/16:33</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Description</span>:</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">RocketMQProducerExample</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> MQClientException, MQBrokerException, RemotingException, InterruptedException &#123;</span><br><span class="line">        <span class="comment">// 1. 创建 Producer，并指定 Producer Group</span></span><br><span class="line">        <span class="type">DefaultMQProducer</span> <span class="variable">producer</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">DefaultMQProducer</span>(<span class="string">&quot;group1&quot;</span>);</span><br><span class="line">        producer.setNamesrvAddr(<span class="string">&quot;192.168.2.32:9876&quot;</span>); <span class="comment">// NameServer 地址</span></span><br><span class="line">        producer.start();</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 2. 构建消息</span></span><br><span class="line">        <span class="type">Message</span> <span class="variable">msg</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Message</span>(<span class="string">&quot;Test&quot;</span>, <span class="string">&quot;Hello RocketMQ Classic&quot;</span>.getBytes());</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 3. 发送消息</span></span><br><span class="line">        <span class="type">SendResult</span> <span class="variable">sendResult</span> <span class="operator">=</span> producer.send(msg);</span><br><span class="line">        System.out.println(<span class="string">&quot;消息发送结果：&quot;</span> + sendResult);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 4. 关闭 Producer</span></span><br><span class="line">        producer.shutdown();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+
+
+<blockquote>
+<p>消费者 Consumer</p>
+</blockquote>
+<p>消息消费者步骤分析：</p>
+<ol>
+<li>创建消费者 <code>Consumer</code>，制定消费者组名</li>
+<li>指定 <code>Nameserver</code> 地址</li>
+<li>订阅主题 <code>Topic</code> 和 <code>Tag</code></li>
+<li>设置回调函数，处理消息</li>
+<li>启动消费者 <code>consumer</code></li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.zr.consumer;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> org.apache.rocketmq.client.consumer.DefaultMQPushConsumer;</span><br><span class="line"><span class="keyword">import</span> org.apache.rocketmq.client.consumer.listener.ConsumeConcurrentlyContext;</span><br><span class="line"><span class="keyword">import</span> org.apache.rocketmq.client.consumer.listener.ConsumeConcurrentlyStatus;</span><br><span class="line"><span class="keyword">import</span> org.apache.rocketmq.client.consumer.listener.MessageListenerConcurrently;</span><br><span class="line"><span class="keyword">import</span> org.apache.rocketmq.common.message.MessageExt;</span><br><span class="line"><span class="keyword">import</span> org.apache.rocketmq.remoting.protocol.heartbeat.MessageModel;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.util.List;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Author</span>: zr</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Date</span>: 2025/10/24/14:16</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Description</span>:</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Consumer</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line">        <span class="comment">// 实例化消息生产者,指定组名</span></span><br><span class="line">        <span class="type">DefaultMQPushConsumer</span> <span class="variable">consumer</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">DefaultMQPushConsumer</span>(<span class="string">&quot;group1&quot;</span>);</span><br><span class="line">        <span class="comment">// 指定Namesrv地址信息.</span></span><br><span class="line">        consumer.setNamesrvAddr(<span class="string">&quot;192.168.2.32:9876&quot;</span>);</span><br><span class="line">        <span class="comment">// 订阅Topic</span></span><br><span class="line">        consumer.subscribe(<span class="string">&quot;Test&quot;</span>, <span class="string">&quot;*&quot;</span>);</span><br><span class="line">        <span class="comment">//负载均衡模式消费</span></span><br><span class="line">        consumer.setMessageModel(MessageModel.CLUSTERING);</span><br><span class="line">        <span class="comment">// 注册回调函数，处理消息</span></span><br><span class="line">        consumer.registerMessageListener(<span class="keyword">new</span> <span class="title class_">MessageListenerConcurrently</span>() &#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="keyword">public</span> ConsumeConcurrentlyStatus <span class="title function_">consumeMessage</span><span class="params">(List&lt;MessageExt&gt; msgs,</span></span><br><span class="line"><span class="params">                                                            ConsumeConcurrentlyContext context)</span> &#123;</span><br><span class="line">                System.out.printf(<span class="string">&quot;%s Receive New Messages: %s %n&quot;</span>,</span><br><span class="line">                        Thread.currentThread().getName(), msgs);</span><br><span class="line">                <span class="keyword">return</span> ConsumeConcurrentlyStatus.CONSUME_SUCCESS;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br><span class="line">        <span class="comment">//启动消息者</span></span><br><span class="line">        consumer.start();</span><br><span class="line">        System.out.printf(<span class="string">&quot;Consumer Started.%n&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<blockquote>
+<p>发送测试</p>
+</blockquote>
+<p>![](&#x2F;assets&#x2F;Windows WSL Docker Desktop 安装RocketMQ5.3.1以及rocketmq-console&#x2F;608245391ff667d8bcb96dedda6ab619.png)</p>
+<blockquote>
+<p>接收测试</p>
+</blockquote>
+<p>![](&#x2F;assets&#x2F;Windows WSL Docker Desktop 安装RocketMQ5.3.1以及rocketmq-console&#x2F;a4c233f40001eac6637eef8de0143729.png)</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>Author: </span><span class="post-copyright-info"><a href="https://yuanzhang788.github.io">Yuanz</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>Link: </span><span class="post-copyright-info"><a href="https://yuanzhang788.github.io/2026/06/02/Windows%20WSL%20Docker%20Desktop%20%E5%AE%89%E8%A3%85RocketMQ5.3.1%E4%BB%A5%E5%8F%8Arocketmq-console/">https://yuanzhang788.github.io/2026/06/02/Windows%20WSL%20Docker%20Desktop%20%E5%AE%89%E8%A3%85RocketMQ5.3.1%E4%BB%A5%E5%8F%8Arocketmq-console/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>Copyright Notice: </span><span class="post-copyright-info">All articles on this blog are licensed under <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless otherwise stated.</span></div></div><div class="tag_share"><div class="post-share"><div class="social-share" data-image="/img/butterfly-icon.png" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2026/06/02/SpringBoot%20+%20%E7%99%BE%E5%BA%A6%E5%86%85%E5%AE%B9%E5%AE%89%E5%85%A8%E5%AE%9E%E6%88%98%EF%BC%9A%E8%87%AA%E5%AE%9A%E4%B9%89%E6%B3%A8%E8%A7%A3%20+%20AOP%20%E5%AE%9E%E7%8E%B0%E7%BB%9F%E4%B8%80%E5%86%85%E5%AE%B9%E5%AE%A1%E6%A0%B8%EF%BC%88%E6%94%AF%E6%8C%81%E6%96%87%E6%9C%AC%20_%20%E5%9B%BE%E7%89%87%20_%20%E8%A7%86%E9%A2%91%20+%20%E7%99%BD%E5%90%8D%E5%8D%95%20+%20%E5%8A%A8%E6%80%81%E5%BC%80%E5%85%B3%EF%BC%89/" title="SpringBoot + 百度内容安全实战：自定义注解 + AOP 实现统一内容审核（支持文本 / 图片 / 视频 + 白名单 + 动态开关）"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info"><div class="info-1"><div class="info-item-1">Previous</div><div class="info-item-2">SpringBoot + 百度内容安全实战：自定义注解 + AOP 实现统一内容审核（支持文本 / 图片 / 视频 + 白名单 + 动态开关）</div></div><div class="info-2"><div class="info-item-1">🧩 一、为什么要做内容审核在实际业务（如用户发帖、评论、任务描述、AI生成内容等）中，往往需要防止以下问题：  🧨 用户发布涉政、色情、辱骂等敏感内容； 🖼️ 上传违规图片或视频； 🤖 机器人刷垃圾广告、推广链接； ⚙️ 需要为不同场景设置灵活的开关与白名单。  这篇文章带你从 架构设计 到 代码实现，一步步构建出企业级的 内容审核中间层。  📘 二、核心功能概览✅ 支持类型：文本、图片、视频✅ 实现方式：自定义注解 + AOP 自动拦截✅ 集成能力：百度内容安全 API（AipContentCensor）✅ 动态配置：从配置中心获取审核开关与白名单（infraConfigApi）✅ 精准提示：自动定位哪个字段违规，展示自定义提示信息✅ 业务无侵入：通过注解实现自动校验  🧱 三、完整架构设计图1234567Controller → Service → (AOP 拦截)                   ↓             MyValidAspect                   ↓             BaiduCheck工具类         ...</div></div></div></a><a class="pagination-related" href="/2026/06/02/Windows%20%E4%B8%8B%20ComfyUI%20+%20Comfy%20CLI%20+%20PyTorch%EF%BC%88CUDA%EF%BC%89%E5%AE%8C%E6%95%B4%E6%BA%90%E7%A0%81%E5%AE%89%E8%A3%85%E6%95%99%E7%A8%8B/" title="Windows 下 ComfyUI + Comfy CLI + PyTorch（CUDA）完整源码安装教程"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">Next</div><div class="info-item-2">Windows 下 ComfyUI + Comfy CLI + PyTorch（CUDA）完整源码安装教程</div></div><div class="info-2"><div class="info-item-1">✅源码下载以及Python环境安装 源码地址,去到源码地址下载源码开始构建安装  GitHub - comfyanonymous&#x2F;ComfyUI: The most powerful and modular diffusion model GUI, api and backend with a graph&#x2F;nodes interface.  执行 pip install comfy-cli  发现如下错误,表示没有安装python环境  1pip install comfy-cli   ![](&#x2F;assets&#x2F;Windows 下 ComfyUI + Comfy CLI + PyTorch（CUDA）完整源码安装教程&#x2F;69ed88593af6684b6cab0a2dab5871aa.png)  下载python,地址如下  https://www.python.org/downloads/windows/   ![](&#x2F;assets&#x2F;Windows 下 ComfyUI + Comfy CLI + PyTorch（...</div></div></div></a></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/butterfly-icon.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">Yuanz</div><div class="author-info-description">Yuanz的个人博客</div><div class="site-data"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">176</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">0</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">0</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>Announcement</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>Contents</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%F0%9F%99%85%E9%97%AE%E9%A2%98"><span class="toc-number">1.</span> <span class="toc-text">🙅问题</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%94%B7%E8%B5%B7%E5%9B%A0"><span class="toc-number">1.1.</span> <span class="toc-text">🔷起因</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%94%B7%E6%8E%92%E6%9F%A5"><span class="toc-number">1.2.</span> <span class="toc-text">🔷排查</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%91%89-%E6%8E%92%E6%9F%A5%E7%BB%93%E8%AE%BA"><span class="toc-number">1.3.</span> <span class="toc-text">👉 排查结论</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88%EF%BC%9A"><span class="toc-number">2.</span> <span class="toc-text">解决方案：</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E2%9C%85%E4%BD%BF%E7%94%A8%E5%AE%BF%E4%B8%BB%E6%9C%BA%E7%9A%84IP%E5%9C%B0%E5%9D%80%E9%85%8D%E7%BD%AEbrokerIP1%E3%80%82"><span class="toc-number">2.1.</span> <span class="toc-text">✅使用宿主机的IP地址配置brokerIP1。</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%94%B6%E6%B5%8B%E8%AF%95"><span class="toc-number">2.2.</span> <span class="toc-text">🔶测试</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%F0%9F%A7%A9RocketMQ%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5"><span class="toc-number">2.2.1.</span> <span class="toc-text">🧩RocketMQ基本概念</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E2%9C%85%E5%8F%91%E9%80%81%E6%8E%A5%E6%94%B6%E6%B5%8B%E8%AF%95"><span class="toc-number">2.2.2.</span> <span class="toc-text">✅发送接收测试</span></a></li></ol></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Posts</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/06/02/hello-world/" title="Hello World">Hello World</a><time datetime="2026-06-02T07:15:27.184Z" title="Created 2026-06-02 15:15:27">2026-06-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/06/02/%E8%B0%B7%E7%B2%92%E5%95%86%E5%9F%8E--%E6%B3%A8%E5%86%8C%E4%B8%AD%E5%BF%83%E9%85%8D%E7%BD%AE%E4%B8%AD%E5%BF%83%E5%8F%8A%E7%BD%91%E5%85%B3--%E7%AC%94%E8%AE%B0%E4%BA%8C/" title="谷粒商城--注册中心配置中心及网关--笔记二">谷粒商城--注册中心配置中心及网关--笔记二</a><time datetime="2026-06-01T23:59:20.000Z" title="Created 2026-06-02 07:59:20">2026-06-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/06/02/%E8%B0%B7%E7%B2%92%E5%95%86%E5%9F%8E--%E5%89%8D%E7%AB%AF%E5%9F%BA%E7%A1%80--es6--%E7%AC%94%E8%AE%B0%E4%B8%89/" title="谷粒商城--前端基础--es6--笔记三">谷粒商城--前端基础--es6--笔记三</a><time datetime="2026-06-01T23:59:13.000Z" title="Created 2026-06-02 07:59:13">2026-06-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/06/02/%E8%B0%B7%E7%B2%92%E5%95%86%E5%9F%8E-vue-%E7%AC%94%E8%AE%B0%E5%9B%9B/" title="谷粒商城-vue-笔记四">谷粒商城-vue-笔记四</a><time datetime="2026-06-01T23:59:06.000Z" title="Created 2026-06-02 07:59:06">2026-06-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/06/02/%E8%B0%B7%E7%B2%92%E5%95%86%E5%9F%8E-%E6%A0%91%E5%BD%A2%E7%9B%AE%E5%BD%95%E5%BC%80%E5%8F%91-%E7%AC%94%E8%AE%B0%E4%BA%94/" title="谷粒商城-树形目录开发-笔记五">谷粒商城-树形目录开发-笔记五</a><time datetime="2026-06-01T23:58:59.000Z" title="Created 2026-06-02 07:58:59">2026-06-02</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2025 - 2026 By Yuanz</span><span class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 8.1.2</a><span class="footer-separator">|</span><span>Theme </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.5.5-b1</a></span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="Reading Mode"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="Toggle Between Light and Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle Between Single-column and Double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="Settings"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="Table of Contents"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="Back to Top"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.5.5-b1"></script><script src="/js/main.js?v=5.5.5-b1"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>

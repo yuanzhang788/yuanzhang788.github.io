@@ -1,0 +1,401 @@
+<!DOCTYPE html><html lang="cn" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>Netty核心技术十一--用Netty 自己 实现 dubbo RPC | Yuanz</title><meta name="author" content="Yuanz"><meta name="copyright" content="Yuanz"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="1. RPC基本介绍 RPC（Remote Procedure Call）:远程 过程调用，是一个计算机 通信协议。该协议允许运 行于一台计算机的程序调 用另一台计算机的子程序， 而程序员无需额外地为这 个交互作用编程  两个或多个应用程序都分 布在不同的服务器上，它 们之间的调用都像是本地 方法调用一样(如图)   ![image-20230715122856569](&#x2F;assets&amp;">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Netty核心技术十一--用Netty 自己 实现 dubbo RPC">
+<meta property="og:url" content="https://yuanzhang788.github.io/2026/06/02/Netty%E6%A0%B8%E5%BF%83%E6%8A%80%E6%9C%AF%E5%8D%81%E4%B8%80--%E7%94%A8Netty%20%E8%87%AA%E5%B7%B1%20%E5%AE%9E%E7%8E%B0%20dubbo%20RPC/index.html">
+<meta property="og:site_name" content="Yuanz">
+<meta property="og:description" content="1. RPC基本介绍 RPC（Remote Procedure Call）:远程 过程调用，是一个计算机 通信协议。该协议允许运 行于一台计算机的程序调 用另一台计算机的子程序， 而程序员无需额外地为这 个交互作用编程  两个或多个应用程序都分 布在不同的服务器上，它 们之间的调用都像是本地 方法调用一样(如图)   ![image-20230715122856569](&#x2F;assets&amp;">
+<meta property="og:locale">
+<meta property="og:image" content="https://yuanzhang788.github.io/img/butterfly-icon.png">
+<meta property="article:published_time" content="2026-06-01T23:49:00.000Z">
+<meta property="article:modified_time" content="2026-06-02T08:13:55.266Z">
+<meta property="article:author" content="Yuanz">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://yuanzhang788.github.io/img/butterfly-icon.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Netty核心技术十一--用Netty 自己 实现 dubbo RPC",
+  "url": "https://yuanzhang788.github.io/2026/06/02/Netty%E6%A0%B8%E5%BF%83%E6%8A%80%E6%9C%AF%E5%8D%81%E4%B8%80--%E7%94%A8Netty%20%E8%87%AA%E5%B7%B1%20%E5%AE%9E%E7%8E%B0%20dubbo%20RPC/",
+  "image": "https://yuanzhang788.github.io/img/butterfly-icon.png",
+  "datePublished": "2026-06-01T23:49:00.000Z",
+  "dateModified": "2026-06-02T08:13:55.266Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "Yuanz",
+      "url": "https://yuanzhang788.github.io"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://yuanzhang788.github.io/2026/06/02/Netty%E6%A0%B8%E5%BF%83%E6%8A%80%E6%9C%AF%E5%8D%81%E4%B8%80--%E7%94%A8Netty%20%E8%87%AA%E5%B7%B1%20%E5%AE%9E%E7%8E%B0%20dubbo%20RPC/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=5.5.5-b1"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: 'Copy Successful',
+    error: 'Copy Failed',
+    noSupport: 'Browser Not Supported'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: 'Just now',
+    min: 'minutes ago',
+    hour: 'hours ago',
+    day: 'days ago',
+    month: 'months ago'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.0/dist/infinitegrid.min.js',
+    buttonText: 'Load More'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Netty核心技术十一--用Netty 自己 实现 dubbo RPC',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><meta name="generator" content="Hexo 8.1.2"></head><body><div class="post" id="body-wrap"><header class="post-bg" id="page-header"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">Yuanz</span></a><a class="nav-page-title" href="/"><span class="site-name">Netty核心技术十一--用Netty 自己 实现 dubbo RPC</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  Back to Home</span></span></a></span><div id="menus"></div></nav><div id="post-info"><h1 class="post-title">Netty核心技术十一--用Netty 自己 实现 dubbo RPC</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2026-06-01T23:49:00.000Z" title="Created 2026-06-02 07:49:00">2026-06-02</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2026-06-02T08:13:55.266Z" title="Updated 2026-06-02 16:13:55">2026-06-02</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">Post Views:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><h1 id="1-RPC基本介绍"><a href="#1-RPC基本介绍" class="headerlink" title="1. RPC基本介绍"></a>1. RPC基本介绍</h1><ol>
+<li><p><code>RPC（Remote Procedure Call）</code>:远程 过程调用，是一个计算机 通信协议。该协议允许运 行于一台计算机的程序调 用另一台计算机的子程序， 而程序员无需额外地为这 个交互作用编程</p>
+</li>
+<li><p>两个或多个应用程序都分 布在不同的服务器上，它 们之间的调用都像是本地 方法调用一样(如图)</p>
+</li>
+</ol>
+<p>![image-20230715122856569](&#x2F;assets&#x2F;Netty核心技术十一–用Netty 自己 实现 dubbo RPC&#x2F;af971b1c2d27959f4185107f512a3e0c.png)</p>
+<ol start="3">
+<li>常见的 RPC 框架有: 比较知名的如阿里的Dubbo、google的gRPC、Go语言的rpcx、Apache的thrift， Spring 旗下的 Spring Cloud。</li>
+</ol>
+<h1 id="2-RPC调用流程图"><a href="#2-RPC调用流程图" class="headerlink" title="2. RPC调用流程图"></a>2. RPC调用流程图</h1><blockquote>
+<p>术语说明：在RPC中，</p>
+<ul>
+<li><strong>Client叫服务消费者</strong></li>
+<li><strong>Server叫服务提供者</strong></li>
+</ul>
+</blockquote>
+<p>![image-20230715123024750](&#x2F;assets&#x2F;Netty核心技术十一–用Netty 自己 实现 dubbo RPC&#x2F;15607f08f09380131cc321fe09a5b70b.png)</p>
+<h1 id="3-PRC调用流程说明"><a href="#3-PRC调用流程说明" class="headerlink" title="3. PRC调用流程说明"></a>3. PRC调用流程说明</h1><ol>
+<li>**服务消费方(client)**以本地调用方式调用服务 </li>
+<li>client stub 接收到调用后负责将方法、参数等封装成能够进行网络传输的消息体</li>
+<li>client stub 将消息进行编码并发送到服务端 </li>
+<li>server stub 收到消息后进行解码 </li>
+<li>server stub 根据解码结果调用本地的服务</li>
+<li>地服务执行并将结果返回给 server stub </li>
+<li>server stub 将返回导入结果进行编码并发送至消费方</li>
+<li>client stub 接收到消息并进行解码 </li>
+<li><strong>服务消费方(client)得到结果</strong></li>
+</ol>
+<blockquote>
+<p>小结：RPC 的目标就是将 2-8 这些步骤都封装起来，用户无需关心这些细节，可以像调用本地方法一样即可完成远程服务调用。</p>
+</blockquote>
+<h1 id="4-自己实现-dubbo-RPC-基于Netty"><a href="#4-自己实现-dubbo-RPC-基于Netty" class="headerlink" title="4. 自己实现 dubbo RPC(基于Netty)"></a>4. 自己实现 dubbo RPC(基于Netty)</h1><blockquote>
+<ul>
+<li><p>需求说明</p>
+<ol>
+<li>dubbo 底层使用了 Netty 作为网络通讯框架，要求用Netty 实现一个简单的RPC框架 </li>
+<li>模仿 dubbo，消费者和提供者约定接口和协议，消费者远程调用提供者的服务，提供者返回一个字符串，消费者打印提供者返回的数据。底层网络通信使用Netty4.1.20</li>
+</ol>
+</li>
+<li><p>设计说明</p>
+</li>
+</ul>
+<p>![image-20230715123505151](&#x2F;assets&#x2F;Netty核心技术十一–用Netty 自己 实现 dubbo RPC&#x2F;5e33a7a957b9ce456ca0567fa0026762.png)</p>
+<ol>
+<li>创建一个接口，定义抽象方法。用于消费者和提供者之间的约定。</li>
+<li>创建一个提供者，该类需要监听消费者的请求，并按照约定返回数据。</li>
+<li>创建一个消费者，该类需要透明的调用自己不存在的方法，内部需要使用Netty请求提供者返回数据</li>
+</ol>
+</blockquote>
+<h2 id="4-1-公共接口-publicinterface包"><a href="#4-1-公共接口-publicinterface包" class="headerlink" title="4.1 公共接口 publicinterface包"></a>4.1 公共接口 publicinterface包</h2><h3 id="4-1-1-HelloService"><a href="#4-1-1-HelloService" class="headerlink" title="4.1.1 HelloService"></a>4.1.1 HelloService</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> site.zhourui.nioAndNetty.netty.dubborpc.publicinterface;</span><br><span class="line"></span><br><span class="line"><span class="comment">//这个是接口，是服务提供方和 服务消费方都需要</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">interface</span> <span class="title class_">HelloService</span> &#123;</span><br><span class="line">    String <span class="title function_">hello</span><span class="params">(String msg)</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+
+<h2 id="4-2-远程调用netty包"><a href="#4-2-远程调用netty包" class="headerlink" title="4.2  远程调用netty包"></a>4.2  远程调用netty包</h2><blockquote>
+<p>本质上就是客户端访问服务端</p>
+</blockquote>
+<h3 id="4-2-1-NettyClientHandler"><a href="#4-2-1-NettyClientHandler" class="headerlink" title="4.2.1 NettyClientHandler"></a>4.2.1 NettyClientHandler</h3><blockquote>
+<ol>
+<li>我们<strong>实现了Callable方法</strong></li>
+<li>setPara(String para)方法: 设置要发给服务器端的信息</li>
+<li>我们将ctx在channelActive时<strong>抽取为全局对象context,方便我们在其他方法也能使用(这里就是call方法)</strong></li>
+<li>call方法:<ul>
+<li>开启子线程向服务端发送消息</li>
+<li>发送完成后该子线程进行wait,等待服务提供方处理并返回数据(被唤醒)</li>
+<li>唤醒后打印服务端返回数据全局变量result中的数据</li>
+</ul>
+</li>
+<li>channelRead方法:<ul>
+<li>收到服务器的返回数据后,将返回数据放在全局变量result中</li>
+<li>&#x3D;&#x3D;唤醒等待的线程&#x3D;&#x3D;</li>
+<li>因为channelRead和call方法是有同步关系的所有要加上<code>synchronized</code>加锁</li>
+</ul>
+</li>
+<li><strong>小结: 代码执行流程</strong><ol>
+<li><strong>channelActive()</strong></li>
+<li><strong>setPara()设置需要发送的数据</strong></li>
+<li><strong>call(wait之前代码)被代理对象调用, 发送数据给服务器-&gt; wait</strong></li>
+<li><strong>等待被唤醒(channelRead)-&gt;notify</strong></li>
+<li><strong>call(wait之后代码)</strong></li>
+</ol>
+</li>
+</ol>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> site.zhourui.nioAndNetty.netty.dubborpc.netty;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> io.netty.channel.ChannelHandlerContext;</span><br><span class="line"><span class="keyword">import</span> io.netty.channel.ChannelInboundHandlerAdapter;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.util.concurrent.Callable;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">NettyClientHandler</span> <span class="keyword">extends</span> <span class="title class_">ChannelInboundHandlerAdapter</span> <span class="keyword">implements</span> <span class="title class_">Callable</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> ChannelHandlerContext context;<span class="comment">//上下文</span></span><br><span class="line">    <span class="keyword">private</span> String result; <span class="comment">//返回的结果</span></span><br><span class="line">    <span class="keyword">private</span> String para; <span class="comment">//客户端调用方法时，传入的参数</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">//与服务器的连接创建后，就会被调用, 这个方法是第一个被调用(1)</span></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">channelActive</span><span class="params">(ChannelHandlerContext ctx)</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line">        System.out.println(<span class="string">&quot; channelActive 被调用  &quot;</span>);</span><br><span class="line">        context = ctx; <span class="comment">//因为我们在其它方法会使用到 ctx</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//收到服务器的数据后，调用方法 (4)</span></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">channelRead</span><span class="params">(ChannelHandlerContext ctx, Object msg)</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line">        System.out.println(<span class="string">&quot; channelRead 被调用  &quot;</span>);</span><br><span class="line">        result = msg.toString();</span><br><span class="line">        notify(); <span class="comment">//唤醒等待的线程</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">exceptionCaught</span><span class="params">(ChannelHandlerContext ctx, Throwable cause)</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line">        ctx.close();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//被代理对象调用, 发送数据给服务器，-&gt; wait -&gt; 等待被唤醒(channelRead) -&gt; 返回结果 (3)-》5</span></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">synchronized</span> Object <span class="title function_">call</span><span class="params">()</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line">        System.out.println(<span class="string">&quot; call1 被调用  &quot;</span>);</span><br><span class="line">        context.writeAndFlush(para);</span><br><span class="line">        <span class="comment">//进行wait</span></span><br><span class="line">        wait(); <span class="comment">//等待channelRead 方法获取到服务器的结果后，唤醒</span></span><br><span class="line">        System.out.println(<span class="string">&quot; call2 被调用  &quot;</span>);</span><br><span class="line">        <span class="keyword">return</span>  result; <span class="comment">//服务方返回的结果</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">void</span> <span class="title function_">setPara</span><span class="params">(String para)</span> &#123;</span><br><span class="line">        System.out.println(<span class="string">&quot; setPara  &quot;</span>);</span><br><span class="line">        <span class="built_in">this</span>.para = para;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+
+<h3 id="4-2-2-NettyClient"><a href="#4-2-2-NettyClient" class="headerlink" title="4.2.2 NettyClient"></a>4.2.2 NettyClient</h3><blockquote>
+<p>说明:</p>
+<ol>
+<li><p>创建线程池executor</p>
+</li>
+<li><p>initClient():</p>
+<ul>
+<li>初始化NettyClientHandler 设为全局对象client</li>
+<li>创建客户端并连接客户端<ul>
+<li>StringDecoder():字符串编码器</li>
+<li>StringEncoder():字符串解码器</li>
+<li>pipeline.addLast(client):将加入自定义handler-client</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>&#x3D;&#x3D;编写方法getBean使用代理模式，获取一个代理对象&#x3D;&#x3D;</p>
+<blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> Object <span class="title function_">getBean</span><span class="params">(<span class="keyword">final</span> Class&lt;?&gt; serivceClass, <span class="keyword">final</span> String providerName)</span> </span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>serivceClass: 需要代理的Class对象</li>
+<li>providerName: 协议以及需要发送的数据</li>
+</ul>
+</blockquote>
+<ul>
+<li>如果client为空就初始化initClient</li>
+<li>client.setPara():使用自定义handler的全局对象client设置需要发送的数据</li>
+<li>&#x3D;&#x3D;executor.submit(client): 将我们的自定义handler提交给异步线程池,因为NettyClientHandler 实现了Callable方法,会自动调用call方法&#x3D;&#x3D;<ul>
+<li>.get():异步任务执行完成后获取返回结果</li>
+</ul>
+</li>
+<li>将返回结果return</li>
+</ul>
+</li>
+</ol>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> site.zhourui.nioAndNetty.netty.dubborpc.netty;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> io.netty.bootstrap.Bootstrap;</span><br><span class="line"><span class="keyword">import</span> io.netty.channel.ChannelInitializer;</span><br><span class="line"><span class="keyword">import</span> io.netty.channel.ChannelOption;</span><br><span class="line"><span class="keyword">import</span> io.netty.channel.ChannelPipeline;</span><br><span class="line"><span class="keyword">import</span> io.netty.channel.nio.NioEventLoopGroup;</span><br><span class="line"><span class="keyword">import</span> io.netty.channel.socket.SocketChannel;</span><br><span class="line"><span class="keyword">import</span> io.netty.channel.socket.nio.NioSocketChannel;</span><br><span class="line"><span class="keyword">import</span> io.netty.handler.codec.string.StringDecoder;</span><br><span class="line"><span class="keyword">import</span> io.netty.handler.codec.string.StringEncoder;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.lang.reflect.Proxy;</span><br><span class="line"><span class="keyword">import</span> java.util.concurrent.ExecutorService;</span><br><span class="line"><span class="keyword">import</span> java.util.concurrent.Executors;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">NettyClient</span> &#123;</span><br><span class="line">    <span class="comment">//创建线程池</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="type">ExecutorService</span> <span class="variable">executor</span> <span class="operator">=</span> Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> NettyClientHandler client;</span><br><span class="line">    <span class="keyword">private</span> <span class="type">int</span> <span class="variable">count</span> <span class="operator">=</span> <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//编写方法使用代理模式，获取一个代理对象</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> Object <span class="title function_">getBean</span><span class="params">(<span class="keyword">final</span> Class&lt;?&gt; serivceClass, <span class="keyword">final</span> String providerName)</span> &#123;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> Proxy.newProxyInstance(Thread.currentThread().getContextClassLoader(),</span><br><span class="line">                <span class="keyword">new</span> <span class="title class_">Class</span>&lt;?&gt;[]&#123;serivceClass&#125;, (proxy, method, args) -&gt; &#123;</span><br><span class="line"></span><br><span class="line">                    System.out.println(<span class="string">&quot;(proxy, method, args) 进入....&quot;</span> + (++count) + <span class="string">&quot; 次&quot;</span>);</span><br><span class="line">                    <span class="comment">//&#123;&#125;  部分的代码，客户端每调用一次 hello, 就会进入到该代码</span></span><br><span class="line">                    <span class="keyword">if</span> (client == <span class="literal">null</span>) &#123;</span><br><span class="line">                        initClient();</span><br><span class="line">                    &#125;</span><br><span class="line"></span><br><span class="line">                    <span class="comment">//设置要发给服务器端的信息</span></span><br><span class="line">                    <span class="comment">//providerName 协议头 args[0] 就是客户端调用api hello(???), 参数</span></span><br><span class="line">                    client.setPara(providerName + args[<span class="number">0</span>]);</span><br><span class="line"></span><br><span class="line">                    <span class="comment">//</span></span><br><span class="line">                    <span class="keyword">return</span> executor.submit(client).get();</span><br><span class="line"></span><br><span class="line">                &#125;);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//初始化客户端</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">initClient</span><span class="params">()</span> &#123;</span><br><span class="line">        client = <span class="keyword">new</span> <span class="title class_">NettyClientHandler</span>();</span><br><span class="line">        <span class="comment">//创建EventLoopGroup</span></span><br><span class="line">        <span class="type">NioEventLoopGroup</span> <span class="variable">group</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">NioEventLoopGroup</span>();</span><br><span class="line">        <span class="type">Bootstrap</span> <span class="variable">bootstrap</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Bootstrap</span>();</span><br><span class="line">        bootstrap.group(group)</span><br><span class="line">                .channel(NioSocketChannel.class)</span><br><span class="line">                .option(ChannelOption.TCP_NODELAY, <span class="literal">true</span>)</span><br><span class="line">                .handler(</span><br><span class="line">                        <span class="keyword">new</span> <span class="title class_">ChannelInitializer</span>&lt;SocketChannel&gt;() &#123;</span><br><span class="line">                            <span class="meta">@Override</span></span><br><span class="line">                            <span class="keyword">protected</span> <span class="keyword">void</span> <span class="title function_">initChannel</span><span class="params">(SocketChannel ch)</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line">                                <span class="type">ChannelPipeline</span> <span class="variable">pipeline</span> <span class="operator">=</span> ch.pipeline();</span><br><span class="line">                                pipeline.addLast(<span class="keyword">new</span> <span class="title class_">StringDecoder</span>());</span><br><span class="line">                                pipeline.addLast(<span class="keyword">new</span> <span class="title class_">StringEncoder</span>());</span><br><span class="line">                                pipeline.addLast(client);</span><br><span class="line">                            &#125;</span><br><span class="line">                        &#125;</span><br><span class="line">                );</span><br><span class="line"></span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            bootstrap.connect(<span class="string">&quot;127.0.0.1&quot;</span>, <span class="number">7000</span>).sync();</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+
+<hr>
+<h3 id="4-2-3-NettyServerHandler"><a href="#4-2-3-NettyServerHandler" class="headerlink" title="4.2.3 NettyServerHandler"></a>4.2.3 NettyServerHandler</h3><blockquote>
+<ul>
+<li>当通道发生读事件时<ul>
+<li>获取客户端发送的消息，并调用服务</li>
+<li>按照协议规则取出数据(HelloService#hello#)<ul>
+<li>HelloService#  为协议头</li>
+<li>hello为数据</li>
+</ul>
+</li>
+<li>回复客户端调用结果</li>
+</ul>
+</li>
+</ul>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> site.zhourui.nioAndNetty.netty.dubborpc.netty;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> io.netty.channel.ChannelHandlerContext;</span><br><span class="line"><span class="keyword">import</span> io.netty.channel.ChannelInboundHandlerAdapter;</span><br><span class="line"><span class="keyword">import</span> site.zhourui.nioAndNetty.netty.dubborpc.customer.ClientBootstrap;</span><br><span class="line"><span class="keyword">import</span> site.zhourui.nioAndNetty.netty.dubborpc.provider.HelloServiceImpl;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">NettyServerHandler</span> <span class="keyword">extends</span> <span class="title class_">ChannelInboundHandlerAdapter</span> &#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">channelRead</span><span class="params">(ChannelHandlerContext ctx, Object msg)</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line">        <span class="comment">//获取客户端发送的消息，并调用服务</span></span><br><span class="line">        System.out.println(<span class="string">&quot;msg=&quot;</span> + msg);</span><br><span class="line">        <span class="comment">//客户端在调用服务器的api 时，我们需要定义一个协议</span></span><br><span class="line">        <span class="comment">//比如我们要求 每次发消息是都必须以某个字符串开头 &quot;HelloService#hello#你好&quot;</span></span><br><span class="line">        <span class="keyword">if</span>(msg.toString().startsWith(ClientBootstrap.providerName)) &#123;</span><br><span class="line"></span><br><span class="line">            <span class="type">String</span> <span class="variable">result</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">HelloServiceImpl</span>().hello(msg.toString().substring(msg.toString().lastIndexOf(<span class="string">&quot;#&quot;</span>) + <span class="number">1</span>));</span><br><span class="line">            ctx.writeAndFlush(result);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">exceptionCaught</span><span class="params">(ChannelHandlerContext ctx, Throwable cause)</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line">        ctx.close();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<h3 id="4-2-4-NettyServer"><a href="#4-2-4-NettyServer" class="headerlink" title="4.2.4 NettyServer"></a>4.2.4 NettyServer</h3><blockquote>
+<ul>
+<li>启动客户端<ul>
+<li>StringDecoder</li>
+<li>StringEncoder</li>
+<li>NettyServerHandler</li>
+</ul>
+</li>
+</ul>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> site.zhourui.nioAndNetty.netty.dubborpc.netty;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> io.netty.bootstrap.ServerBootstrap;</span><br><span class="line"><span class="keyword">import</span> io.netty.channel.ChannelFuture;</span><br><span class="line"><span class="keyword">import</span> io.netty.channel.ChannelInitializer;</span><br><span class="line"><span class="keyword">import</span> io.netty.channel.ChannelPipeline;</span><br><span class="line"><span class="keyword">import</span> io.netty.channel.EventLoopGroup;</span><br><span class="line"><span class="keyword">import</span> io.netty.channel.nio.NioEventLoopGroup;</span><br><span class="line"><span class="keyword">import</span> io.netty.channel.socket.SocketChannel;</span><br><span class="line"><span class="keyword">import</span> io.netty.channel.socket.nio.NioServerSocketChannel;</span><br><span class="line"><span class="keyword">import</span> io.netty.handler.codec.string.StringDecoder;</span><br><span class="line"><span class="keyword">import</span> io.netty.handler.codec.string.StringEncoder;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">NettyServer</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">startServer</span><span class="params">(String hostName, <span class="type">int</span> port)</span> &#123;</span><br><span class="line">        startServer0(hostName,port);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//编写一个方法，完成对NettyServer的初始化和启动</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">startServer0</span><span class="params">(String hostname, <span class="type">int</span> port)</span> &#123;</span><br><span class="line"></span><br><span class="line">        <span class="type">EventLoopGroup</span> <span class="variable">bossGroup</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">NioEventLoopGroup</span>(<span class="number">1</span>);</span><br><span class="line">        <span class="type">EventLoopGroup</span> <span class="variable">workerGroup</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">NioEventLoopGroup</span>();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line"></span><br><span class="line">            <span class="type">ServerBootstrap</span> <span class="variable">serverBootstrap</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ServerBootstrap</span>();</span><br><span class="line"></span><br><span class="line">            serverBootstrap.group(bossGroup,workerGroup)</span><br><span class="line">                    .channel(NioServerSocketChannel.class)</span><br><span class="line">                    .childHandler(<span class="keyword">new</span> <span class="title class_">ChannelInitializer</span>&lt;SocketChannel&gt;() &#123;</span><br><span class="line">                                      <span class="meta">@Override</span></span><br><span class="line">                                      <span class="keyword">protected</span> <span class="keyword">void</span> <span class="title function_">initChannel</span><span class="params">(SocketChannel ch)</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line">                                          <span class="type">ChannelPipeline</span> <span class="variable">pipeline</span> <span class="operator">=</span> ch.pipeline();</span><br><span class="line">                                          pipeline.addLast(<span class="keyword">new</span> <span class="title class_">StringDecoder</span>());</span><br><span class="line">                                          pipeline.addLast(<span class="keyword">new</span> <span class="title class_">StringEncoder</span>());</span><br><span class="line">                                          pipeline.addLast(<span class="keyword">new</span> <span class="title class_">NettyServerHandler</span>()); <span class="comment">//业务处理器</span></span><br><span class="line"></span><br><span class="line">                                      &#125;</span><br><span class="line">                                  &#125;</span><br><span class="line"></span><br><span class="line">                    );</span><br><span class="line"></span><br><span class="line">            <span class="type">ChannelFuture</span> <span class="variable">channelFuture</span> <span class="operator">=</span> serverBootstrap.bind(hostname, port).sync();</span><br><span class="line">            System.out.println(<span class="string">&quot;服务提供方开始提供服务~~&quot;</span>);</span><br><span class="line">            channelFuture.channel().closeFuture().sync();</span><br><span class="line"></span><br><span class="line">        &#125;<span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">finally</span> &#123;</span><br><span class="line">            bossGroup.shutdownGracefully();</span><br><span class="line">            workerGroup.shutdownGracefully();</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+
+<h2 id="4-3-customer-包"><a href="#4-3-customer-包" class="headerlink" title="4.3  customer 包"></a>4.3  customer 包</h2><h3 id="4-3-1-ClientBootstrap"><a href="#4-3-1-ClientBootstrap" class="headerlink" title="4.3.1 ClientBootstrap"></a>4.3.1 ClientBootstrap</h3><blockquote>
+<ul>
+<li>设置providerName:我们发送的数据(协议+数据)</li>
+<li>创建一个消费者</li>
+<li>创建代理对象</li>
+<li>通过代理对象调用服务提供者的方法(服务)</li>
+</ul>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> site.zhourui.nioAndNetty.netty.dubborpc.customer;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> site.zhourui.nioAndNetty.netty.dubborpc.netty.NettyClient;</span><br><span class="line"><span class="keyword">import</span> site.zhourui.nioAndNetty.netty.dubborpc.publicinterface.HelloService;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">ClientBootstrap</span> &#123;</span><br><span class="line">    <span class="comment">//这里定义协议头</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="type">String</span> <span class="variable">providerName</span> <span class="operator">=</span> <span class="string">&quot;HelloService#hello#&quot;</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span>  Exception&#123;</span><br><span class="line"></span><br><span class="line">        <span class="comment">//创建一个消费者</span></span><br><span class="line">        <span class="type">NettyClient</span> <span class="variable">customer</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">NettyClient</span>();</span><br><span class="line"></span><br><span class="line">        <span class="comment">//创建代理对象</span></span><br><span class="line">        <span class="type">HelloService</span> <span class="variable">service</span> <span class="operator">=</span> (HelloService) customer.getBean(HelloService.class, providerName);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> (;; ) &#123;</span><br><span class="line">            Thread.sleep(<span class="number">2</span> * <span class="number">1000</span>);</span><br><span class="line">            <span class="comment">//通过代理对象调用服务提供者的方法(服务)</span></span><br><span class="line">            <span class="type">String</span> <span class="variable">res</span> <span class="operator">=</span> service.hello(<span class="string">&quot;你好 dubbo~&quot;</span>);</span><br><span class="line">            System.out.println(<span class="string">&quot;调用的结果 res= &quot;</span> + res);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+
+<h2 id="4-4-provider-包"><a href="#4-4-provider-包" class="headerlink" title="4.4  provider 包"></a>4.4  provider 包</h2><h3 id="4-4-1-HelloServiceImpl"><a href="#4-4-1-HelloServiceImpl" class="headerlink" title="4.4.1 HelloServiceImpl"></a>4.4.1 HelloServiceImpl</h3><blockquote>
+<p>服务端提供方的实现,远程真正被调用的方法</p>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> site.zhourui.nioAndNetty.netty.dubborpc.provider;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> site.zhourui.nioAndNetty.netty.dubborpc.publicinterface.HelloService;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">HelloServiceImpl</span> <span class="keyword">implements</span> <span class="title class_">HelloService</span> &#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="type">int</span> <span class="variable">count</span> <span class="operator">=</span> <span class="number">0</span>;</span><br><span class="line">    <span class="comment">//当有消费方调用该方法时， 就返回一个结果</span></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> String <span class="title function_">hello</span><span class="params">(String msg)</span> &#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;收到客户端消息=&quot;</span> + msg);</span><br><span class="line">        <span class="comment">//根据mes 返回不同的结果</span></span><br><span class="line">        <span class="keyword">if</span>(msg != <span class="literal">null</span>) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="string">&quot;你好客户端, 我已经收到你的消息 [&quot;</span> + msg + <span class="string">&quot;] 第&quot;</span> + (++count) + <span class="string">&quot; 次&quot;</span>;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="string">&quot;你好客户端, 我已经收到你的消息 &quot;</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+
+<h3 id="4-4-1-ServerBootstrap"><a href="#4-4-1-ServerBootstrap" class="headerlink" title="4.4.1 ServerBootstrap"></a>4.4.1 ServerBootstrap</h3><blockquote>
+<p>ServerBootstrap 会启动一个服务提供者，就是 NettyServer</p>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> site.zhourui.nioAndNetty.netty.dubborpc.provider;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> site.zhourui.nioAndNetty.netty.dubborpc.netty.NettyServer;</span><br><span class="line"></span><br><span class="line"><span class="comment">//ServerBootstrap 会启动一个服务提供者，就是 NettyServer</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">ServerBootstrap</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line"></span><br><span class="line">        <span class="comment">//代码代填..</span></span><br><span class="line">        NettyServer.startServer(<span class="string">&quot;127.0.0.1&quot;</span>, <span class="number">7000</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+
+<h2 id="4-5-测试"><a href="#4-5-测试" class="headerlink" title="4.5 测试"></a>4.5 测试</h2><ol>
+<li>启动ServerBootstrap</li>
+</ol>
+<p>![image-20230715153549514](&#x2F;assets&#x2F;Netty核心技术十一–用Netty 自己 实现 dubbo RPC&#x2F;d8d55458564024479201b646d6f77840.png)</p>
+<ol start="2">
+<li>启动ClientBootstrap</li>
+</ol>
+<p>![image-20230715153625019](&#x2F;assets&#x2F;Netty核心技术十一–用Netty 自己 实现 dubbo RPC&#x2F;17e3052ed60509cea358b61116f9f061.png)</p>
+<p>![image-20230715153633552](&#x2F;assets&#x2F;Netty核心技术十一–用Netty 自己 实现 dubbo RPC&#x2F;3f958e5a4a286be56997322e17c088e9.png)</p>
+<h3 id="4-5-1-debug看一下ClientBootstrap启动"><a href="#4-5-1-debug看一下ClientBootstrap启动" class="headerlink" title="4.5.1 debug看一下ClientBootstrap启动"></a>4.5.1 debug看一下ClientBootstrap启动</h3><blockquote>
+<p>首先还是先启动服务端ServerBootstrap</p>
+</blockquote>
+<ol>
+<li>debug启动ClientBootstrap</li>
+</ol>
+<p>![image-20230715153928061](&#x2F;assets&#x2F;Netty核心技术十一–用Netty 自己 实现 dubbo RPC&#x2F;6bd6b947afb890984241e3bae6e53525.png)</p>
+<ol start="2">
+<li><p>NettyClient(),此时只是初始化了全局属性</p>
+</li>
+<li><p>getBean:创建代理对象</p>
+<ul>
+<li>先看看入参是什么数据</li>
+</ul>
+</li>
+</ol>
+<p>![image-20230715154250353](&#x2F;assets&#x2F;Netty核心技术十一–用Netty 自己 实现 dubbo RPC&#x2F;4e00c5adfc0431b6b9949c318bfd984d.png)</p>
+<ul>
+<li>如果client没有被初始化就初始化</li>
+</ul>
+<p>![image-20230715154338794](&#x2F;assets&#x2F;Netty核心技术十一–用Netty 自己 实现 dubbo RPC&#x2F;9c78a2fc9cd92ca1603633551fc056f2.png)</p>
+<ul>
+<li>设置要发给服务器端的信息</li>
+</ul>
+<p>![image-20230715154437686](&#x2F;assets&#x2F;Netty核心技术十一–用Netty 自己 实现 dubbo RPC&#x2F;85b5d1e68989a06c64ad443f7e7a455d.png)</p>
+<ul>
+<li>executor.submit:提交异步任务就会来到NettyClientHandler的call方法</li>
+</ul>
+<p>![image-20230715154604732](&#x2F;assets&#x2F;Netty核心技术十一–用Netty 自己 实现 dubbo RPC&#x2F;1bce805e1aefa01f8ee7f26d757b7591.png)</p>
+<ul>
+<li>call方法执行到wait()方法后,channelRead不久后就会收到服务端的调用结果然后唤醒call方法的子线程继续执行</li>
+</ul>
+<p>![image-20230715154847317](&#x2F;assets&#x2F;Netty核心技术十一–用Netty 自己 实现 dubbo RPC&#x2F;d7162602ecd39c1c8d3a449a3344ed92.png)</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>Author: </span><span class="post-copyright-info"><a href="https://yuanzhang788.github.io">Yuanz</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>Link: </span><span class="post-copyright-info"><a href="https://yuanzhang788.github.io/2026/06/02/Netty%E6%A0%B8%E5%BF%83%E6%8A%80%E6%9C%AF%E5%8D%81%E4%B8%80--%E7%94%A8Netty%20%E8%87%AA%E5%B7%B1%20%E5%AE%9E%E7%8E%B0%20dubbo%20RPC/">https://yuanzhang788.github.io/2026/06/02/Netty%E6%A0%B8%E5%BF%83%E6%8A%80%E6%9C%AF%E5%8D%81%E4%B8%80--%E7%94%A8Netty%20%E8%87%AA%E5%B7%B1%20%E5%AE%9E%E7%8E%B0%20dubbo%20RPC/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>Copyright Notice: </span><span class="post-copyright-info">All articles on this blog are licensed under <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless otherwise stated.</span></div></div><div class="tag_share"><div class="post-share"><div class="social-share" data-image="/img/butterfly-icon.png" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2026/06/02/Netty%E6%A0%B8%E5%BF%83%E6%8A%80%E6%9C%AF%E5%8D%81--Netty%20%E6%A0%B8%E5%BF%83%E6%BA%90%E7%A0%81%E5%89%96%E6%9E%90/" title="Netty核心技术十--Netty 核心源码剖析"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info"><div class="info-1"><div class="info-item-1">Previous</div><div class="info-item-2">Netty核心技术十--Netty 核心源码剖析</div></div><div class="info-2"><div class="info-item-1">1. 基本说明 只有看过Netty源码，才能说是真的掌握了Netty框架。  在 io.netty.example 包下，有很多Netty源码案例，可以用来分析   ![image-20230708143830267](&#x2F;assets&#x2F;Netty核心技术十–Netty 核心源码剖析&#x2F;226c2516a0c9ef696c558e5efc1f96d6.png) 2.  netty 启动过程源码分析 本次分析使用的是example包下的echo  2.1 源码剖析的目的用源码分析的方式走一下 Netty（服务器〉的启动过程，更好的理解Netty的整体设计和运行机制。 2.2 源码剖析 源码需要剖析到Netty调用doBind方法，追踪到NioServerSocketChannel的doBind 并且要Debug程序到NioEventLoop类的run代码，无限循环，在服务器端运行。  2.2.1 EchoServer12345678910111213141516171819202122232425262728293031323334353637383940...</div></div></div></a><a class="pagination-related" href="/2026/06/02/JasperReport%E4%B8%8ESpringBoot%E6%95%B4%E5%90%88%E5%8F%8A%E6%A8%A1%E6%9D%BF%E5%88%B6%E4%BD%9C/" title="JasperReport与SpringBoot整合及模板制作"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">Next</div><div class="info-item-2">JasperReport与SpringBoot整合及模板制作</div></div><div class="info-2"><div class="info-item-1">0. 示例代码&#x3D;&#x3D;示例代码地址&#x3D;&#x3D; 1. 报表介绍1.1 为什么要使用报表? 在企业级应用开发中，报表生成、报表打印下载是其重要的一个环节。除了Excel报表之外，PDF报表也有广泛的应用场景，必须用户详细资料，用户简历等  目前世面上比较流行的制作PDF报表的工具如下：    名称 介绍    Jasper Report 是一个强大、灵活的报表生成工具，能够展示丰富的页面内容，并将之转换成PDF   Openoffice openoffice是开源软件且能在windows和linux平台下运行，可以灵活的将word或者Excel转化为PDF文档。   iText PDF iText是著名的开放项目，是用于生成PDF文档的一个java类库。通过iText不仅可以生成PDF或rtf的文档，而且可以将XML、Html文件转化为PDF文件。   2. JasperReport2.1 框架介绍 JasperReport是一个强大、灵活的报表生成工具，能够展示丰富的页面内容，并将之转换成PDF，HTML，或者XML格式。**该库完全由Java写成，可...</div></div></div></a></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/butterfly-icon.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">Yuanz</div><div class="author-info-description">Yuanz的个人博客</div><div class="site-data"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">176</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">0</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">0</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>Announcement</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>Contents</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#1-RPC%E5%9F%BA%E6%9C%AC%E4%BB%8B%E7%BB%8D"><span class="toc-number">1.</span> <span class="toc-text">1. RPC基本介绍</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#2-RPC%E8%B0%83%E7%94%A8%E6%B5%81%E7%A8%8B%E5%9B%BE"><span class="toc-number">2.</span> <span class="toc-text">2. RPC调用流程图</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#3-PRC%E8%B0%83%E7%94%A8%E6%B5%81%E7%A8%8B%E8%AF%B4%E6%98%8E"><span class="toc-number">3.</span> <span class="toc-text">3. PRC调用流程说明</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#4-%E8%87%AA%E5%B7%B1%E5%AE%9E%E7%8E%B0-dubbo-RPC-%E5%9F%BA%E4%BA%8ENetty"><span class="toc-number">4.</span> <span class="toc-text">4. 自己实现 dubbo RPC(基于Netty)</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#4-1-%E5%85%AC%E5%85%B1%E6%8E%A5%E5%8F%A3-publicinterface%E5%8C%85"><span class="toc-number">4.1.</span> <span class="toc-text">4.1 公共接口 publicinterface包</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#4-1-1-HelloService"><span class="toc-number">4.1.1.</span> <span class="toc-text">4.1.1 HelloService</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-2-%E8%BF%9C%E7%A8%8B%E8%B0%83%E7%94%A8netty%E5%8C%85"><span class="toc-number">4.2.</span> <span class="toc-text">4.2  远程调用netty包</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#4-2-1-NettyClientHandler"><span class="toc-number">4.2.1.</span> <span class="toc-text">4.2.1 NettyClientHandler</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-2-2-NettyClient"><span class="toc-number">4.2.2.</span> <span class="toc-text">4.2.2 NettyClient</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-2-3-NettyServerHandler"><span class="toc-number">4.2.3.</span> <span class="toc-text">4.2.3 NettyServerHandler</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-2-4-NettyServer"><span class="toc-number">4.2.4.</span> <span class="toc-text">4.2.4 NettyServer</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-3-customer-%E5%8C%85"><span class="toc-number">4.3.</span> <span class="toc-text">4.3  customer 包</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#4-3-1-ClientBootstrap"><span class="toc-number">4.3.1.</span> <span class="toc-text">4.3.1 ClientBootstrap</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-4-provider-%E5%8C%85"><span class="toc-number">4.4.</span> <span class="toc-text">4.4  provider 包</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#4-4-1-HelloServiceImpl"><span class="toc-number">4.4.1.</span> <span class="toc-text">4.4.1 HelloServiceImpl</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-4-1-ServerBootstrap"><span class="toc-number">4.4.2.</span> <span class="toc-text">4.4.1 ServerBootstrap</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-5-%E6%B5%8B%E8%AF%95"><span class="toc-number">4.5.</span> <span class="toc-text">4.5 测试</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#4-5-1-debug%E7%9C%8B%E4%B8%80%E4%B8%8BClientBootstrap%E5%90%AF%E5%8A%A8"><span class="toc-number">4.5.1.</span> <span class="toc-text">4.5.1 debug看一下ClientBootstrap启动</span></a></li></ol></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Posts</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/06/02/hello-world/" title="Hello World">Hello World</a><time datetime="2026-06-02T07:15:27.184Z" title="Created 2026-06-02 15:15:27">2026-06-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/06/02/%E8%B0%B7%E7%B2%92%E5%95%86%E5%9F%8E--%E6%B3%A8%E5%86%8C%E4%B8%AD%E5%BF%83%E9%85%8D%E7%BD%AE%E4%B8%AD%E5%BF%83%E5%8F%8A%E7%BD%91%E5%85%B3--%E7%AC%94%E8%AE%B0%E4%BA%8C/" title="谷粒商城--注册中心配置中心及网关--笔记二">谷粒商城--注册中心配置中心及网关--笔记二</a><time datetime="2026-06-01T23:59:20.000Z" title="Created 2026-06-02 07:59:20">2026-06-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/06/02/%E8%B0%B7%E7%B2%92%E5%95%86%E5%9F%8E--%E5%89%8D%E7%AB%AF%E5%9F%BA%E7%A1%80--es6--%E7%AC%94%E8%AE%B0%E4%B8%89/" title="谷粒商城--前端基础--es6--笔记三">谷粒商城--前端基础--es6--笔记三</a><time datetime="2026-06-01T23:59:13.000Z" title="Created 2026-06-02 07:59:13">2026-06-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/06/02/%E8%B0%B7%E7%B2%92%E5%95%86%E5%9F%8E-vue-%E7%AC%94%E8%AE%B0%E5%9B%9B/" title="谷粒商城-vue-笔记四">谷粒商城-vue-笔记四</a><time datetime="2026-06-01T23:59:06.000Z" title="Created 2026-06-02 07:59:06">2026-06-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/06/02/%E8%B0%B7%E7%B2%92%E5%95%86%E5%9F%8E-%E6%A0%91%E5%BD%A2%E7%9B%AE%E5%BD%95%E5%BC%80%E5%8F%91-%E7%AC%94%E8%AE%B0%E4%BA%94/" title="谷粒商城-树形目录开发-笔记五">谷粒商城-树形目录开发-笔记五</a><time datetime="2026-06-01T23:58:59.000Z" title="Created 2026-06-02 07:58:59">2026-06-02</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2025 - 2026 By Yuanz</span><span class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 8.1.2</a><span class="footer-separator">|</span><span>Theme </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.5.5-b1</a></span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="Reading Mode"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="Toggle Between Light and Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle Between Single-column and Double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="Settings"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="Table of Contents"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="Back to Top"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.5.5-b1"></script><script src="/js/main.js?v=5.5.5-b1"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>

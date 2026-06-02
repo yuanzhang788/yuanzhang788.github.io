@@ -1,0 +1,172 @@
+<!DOCTYPE html><html lang="cn" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>Yuanz - 个人博客</title><meta name="author" content="Yuanz"><meta name="copyright" content="Yuanz"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="Yuanz的个人博客">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Yuanz">
+<meta property="og:url" content="https://yuanzhang788.github.io/page/9/index.html">
+<meta property="og:site_name" content="Yuanz">
+<meta property="og:description" content="Yuanz的个人博客">
+<meta property="og:locale">
+<meta property="og:image" content="https://yuanzhang788.github.io/img/butterfly-icon.png">
+<meta property="article:author" content="Yuanz">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://yuanzhang788.github.io/img/butterfly-icon.png"><script type="application/ld+json"></script><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://yuanzhang788.github.io/page/9/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=5.5.5-b1"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: 'Copy Successful',
+    error: 'Copy Failed',
+    noSupport: 'Browser Not Supported'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: 'Just now',
+    min: 'minutes ago',
+    hour: 'hours ago',
+    day: 'days ago',
+    month: 'months ago'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.0/dist/infinitegrid.min.js',
+    buttonText: 'Load More'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Yuanz',
+  isHighlightShrink: false,
+  isToc: false,
+  pageType: 'home'
+}</script><meta name="generator" content="Hexo 8.1.2"></head><body><div class="page" id="body-wrap"><header class="full_page" id="page-header"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">Yuanz</span></a></span><div id="menus"></div></nav><div id="site-info"><h1 id="site-title">Yuanz</h1></div><div id="scroll-down"><i class="fas fa-angle-down scroll-down-effects"></i></div></header><main class="layout" id="content-inner"><div class="recent-posts nc" id="recent-posts"><div class="recent-post-items"><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2026/06/02/SpringBoot%20%E4%B8%8A%E4%BC%A0%E5%9B%BE%E7%89%87-%E6%8C%87%E5%AE%9A%E7%9B%AE%E5%BD%95%E6%8C%89%E7%85%A7%E6%97%A5%E6%9C%9F%E5%AD%98%E5%82%A8/" title="SpringBoot 上传图片-指定目录按照日期存储">SpringBoot 上传图片-指定目录按照日期存储</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">Created</span><time datetime="2026-06-01T23:50:11.000Z" title="Created 2026-06-02 07:50:11">2026-06-02</time></span></div><div class="content">SpringBoot 上传图片-指定目录按照日期存储1. 在配置文件中指定文件保存根目录 我用的yaml,用properties也行  1file-save-path: D:/upload/     2. 文件上传接口12345678910111213141516171819202122232425262728293031323334353637383940414243444546474849505152535455565758596061626364package com.admin.controller.wechat;import cn.hutool.core.lang.UUID;import com.redic.base.Result;import com.redic.utils.UploadImg;import org.springframework.beans.factory.annotation.Value;import org.springframework.web.bind.annotation.PostMapping;import org.springframe...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2026/06/02/Netty%E6%A0%B8%E5%BF%83%E6%8A%80%E6%9C%AF%E4%BA%94--Netty%E9%AB%98%E6%80%A7%E8%83%BD%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1/" title="Netty核心技术五--Netty高性能架构设计">Netty核心技术五--Netty高性能架构设计</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">Created</span><time datetime="2026-06-01T23:50:04.000Z" title="Created 2026-06-02 07:50:04">2026-06-02</time></span></div><div class="content">1. 线程模型基本介绍 不同的线程模式，对程序的性能有很大影响，为了搞清Netty 线程模式，我们来系统的讲解下 各个线程模式， 最后看看Netty 线程模型有什么优越性. 目前存在的线程模型有: 传统阻塞 I&#x2F;O 服务模型 Reactor 模式   根据 Reactor 的数量和处理资源池线程的数量不同，有3 种典型的实现 单 Reactor 单线程； 单 Reactor 多线程； 主从 Reactor 多线程   Netty 线程模式(Netty 主要基于主从 Reactor 多线程模型做了一定的改进，其中主从Reactor 多线程模型有多个 Reactor)  2. 传统阻塞 I&#x2F;O 服务模型2.1 工作原理图  蓝色的框表示线程 黄色的框表示对象， 白色的框表示方法(API)    2.2 模型特点 采用阻塞IO模式获取输入的数据 每个连接都需要独立的线程完成数据的输入，业务处理, 数据返回  2.3 问题分析 当并发数很大，就会创建大量的线程，占用很大系统资源 连接创建后，如果当前线程暂时没有数据可读，该线程 会阻塞在read 操作，造成线程资源浪费...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2026/06/02/Netty%E6%A0%B8%E5%BF%83%E6%8A%80%E6%9C%AF%E5%85%AD--Netty%E6%A0%B8%E5%BF%83%E6%A8%A1%E5%9D%97%E7%BB%84%E4%BB%B6/" title="Netty核心技术六--Netty核心模块组件">Netty核心技术六--Netty核心模块组件</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">Created</span><time datetime="2026-06-01T23:49:57.000Z" title="Created 2026-06-02 07:49:57">2026-06-02</time></span></div><div class="content">1. Bootstrap、ServerBootstrapBootstrap 意思是引导，一个 Netty 应用通常由一个Bootstrap 开始，主要作用是配置整个 Netty 程序，串联各个组件，Netty 中 Bootstrap 类是客户端程序的启动引导类，ServerBootstrap 是服务端启动引导类 1.1 常用方法 public ServerBootstrap group(EventLoopGroup parentGroup, EventLoopGroup childGroup)，该方法用于服务器端，用来设置两个 EventLoop public B group(EventLoopGroup group) ，该方法用于客户端，用来设置一个EventLoop public B channel(Class channelClass)，该方法用来设置一个服务器端的通道实现 public  B option(ChannelOption option, T value)，用来给ServerChannel 添加配置 public  ServerBootstrap childOp...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2026/06/02/Netty%E6%A0%B8%E5%BF%83%E6%8A%80%E6%9C%AF%E5%9B%9B--Netty%E6%A6%82%E8%BF%B0/" title="Netty核心技术四--Netty概述">Netty核心技术四--Netty概述</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">Created</span><time datetime="2026-06-01T23:49:50.000Z" title="Created 2026-06-02 07:49:50">2026-06-02</time></span></div><div class="content">1. 原生NIO存在的问题 NIO 的类库和 API 繁杂，使用麻烦：需要熟练掌握Selector、ServerSocketChannel、SocketChannel、ByteBuffer 等。 需要具备其他的额外技能：要熟悉 Java 多线程编程，因为NIO编程涉及到Reactor模式，你必须对多线程和网络编程非常熟悉，才能编写出高质量的NIO程序。 开发工作量和难度都非常大：例如客户端面临断连重连、网络闪断、半包读写、失败缓存、网络拥塞和异常流的处理等等。 JDK NIO 的 Bug：例如臭名昭著的 &#x3D;&#x3D;Epoll Bug&#x3D;&#x3D;，**它会导致Selector 空轮询，最终导致 CPU 100%。**直到 JDK 1.7 版本该问题仍旧存在，没有被根本解决。  2. Netty官网说明Netty官网  Netty is an asynchronous event-driven network application framework for rapid development of maintainable high performanc...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2026/06/02/%E5%BE%AE%E4%BF%A1%E5%B0%8F%E7%A8%8B%E5%BA%8Funiapp+springboot%E5%AE%9E%E7%8E%B0%E5%B0%8F%E7%A8%8B%E5%BA%8F%E6%9C%8D%E5%8A%A1%E9%80%9A%E7%9F%A5/" title="微信小程序uniapp+springboot实现小程序服务通知">微信小程序uniapp+springboot实现小程序服务通知</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">Created</span><time datetime="2026-06-01T23:49:43.000Z" title="Created 2026-06-02 07:49:43">2026-06-02</time></span></div><div class="content">微信小程序uniapp+springboot实现小程序服务通知1. 实现效果 2. 模板选用及字段类型判断2.1 开通订阅消息,并选用模板 如果点击订阅消息让开启消息订阅开启后就可以出现以下页面,我本次使用的模板是月卡到期提醒模板,点击选用即可   2.2 查看模板字段类型 TemplateId后续会使用,复制出来,点击详情查看模板信息    2.3 查询对应字段类型的限制订阅消息参数值内容限制说明  我们的字段是character_string.DATA,time和thing,只需要遵守其规则即可     参数类别 参数说明 参数值限制 说明    thing.DATA 事物 20个以内字符 可汉字、数字、字母或符号组合   number.DATA 数字 32位以内数字 只能数字，可带小数   letter.DATA 字母 32位以内字母 只能字母   symbol.DATA 符号 5位以内符号 只能符号   character_string.DATA 字符串 32位以内数字、字母或符号 可数字、字母或符号组合   time.DATA 时间 24小时制时间格式（支持+年月日），...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2026/06/02/Netty%E6%A0%B8%E5%BF%83%E6%8A%80%E6%9C%AF%E4%B8%83--Google%20Protobuf/" title="Netty核心技术七--Google Protobuf">Netty核心技术七--Google Protobuf</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">Created</span><time datetime="2026-06-01T23:49:37.000Z" title="Created 2026-06-02 07:49:37">2026-06-02</time></span></div><div class="content">1.编码和解码的基本介绍 编写网络应用程序时，因为数据在网络中传输的都是二进制字节码数据，在发送数据时就需要编码，接收数据时就需要解码  ![image-20230621153118054](&#x2F;assets&#x2F;Netty核心技术七–Google Protobuf&#x2F;c1ea971e27df3e0dcf731c3052c50b08.png)  codec(编解码器) 的组成部分有两个：decoder(解码器)和encoder(编码器)。encoder 负责把业务数据转换成字节码数据，decoder 负责把字节码数据转换成业务数据  2. Netty 本身的编码解码的机制和问题分析 Netty 自身提供了一些 codec(编解码器) Netty 提供的编码器 StringEncoder，对字符串数据进行编码 ObjectEncoder，对 Java 对象进行编码 …   Netty 提供的解码器 StringDecoder, 对字符串数据进行解码 ObjectDecoder，对 Java 对象进行解码 …   Netty 本身自带的 ObjectDecode...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2026/06/02/%E9%98%BF%E9%87%8C%E4%BA%91%E4%BA%91%E6%95%88%20%E6%B5%81%E6%B0%B4%E7%BA%BF%E5%8F%91%E5%B8%83spring%20cloud%E9%A1%B9%E7%9B%AE%E5%8F%8AVue%E9%A1%B9%E7%9B%AE/" title="阿里云云效 流水线发布spring cloud项目及Vue项目">阿里云云效 流水线发布spring cloud项目及Vue项目</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">Created</span><time datetime="2026-06-01T23:49:30.000Z" title="Created 2026-06-02 07:49:30">2026-06-02</time></span></div><div class="content">1. 单体spring boot 项目流水线主机部署1.1 创建流水线页面地址  我们选择模板,当然也可以自己新建一个  ![image-20230630101427198](&#x2F;assets&#x2F;阿里云云效 流水线发布spring cloud项目及Vue项目&#x2F;86a10e43d0fc2f87c4a7ab99935c607f.png) 1.2 添加流水线源 这里是根据自己的代码仓库决定的,我用的gitee,需要添加服务连接  ![image-20230630102937038](&#x2F;assets&#x2F;阿里云云效 流水线发布spring cloud项目及Vue项目&#x2F;a808b018e217cff1e6243c2e1a8a8ae4.png)  添加服务连接  ![image-20230630103216568](&#x2F;assets&#x2F;阿里云云效 流水线发布spring cloud项目及Vue项目&#x2F;2e2dfe319c56d1196b2585236273796f.png)  新建服务授权&#x2F;证书  &#x3...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2026/06/02/Netty%E6%A0%B8%E5%BF%83%E6%8A%80%E6%9C%AF%E5%85%AB--Netty%E7%BC%96%E8%A7%A3%E7%A0%81%E5%99%A8%E5%92%8Chandler%E7%9A%84%E8%B0%83%E7%94%A8%E6%9C%BA%E5%88%B6/" title="Netty核心技术八--Netty编解码器和handler的调用机制">Netty核心技术八--Netty编解码器和handler的调用机制</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">Created</span><time datetime="2026-06-01T23:49:23.000Z" title="Created 2026-06-02 07:49:23">2026-06-02</time></span></div><div class="content">1.基本说明 netty的组件设计：Netty的主要组件有Channel、EventLoop、ChannelFuture、 ChannelHandler、ChannelPipe等  ChannelHandler充当了处理入站和出站数据的应用程序逻辑的容器。 例如，实现ChannelInboundHandler接口（或ChannelInboundHandlerAdapter），你就可以接收入站事件和数据，这些数据会被业务逻辑处理。当要给客户端发送响应时，也可以从ChannelInboundHandler冲刷数据。**业务逻辑通常写在一个或者多个ChannelInboundHandler中。**ChannelOutboundHandler原理一样，只不过它是用来处理出站数据的  ChannelPipeline提供了ChannelHandler链的容器。以客户端应用程序为例，如果事件的运动方向是从客户端到服务端的，那么我们称这些事件为出站的，即客户端发送给服务端的数据会通过pipeline中的一系列ChannelOutboundHandler，并被这些Handler处理，反之则称为入站...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2026/06/02/Netty%E6%A0%B8%E5%BF%83%E6%8A%80%E6%9C%AF%E4%B9%9D--TCP%20%E7%B2%98%E5%8C%85%E5%92%8C%E6%8B%86%E5%8C%85%E5%8F%8A%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88/" title="Netty核心技术九--TCP 粘包和拆包及解决方案">Netty核心技术九--TCP 粘包和拆包及解决方案</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">Created</span><time datetime="2026-06-01T23:49:16.000Z" title="Created 2026-06-02 07:49:16">2026-06-02</time></span></div><div class="content">1. TCP 粘包和拆包基本介绍 **TCP是面向连接的，面向流的，提供高可靠性服务。收发两端（客户端和服务器端）都要有一一成对的socket，因此，发送端为了将多个发给接收端的包，更有效的发给对方，使用了优化方法（Nagle算法），将多次间隔较小且数据量小的数据，合并成一个大的数据块，然后进行封包。**这样做虽然提高了效率，但是&#x3D;&#x3D;接收端就难于分辨出完整的数据包了，因为面向流的通信是无消息保护边界的&#x3D;&#x3D;  由于TCP无消息保护边界, 需要在接收端处理消息边界问题，也就是我们所说的粘包、拆包问题  TCP粘包、拆包图解   ![image-20230708102428452](&#x2F;assets&#x2F;Netty核心技术九–TCP 粘包和拆包及解决方案&#x2F;f1cb4c2d538eace63e1417b582358d24.png)    假设客户端分别发送了两个数据包D1和D2给服务端，由于服务端一次读取到字节数是不定的，故可能存在以下四种情况：  服务端分两次读取到了两个独立的数据包,分别是D1和D2，没有粘包和拆包 服务...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2026/06/02/Netty%E6%A0%B8%E5%BF%83%E6%8A%80%E6%9C%AF%E5%8D%81--Netty%20%E6%A0%B8%E5%BF%83%E6%BA%90%E7%A0%81%E5%89%96%E6%9E%90/" title="Netty核心技术十--Netty 核心源码剖析">Netty核心技术十--Netty 核心源码剖析</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">Created</span><time datetime="2026-06-01T23:49:09.000Z" title="Created 2026-06-02 07:49:09">2026-06-02</time></span></div><div class="content">1. 基本说明 只有看过Netty源码，才能说是真的掌握了Netty框架。  在 io.netty.example 包下，有很多Netty源码案例，可以用来分析   ![image-20230708143830267](&#x2F;assets&#x2F;Netty核心技术十–Netty 核心源码剖析&#x2F;226c2516a0c9ef696c558e5efc1f96d6.png) 2.  netty 启动过程源码分析 本次分析使用的是example包下的echo  2.1 源码剖析的目的用源码分析的方式走一下 Netty（服务器〉的启动过程，更好的理解Netty的整体设计和运行机制。 2.2 源码剖析 源码需要剖析到Netty调用doBind方法，追踪到NioServerSocketChannel的doBind 并且要Debug程序到NioEventLoop类的run代码，无限循环，在服务器端运行。  2.2.1 EchoServer12345678910111213141516171819202122232425262728293031323334353637383940...</div></div></div></div><nav id="pagination"><div class="pagination"><a class="extend prev" rel="prev" href="/page/8/#content-inner"><i class="fas fa-chevron-left fa-fw"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/8/#content-inner">8</a><span class="page-number current">9</span><a class="page-number" href="/page/10/#content-inner">10</a><span class="space">&hellip;</span><a class="page-number" href="/page/18/#content-inner">18</a><a class="extend next" rel="next" href="/page/10/#content-inner"><i class="fas fa-chevron-right fa-fw"></i></a></div></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/butterfly-icon.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">Yuanz</div><div class="author-info-description">Yuanz的个人博客</div><div class="site-data"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">176</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">0</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">0</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>Announcement</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Posts</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/06/02/hello-world/" title="Hello World">Hello World</a><time datetime="2026-06-02T07:15:27.184Z" title="Created 2026-06-02 15:15:27">2026-06-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/06/02/%E8%B0%B7%E7%B2%92%E5%95%86%E5%9F%8E--%E6%B3%A8%E5%86%8C%E4%B8%AD%E5%BF%83%E9%85%8D%E7%BD%AE%E4%B8%AD%E5%BF%83%E5%8F%8A%E7%BD%91%E5%85%B3--%E7%AC%94%E8%AE%B0%E4%BA%8C/" title="谷粒商城--注册中心配置中心及网关--笔记二">谷粒商城--注册中心配置中心及网关--笔记二</a><time datetime="2026-06-01T23:59:20.000Z" title="Created 2026-06-02 07:59:20">2026-06-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/06/02/%E8%B0%B7%E7%B2%92%E5%95%86%E5%9F%8E--%E5%89%8D%E7%AB%AF%E5%9F%BA%E7%A1%80--es6--%E7%AC%94%E8%AE%B0%E4%B8%89/" title="谷粒商城--前端基础--es6--笔记三">谷粒商城--前端基础--es6--笔记三</a><time datetime="2026-06-01T23:59:13.000Z" title="Created 2026-06-02 07:59:13">2026-06-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/06/02/%E8%B0%B7%E7%B2%92%E5%95%86%E5%9F%8E-vue-%E7%AC%94%E8%AE%B0%E5%9B%9B/" title="谷粒商城-vue-笔记四">谷粒商城-vue-笔记四</a><time datetime="2026-06-01T23:59:06.000Z" title="Created 2026-06-02 07:59:06">2026-06-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/06/02/%E8%B0%B7%E7%B2%92%E5%95%86%E5%9F%8E-%E6%A0%91%E5%BD%A2%E7%9B%AE%E5%BD%95%E5%BC%80%E5%8F%91-%E7%AC%94%E8%AE%B0%E4%BA%94/" title="谷粒商城-树形目录开发-笔记五">谷粒商城-树形目录开发-笔记五</a><time datetime="2026-06-01T23:58:59.000Z" title="Created 2026-06-02 07:58:59">2026-06-02</time></div></div></div></div><div class="card-widget card-archives">
+    <div class="item-headline">
+      <i class="fas fa-archive"></i>
+      <span>Archives</span>
+      
+    </div>
+  
+    <ul class="card-archive-list">
+      
+        <li class="card-archive-list-item">
+          <a class="card-archive-list-link" href="/archives/2026/06/">
+            <span class="card-archive-list-date">
+              June 2026
+            </span>
+            <span class="card-archive-list-count">174</span>
+          </a>
+        </li>
+      
+        <li class="card-archive-list-item">
+          <a class="card-archive-list-link" href="/archives/2026/05/">
+            <span class="card-archive-list-date">
+              May 2026
+            </span>
+            <span class="card-archive-list-count">2</span>
+          </a>
+        </li>
+      
+    </ul>
+  </div><div class="card-widget card-webinfo"><div class="item-headline"><i class="fas fa-chart-line"></i><span>Website Info</span></div><div class="webinfo"><div class="webinfo-item"><div class="item-name">Article Count :</div><div class="item-count">176</div></div><div class="webinfo-item"><div class="item-name">Unique Visitors :</div><div class="item-count" id="busuanzi_value_site_uv"><i class="fa-solid fa-spinner fa-spin"></i></div></div><div class="webinfo-item"><div class="item-name">Page Views :</div><div class="item-count" id="busuanzi_value_site_pv"><i class="fa-solid fa-spinner fa-spin"></i></div></div><div class="webinfo-item"><div class="item-name">Last Update :</div><div class="item-count" id="last-push-date" data-lastPushDate="2026-06-02T10:34:58.394Z"><i class="fa-solid fa-spinner fa-spin"></i></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2025 - 2026 By Yuanz</span><span class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 8.1.2</a><span class="footer-separator">|</span><span>Theme </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.5.5-b1</a></span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="darkmode" type="button" title="Toggle Between Light and Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle Between Single-column and Double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="Settings"><i class="fas fa-cog fa-spin"></i></button><button id="go-up" type="button" title="Back to Top"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.5.5-b1"></script><script src="/js/main.js?v=5.5.5-b1"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>

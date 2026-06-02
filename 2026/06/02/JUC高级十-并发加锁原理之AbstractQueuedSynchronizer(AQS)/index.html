@@ -1,0 +1,419 @@
+<!DOCTYPE html><html lang="cn" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>JUC高级十-并发加锁原理之AbstractQueuedSynchronizer(AQS) | Yuanz</title><meta name="author" content="Yuanz"><meta name="copyright" content="Yuanz"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="1. 前置知识 公平锁和非公平锁 可重入锁 自旋锁 LockSupport 数据结构之双向链表 设计模式之模板设计模式   AQS重要性 JAVA   ——&gt;JVM AQS   ——&gt;AQS  2. AQS入门级别理论知识2.1 是什么?2.1.1 字面意思Abstract Queued Synchronizer—-抽象的队列同步器 源码位置:  AbstractQueuedSynch">
+<meta property="og:type" content="article">
+<meta property="og:title" content="JUC高级十-并发加锁原理之AbstractQueuedSynchronizer(AQS)">
+<meta property="og:url" content="https://yuanzhang788.github.io/2026/06/02/JUC%E9%AB%98%E7%BA%A7%E5%8D%81-%E5%B9%B6%E5%8F%91%E5%8A%A0%E9%94%81%E5%8E%9F%E7%90%86%E4%B9%8BAbstractQueuedSynchronizer(AQS)/index.html">
+<meta property="og:site_name" content="Yuanz">
+<meta property="og:description" content="1. 前置知识 公平锁和非公平锁 可重入锁 自旋锁 LockSupport 数据结构之双向链表 设计模式之模板设计模式   AQS重要性 JAVA   ——&gt;JVM AQS   ——&gt;AQS  2. AQS入门级别理论知识2.1 是什么?2.1.1 字面意思Abstract Queued Synchronizer—-抽象的队列同步器 源码位置:  AbstractQueuedSynch">
+<meta property="og:locale">
+<meta property="og:image" content="https://yuanzhang788.github.io/img/butterfly-icon.png">
+<meta property="article:published_time" content="2026-06-01T23:50:58.000Z">
+<meta property="article:modified_time" content="2026-06-02T08:10:42.585Z">
+<meta property="article:author" content="Yuanz">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://yuanzhang788.github.io/img/butterfly-icon.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "JUC高级十-并发加锁原理之AbstractQueuedSynchronizer(AQS)",
+  "url": "https://yuanzhang788.github.io/2026/06/02/JUC%E9%AB%98%E7%BA%A7%E5%8D%81-%E5%B9%B6%E5%8F%91%E5%8A%A0%E9%94%81%E5%8E%9F%E7%90%86%E4%B9%8BAbstractQueuedSynchronizer(AQS)/",
+  "image": "https://yuanzhang788.github.io/img/butterfly-icon.png",
+  "datePublished": "2026-06-01T23:50:58.000Z",
+  "dateModified": "2026-06-02T08:10:42.585Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "Yuanz",
+      "url": "https://yuanzhang788.github.io"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://yuanzhang788.github.io/2026/06/02/JUC%E9%AB%98%E7%BA%A7%E5%8D%81-%E5%B9%B6%E5%8F%91%E5%8A%A0%E9%94%81%E5%8E%9F%E7%90%86%E4%B9%8BAbstractQueuedSynchronizer(AQS)/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=5.5.5-b1"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: 'Copy Successful',
+    error: 'Copy Failed',
+    noSupport: 'Browser Not Supported'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: 'Just now',
+    min: 'minutes ago',
+    hour: 'hours ago',
+    day: 'days ago',
+    month: 'months ago'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.0/dist/infinitegrid.min.js',
+    buttonText: 'Load More'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'JUC高级十-并发加锁原理之AbstractQueuedSynchronizer(AQS)',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><meta name="generator" content="Hexo 8.1.2"></head><body><div class="post" id="body-wrap"><header class="post-bg" id="page-header"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">Yuanz</span></a><a class="nav-page-title" href="/"><span class="site-name">JUC高级十-并发加锁原理之AbstractQueuedSynchronizer(AQS)</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  Back to Home</span></span></a></span><div id="menus"></div></nav><div id="post-info"><h1 class="post-title">JUC高级十-并发加锁原理之AbstractQueuedSynchronizer(AQS)</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2026-06-01T23:50:58.000Z" title="Created 2026-06-02 07:50:58">2026-06-02</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2026-06-02T08:10:42.585Z" title="Updated 2026-06-02 16:10:42">2026-06-02</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">Post Views:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><h1 id="1-前置知识"><a href="#1-前置知识" class="headerlink" title="1. 前置知识"></a>1. 前置知识</h1><ul>
+<li>公平锁和非公平锁</li>
+<li>可重入锁</li>
+<li>自旋锁</li>
+<li>LockSupport</li>
+<li>数据结构之双向链表</li>
+<li>设计模式之模板设计模式</li>
+</ul>
+<blockquote>
+<p>AQS重要性</p>
+<p>JAVA   ——&gt;JVM</p>
+<p>AQS   ——&gt;AQS</p>
+</blockquote>
+<h1 id="2-AQS入门级别理论知识"><a href="#2-AQS入门级别理论知识" class="headerlink" title="2. AQS入门级别理论知识"></a>2. AQS入门级别理论知识</h1><h2 id="2-1-是什么"><a href="#2-1-是什么" class="headerlink" title="2.1 是什么?"></a>2.1 是什么?</h2><h3 id="2-1-1-字面意思"><a href="#2-1-1-字面意思" class="headerlink" title="2.1.1 字面意思"></a>2.1.1 字面意思</h3><p>Abstract Queued Synchronizer—-抽象的队列同步器</p>
+<p>源码位置:</p>
+<blockquote>
+<p>AbstractQueuedSynchronizer和AbstractQueuedLongSynchronizer是AbstractOwnableSynchronizer的子类</p>
+</blockquote>
+<p><img src="/assets/JUC%E9%AB%98%E7%BA%A7%E5%8D%81-%E5%B9%B6%E5%8F%91%E5%8A%A0%E9%94%81%E5%8E%9F%E7%90%86%E4%B9%8BAbstractQueuedSynchronizer(AQS)/486bc6e0032cfcafb2185b05a60aef08.png" alt="image-20230415100107662"></p>
+<p>并且是一个抽象类:</p>
+<p><img src="/assets/JUC%E9%AB%98%E7%BA%A7%E5%8D%81-%E5%B9%B6%E5%8F%91%E5%8A%A0%E9%94%81%E5%8E%9F%E7%90%86%E4%B9%8BAbstractQueuedSynchronizer(AQS)/69b862decc75f548c095441498621a76.png" alt="image-20230415100320554"></p>
+<h3 id="2-1-2-技术解释"><a href="#2-1-2-技术解释" class="headerlink" title="2.1.2 技术解释"></a>2.1.2 技术解释</h3><p><img src="/assets/JUC%E9%AB%98%E7%BA%A7%E5%8D%81-%E5%B9%B6%E5%8F%91%E5%8A%A0%E9%94%81%E5%8E%9F%E7%90%86%E4%B9%8BAbstractQueuedSynchronizer(AQS)/66808f841d660e236d533860c8c4c856.png" alt="image-20230415102708930"></p>
+<ul>
+<li>是用来构建锁或者其它同步器组件的<strong>重量级基础框架及整个JUC体系的基石,主要用于解决锁分配给”谁”的问题</strong></li>
+<li>通过内置的<strong>FIFO队列</strong>来完成资源获取线程的排队工作，并通过一个<strong>int类变量</strong><br><strong>表示持有锁的状态</strong></li>
+</ul>
+<blockquote>
+<p>CLH队列(FIFO)</p>
+<p>CLH：Craig、Landin and Hagersten 队列，是一个单向链表，&#x3D;&#x3D;AQS中的队列是CLH变体的虚拟双向队列FIFO&#x3D;&#x3D;</p>
+</blockquote>
+<p><img src="/assets/JUC%E9%AB%98%E7%BA%A7%E5%8D%81-%E5%B9%B6%E5%8F%91%E5%8A%A0%E9%94%81%E5%8E%9F%E7%90%86%E4%B9%8BAbstractQueuedSynchronizer(AQS)/e331c50e11bca6e890b6b0ce1b6bf764.png" alt="image-20230415100847071"></p>
+<h2 id="2-2-AQS为什么是JUC内容中最重要的基石"><a href="#2-2-AQS为什么是JUC内容中最重要的基石" class="headerlink" title="2.2 AQS为什么是JUC内容中最重要的基石?"></a>2.2 AQS为什么是JUC内容中最重要的基石?</h2><h3 id="2-2-1-和AQS关联的技术"><a href="#2-2-1-和AQS关联的技术" class="headerlink" title="2.2.1 和AQS关联的技术"></a>2.2.1 和AQS关联的技术</h3><p><img src="/assets/JUC%E9%AB%98%E7%BA%A7%E5%8D%81-%E5%B9%B6%E5%8F%91%E5%8A%A0%E9%94%81%E5%8E%9F%E7%90%86%E4%B9%8BAbstractQueuedSynchronizer(AQS)/cdb07cec60f215a7a82ed8df65eed2e2.bmp" alt="AQS"></p>
+<p>JUC的以下技术都是以AQS为基石</p>
+<ul>
+<li>Semaphore</li>
+<li>CycleBarrier</li>
+<li>ReentranReadWriteLock</li>
+<li>CountDownLatch</li>
+<li>ReentranLock</li>
+</ul>
+<p>AQS子类:</p>
+<p><img src="/assets/JUC%E9%AB%98%E7%BA%A7%E5%8D%81-%E5%B9%B6%E5%8F%91%E5%8A%A0%E9%94%81%E5%8E%9F%E7%90%86%E4%B9%8BAbstractQueuedSynchronizer(AQS)/8648067d1a190ee8c8da29e6c0b839c3.png" alt="image-20230415101859403"></p>
+<h3 id="2-2-2-锁和同步器的关系"><a href="#2-2-2-锁和同步器的关系" class="headerlink" title="2.2.2 锁和同步器的关系"></a>2.2.2 锁和同步器的关系</h3><ul>
+<li>锁，面向锁的使用者<ul>
+<li>定义了程序员和锁交互的使用层API，隐藏了实现细节，你调用即可。</li>
+</ul>
+</li>
+<li>同步器，面向锁的实现者<ul>
+<li>比如Java并发大神DougLee，提出统一规范并简化了锁的实现，<br>屏蔽了同步状态管理、阻塞线程排队和通知、唤醒机制等。</li>
+</ul>
+</li>
+</ul>
+<h2 id="2-3-AQS能干嘛"><a href="#2-3-AQS能干嘛" class="headerlink" title="2.3 AQS能干嘛?"></a>2.3 AQS能干嘛?</h2><p>因为:加锁会导致阻塞</p>
+<p>所以:有阻塞就需要排队，实现排队必然需要队列</p>
+<p>如果共享资源被占用，就<strong>需要一定的阻塞等待唤醒机制来&#x3D;&#x3D;保证锁分配&#x3D;&#x3D;</strong>。这个机制主要用的是CLH队列的变体实现的，<strong>将暂时获取不到锁的线程加入到队列中</strong>，这个队列就是AQS的抽象表现。它将请求共享资源的线程封装成队列的结点（<code>Node</code>），通过<code>CAS</code>、<code>自旋</code>以及<code>LockSupport.park()</code>的方式，维护<code>state变量</code>的状态，使并发达到同步的效果。</p>
+<h1 id="3-AQS内部体系架构"><a href="#3-AQS内部体系架构" class="headerlink" title="3 AQS内部体系架构"></a>3 AQS内部体系架构</h1><p><img src="/assets/JUC%E9%AB%98%E7%BA%A7%E5%8D%81-%E5%B9%B6%E5%8F%91%E5%8A%A0%E9%94%81%E5%8E%9F%E7%90%86%E4%B9%8BAbstractQueuedSynchronizer(AQS)/c667b41c179b13676a63decc32a492fd.png" alt="image-20230415103008431"></p>
+<p><img src="/assets/JUC%E9%AB%98%E7%BA%A7%E5%8D%81-%E5%B9%B6%E5%8F%91%E5%8A%A0%E9%94%81%E5%8E%9F%E7%90%86%E4%B9%8BAbstractQueuedSynchronizer(AQS)/15a376b114d0e6e893414ee3b23142dc.png" alt="image-20230415102854436"></p>
+<h2 id="3-1-AQS自身"><a href="#3-1-AQS自身" class="headerlink" title="3.1 AQS自身"></a>3.1 AQS自身</h2><h3 id="3-1-1-AQS的int变量state-volatile修饰"><a href="#3-1-1-AQS的int变量state-volatile修饰" class="headerlink" title="3.1.1 &#x3D;&#x3D;AQS的int变量state&#x3D;&#x3D;-volatile修饰"></a>3.1.1 &#x3D;&#x3D;AQS的int变量state&#x3D;&#x3D;-volatile修饰</h3><p>代表同步状态标志位  </p>
+<ul>
+<li>0代表资源没有被线程占用,资源现在是空闲状态</li>
+<li>1代表资源被线程占用,资源现在不是空闲状态</li>
+</ul>
+<h4 id=""><a href="#" class="headerlink" title=""></a></h4><h2 id="3-2-内部类Node-Node类在AQS类内部"><a href="#3-2-内部类Node-Node类在AQS类内部" class="headerlink" title="3.2 内部类Node(Node类在AQS类内部)"></a>3.2 内部类Node(Node类在AQS类内部)</h2><p><img src="/assets/JUC%E9%AB%98%E7%BA%A7%E5%8D%81-%E5%B9%B6%E5%8F%91%E5%8A%A0%E9%94%81%E5%8E%9F%E7%90%86%E4%B9%8BAbstractQueuedSynchronizer(AQS)/ee2ba4e3d4490df78b060547f088f35c.png" alt="image-20230415112629037"></p>
+<p><img src="/assets/JUC%E9%AB%98%E7%BA%A7%E5%8D%81-%E5%B9%B6%E5%8F%91%E5%8A%A0%E9%94%81%E5%8E%9F%E7%90%86%E4%B9%8BAbstractQueuedSynchronizer(AQS)/1c5162fa738d4de85c6ac34a64dc8df5.png" alt="image-20230415112746065"></p>
+<h3 id="3-2-1-Node对象两种模式"><a href="#3-2-1-Node对象两种模式" class="headerlink" title="3.2.1 Node对象两种模式"></a>3.2.1 Node对象两种模式</h3><ul>
+<li>SHARED(共享模式)<ul>
+<li>标志节点正在等待共享模式的标记</li>
+</ul>
+</li>
+<li>EXCLUSIVE(独占模式)<ul>
+<li>标志节点正在独占模式等待的标记</li>
+</ul>
+</li>
+</ul>
+<h3 id="3-2-2-Node的Node的int变量waitState-volatile修饰"><a href="#3-2-2-Node的Node的int变量waitState-volatile修饰" class="headerlink" title="3.2.2 &#x3D;&#x3D;Node的Node的int变量waitState&#x3D;&#x3D;-volatile修饰"></a>3.2.2 &#x3D;&#x3D;Node的Node的int变量waitState&#x3D;&#x3D;-volatile修饰</h3><p>每个Node节点在AQS队列中的等待状态,&#x3D;&#x3D;Node初始化时waitState为0&#x3D;&#x3D;</p>
+<ul>
+<li>CANCELLED(取消)&#x3D;1<ul>
+<li>表示该Node节点为取消状态,需要出队</li>
+</ul>
+</li>
+<li>SIGNAL(标志)&#x3D;-1<ul>
+<li>表示该节点的后一个节点需要unparking(LockSupport里的知识)</li>
+</ul>
+</li>
+<li>CONDITION(条件)&#x3D;-2<ul>
+<li>表示该节点正在等待某种条件激活</li>
+</ul>
+</li>
+<li>PROPAGATE(传播)&#x3D;-3<ul>
+<li>指示下一个 acquireShared 应该无条件传播的 waitStatus 值</li>
+</ul>
+</li>
+</ul>
+<blockquote>
+<p><strong>只有CANCELLED状态是大于0的,判断时有需要先记住</strong></p>
+</blockquote>
+<h3 id="3-2-3-prev-next-双向链表"><a href="#3-2-3-prev-next-双向链表" class="headerlink" title="3.2.3 prev&amp;next 双向链表"></a><strong>3.2.3 prev&amp;next 双向链表</strong></h3><p>记录该节点的前一个节点和后一个节点</p>
+<h2 id="3-3-以上得出结论-AQS同步队列的基本结构"><a href="#3-3-以上得出结论-AQS同步队列的基本结构" class="headerlink" title="3.3 以上得出结论:AQS同步队列的基本结构"></a>3.3 以上得出结论:AQS同步队列的基本结构</h2><blockquote>
+<p>CLH：Craig、Landin and Hagersten 队列，是个单向链表，AQS中的队列是CLH变体的虚拟双向队列（FIFO）</p>
+</blockquote>
+<p><img src="/assets/JUC%E9%AB%98%E7%BA%A7%E5%8D%81-%E5%B9%B6%E5%8F%91%E5%8A%A0%E9%94%81%E5%8E%9F%E7%90%86%E4%B9%8BAbstractQueuedSynchronizer(AQS)/70172f7b876b461adbc145214a5c35c3.png" alt="image-20230415113031991"></p>
+<h1 id="4-AQS源码分析之ReentranLock"><a href="#4-AQS源码分析之ReentranLock" class="headerlink" title="4 AQS源码分析之ReentranLock"></a>4 AQS源码分析之ReentranLock</h1><p><img src="/assets/JUC%E9%AB%98%E7%BA%A7%E5%8D%81-%E5%B9%B6%E5%8F%91%E5%8A%A0%E9%94%81%E5%8E%9F%E7%90%86%E4%B9%8BAbstractQueuedSynchronizer(AQS)/adc420271ef3b8f76f91a2cbde040b72.png" alt="image-20230415132318457"></p>
+<h2 id="4-1-架构"><a href="#4-1-架构" class="headerlink" title="4.1 架构"></a>4.1 架构</h2><p><img src="/assets/JUC%E9%AB%98%E7%BA%A7%E5%8D%81-%E5%B9%B6%E5%8F%91%E5%8A%A0%E9%94%81%E5%8E%9F%E7%90%86%E4%B9%8BAbstractQueuedSynchronizer(AQS)/bc48bdd740a4d16deea0380c106bbd5a.png" alt="image-20230415115416750"></p>
+<p>上图可知:</p>
+<ul>
+<li>ReentranLock实现了Lock接口</li>
+<li>ReentranLock中的内部类NonfairSync(非公平锁)和FairSync(公平锁)继承了Sync</li>
+<li>Sync又继承了AQS抽象类</li>
+</ul>
+<h2 id="4-2-ReentranLock公平锁与非公平锁"><a href="#4-2-ReentranLock公平锁与非公平锁" class="headerlink" title="4.2 ReentranLock公平锁与非公平锁"></a>4.2 ReentranLock公平锁与非公平锁</h2><p><img src="/assets/JUC%E9%AB%98%E7%BA%A7%E5%8D%81-%E5%B9%B6%E5%8F%91%E5%8A%A0%E9%94%81%E5%8E%9F%E7%90%86%E4%B9%8BAbstractQueuedSynchronizer(AQS)/9de4558dcf4f9c75a334faa954a57918.png" alt="image-20230415120249600"></p>
+<p>上图可以得知:</p>
+<ul>
+<li>new ReentranLock()和new ReentranLock(false)都是非公平锁</li>
+<li>new ReentranLock(true) 表示公平锁</li>
+</ul>
+<h3 id="4-2-1-公平锁和非公平锁"><a href="#4-2-1-公平锁和非公平锁" class="headerlink" title="4.2.1 公平锁和非公平锁"></a>4.2.1 公平锁和非公平锁</h3><h4 id="4-2-1-1-公平锁和非公平锁的lock方法"><a href="#4-2-1-1-公平锁和非公平锁的lock方法" class="headerlink" title="4.2.1.1 公平锁和非公平锁的lock方法"></a>4.2.1.1 公平锁和非公平锁的lock方法</h4><blockquote>
+<p>&#x3D;&#x3D;提前了解acquire方法会调用tryAcquire,不管公平锁还是非公平锁最后都会调用acquire方法&#x3D;&#x3D;</p>
+</blockquote>
+<p><img src="/assets/JUC%E9%AB%98%E7%BA%A7%E5%8D%81-%E5%B9%B6%E5%8F%91%E5%8A%A0%E9%94%81%E5%8E%9F%E7%90%86%E4%B9%8BAbstractQueuedSynchronizer(AQS)/6384755365e472d95575b29159188b59.png" alt="image-20230415132026967"></p>
+<ul>
+<li>因为非公平的的tryAcquire不讲武德,不排队所以我们在抢锁之前需要看看锁的状态status是否为0,不然队列中所有节点不管status是否为0都去强太耗费性能.</li>
+<li>而公平锁在tryAcquire的时候将武德,只有成为头结点才会去抢,所以直接acquire</li>
+</ul>
+<p><img src="/assets/JUC%E9%AB%98%E7%BA%A7%E5%8D%81-%E5%B9%B6%E5%8F%91%E5%8A%A0%E9%94%81%E5%8E%9F%E7%90%86%E4%B9%8BAbstractQueuedSynchronizer(AQS)/3327b5772e97d374087ab9d63b654789.png" alt="image-20230415122841881"></p>
+<h4 id="4-2-1-2-非公平锁的tryAcquire"><a href="#4-2-1-2-非公平锁的tryAcquire" class="headerlink" title="4.2.1.2 非公平锁的tryAcquire"></a>4.2.1.2 非公平锁的tryAcquire</h4><blockquote>
+<p>非公平锁tryAcquire返回值:</p>
+<ol>
+<li>&#x3D;&#x3D;当AQS status为0返回true&#x3D;&#x3D;</li>
+<li>&#x3D;&#x3D;是重入锁的情况下返回true&#x3D;&#x3D;</li>
+</ol>
+</blockquote>
+<p><img src="/assets/JUC%E9%AB%98%E7%BA%A7%E5%8D%81-%E5%B9%B6%E5%8F%91%E5%8A%A0%E9%94%81%E5%8E%9F%E7%90%86%E4%B9%8BAbstractQueuedSynchronizer(AQS)/90988a479f995c4f90b764decefa94bc.png" alt="image-20230415123058397"></p>
+<blockquote>
+<p>nonfairTryAcquire()方法</p>
+</blockquote>
+<p><img src="/assets/JUC%E9%AB%98%E7%BA%A7%E5%8D%81-%E5%B9%B6%E5%8F%91%E5%8A%A0%E9%94%81%E5%8E%9F%E7%90%86%E4%B9%8BAbstractQueuedSynchronizer(AQS)/0daee1bf90f7efc45a7d59baa2352387.png" alt="image-20230415124133044"></p>
+<h4 id="4-2-1-3-公平锁的tryAcquire"><a href="#4-2-1-3-公平锁的tryAcquire" class="headerlink" title="4.2.1.3 公平锁的tryAcquire"></a>4.2.1.3 公平锁的tryAcquire</h4><blockquote>
+<p>公平锁tryAcquire返回值:</p>
+<ol>
+<li>&#x3D;&#x3D;当AQS status为0并且当前节点是头结点时返回true&#x3D;&#x3D;</li>
+<li>&#x3D;&#x3D;是重入锁的情况下返回true&#x3D;&#x3D;</li>
+</ol>
+</blockquote>
+<p><img src="/assets/JUC%E9%AB%98%E7%BA%A7%E5%8D%81-%E5%B9%B6%E5%8F%91%E5%8A%A0%E9%94%81%E5%8E%9F%E7%90%86%E4%B9%8BAbstractQueuedSynchronizer(AQS)/e608a792e6bebc712cdeb606b8191859.png" alt="image-20230415124400940"></p>
+<blockquote>
+<p>参考下图及结论:</p>
+<p>&#x3D;&#x3D;<code>!hasQueuedPredecessors()</code>的意思就是如果在当前线程之前有排队的线程就不尝试去抢锁了,老老实实的排队,这不就是公平锁吗?&#x3D;&#x3D;</p>
+<p>非公平锁没有这个条件约束,所以不管是排在那个位置的线程都会去抢一抢</p>
+</blockquote>
+<blockquote>
+<p>hasQueuedPredecessors()方法</p>
+<ul>
+<li>&#x3D;&#x3D;如果在当前线程之前有排队的线程，则为true ；&#x3D;&#x3D;</li>
+<li>&#x3D;&#x3D;如果当前线程位于队列的头部或队列为空，则为false&#x3D;&#x3D;</li>
+</ul>
+</blockquote>
+<p><img src="/assets/JUC%E9%AB%98%E7%BA%A7%E5%8D%81-%E5%B9%B6%E5%8F%91%E5%8A%A0%E9%94%81%E5%8E%9F%E7%90%86%E4%B9%8BAbstractQueuedSynchronizer(AQS)/e4ead1652a2dc98bc8852ae7cf6fee47.png" alt="image-20230415125536570"></p>
+<blockquote>
+<p>总结:</p>
+<ul>
+<li>可以明显看出公平锁与非公平锁的lock()方法唯一的区别就在于公平锁在获取同步状态时多了一个限制条件：<br>hasQueuedPredecessors():<br><strong>hasQueuedPredecessors是公平锁加锁时判断等待队列中是否存在有效节点的方法</strong></li>
+</ul>
+</blockquote>
+<p><img src="/assets/JUC%E9%AB%98%E7%BA%A7%E5%8D%81-%E5%B9%B6%E5%8F%91%E5%8A%A0%E9%94%81%E5%8E%9F%E7%90%86%E4%B9%8BAbstractQueuedSynchronizer(AQS)/43a180c21b91e974d27bad4b0927e962.png" alt="image-20230415125807397"></p>
+<h2 id="4-3-以非公平锁为例继续后面的源码分析"><a href="#4-3-以非公平锁为例继续后面的源码分析" class="headerlink" title="4.3 以非公平锁为例继续后面的源码分析"></a>4.3 以非公平锁为例继续后面的源码分析</h2><blockquote>
+<p>tryAcquire方法在4.2章节以及分析后续我们主要针对</p>
+<ul>
+<li>addWaiter</li>
+<li>acquireQueued</li>
+<li>selfInterrupt</li>
+</ul>
+<p>以上三个方法进行分析</p>
+</blockquote>
+<p><img src="/assets/JUC%E9%AB%98%E7%BA%A7%E5%8D%81-%E5%B9%B6%E5%8F%91%E5%8A%A0%E9%94%81%E5%8E%9F%E7%90%86%E4%B9%8BAbstractQueuedSynchronizer(AQS)/6384755365e472d95575b29159188b59.png" alt="image-20230415132026967"></p>
+<h3 id="4-3-0-acquire方法总流程"><a href="#4-3-0-acquire方法总流程" class="headerlink" title="4.3.0 &#x3D;&#x3D;acquire方法总流程&#x3D;&#x3D;"></a>4.3.0 &#x3D;&#x3D;acquire方法总流程&#x3D;&#x3D;</h3><p><img src="/assets/JUC%E9%AB%98%E7%BA%A7%E5%8D%81-%E5%B9%B6%E5%8F%91%E5%8A%A0%E9%94%81%E5%8E%9F%E7%90%86%E4%B9%8BAbstractQueuedSynchronizer(AQS)/80d773f4a2ac738a4fa9099a237efe97.bmp" alt="acquire"></p>
+<h3 id="4-3-1-addWaiter-Node-EXCLUSIVE"><a href="#4-3-1-addWaiter-Node-EXCLUSIVE" class="headerlink" title="4.3.1 addWaiter(Node.EXCLUSIVE)"></a>4.3.1 addWaiter(Node.EXCLUSIVE)</h3><p>&#x3D;&#x3D;将加锁失败的节点加入队列&#x3D;&#x3D;</p>
+<blockquote>
+<p><strong>当tryAcquire()返回false的情况下才会执行addWaiter</strong></p>
+<ul>
+<li><p>公平锁:</p>
+<blockquote>
+<p>以下条件只要包含一个就返回false</p>
+</blockquote>
+<ol>
+<li>status不等于0</li>
+<li>当前节点不是头结点</li>
+<li>也不是可重入锁</li>
+</ol>
+</li>
+<li><p>非公平锁</p>
+<blockquote>
+<p>以下条件只要包含一个就返回false</p>
+</blockquote>
+<ol>
+<li>status不等于0</li>
+<li>也不是可重入锁</li>
+</ol>
+</li>
+</ul>
+</blockquote>
+<p><img src="/assets/JUC%E9%AB%98%E7%BA%A7%E5%8D%81-%E5%B9%B6%E5%8F%91%E5%8A%A0%E9%94%81%E5%8E%9F%E7%90%86%E4%B9%8BAbstractQueuedSynchronizer(AQS)/8ac378c8e02d1545ae5927878d901709.png" alt="image-20230415141207437"></p>
+<blockquote>
+<p>enq(Node node)</p>
+</blockquote>
+<p><img src="/assets/JUC%E9%AB%98%E7%BA%A7%E5%8D%81-%E5%B9%B6%E5%8F%91%E5%8A%A0%E9%94%81%E5%8E%9F%E7%90%86%E4%B9%8BAbstractQueuedSynchronizer(AQS)/95cbf3aa29ee8469e63a3ec8e54a48ab.png" alt="image-20230415140908057"></p>
+<h3 id="4-3-2-acquireQueued-final-Node-node-int-arg"><a href="#4-3-2-acquireQueued-final-Node-node-int-arg" class="headerlink" title="4.3.2 acquireQueued(final Node node, int arg)"></a>4.3.2 acquireQueued(final Node node, int arg)</h3><ul>
+<li>&#x3D;&#x3D;将队列中各节点的等待状态waitStatus进行管理&#x3D;&#x3D;<ul>
+<li>&#x3D;&#x3D;waitStatus为-1的节点park&#x3D;&#x3D;</li>
+<li>&#x3D;&#x3D;waitStatus为1的移出队列;&#x3D;&#x3D;</li>
+<li>&#x3D;&#x3D;其他状态值会逐步修改为-1,&#x3D;&#x3D;</li>
+<li>&#x3D;&#x3D;最后将waitStatus为-1的节点对应的线程park&#x3D;&#x3D;</li>
+</ul>
+</li>
+<li>&#x3D;&#x3D;在addWaiter的大自旋中会不断tryAcquire(),检测共享资源是否解锁&#x3D;&#x3D;</li>
+</ul>
+<blockquote>
+<p>addWaiter后会返回最新的尾节点</p>
+</blockquote>
+<p><img src="/assets/JUC%E9%AB%98%E7%BA%A7%E5%8D%81-%E5%B9%B6%E5%8F%91%E5%8A%A0%E9%94%81%E5%8E%9F%E7%90%86%E4%B9%8BAbstractQueuedSynchronizer(AQS)/4a708955e0b9a2b0695ea59a0a4855e4.png" alt="image-20230415145653986"></p>
+<blockquote>
+<p>predecessor()方法 返回尾结点的前置节点</p>
+</blockquote>
+<p><img src="/assets/JUC%E9%AB%98%E7%BA%A7%E5%8D%81-%E5%B9%B6%E5%8F%91%E5%8A%A0%E9%94%81%E5%8E%9F%E7%90%86%E4%B9%8BAbstractQueuedSynchronizer(AQS)/d983c77f8f7cc15f633fa72b0bc9c855.png" alt="image-20230415141624556"></p>
+<blockquote>
+<p>shouldParkAfterFailedAcquire(Node pred, Node node)</p>
+<p>&#x3D;&#x3D;该方法主要作用就是将修改抢锁失败的节点waitStatus为-1等待状态,或者将想要取消的节点从队列中移除&#x3D;&#x3D;<br>如果前驱节点的 waitStatus 是 SIGNAL状态，即 shouldParkAfterFailedAcquire 方法会返回 true 程序会继续向下执行 parkAndCheckInterrupt 方法，用于将当前线程挂起</p>
+</blockquote>
+<p><img src="/assets/JUC%E9%AB%98%E7%BA%A7%E5%8D%81-%E5%B9%B6%E5%8F%91%E5%8A%A0%E9%94%81%E5%8E%9F%E7%90%86%E4%B9%8BAbstractQueuedSynchronizer(AQS)/f41875f8b2f4bc3f2512b6581d2026aa.png" alt="image-20230415145208528"></p>
+<p><img src="/assets/JUC%E9%AB%98%E7%BA%A7%E5%8D%81-%E5%B9%B6%E5%8F%91%E5%8A%A0%E9%94%81%E5%8E%9F%E7%90%86%E4%B9%8BAbstractQueuedSynchronizer(AQS)/bd9fca57f61040fd5a0e90cebed86722.png" alt="image-20230415150527046"></p>
+<blockquote>
+<p>parkAndCheckInterrupt()</p>
+<p>阻塞当前节点</p>
+</blockquote>
+<p><img src="/assets/JUC%E9%AB%98%E7%BA%A7%E5%8D%81-%E5%B9%B6%E5%8F%91%E5%8A%A0%E9%94%81%E5%8E%9F%E7%90%86%E4%B9%8BAbstractQueuedSynchronizer(AQS)/d7cb2696b7060e00026f637a9ab2e741.png" alt="image-20230415145734077"></p>
+<p><img src="/assets/JUC%E9%AB%98%E7%BA%A7%E5%8D%81-%E5%B9%B6%E5%8F%91%E5%8A%A0%E9%94%81%E5%8E%9F%E7%90%86%E4%B9%8BAbstractQueuedSynchronizer(AQS)/b6f260396b1f195ddaa945fe2138d52f.png" alt="image-20230415150547678"></p>
+<h3 id="4-3-3-selfInterrupt"><a href="#4-3-3-selfInterrupt" class="headerlink" title="4.3.3 selfInterrupt()"></a>4.3.3 selfInterrupt()</h3><blockquote>
+<p>抢锁失败,加入队列成功那么就中断当前线程</p>
+</blockquote>
+<p><img src="/assets/JUC%E9%AB%98%E7%BA%A7%E5%8D%81-%E5%B9%B6%E5%8F%91%E5%8A%A0%E9%94%81%E5%8E%9F%E7%90%86%E4%B9%8BAbstractQueuedSynchronizer(AQS)/dc67e09aa279176b09ddf229df5c1e7f.png" alt="image-20230415150048568"></p>
+<h2 id="4-4-unlock解锁源码分析"><a href="#4-4-unlock解锁源码分析" class="headerlink" title="4.4 unlock解锁源码分析"></a>4.4 unlock解锁源码分析</h2><blockquote>
+<p>&#x3D;&#x3D;解锁操作,主要作用是将头结点后为等待状态-1的节点unpark,然后唤醒阻塞的线程,以及一些异常处理&#x3D;&#x3D;</p>
+</blockquote>
+<blockquote>
+<p>unlock主要就是调用AQS的释放方法release</p>
+</blockquote>
+<p><img src="/assets/JUC%E9%AB%98%E7%BA%A7%E5%8D%81-%E5%B9%B6%E5%8F%91%E5%8A%A0%E9%94%81%E5%8E%9F%E7%90%86%E4%B9%8BAbstractQueuedSynchronizer(AQS)/06708edab614ebde11eaf86e1792b4c3.png" alt="image-20230415151000969"></p>
+<blockquote>
+<p>release开始会tryAcquire尝试解锁</p>
+</blockquote>
+<p><img src="/assets/JUC%E9%AB%98%E7%BA%A7%E5%8D%81-%E5%B9%B6%E5%8F%91%E5%8A%A0%E9%94%81%E5%8E%9F%E7%90%86%E4%B9%8BAbstractQueuedSynchronizer(AQS)/8f9751a8dc95fad9d1b9b19c671f17c3.png" alt="image-20230415152139945"></p>
+<blockquote>
+<p>tryAcquire尝试解锁</p>
+</blockquote>
+<p><img src="/assets/JUC%E9%AB%98%E7%BA%A7%E5%8D%81-%E5%B9%B6%E5%8F%91%E5%8A%A0%E9%94%81%E5%8E%9F%E7%90%86%E4%B9%8BAbstractQueuedSynchronizer(AQS)/b8807611e800f6f5a9dfd7614b964e8b.png" alt="image-20230415151810148"></p>
+<blockquote>
+<p>unparkSuccessor方法将中断节点恢复至正常状态</p>
+</blockquote>
+<p><img src="/assets/JUC%E9%AB%98%E7%BA%A7%E5%8D%81-%E5%B9%B6%E5%8F%91%E5%8A%A0%E9%94%81%E5%8E%9F%E7%90%86%E4%B9%8BAbstractQueuedSynchronizer(AQS)/c8f8e0d9a09e22a3e92e8ebe0810710f.png" alt="image-20230415154326651"></p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>Author: </span><span class="post-copyright-info"><a href="https://yuanzhang788.github.io">Yuanz</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>Link: </span><span class="post-copyright-info"><a href="https://yuanzhang788.github.io/2026/06/02/JUC%E9%AB%98%E7%BA%A7%E5%8D%81-%E5%B9%B6%E5%8F%91%E5%8A%A0%E9%94%81%E5%8E%9F%E7%90%86%E4%B9%8BAbstractQueuedSynchronizer(AQS)/">https://yuanzhang788.github.io/2026/06/02/JUC%E9%AB%98%E7%BA%A7%E5%8D%81-%E5%B9%B6%E5%8F%91%E5%8A%A0%E9%94%81%E5%8E%9F%E7%90%86%E4%B9%8BAbstractQueuedSynchronizer(AQS)/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>Copyright Notice: </span><span class="post-copyright-info">All articles on this blog are licensed under <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless otherwise stated.</span></div></div><div class="tag_share"><div class="post-share"><div class="social-share" data-image="/img/butterfly-icon.png" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2026/06/02/JUC%E9%AB%98%E7%BA%A7%E4%B9%9D-Synchronized%E4%B8%8E%E9%94%81%E5%8D%87%E7%BA%A7/" title="JUC高级九-Synchronized与锁升级"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info"><div class="info-1"><div class="info-item-1">Previous</div><div class="info-item-2">JUC高级九-Synchronized与锁升级</div></div><div class="info-2"><div class="info-item-1">1. synchronized 锁优化的背景 用锁能够实现数据的安全性，但是会带来性能下降。 无锁能够基于线程并行提升程序性能，但是会带来安全性下降。   为求平衡将synchronized优化为不在是无所和重锁两个状态,新增偏向锁和轻量级锁来平衡安全性和性能问题   synchronized锁：由对象头中的Mark Word根据锁标志位的不同而被复用及锁升级策略  2. Synchronized的性能变化2.1 java5以前-重量级锁只有Synchronized，这个是操作系统级别的重量级操作,重量级锁，假如锁的竞争比较激烈的话，性能急剧下降 2.1.1 重量级锁为什么比较消耗性能?&#x3D;&#x3D;重量级锁涉及到用户态和内核态之间的切换&#x3D;&#x3D;   java的线程是映射到操作系统原生线程之上的，如果要阻塞或唤醒一个线程就需要操作系统介入，需要在户态与核心态之间切换，&#x3D;&#x3D;这种切换会消耗大量的系统资源&#x3D;&#x3D;，因为用户态与内核态都有各自专用的内存空间，专用的寄存器等，用户态切换至内核态需要传递给许多变量、参数给内核，内核...</div></div></div></a><a class="pagination-related" href="/2026/06/02/JUC%E9%AB%98%E7%BA%A7%E5%8D%81%E4%BA%8C-ReentrantLock%E3%80%81ReentrantReadWriteLock%E3%80%81StampedLock/" title="JUC高级十二-ReentrantLock、ReentrantReadWriteLock、StampedLock"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">Next</div><div class="info-item-2">JUC高级十二-ReentrantLock、ReentrantReadWriteLock、StampedLock</div></div><div class="info-2"><div class="info-item-1"> 无锁→独占锁→读写锁→邮戳锁  1. 关于锁的大厂面试题 你知道Java里面有哪些锁? 你说你用过读写锁，锁饥饿问题是什么？ 有没有比读写锁更快的锁？ StampedLock知道吗?(邮戳锁&#x2F;票据锁) ReentrantReadWriteLock有锁降级机制策略你知道吗？  2.  读写锁 &#x3D;&#x3D;读写锁定义为一个资源能够被多个读线程访问，或者被一个写线程访问，但是不能同时存在读写线程。&#x3D;&#x3D;  2.1 ReentrantReadWriteLock分析由ReentrantLock与ReentrantReadWriteLock的对比  ReentrantLock实现的是Lock接口 ReentrantReadWriteLock实现的是ReadWriteLock接口    ReadWriteLock接口  有一个读锁一个写锁    2. 读写锁演变 无锁无序-&gt;加锁-&gt;读写锁    无锁时期一旦多线程,肯定会出现线程安全问题 加锁时期读读操作也只能单线程操作—–解决了线程安全问题但是性能太低 读写锁时期:高并发的情况下大部分的...</div></div></div></a></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/butterfly-icon.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">Yuanz</div><div class="author-info-description">Yuanz的个人博客</div><div class="site-data"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">176</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">0</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">0</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>Announcement</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>Contents</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#1-%E5%89%8D%E7%BD%AE%E7%9F%A5%E8%AF%86"><span class="toc-number">1.</span> <span class="toc-text">1. 前置知识</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#2-AQS%E5%85%A5%E9%97%A8%E7%BA%A7%E5%88%AB%E7%90%86%E8%AE%BA%E7%9F%A5%E8%AF%86"><span class="toc-number">2.</span> <span class="toc-text">2. AQS入门级别理论知识</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#2-1-%E6%98%AF%E4%BB%80%E4%B9%88"><span class="toc-number">2.1.</span> <span class="toc-text">2.1 是什么?</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-1-%E5%AD%97%E9%9D%A2%E6%84%8F%E6%80%9D"><span class="toc-number">2.1.1.</span> <span class="toc-text">2.1.1 字面意思</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-2-%E6%8A%80%E6%9C%AF%E8%A7%A3%E9%87%8A"><span class="toc-number">2.1.2.</span> <span class="toc-text">2.1.2 技术解释</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-2-AQS%E4%B8%BA%E4%BB%80%E4%B9%88%E6%98%AFJUC%E5%86%85%E5%AE%B9%E4%B8%AD%E6%9C%80%E9%87%8D%E8%A6%81%E7%9A%84%E5%9F%BA%E7%9F%B3"><span class="toc-number">2.2.</span> <span class="toc-text">2.2 AQS为什么是JUC内容中最重要的基石?</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-2-1-%E5%92%8CAQS%E5%85%B3%E8%81%94%E7%9A%84%E6%8A%80%E6%9C%AF"><span class="toc-number">2.2.1.</span> <span class="toc-text">2.2.1 和AQS关联的技术</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-2-2-%E9%94%81%E5%92%8C%E5%90%8C%E6%AD%A5%E5%99%A8%E7%9A%84%E5%85%B3%E7%B3%BB"><span class="toc-number">2.2.2.</span> <span class="toc-text">2.2.2 锁和同步器的关系</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-3-AQS%E8%83%BD%E5%B9%B2%E5%98%9B"><span class="toc-number">2.3.</span> <span class="toc-text">2.3 AQS能干嘛?</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#3-AQS%E5%86%85%E9%83%A8%E4%BD%93%E7%B3%BB%E6%9E%B6%E6%9E%84"><span class="toc-number">3.</span> <span class="toc-text">3 AQS内部体系架构</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#3-1-AQS%E8%87%AA%E8%BA%AB"><span class="toc-number">3.1.</span> <span class="toc-text">3.1 AQS自身</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-1-AQS%E7%9A%84int%E5%8F%98%E9%87%8Fstate-volatile%E4%BF%AE%E9%A5%B0"><span class="toc-number">3.1.1.</span> <span class="toc-text">3.1.1 &#x3D;&#x3D;AQS的int变量state&#x3D;&#x3D;-volatile修饰</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link"><span class="toc-number">3.1.1.1.</span> <span class="toc-text"></span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-2-%E5%86%85%E9%83%A8%E7%B1%BBNode-Node%E7%B1%BB%E5%9C%A8AQS%E7%B1%BB%E5%86%85%E9%83%A8"><span class="toc-number">3.2.</span> <span class="toc-text">3.2 内部类Node(Node类在AQS类内部)</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-2-1-Node%E5%AF%B9%E8%B1%A1%E4%B8%A4%E7%A7%8D%E6%A8%A1%E5%BC%8F"><span class="toc-number">3.2.1.</span> <span class="toc-text">3.2.1 Node对象两种模式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-2-2-Node%E7%9A%84Node%E7%9A%84int%E5%8F%98%E9%87%8FwaitState-volatile%E4%BF%AE%E9%A5%B0"><span class="toc-number">3.2.2.</span> <span class="toc-text">3.2.2 &#x3D;&#x3D;Node的Node的int变量waitState&#x3D;&#x3D;-volatile修饰</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-2-3-prev-next-%E5%8F%8C%E5%90%91%E9%93%BE%E8%A1%A8"><span class="toc-number">3.2.3.</span> <span class="toc-text">3.2.3 prev&amp;next 双向链表</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-3-%E4%BB%A5%E4%B8%8A%E5%BE%97%E5%87%BA%E7%BB%93%E8%AE%BA-AQS%E5%90%8C%E6%AD%A5%E9%98%9F%E5%88%97%E7%9A%84%E5%9F%BA%E6%9C%AC%E7%BB%93%E6%9E%84"><span class="toc-number">3.3.</span> <span class="toc-text">3.3 以上得出结论:AQS同步队列的基本结构</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#4-AQS%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%E4%B9%8BReentranLock"><span class="toc-number">4.</span> <span class="toc-text">4 AQS源码分析之ReentranLock</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#4-1-%E6%9E%B6%E6%9E%84"><span class="toc-number">4.1.</span> <span class="toc-text">4.1 架构</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-2-ReentranLock%E5%85%AC%E5%B9%B3%E9%94%81%E4%B8%8E%E9%9D%9E%E5%85%AC%E5%B9%B3%E9%94%81"><span class="toc-number">4.2.</span> <span class="toc-text">4.2 ReentranLock公平锁与非公平锁</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#4-2-1-%E5%85%AC%E5%B9%B3%E9%94%81%E5%92%8C%E9%9D%9E%E5%85%AC%E5%B9%B3%E9%94%81"><span class="toc-number">4.2.1.</span> <span class="toc-text">4.2.1 公平锁和非公平锁</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#4-2-1-1-%E5%85%AC%E5%B9%B3%E9%94%81%E5%92%8C%E9%9D%9E%E5%85%AC%E5%B9%B3%E9%94%81%E7%9A%84lock%E6%96%B9%E6%B3%95"><span class="toc-number">4.2.1.1.</span> <span class="toc-text">4.2.1.1 公平锁和非公平锁的lock方法</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4-2-1-2-%E9%9D%9E%E5%85%AC%E5%B9%B3%E9%94%81%E7%9A%84tryAcquire"><span class="toc-number">4.2.1.2.</span> <span class="toc-text">4.2.1.2 非公平锁的tryAcquire</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4-2-1-3-%E5%85%AC%E5%B9%B3%E9%94%81%E7%9A%84tryAcquire"><span class="toc-number">4.2.1.3.</span> <span class="toc-text">4.2.1.3 公平锁的tryAcquire</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-3-%E4%BB%A5%E9%9D%9E%E5%85%AC%E5%B9%B3%E9%94%81%E4%B8%BA%E4%BE%8B%E7%BB%A7%E7%BB%AD%E5%90%8E%E9%9D%A2%E7%9A%84%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90"><span class="toc-number">4.3.</span> <span class="toc-text">4.3 以非公平锁为例继续后面的源码分析</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#4-3-0-acquire%E6%96%B9%E6%B3%95%E6%80%BB%E6%B5%81%E7%A8%8B"><span class="toc-number">4.3.1.</span> <span class="toc-text">4.3.0 &#x3D;&#x3D;acquire方法总流程&#x3D;&#x3D;</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-3-1-addWaiter-Node-EXCLUSIVE"><span class="toc-number">4.3.2.</span> <span class="toc-text">4.3.1 addWaiter(Node.EXCLUSIVE)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-3-2-acquireQueued-final-Node-node-int-arg"><span class="toc-number">4.3.3.</span> <span class="toc-text">4.3.2 acquireQueued(final Node node, int arg)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-3-3-selfInterrupt"><span class="toc-number">4.3.4.</span> <span class="toc-text">4.3.3 selfInterrupt()</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-4-unlock%E8%A7%A3%E9%94%81%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90"><span class="toc-number">4.4.</span> <span class="toc-text">4.4 unlock解锁源码分析</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Posts</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/06/02/hello-world/" title="Hello World">Hello World</a><time datetime="2026-06-02T07:15:27.184Z" title="Created 2026-06-02 15:15:27">2026-06-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/06/02/%E8%B0%B7%E7%B2%92%E5%95%86%E5%9F%8E--%E6%B3%A8%E5%86%8C%E4%B8%AD%E5%BF%83%E9%85%8D%E7%BD%AE%E4%B8%AD%E5%BF%83%E5%8F%8A%E7%BD%91%E5%85%B3--%E7%AC%94%E8%AE%B0%E4%BA%8C/" title="谷粒商城--注册中心配置中心及网关--笔记二">谷粒商城--注册中心配置中心及网关--笔记二</a><time datetime="2026-06-01T23:59:20.000Z" title="Created 2026-06-02 07:59:20">2026-06-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/06/02/%E8%B0%B7%E7%B2%92%E5%95%86%E5%9F%8E--%E5%89%8D%E7%AB%AF%E5%9F%BA%E7%A1%80--es6--%E7%AC%94%E8%AE%B0%E4%B8%89/" title="谷粒商城--前端基础--es6--笔记三">谷粒商城--前端基础--es6--笔记三</a><time datetime="2026-06-01T23:59:13.000Z" title="Created 2026-06-02 07:59:13">2026-06-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/06/02/%E8%B0%B7%E7%B2%92%E5%95%86%E5%9F%8E-vue-%E7%AC%94%E8%AE%B0%E5%9B%9B/" title="谷粒商城-vue-笔记四">谷粒商城-vue-笔记四</a><time datetime="2026-06-01T23:59:06.000Z" title="Created 2026-06-02 07:59:06">2026-06-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/06/02/%E8%B0%B7%E7%B2%92%E5%95%86%E5%9F%8E-%E6%A0%91%E5%BD%A2%E7%9B%AE%E5%BD%95%E5%BC%80%E5%8F%91-%E7%AC%94%E8%AE%B0%E4%BA%94/" title="谷粒商城-树形目录开发-笔记五">谷粒商城-树形目录开发-笔记五</a><time datetime="2026-06-01T23:58:59.000Z" title="Created 2026-06-02 07:58:59">2026-06-02</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2025 - 2026 By Yuanz</span><span class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 8.1.2</a><span class="footer-separator">|</span><span>Theme </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.5.5-b1</a></span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="Reading Mode"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="Toggle Between Light and Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle Between Single-column and Double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="Settings"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="Table of Contents"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="Back to Top"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.5.5-b1"></script><script src="/js/main.js?v=5.5.5-b1"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>

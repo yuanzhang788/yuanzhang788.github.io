@@ -1,0 +1,194 @@
+<!DOCTYPE html><html lang="cn" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>阿里云云效流水线自有主机卸载Runner | Yuanz</title><meta name="author" content="Yuanz"><meta name="copyright" content="Yuanz"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="问题: 我想切换一台主机的到另外一个主机组  只有将主机上的 Runner 卸载后，才可以更换主机组 。 之前已经安装过了,想要更换主机组,没卸载之前的Runner,执行其他主机组的命令时如下图所示     全局配置中删除主机组的示例时会弹出以下提示,让我们手动卸载Runner   手动卸载Runner官网地址  123systemctl stop runner-&#123;版本&#125;-&amp;">
+<meta property="og:type" content="article">
+<meta property="og:title" content="阿里云云效流水线自有主机卸载Runner">
+<meta property="og:url" content="https://yuanzhang788.github.io/2026/06/02/%E9%98%BF%E9%87%8C%E4%BA%91%E4%BA%91%E6%95%88%E6%B5%81%E6%B0%B4%E7%BA%BF%E8%87%AA%E6%9C%89%E4%B8%BB%E6%9C%BA%E5%8D%B8%E8%BD%BDRunner/index.html">
+<meta property="og:site_name" content="Yuanz">
+<meta property="og:description" content="问题: 我想切换一台主机的到另外一个主机组  只有将主机上的 Runner 卸载后，才可以更换主机组 。 之前已经安装过了,想要更换主机组,没卸载之前的Runner,执行其他主机组的命令时如下图所示     全局配置中删除主机组的示例时会弹出以下提示,让我们手动卸载Runner   手动卸载Runner官网地址  123systemctl stop runner-&#123;版本&#125;-&amp;">
+<meta property="og:locale">
+<meta property="og:image" content="https://yuanzhang788.github.io/img/butterfly-icon.png">
+<meta property="article:published_time" content="2026-06-01T23:43:49.000Z">
+<meta property="article:modified_time" content="2026-06-02T08:20:50.825Z">
+<meta property="article:author" content="Yuanz">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://yuanzhang788.github.io/img/butterfly-icon.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "阿里云云效流水线自有主机卸载Runner",
+  "url": "https://yuanzhang788.github.io/2026/06/02/%E9%98%BF%E9%87%8C%E4%BA%91%E4%BA%91%E6%95%88%E6%B5%81%E6%B0%B4%E7%BA%BF%E8%87%AA%E6%9C%89%E4%B8%BB%E6%9C%BA%E5%8D%B8%E8%BD%BDRunner/",
+  "image": "https://yuanzhang788.github.io/img/butterfly-icon.png",
+  "datePublished": "2026-06-01T23:43:49.000Z",
+  "dateModified": "2026-06-02T08:20:50.825Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "Yuanz",
+      "url": "https://yuanzhang788.github.io"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://yuanzhang788.github.io/2026/06/02/%E9%98%BF%E9%87%8C%E4%BA%91%E4%BA%91%E6%95%88%E6%B5%81%E6%B0%B4%E7%BA%BF%E8%87%AA%E6%9C%89%E4%B8%BB%E6%9C%BA%E5%8D%B8%E8%BD%BDRunner/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=5.5.5-b1"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: 'Copy Successful',
+    error: 'Copy Failed',
+    noSupport: 'Browser Not Supported'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: 'Just now',
+    min: 'minutes ago',
+    hour: 'hours ago',
+    day: 'days ago',
+    month: 'months ago'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.0/dist/infinitegrid.min.js',
+    buttonText: 'Load More'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '阿里云云效流水线自有主机卸载Runner',
+  isHighlightShrink: false,
+  isToc: false,
+  pageType: 'post'
+}</script><meta name="generator" content="Hexo 8.1.2"></head><body><div class="post" id="body-wrap"><header class="post-bg" id="page-header"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">Yuanz</span></a><a class="nav-page-title" href="/"><span class="site-name">阿里云云效流水线自有主机卸载Runner</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  Back to Home</span></span></a></span><div id="menus"></div></nav><div id="post-info"><h1 class="post-title">阿里云云效流水线自有主机卸载Runner</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2026-06-01T23:43:49.000Z" title="Created 2026-06-02 07:43:49">2026-06-02</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2026-06-02T08:20:50.825Z" title="Updated 2026-06-02 16:20:50">2026-06-02</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">Post Views:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><blockquote>
+<p>问题: 我想切换一台主机的到另外一个主机组</p>
+<ul>
+<li><font style="color:rgb(24, 24, 24);">只有将主机上的 Runner 卸载后，才可以更换主机组 。</font></li>
+<li><font style="color:rgb(24, 24, 24);">之前已经安装过了,想要更换主机组,没卸载之前的Runner,执行其他主机组的命令时如下图所示</font></li>
+</ul>
+</blockquote>
+<p><img src="/assets/%E9%98%BF%E9%87%8C%E4%BA%91%E4%BA%91%E6%95%88%E6%B5%81%E6%B0%B4%E7%BA%BF%E8%87%AA%E6%9C%89%E4%B8%BB%E6%9C%BA%E5%8D%B8%E8%BD%BDRunner/068c3df19382b702fc0edc8d747a832d.png"></p>
+<blockquote>
+<p>全局配置中删除主机组的示例时会弹出以下提示,让我们手动卸载Runner</p>
+</blockquote>
+<p><img src="/assets/%E9%98%BF%E9%87%8C%E4%BA%91%E4%BA%91%E6%95%88%E6%B5%81%E6%B0%B4%E7%BA%BF%E8%87%AA%E6%9C%89%E4%B8%BB%E6%9C%BA%E5%8D%B8%E8%BD%BDRunner/e8c53c3649fc963720401cf28c002687.png"></p>
+<p><a target="_blank" rel="noopener" href="https://help.aliyun.com/zh/yunxiao/user-guide/common-issues-in-host-deployment?spm=a2cl9.flow_devops2020_goldlog.0.0.2fff70bfkfnvIJ">手动卸载Runner官网地址</a></p>
+<p><img src="/assets/%E9%98%BF%E9%87%8C%E4%BA%91%E4%BA%91%E6%95%88%E6%B5%81%E6%B0%B4%E7%BA%BF%E8%87%AA%E6%9C%89%E4%B8%BB%E6%9C%BA%E5%8D%B8%E8%BD%BDRunner/3ed8421e372640c80804ea50cd73112e.png"></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">systemctl stop runner-&#123;版本&#125;-&#123;租户名称&#125;.service</span><br><span class="line">rm -rf /etc/systemd/system/runner-&#123;版本&#125;-&#123;租户名称&#125;.service</span><br><span class="line">rm -rf /root/yunxiao/&#123;租户名称&#125;/runner/config</span><br></pre></td></tr></table></figure>
+
+
+<blockquote>
+<p>官网上的示例很笼统,拿我自己之前安装的命令为例</p>
+<p>-v 后面的为版本</p>
+<p>-t 后面为租户名称</p>
+</blockquote>
+<p><img src="/assets/%E9%98%BF%E9%87%8C%E4%BA%91%E4%BA%91%E6%95%88%E6%B5%81%E6%B0%B4%E7%BA%BF%E8%87%AA%E6%9C%89%E4%B8%BB%E6%9C%BA%E5%8D%B8%E8%BD%BDRunner/30f2fac908f81b6d83d17f50c6abc9de.png"><font style="color:rgb(24, 24, 24);"></font></p>
+<blockquote>
+<p>替换为自己的版本和租户名称</p>
+</blockquote>
+<p><img src="/assets/%E9%98%BF%E9%87%8C%E4%BA%91%E4%BA%91%E6%95%88%E6%B5%81%E6%B0%B4%E7%BA%BF%E8%87%AA%E6%9C%89%E4%B8%BB%E6%9C%BA%E5%8D%B8%E8%BD%BDRunner/7cd4d187ba693ea27a57a1af1b982d37.png"></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">systemctl stop runner-v0.2.2-be-sazxxxxxxxxxxxxxxxxxxxxxx.service</span><br><span class="line"><span class="built_in">rm</span> -rf /etc/systemd/system/runner-v0.2.2-be-sazxxxxxxxxxxxxxxxxxxxxxx.service</span><br><span class="line"><span class="built_in">rm</span> -rf /root/yunxiao/be-sazxxxxxxxxxxxxxxxxxxxxxx/runner/config</span><br></pre></td></tr></table></figure>
+
+
+<blockquote>
+<p>之后可以执行其他主机组的安装命令了</p>
+</blockquote>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>Author: </span><span class="post-copyright-info"><a href="https://yuanzhang788.github.io">Yuanz</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>Link: </span><span class="post-copyright-info"><a href="https://yuanzhang788.github.io/2026/06/02/%E9%98%BF%E9%87%8C%E4%BA%91%E4%BA%91%E6%95%88%E6%B5%81%E6%B0%B4%E7%BA%BF%E8%87%AA%E6%9C%89%E4%B8%BB%E6%9C%BA%E5%8D%B8%E8%BD%BDRunner/">https://yuanzhang788.github.io/2026/06/02/%E9%98%BF%E9%87%8C%E4%BA%91%E4%BA%91%E6%95%88%E6%B5%81%E6%B0%B4%E7%BA%BF%E8%87%AA%E6%9C%89%E4%B8%BB%E6%9C%BA%E5%8D%B8%E8%BD%BDRunner/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>Copyright Notice: </span><span class="post-copyright-info">All articles on this blog are licensed under <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless otherwise stated.</span></div></div><div class="tag_share"><div class="post-share"><div class="social-share" data-image="/img/butterfly-icon.png" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2026/06/02/Docker%20Mysql%20%E6%95%B0%E6%8D%AE%E8%BF%81%E7%A7%BB/" title="Docker Mysql 数据迁移"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info"><div class="info-1"><div class="info-item-1">Previous</div><div class="info-item-2">Docker Mysql 数据迁移</div></div><div class="info-2"><div class="info-item-1">查看启动命令目录映射 查看容器名称  1docker ps   ![](&#x2F;assets&#x2F;Docker Mysql 数据迁移&#x2F;1940fbf8d8d6dc0164ae66d1dd4ed84d.png)  查看容器的启动命令  1docker inspect mysql8.0 |grep &#x27;CreateCommand&#x27; -A 20    如下图所示:我这边是把&#x2F;var&#x2F;lib&#x2F;mysql 目录映射到我宿主机的&#x2F;mnt&#x2F;mysql&#x2F;data目录下,而且我的数量比较大使用方法1的话时间比较久,所以我采用方法2  如果没有映射可以通过docker cp 的方式复制到宿主机后,也可以用方法二   ![](&#x2F;assets&#x2F;Docker Mysql 数据迁移&#x2F;f2b4a9ea750cfbfaa5809673826015e0.png) 方法 1：使用 mysqldump（推荐）方法1就是将所有库打包成sql,然后再通过sql导入库适用于数据量 不太大，保证数据...</div></div></div></a><a class="pagination-related" href="/2026/06/02/ThreadLocal%E5%9C%A8%E5%A4%9A%E7%BA%BF%E7%A8%8B%E4%B8%AD%E4%BC%A0%E9%80%92%E4%B8%8A%E4%B8%8B%E6%96%87InheritableThreadLocal/" title="ThreadLocal在多线程中传递上下文InheritableThreadLocal"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">Next</div><div class="info-item-2">ThreadLocal在多线程中传递上下文InheritableThreadLocal</div></div><div class="info-2"><div class="info-item-1">深入理解 InheritableThreadLocal：在多线程中传递上下文在 Java 多线程编程中，ThreadLocal 作为一个重要的工具，允许每个线程维护独立的变量副本。然而，默认的 ThreadLocal不会被子线程继承，这在一些场景下会带来问题。 为了解决这个问题，Java 提供了 InheritableThreadLocal，它允许 子线程自动继承父线程的变量。本文将深入探讨 InheritableThreadLocal 的使用场景、实现原理及注意事项。  1. 为什么需要 InheritableThreadLocal？在实际开发中，我们可能会遇到 父线程中设置了一些上下文数据，希望子线程也能使用 的情况，例如：  日志跟踪（每个请求的唯一 ID 需要在多个线程之间共享） 用户上下文（用户身份信息需要在子线程中保持一致） 事务管理（跨线程传递事务信息）  示例：普通 ThreadLocal 不会被子线程继承12345678910111213public class ThreadLocalExample &#123;    private static final ...</div></div></div></a></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/butterfly-icon.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">Yuanz</div><div class="author-info-description">Yuanz的个人博客</div><div class="site-data"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">176</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">0</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">0</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>Announcement</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Posts</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/06/02/hello-world/" title="Hello World">Hello World</a><time datetime="2026-06-02T07:15:27.184Z" title="Created 2026-06-02 15:15:27">2026-06-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/06/02/%E8%B0%B7%E7%B2%92%E5%95%86%E5%9F%8E--%E6%B3%A8%E5%86%8C%E4%B8%AD%E5%BF%83%E9%85%8D%E7%BD%AE%E4%B8%AD%E5%BF%83%E5%8F%8A%E7%BD%91%E5%85%B3--%E7%AC%94%E8%AE%B0%E4%BA%8C/" title="谷粒商城--注册中心配置中心及网关--笔记二">谷粒商城--注册中心配置中心及网关--笔记二</a><time datetime="2026-06-01T23:59:20.000Z" title="Created 2026-06-02 07:59:20">2026-06-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/06/02/%E8%B0%B7%E7%B2%92%E5%95%86%E5%9F%8E--%E5%89%8D%E7%AB%AF%E5%9F%BA%E7%A1%80--es6--%E7%AC%94%E8%AE%B0%E4%B8%89/" title="谷粒商城--前端基础--es6--笔记三">谷粒商城--前端基础--es6--笔记三</a><time datetime="2026-06-01T23:59:13.000Z" title="Created 2026-06-02 07:59:13">2026-06-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/06/02/%E8%B0%B7%E7%B2%92%E5%95%86%E5%9F%8E-vue-%E7%AC%94%E8%AE%B0%E5%9B%9B/" title="谷粒商城-vue-笔记四">谷粒商城-vue-笔记四</a><time datetime="2026-06-01T23:59:06.000Z" title="Created 2026-06-02 07:59:06">2026-06-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/06/02/%E8%B0%B7%E7%B2%92%E5%95%86%E5%9F%8E-%E6%A0%91%E5%BD%A2%E7%9B%AE%E5%BD%95%E5%BC%80%E5%8F%91-%E7%AC%94%E8%AE%B0%E4%BA%94/" title="谷粒商城-树形目录开发-笔记五">谷粒商城-树形目录开发-笔记五</a><time datetime="2026-06-01T23:58:59.000Z" title="Created 2026-06-02 07:58:59">2026-06-02</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2025 - 2026 By Yuanz</span><span class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 8.1.2</a><span class="footer-separator">|</span><span>Theme </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.5.5-b1</a></span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="Reading Mode"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="Toggle Between Light and Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle Between Single-column and Double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="Settings"><i class="fas fa-cog fa-spin"></i></button><button id="go-up" type="button" title="Back to Top"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.5.5-b1"></script><script src="/js/main.js?v=5.5.5-b1"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>

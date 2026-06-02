@@ -1,0 +1,172 @@
+<!DOCTYPE html><html lang="cn" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>Yuanz - 个人博客</title><meta name="author" content="Yuanz"><meta name="copyright" content="Yuanz"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="Yuanz的个人博客">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Yuanz">
+<meta property="og:url" content="https://yuanzhang788.github.io/page/2/index.html">
+<meta property="og:site_name" content="Yuanz">
+<meta property="og:description" content="Yuanz的个人博客">
+<meta property="og:locale">
+<meta property="og:image" content="https://yuanzhang788.github.io/img/butterfly-icon.png">
+<meta property="article:author" content="Yuanz">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://yuanzhang788.github.io/img/butterfly-icon.png"><script type="application/ld+json"></script><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://yuanzhang788.github.io/page/2/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=5.5.5-b1"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: 'Copy Successful',
+    error: 'Copy Failed',
+    noSupport: 'Browser Not Supported'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: 'Just now',
+    min: 'minutes ago',
+    hour: 'hours ago',
+    day: 'days ago',
+    month: 'months ago'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.0/dist/infinitegrid.min.js',
+    buttonText: 'Load More'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Yuanz',
+  isHighlightShrink: false,
+  isToc: false,
+  pageType: 'home'
+}</script><meta name="generator" content="Hexo 8.1.2"></head><body><div class="page" id="body-wrap"><header class="full_page" id="page-header"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">Yuanz</span></a></span><div id="menus"></div></nav><div id="site-info"><h1 id="site-title">Yuanz</h1></div><div id="scroll-down"><i class="fas fa-angle-down scroll-down-effects"></i></div></header><main class="layout" id="content-inner"><div class="recent-posts nc" id="recent-posts"><div class="recent-post-items"><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2026/06/02/%E8%B0%B7%E7%B2%92%E5%95%86%E5%9F%8E--elasticsearch--%E9%AB%98%E7%BA%A7%E7%AF%87%E7%AC%94%E8%AE%B0%E4%B8%80/" title="谷粒商城--elasticsearch--高级篇笔记一">谷粒商城--elasticsearch--高级篇笔记一</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">Created</span><time datetime="2026-06-01T23:58:16.000Z" title="Created 2026-06-02 07:58:16">2026-06-02</time></span></div><div class="content">谷粒商城–elasticsearch–高级篇笔记一1.elasticsearch是什么?Elasticsearch 是位于 Elastic Stack 核心的分布式搜索和分析引擎。Logstash 和 Beats 有助于收集、聚合和丰富您的数据并将其存储在 Elasticsearch 中。Kibana 使您能够以交互方式探索、可视化和共享对数据的洞察，并管理和监控堆栈。Elasticsearch 是索引、搜索和分析发生的地方。 Elasticsearch 为所有类型的数据提供近乎实时的搜索和分析。无论您拥有结构化或非结构化文本、数值数据还是地理空间数据，Elasticsearch 都可以以支持快速搜索的方式高效地存储和索引它。您可以超越简单的数据检索和聚合信息来发现数据中的趋势和模式。随着您的数据和查询量的增长，Elasticsearch 的分布式特性使您的部署能够随之无缝增长。 虽然并非所有问题都是搜索问题，但 Elasticsearch 提供了在各种用例中处理数据的速度和灵活性：  向应用或网站添加搜索框 存储和分析日志、指标和安全事件数据 使用机器学习实时自动建模数据的行为...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2026/06/02/%E8%B0%B7%E7%B2%92%E5%95%86%E5%9F%8E--%E6%80%A7%E8%83%BD%E8%B0%83%E4%BC%98%E4%B8%8E%E5%8E%8B%E5%8A%9B%E6%B5%8B%E8%AF%95--%E9%AB%98%E7%BA%A7%E7%AF%87%E7%AC%94%E8%AE%B0%E4%BA%94/" title="谷粒商城--性能调优与压力测试--高级篇笔记五">谷粒商城--性能调优与压力测试--高级篇笔记五</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">Created</span><time datetime="2026-06-01T23:58:09.000Z" title="Created 2026-06-02 07:58:09">2026-06-02</time></span></div><div class="content">谷粒商城–性能调优与压力测试–高级篇笔记五1.压力测试压力测试考察当前软硬件环境下系统所能承受的最大负荷并帮助找出系统瓶颈所在。 压测都是为了系统在线上的处理能力和稳定性维持在一个标准范围内， 做到心中有数。 使用压力测试， 我们有希望找到很多种用其他测试方法更难发现的错误。 有两种错误类型是:内存泄漏， 并发与同步。 有效的压力测试系统将应用以下这些关键条件:重复， 并发， 量级， 随机变化。   1.1 性能指标 响应时间（Response Time:RT）响应时间指用户从客户端发起一个请求开始，到客户端接收到从服务器端返回的响应结束，整个过程所耗费的时间。  HPS（Hits Per Second）:每秒点击次数，单位是次&#x2F;秒。【不是特别重要】  TPS(Transaction per Second）:系统每秒处理交易数，单位是笔&#x2F;秒。  Qps(Query per Second）:系统每秒处理查询次数，单位是次&#x2F;秒。对于互联网业务中，如果某些业务有且仅有一个请求连接，那么TPS&#x3D;QPS&#x3D;HPS，一般情况下用 TPS来衡量整...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2026/06/02/%E8%B0%B7%E7%B2%92%E5%95%86%E5%9F%8E--%E5%95%86%E5%93%81%E4%B8%8A%E6%9E%B6--%E9%AB%98%E7%BA%A7%E7%AF%87%E7%AC%94%E8%AE%B0%E4%BA%8C/" title="谷粒商城--商品上架--高级篇笔记二">谷粒商城--商品上架--高级篇笔记二</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">Created</span><time datetime="2026-06-01T23:58:01.000Z" title="Created 2026-06-02 07:58:01">2026-06-02</time></span></div><div class="content">谷粒商城–商品上架–高级篇笔记二1. 新增商品索引1234567891011121314151617181920212223242526272829303132333435363738394041424344454647484950515253545556575859606162636465666768697071PUT product&#123;  &quot;mappings&quot;: &#123;    &quot;properties&quot;: &#123;      &quot;skuId&quot;: &#123;        &quot;type&quot;: &quot;long&quot;      &#125;,      &quot;spuId&quot;: &#123;        &quot;type&quot;: &quot;keyword&quot;      &#125;,      &quot;skuTitle&quot;: &#123;        &quot;type&quot;: &quot;text&quot;,      ...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2026/06/02/%E8%B0%B7%E7%B2%92%E5%95%86%E5%9F%8E--%E5%95%86%E5%9F%8E%E4%B8%BB%E9%A1%B5(%E7%B1%BB%E7%9B%AE)--%E9%AB%98%E7%BA%A7%E7%AF%87%E7%AC%94%E8%AE%B0%E4%B8%89/" title="谷粒商城--商城主页(类目)--高级篇笔记三">谷粒商城--商城主页(类目)--高级篇笔记三</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">Created</span><time datetime="2026-06-01T23:57:54.000Z" title="Created 2026-06-02 07:57:54">2026-06-02</time></span></div><div class="content">谷粒商城–商城主页(类目)–高级篇笔记三1. 首页代码 2. 导入thymeleaf依赖 gulimall-product&#x2F;pom.xml  12345&lt;!--模板引擎thymeleaf--&gt;       &lt;dependency&gt;           &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;           &lt;artifactId&gt;spring-boot-starter-thymeleaf&lt;/artifactId&gt;       &lt;/dependency&gt;     3. 首页与静态资源复制  4. 重启gulimall-product服务 访问gulimall-product服务    此页面为静态有页面  5. 编写查询一级目录列表接口 因为使用的thymeleaf,所以直接返回的页面,新建一个web包,用来专门存储thymeleaf相关controller 将原来的controller包修改为app包    新增gulimall-pro...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2026/06/02/%E8%B0%B7%E7%B2%92%E5%95%86%E5%9F%8E--nginx--%E9%AB%98%E7%BA%A7%E7%AF%87%E7%AC%94%E8%AE%B0%E5%9B%9B/" title="谷粒商城--nginx--高级篇笔记四">谷粒商城--nginx--高级篇笔记四</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">Created</span><time datetime="2026-06-01T23:57:47.000Z" title="Created 2026-06-02 07:57:47">2026-06-02</time></span></div><div class="content">谷粒商城–nginx–高级篇笔记四1. nginx搭建域名访问 (反向代理)1.1 动静分离 1.2 正向代理与反向代理 正向代理隐藏客户端 反向代理隐藏服务端   1.3 nginx与windows搭建域名访问环境 为什么能够通过修改host文件来实现域名访问?  众所周知域名解析是通过dns来解析的,但是在通过网络的dns解析之前需要找到本机的host文件查询是否有对应的域名映射,如果有就通过映射的域名地址访问,如果没有再访问dns 1.3.1 通过改host文件的方法就可以实现host文件地址C:\Windows\System32\drivers\etc  也可以使用工具SwitchHosts 注意:启动SwitchHosts必须以管理员身份启动  1.3.2 配置host 新建本地方案,IP地址为虚拟机地址 192.168.157.128 gulimall.com   1.3.3 域名测试 之前虚拟机配置的nginx的index.html页面显示出来了,域名访问配置成功   1.1.4 nginx搭建域名访问(nginx转发网关)1.1.4.1 实现 1.1.4.1 ng...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2026/06/02/%E8%B0%B7%E7%B2%92%E5%95%86%E5%9F%8E--%E6%90%9C%E7%B4%A2%E6%9C%8D%E5%8A%A1--%E9%AB%98%E7%BA%A7%E7%AF%87%E7%AC%94%E8%AE%B0%E5%85%AD/" title="谷粒商城--搜索服务--高级篇笔记六">谷粒商城--搜索服务--高级篇笔记六</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">Created</span><time datetime="2026-06-01T23:57:41.000Z" title="Created 2026-06-02 07:57:41">2026-06-02</time></span></div><div class="content">谷粒商城–搜索服务–高级篇笔记六1 搜索页面搭建1.1 添加依赖1234567891011&lt;!--devtools--&gt;      &lt;dependency&gt;          &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;          &lt;artifactId&gt;spring-boot-devtools&lt;/artifactId&gt;          &lt;optional&gt;true&lt;/optional&gt;      &lt;/dependency&gt;      &lt;!--Spring Cache--&gt;      &lt;dependency&gt;          &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;          &lt;artifactId&gt;spring-boot-starter-cache&lt;/artifactId&gt;      &lt;/...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2026/06/02/%E8%B0%B7%E7%B2%92%E5%95%86%E5%9F%8E--%E5%BC%82%E6%AD%A5&amp;%E7%BA%BF%E7%A8%8B%E6%B1%A0%20--%E9%AB%98%E7%BA%A7%E7%AF%87%E7%AC%94%E8%AE%B0%E4%B8%83/" title="谷粒商城--异步&amp;线程池 --高级篇笔记七">谷粒商城--异步&amp;线程池 --高级篇笔记七</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">Created</span><time datetime="2026-06-01T23:57:34.000Z" title="Created 2026-06-02 07:57:34">2026-06-02</time></span></div><div class="content">谷粒商城–异步&amp;线程池 –高级篇笔记七0.测试代码地址ThreadTest 1. 初始化线程的4种方式1.1 继承 Thread123456789101112131415161718192021222324package site.zhourui.gilimall.search.thread;/** * @author zr * @date 2021/11/22 22:46 */public class ThreadTest &#123;    public static void main(String[] args) &#123;        System.out.println(&quot;main......start...&quot;);        Thread01 thread01 = new Thread01();        thread01.start();        System.out.println(&quot;main......end...&quot;);    &#125;    public static class Threa...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2026/06/02/%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA--%E8%B0%B7%E7%B2%92%E5%95%86%E5%9F%8E%E7%AC%94%E8%AE%B0%E4%B8%80/" title="环境搭建--谷粒商城笔记一">环境搭建--谷粒商城笔记一</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">Created</span><time datetime="2026-06-01T23:57:26.000Z" title="Created 2026-06-02 07:57:26">2026-06-02</time></span></div><div class="content">环境搭建–谷粒商城笔记一由于vagrant与virtualbox搭建linux不成功,所以我选择VMware搭建centos7系统 centos7阿里云镜像下载 VMware安装centos7 修改CentOS默认yum源为国内yum镜像源  首先备份系统自带yum源配置文件&#x2F;etc&#x2F;yum.repos.d&#x2F;CentOS-Base.repo    1[root@localhost ~] # mv /etc/yum.repos.d/CentOS-Base.repo /etc/yum.repos.d/CentOS-Base.repo.backup    进入yum源配置文件所在的文件夹  1[root@localhost ~] # cd /etc/yum.repos.d/    下载163的yum源配置文件到上面那个文件夹内  CentOS7  1[root@localhost yum.repos.d] # wget http://mirrors.163.com/.help/CentOS7-Base-163.repo    运行yum makecache...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2026/06/02/%E8%B0%B7%E7%B2%92%E5%95%86%E5%9F%8E--%E8%AE%A4%E8%AF%81%E4%B8%AD%E5%BF%83--%E9%AB%98%E7%BA%A7%E7%AF%87%E7%AC%94%E8%AE%B0%E5%85%AB/" title="谷粒商城--认证中心--高级篇笔记八">谷粒商城--认证中心--高级篇笔记八</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">Created</span><time datetime="2026-06-01T23:57:20.000Z" title="Created 2026-06-02 07:57:20">2026-06-02</time></span></div><div class="content">谷粒商城–认证中心–高级篇笔记八 1. 环境搭建1.1 新建模块gulimall-auth-server  1.2 pom文件上面没选好直接复制下面的pom文件,记得排除gulimall-common包的mybatis-plus 12345678910111213141516171819202122232425262728293031323334353637383940414243444546474849505152535455565758596061626364656667686970717273747576777879808182838485868788899091929394&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&lt;project xmlns=&quot;http://maven.apache.org/POM/4.0.0&quot; xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;		 xsi:schem...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2026/06/02/%E8%B0%B7%E7%B2%92%E5%95%86%E5%9F%8E--%E8%B4%AD%E7%89%A9%E8%BD%A6--%E9%AB%98%E7%BA%A7%E7%AF%87%E7%AC%94%E8%AE%B0%E4%B9%9D/" title="谷粒商城--购物车--高级篇笔记九">谷粒商城--购物车--高级篇笔记九</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">Created</span><time datetime="2026-06-01T23:57:12.000Z" title="Created 2026-06-02 07:57:12">2026-06-02</time></span></div><div class="content">谷粒商城–购物车–高级篇笔记九0.购物车需求 用户可以在登录状态下将商品添加到购物车【用户购物车&#x2F;在线购物车】 放入数据库 mongodb 放入 redis（采用） 登录以后， 会将临时购物车的数据全部合并过来， 并清空临时购物车；   用户可以在未登录状态下将商品添加到购物车【游客购物车&#x2F;离线购物车&#x2F;临时购物车】 放入 localstorage（客户端存储， 后台不存） cookie WebSQL 放入 redis（采用） 浏览器即使关闭， 下次进入， 临时购物车数据都在     用户可以使用购物车一起结算下单 给购物车添加商品 用户可以查询自己的购物车 用户可以在购物车中修改购买商品的数量。 用户可以在购物车中删除商品。 选中不选中商品 在购物车中展示商品优惠信息 提示购物车商品价格变化  1. 数据模型分析1.1 数据存储方式购物车是一个读多写多的场景，因此放入数据库并不合适，但购物车又是需要持久化，因此这里我们选用redis存储购物车数据。 1.2 数据存储结构一个购物车是由多个购物项组成的，但是我们用List进行存储并不合适，因为使用Lis...</div></div></div></div><nav id="pagination"><div class="pagination"><a class="extend prev" rel="prev" href="/"><i class="fas fa-chevron-left fa-fw"></i></a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/#content-inner">3</a><span class="space">&hellip;</span><a class="page-number" href="/page/18/#content-inner">18</a><a class="extend next" rel="next" href="/page/3/#content-inner"><i class="fas fa-chevron-right fa-fw"></i></a></div></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/butterfly-icon.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">Yuanz</div><div class="author-info-description">Yuanz的个人博客</div><div class="site-data"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">176</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">0</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">0</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>Announcement</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Posts</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/06/02/hello-world/" title="Hello World">Hello World</a><time datetime="2026-06-02T07:15:27.184Z" title="Created 2026-06-02 15:15:27">2026-06-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/06/02/%E8%B0%B7%E7%B2%92%E5%95%86%E5%9F%8E--%E6%B3%A8%E5%86%8C%E4%B8%AD%E5%BF%83%E9%85%8D%E7%BD%AE%E4%B8%AD%E5%BF%83%E5%8F%8A%E7%BD%91%E5%85%B3--%E7%AC%94%E8%AE%B0%E4%BA%8C/" title="谷粒商城--注册中心配置中心及网关--笔记二">谷粒商城--注册中心配置中心及网关--笔记二</a><time datetime="2026-06-01T23:59:20.000Z" title="Created 2026-06-02 07:59:20">2026-06-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/06/02/%E8%B0%B7%E7%B2%92%E5%95%86%E5%9F%8E--%E5%89%8D%E7%AB%AF%E5%9F%BA%E7%A1%80--es6--%E7%AC%94%E8%AE%B0%E4%B8%89/" title="谷粒商城--前端基础--es6--笔记三">谷粒商城--前端基础--es6--笔记三</a><time datetime="2026-06-01T23:59:13.000Z" title="Created 2026-06-02 07:59:13">2026-06-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/06/02/%E8%B0%B7%E7%B2%92%E5%95%86%E5%9F%8E-vue-%E7%AC%94%E8%AE%B0%E5%9B%9B/" title="谷粒商城-vue-笔记四">谷粒商城-vue-笔记四</a><time datetime="2026-06-01T23:59:06.000Z" title="Created 2026-06-02 07:59:06">2026-06-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/06/02/%E8%B0%B7%E7%B2%92%E5%95%86%E5%9F%8E-%E6%A0%91%E5%BD%A2%E7%9B%AE%E5%BD%95%E5%BC%80%E5%8F%91-%E7%AC%94%E8%AE%B0%E4%BA%94/" title="谷粒商城-树形目录开发-笔记五">谷粒商城-树形目录开发-笔记五</a><time datetime="2026-06-01T23:58:59.000Z" title="Created 2026-06-02 07:58:59">2026-06-02</time></div></div></div></div><div class="card-widget card-archives">
+    <div class="item-headline">
+      <i class="fas fa-archive"></i>
+      <span>Archives</span>
+      
+    </div>
+  
+    <ul class="card-archive-list">
+      
+        <li class="card-archive-list-item">
+          <a class="card-archive-list-link" href="/archives/2026/06/">
+            <span class="card-archive-list-date">
+              June 2026
+            </span>
+            <span class="card-archive-list-count">174</span>
+          </a>
+        </li>
+      
+        <li class="card-archive-list-item">
+          <a class="card-archive-list-link" href="/archives/2026/05/">
+            <span class="card-archive-list-date">
+              May 2026
+            </span>
+            <span class="card-archive-list-count">2</span>
+          </a>
+        </li>
+      
+    </ul>
+  </div><div class="card-widget card-webinfo"><div class="item-headline"><i class="fas fa-chart-line"></i><span>Website Info</span></div><div class="webinfo"><div class="webinfo-item"><div class="item-name">Article Count :</div><div class="item-count">176</div></div><div class="webinfo-item"><div class="item-name">Unique Visitors :</div><div class="item-count" id="busuanzi_value_site_uv"><i class="fa-solid fa-spinner fa-spin"></i></div></div><div class="webinfo-item"><div class="item-name">Page Views :</div><div class="item-count" id="busuanzi_value_site_pv"><i class="fa-solid fa-spinner fa-spin"></i></div></div><div class="webinfo-item"><div class="item-name">Last Update :</div><div class="item-count" id="last-push-date" data-lastPushDate="2026-06-02T10:34:58.394Z"><i class="fa-solid fa-spinner fa-spin"></i></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2025 - 2026 By Yuanz</span><span class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 8.1.2</a><span class="footer-separator">|</span><span>Theme </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.5.5-b1</a></span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="darkmode" type="button" title="Toggle Between Light and Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle Between Single-column and Double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="Settings"><i class="fas fa-cog fa-spin"></i></button><button id="go-up" type="button" title="Back to Top"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.5.5-b1"></script><script src="/js/main.js?v=5.5.5-b1"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>

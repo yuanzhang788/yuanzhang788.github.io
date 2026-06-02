@@ -1,0 +1,210 @@
+<!DOCTYPE html><html lang="cn" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>kubesphere(2.1.x) Devops配置Gitee采坑记录(devops-java-sample) | Yuanz</title><meta name="author" content="Yuanz"><meta name="copyright" content="Yuanz"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="kubesphere(2.1.x) Devops配置Gitee采坑记录(devops-java-sample)0. 本次部署为kubersphere构建流水线的测试项目devops-java-sample1. 为什么我要使用Gitee? 在github-id账号与密码都配置正确的情况下,并且账号密码遵从了以下要求   Devops配置Gitee采坑记录(devops-java-sample)&amp;#x">
+<meta property="og:type" content="article">
+<meta property="og:title" content="kubesphere(2.1.x) Devops配置Gitee采坑记录(devops-java-sample)">
+<meta property="og:url" content="https://yuanzhang788.github.io/2026/06/02/kubesphere(2.1.x)%20Devops%E9%85%8D%E7%BD%AEGitee%E9%87%87%E5%9D%91%E8%AE%B0%E5%BD%95(devops-java-sample)/index.html">
+<meta property="og:site_name" content="Yuanz">
+<meta property="og:description" content="kubesphere(2.1.x) Devops配置Gitee采坑记录(devops-java-sample)0. 本次部署为kubersphere构建流水线的测试项目devops-java-sample1. 为什么我要使用Gitee? 在github-id账号与密码都配置正确的情况下,并且账号密码遵从了以下要求   Devops配置Gitee采坑记录(devops-java-sample)&amp;#x">
+<meta property="og:locale">
+<meta property="og:image" content="https://yuanzhang788.github.io/img/butterfly-icon.png">
+<meta property="article:published_time" content="2026-06-01T23:56:51.000Z">
+<meta property="article:modified_time" content="2026-06-02T08:12:23.900Z">
+<meta property="article:author" content="Yuanz">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://yuanzhang788.github.io/img/butterfly-icon.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "kubesphere(2.1.x) Devops配置Gitee采坑记录(devops-java-sample)",
+  "url": "https://yuanzhang788.github.io/2026/06/02/kubesphere(2.1.x)%20Devops%E9%85%8D%E7%BD%AEGitee%E9%87%87%E5%9D%91%E8%AE%B0%E5%BD%95(devops-java-sample)/",
+  "image": "https://yuanzhang788.github.io/img/butterfly-icon.png",
+  "datePublished": "2026-06-01T23:56:51.000Z",
+  "dateModified": "2026-06-02T08:12:23.900Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "Yuanz",
+      "url": "https://yuanzhang788.github.io"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://yuanzhang788.github.io/2026/06/02/kubesphere(2.1.x)%20Devops%E9%85%8D%E7%BD%AEGitee%E9%87%87%E5%9D%91%E8%AE%B0%E5%BD%95(devops-java-sample)/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=5.5.5-b1"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: 'Copy Successful',
+    error: 'Copy Failed',
+    noSupport: 'Browser Not Supported'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: 'Just now',
+    min: 'minutes ago',
+    hour: 'hours ago',
+    day: 'days ago',
+    month: 'months ago'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.0/dist/infinitegrid.min.js',
+    buttonText: 'Load More'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'kubesphere(2.1.x) Devops配置Gitee采坑记录(devops-java-sample)',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><meta name="generator" content="Hexo 8.1.2"></head><body><div class="post" id="body-wrap"><header class="post-bg" id="page-header"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">Yuanz</span></a><a class="nav-page-title" href="/"><span class="site-name">kubesphere(2.1.x) Devops配置Gitee采坑记录(devops-java-sample)</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  Back to Home</span></span></a></span><div id="menus"></div></nav><div id="post-info"><h1 class="post-title">kubesphere(2.1.x) Devops配置Gitee采坑记录(devops-java-sample)</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2026-06-01T23:56:51.000Z" title="Created 2026-06-02 07:56:51">2026-06-02</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2026-06-02T08:12:23.900Z" title="Updated 2026-06-02 16:12:23">2026-06-02</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">Post Views:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><h1 id="kubesphere-2-1-x-Devops配置Gitee采坑记录-devops-java-sample"><a href="#kubesphere-2-1-x-Devops配置Gitee采坑记录-devops-java-sample" class="headerlink" title="kubesphere(2.1.x) Devops配置Gitee采坑记录(devops-java-sample)"></a>kubesphere(2.1.x) Devops配置Gitee采坑记录(devops-java-sample)</h1><h2 id="0-本次部署为kubersphere构建流水线的测试项目devops-java-sample"><a href="#0-本次部署为kubersphere构建流水线的测试项目devops-java-sample" class="headerlink" title="0. 本次部署为kubersphere构建流水线的测试项目devops-java-sample"></a>0. 本次部署为kubersphere构建流水线的测试项目<a target="_blank" rel="noopener" href="https://github.com/yuanzhang788/devops-java-sample">devops-java-sample</a></h2><h2 id="1-为什么我要使用Gitee"><a href="#1-为什么我要使用Gitee" class="headerlink" title="1. 为什么我要使用Gitee?"></a>1. 为什么我要使用Gitee?</h2><blockquote>
+<p>在github-id账号与密码都配置正确的情况下,并且账号密码遵从了以下要求</p>
+</blockquote>
+<p><img src="/assets/kubesphere(2.1.x" alt="image-20220125171052012"> Devops配置Gitee采坑记录(devops-java-sample)&#x2F;1f5c0353beb2a2401bdb7b7e4ae86631.png)</p>
+<blockquote>
+<p>仍然出现以下错误,推测是墙的原因.我部署几次有一次成功了,代表我配置秘钥凭证没有问题</p>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"> &gt; </span><span class="language-bash">git fetch --tags --progress https://github.com/yuanzhang788/devops-java-sample.git +refs/heads/master:refs/remotes/origin/master --depth=1 <span class="comment"># timeout=20</span></span></span><br><span class="line">ERROR: Error cloning remote repo &#x27;origin&#x27;</span><br><span class="line">hudson.plugins.git.GitException: Command &quot;git fetch --tags --progress https://github.com/yuanzhang788/devops-java-sample.git +refs/heads/master:refs/remotes/origin/master --depth=1&quot; returned status code 128:</span><br><span class="line">stdout: </span><br><span class="line">stderr: fatal: unable to access &#x27;https://github.com/yuanzhang788/devops-java-sample.git/&#x27;: gnutls_handshake() failed: The TLS connection was non-properly terminated.</span><br><span class="line"></span><br><span class="line">	at org.jenkinsci.plugins.gitclient.CliGitAPIImpl.launchCommandIn(CliGitAPIImpl.java:2042)</span><br><span class="line">	at org.jenkinsci.plugins.gitclient.CliGitAPIImpl.launchCommandWithCredentials(CliGitAPIImpl.java:1761)</span><br><span class="line">	at org.jenkinsci.plugins.gitclient.CliGitAPIImpl.access$400(CliGitAPIImpl.java:72)</span><br><span class="line">	at org.jenkinsci.plugins.gitclient.CliGitAPIImpl$1.execute(CliGitAPIImpl.java:442)</span><br><span class="line">	at org.jenkinsci.plugins.gitclient.CliGitAPIImpl$2.execute(CliGitAPIImpl.java:655)</span><br><span class="line">	at org.jenkinsci.plugins.gitclient.RemoteGitImpl$CommandInvocationHandler$1.call(RemoteGitImpl.java:153)</span><br><span class="line">	at org.jenkinsci.plugins.gitclient.RemoteGitImpl$CommandInvocationHandler$1.call(RemoteGitImpl.java:146)</span><br><span class="line">	at hudson.remoting.UserRequest.perform(UserRequest.java:212)</span><br><span class="line">	at hudson.remoting.UserRequest.perform(UserRequest.java:54)</span><br><span class="line">	at hudson.remoting.Request$2.run(Request.java:369)</span><br><span class="line">	at hudson.remoting.InterceptingExecutorService$1.call(InterceptingExecutorService.java:72)</span><br><span class="line">	at java.util.concurrent.FutureTask.run(FutureTask.java:266)</span><br><span class="line">	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)</span><br><span class="line">	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)</span><br><span class="line">	at hudson.remoting.Engine$1.lambda$newThread$0(Engine.java:93)</span><br><span class="line">	at java.lang.Thread.run(Thread.java:748)</span><br><span class="line">	Suppressed: hudson.remoting.Channel$CallSiteStackTrace: Remote call to JNLP4-connect connection from 10.244.2.142/10.244.2.142:32874</span><br><span class="line">		at hudson.remoting.Channel.attachCallSiteStackTrace(Channel.java:1743)</span><br><span class="line">		at hudson.remoting.UserRequest$ExceptionResponse.retrieve(UserRequest.java:357)</span><br><span class="line">		at hudson.remoting.Channel.call(Channel.java:957)</span><br><span class="line">		at org.jenkinsci.plugins.gitclient.RemoteGitImpl$CommandInvocationHandler.execute(RemoteGitImpl.java:146)</span><br><span class="line">		at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)</span><br><span class="line">		at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)</span><br><span class="line">		at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)</span><br><span class="line">		at java.lang.reflect.Method.invoke(Method.java:498)</span><br><span class="line">		at org.jenkinsci.plugins.gitclient.RemoteGitImpl$CommandInvocationHandler.invoke(RemoteGitImpl.java:132)</span><br><span class="line">		at com.sun.proxy.$Proxy134.execute(Unknown Source)</span><br><span class="line">		at hudson.plugins.git.GitSCM.retrieveChanges(GitSCM.java:1152)</span><br><span class="line">		at hudson.plugins.git.GitSCM.checkout(GitSCM.java:1192)</span><br><span class="line">		at org.jenkinsci.plugins.workflow.steps.scm.SCMStep.checkout(SCMStep.java:124)</span><br><span class="line">		at org.jenkinsci.plugins.workflow.steps.scm.SCMStep$StepExecutionImpl.run(SCMStep.java:93)</span><br><span class="line">		at org.jenkinsci.plugins.workflow.steps.scm.SCMStep$StepExecutionImpl.run(SCMStep.java:80)</span><br><span class="line">		at org.jenkinsci.plugins.workflow.steps.SynchronousNonBlockingStepExecution.lambda$start$0(SynchronousNonBlockingStepExecution.java:47)</span><br><span class="line">		at java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:511)</span><br><span class="line">		at java.util.concurrent.FutureTask.run(FutureTask.java:266)</span><br><span class="line">		at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)</span><br><span class="line">		at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)</span><br><span class="line">		... 1 more</span><br><span class="line">[Pipeline] &#125;</span><br><span class="line">[Pipeline] // stage</span><br><span class="line">[Pipeline] &#125;</span><br><span class="line">[Pipeline] // node</span><br><span class="line">[Pipeline] End of Pipeline</span><br><span class="line"></span><br><span class="line">GitHub has been notified of this commit’s build result</span><br><span class="line"></span><br><span class="line">ERROR: Error cloning remote repo &#x27;origin&#x27;</span><br><span class="line">Finished: FAILURE</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+
+<h2 id="2-配置Jenkinsfile"><a href="#2-配置Jenkinsfile" class="headerlink" title="2.配置Jenkinsfile"></a>2.配置Jenkinsfile</h2><blockquote>
+<p>Jenkinsfile配置相关凭证,配置到这里已经可以正常部署</p>
+</blockquote>
+<p><img src="/assets/kubesphere(2.1.x" alt="image-20220125171845403"> Devops配置Gitee采坑记录(devops-java-sample)&#x2F;d49a700150a264e655c6bd49b48261f6.png)</p>
+<blockquote>
+<p>配置到这里已经可以正常扫描部署,但是不会push到仓库以及发布正式环境</p>
+</blockquote>
+<p><img src="/assets/kubesphere(2.1.x" alt="image-20220125172212905"> Devops配置Gitee采坑记录(devops-java-sample)&#x2F;b9de0c128f09d0deefbfed3d0b055802.png)</p>
+<blockquote>
+<p>查看日志信息发现仍然推送的是github</p>
+</blockquote>
+<p><img src="/assets/kubesphere(2.1.x" alt="image-20220125172309792"> Devops配置Gitee采坑记录(devops-java-sample)&#x2F;5def511eb61a843b760e25a34b217bef.png)</p>
+<blockquote>
+<p>Jenkinsfile修改推送地址为gitee</p>
+</blockquote>
+<p><img src="/assets/kubesphere(2.1.x" alt="image-20220125172559954"> Devops配置Gitee采坑记录(devops-java-sample)&#x2F;7800f43b731f0c5219d58774d0af4ce7.png)</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sh &#x27;git push http://$GIT_USERNAME:$GIT_PASSWORD@gitee.com/$GITHUB_ACCOUNT/devops-java-sample.git --tags --ipv4&#x27;</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+
+
+
+<blockquote>
+<p>最终部署成功</p>
+</blockquote>
+<p><img src="/assets/kubesphere(2.1.x" alt="image-20220125173040906"> Devops配置Gitee采坑记录(devops-java-sample)&#x2F;b5032f6153660f23b1cf0302c317b60e.png)</p>
+<p><img src="/assets/kubesphere(2.1.x" alt="image-20220125173134445"> Devops配置Gitee采坑记录(devops-java-sample)&#x2F;e4d27e40e091b338e0600fa1472eafda.png)</p>
+<p><img src="/assets/kubesphere(2.1.x" alt="image-20220125173151908"> Devops配置Gitee采坑记录(devops-java-sample)&#x2F;0adb67646d208bccd55d3e9e69f26cc4.png)</p>
+<h2 id="3-Jenkinsfile-online"><a href="#3-Jenkinsfile-online" class="headerlink" title="3.Jenkinsfile-online"></a>3.Jenkinsfile-online</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br></pre></td><td class="code"><pre><span class="line">pipeline &#123;</span><br><span class="line">  agent &#123;</span><br><span class="line">    node &#123;</span><br><span class="line">      label &#x27;maven&#x27;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">    parameters &#123;</span><br><span class="line">        string(name:&#x27;TAG_NAME&#x27;,defaultValue: &#x27;&#x27;,description:&#x27;&#x27;)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    environment &#123;</span><br><span class="line">        DOCKER_CREDENTIAL_ID = &#x27;dockerhub&#x27;</span><br><span class="line">        GITHUB_CREDENTIAL_ID = &#x27;gitee-id&#x27;</span><br><span class="line">        KUBECONFIG_CREDENTIAL_ID = &#x27;demo-kubeconfig&#x27;</span><br><span class="line">        REGISTRY = &#x27;docker.io&#x27;</span><br><span class="line">        DOCKERHUB_NAMESPACE = &#x27;zr8888&#x27;</span><br><span class="line">        GITHUB_ACCOUNT = &#x27;zhourui815&#x27;</span><br><span class="line">        APP_NAME = &#x27;devops-java-sample&#x27;</span><br><span class="line">        SONAR_CREDENTIAL_ID = &#x27;sonar-qube&#x27;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    stages &#123;</span><br><span class="line">        stage (&#x27;checkout scm&#x27;) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                checkout(scm)</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        stage (&#x27;unit test&#x27;) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                container (&#x27;maven&#x27;) &#123;</span><br><span class="line">                    sh &#x27;mvn clean -gs `pwd`/configuration/settings.xml test&#x27;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        stage(&#x27;sonarqube analysis&#x27;) &#123;</span><br><span class="line">          steps &#123;</span><br><span class="line">            container (&#x27;maven&#x27;) &#123;</span><br><span class="line">              withCredentials([string(credentialsId: &quot;$SONAR_CREDENTIAL_ID&quot;, variable: &#x27;SONAR_TOKEN&#x27;)]) &#123;</span><br><span class="line">                withSonarQubeEnv(&#x27;sonar&#x27;) &#123;</span><br><span class="line">                 sh &quot;mvn sonar:sonar -gs `pwd`/configuration/settings.xml -Dsonar.branch=$BRANCH_NAME -Dsonar.login=$SONAR_TOKEN&quot;</span><br><span class="line">                &#125;</span><br><span class="line">              &#125;</span><br><span class="line">              timeout(time: 1, unit: &#x27;HOURS&#x27;) &#123;</span><br><span class="line">                waitForQualityGate abortPipeline: true</span><br><span class="line">              &#125;</span><br><span class="line">            &#125;</span><br><span class="line">          &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        stage (&#x27;build &amp; push&#x27;) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                container (&#x27;maven&#x27;) &#123;</span><br><span class="line">                    sh &#x27;mvn -Dmaven.test.skip=true -gs `pwd`/configuration/settings.xml clean package&#x27;</span><br><span class="line">                    sh &#x27;docker build -f Dockerfile-online -t $REGISTRY/$DOCKERHUB_NAMESPACE/$APP_NAME:SNAPSHOT-$BRANCH_NAME-$BUILD_NUMBER .&#x27;</span><br><span class="line">                    withCredentials([usernamePassword(passwordVariable : &#x27;DOCKER_PASSWORD&#x27; ,usernameVariable : &#x27;DOCKER_USERNAME&#x27; ,credentialsId : &quot;$DOCKER_CREDENTIAL_ID&quot; ,)]) &#123;</span><br><span class="line">                        sh &#x27;echo &quot;$DOCKER_PASSWORD&quot; | docker login $REGISTRY -u &quot;$DOCKER_USERNAME&quot; --password-stdin&#x27;</span><br><span class="line">                        sh &#x27;docker push  $REGISTRY/$DOCKERHUB_NAMESPACE/$APP_NAME:SNAPSHOT-$BRANCH_NAME-$BUILD_NUMBER&#x27;</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        stage(&#x27;push latest&#x27;)&#123;</span><br><span class="line">           when&#123;</span><br><span class="line">             branch &#x27;master&#x27;</span><br><span class="line">           &#125;</span><br><span class="line">           steps&#123;</span><br><span class="line">                container (&#x27;maven&#x27;) &#123;</span><br><span class="line">                  sh &#x27;docker tag  $REGISTRY/$DOCKERHUB_NAMESPACE/$APP_NAME:SNAPSHOT-$BRANCH_NAME-$BUILD_NUMBER $REGISTRY/$DOCKERHUB_NAMESPACE/$APP_NAME:latest &#x27;</span><br><span class="line">                  sh &#x27;docker push  $REGISTRY/$DOCKERHUB_NAMESPACE/$APP_NAME:latest &#x27;</span><br><span class="line">                &#125;</span><br><span class="line">           &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        stage(&#x27;deploy to dev&#x27;) &#123;</span><br><span class="line">          when&#123;</span><br><span class="line">            branch &#x27;master&#x27;</span><br><span class="line">          &#125;</span><br><span class="line">          steps &#123;</span><br><span class="line">            input(id: &#x27;deploy-to-dev&#x27;, message: &#x27;deploy to dev?&#x27;)</span><br><span class="line">            kubernetesDeploy(configs: &#x27;deploy/dev-ol/**&#x27;, enableConfigSubstitution: true, kubeconfigId: &quot;$KUBECONFIG_CREDENTIAL_ID&quot;)</span><br><span class="line">          &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        stage(&#x27;push with tag&#x27;)&#123;</span><br><span class="line">          when&#123;</span><br><span class="line">            expression&#123;</span><br><span class="line">              return params.TAG_NAME =~ /v.*/</span><br><span class="line">            &#125;</span><br><span class="line">          &#125;</span><br><span class="line">          steps &#123;</span><br><span class="line">              container (&#x27;maven&#x27;) &#123;</span><br><span class="line">                input(id: &#x27;release-image-with-tag&#x27;, message: &#x27;release image with tag?&#x27;)</span><br><span class="line">                  withCredentials([usernamePassword(credentialsId: &quot;$GITHUB_CREDENTIAL_ID&quot;, passwordVariable: &#x27;GIT_PASSWORD&#x27;, usernameVariable: &#x27;GIT_USERNAME&#x27;)]) &#123;</span><br><span class="line">                    sh &#x27;git config --global user.email &quot;kubesphere@yunify.com&quot; &#x27;</span><br><span class="line">                    sh &#x27;git config --global user.name &quot;kubesphere&quot; &#x27;</span><br><span class="line">                    sh &#x27;git tag -a $TAG_NAME -m &quot;$TAG_NAME&quot; &#x27;</span><br><span class="line">                    sh &#x27;git push http://$GIT_USERNAME:$GIT_PASSWORD@gitee.com/$GITHUB_ACCOUNT/devops-java-sample.git --tags --ipv4&#x27;</span><br><span class="line">                  &#125;</span><br><span class="line">                sh &#x27;docker tag  $REGISTRY/$DOCKERHUB_NAMESPACE/$APP_NAME:SNAPSHOT-$BRANCH_NAME-$BUILD_NUMBER $REGISTRY/$DOCKERHUB_NAMESPACE/$APP_NAME:$TAG_NAME &#x27;</span><br><span class="line">                sh &#x27;docker push  $REGISTRY/$DOCKERHUB_NAMESPACE/$APP_NAME:$TAG_NAME &#x27;</span><br><span class="line">          &#125;</span><br><span class="line">          &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        stage(&#x27;deploy to production&#x27;) &#123;</span><br><span class="line">          when&#123;</span><br><span class="line">            expression&#123;</span><br><span class="line">              return params.TAG_NAME =~ /v.*/</span><br><span class="line">            &#125;</span><br><span class="line">          &#125;</span><br><span class="line">          steps &#123;</span><br><span class="line">            input(id: &#x27;deploy-to-production&#x27;, message: &#x27;deploy to production?&#x27;)</span><br><span class="line">            kubernetesDeploy(configs: &#x27;deploy/prod-ol/**&#x27;, enableConfigSubstitution: true, kubeconfigId: &quot;$KUBECONFIG_CREDENTIAL_ID&quot;)</span><br><span class="line">          &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>Author: </span><span class="post-copyright-info"><a href="https://yuanzhang788.github.io">Yuanz</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>Link: </span><span class="post-copyright-info"><a href="https://yuanzhang788.github.io/2026/06/02/kubesphere(2.1.x)%20Devops%E9%85%8D%E7%BD%AEGitee%E9%87%87%E5%9D%91%E8%AE%B0%E5%BD%95(devops-java-sample)/">https://yuanzhang788.github.io/2026/06/02/kubesphere(2.1.x)%20Devops%E9%85%8D%E7%BD%AEGitee%E9%87%87%E5%9D%91%E8%AE%B0%E5%BD%95(devops-java-sample)/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>Copyright Notice: </span><span class="post-copyright-info">All articles on this blog are licensed under <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless otherwise stated.</span></div></div><div class="tag_share"><div class="post-share"><div class="social-share" data-image="/img/butterfly-icon.png" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2026/06/02/VMware%E6%90%AD%E5%BB%BAlinux%E9%9B%86%E7%BE%A4/" title="VMware搭建linux集群"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info"><div class="info-1"><div class="info-item-1">Previous</div><div class="info-item-2">VMware搭建linux集群</div></div><div class="info-2"><div class="info-item-1">VMware搭建linux集群1. 单台虚拟机静态ip配置要想搭建集群,首先需要配置好一台 1.1 配置子网ip,子网ip决定以后你的局域网ip在哪个网段 1.2 配置网关ip 1.3 配置ip起始地址,ip结束地址 1.4 为虚拟机配置静态ip1.4.1 打开虚拟机配置静态ip,需要root用户 找到以下目录  1cd /etc/sysconfig/network-scripts/       备份原始网络配置文件  1cp cp ifcfg-ens33 ifcfg-ens33_back ifcfg-ens33_back      修改ifcfg-ens33配置文件  12345678910111213141516#原始配置TYPE=EthernetPROXY_METHOD=noneBROWSER_ONLY=noBOOTPROTO=dhcpDEFROUTE=yesIPV4_FAILURE_FATAL=noIPV6INIT=yesIPV6_AUTOCONF=yesIPV6_DEFROUTE=yesIPV6_FAILURE_FATAL=noIPV6_ADDR_GEN_MODE=st...</div></div></div></a><a class="pagination-related" href="/2026/06/02/mysql%E9%9B%86%E7%BE%A4/" title="mysql集群"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">Next</div><div class="info-item-2">mysql集群</div></div><div class="info-2"><div class="info-item-1">3. mysql集群3.1 企业中常用的数据库解决方案 3.2 mysql常见的几种集群方式3.2.1 MYSQl-MMM(Master-Master Replication Manager for MySQLMySQL-MMM 是 Master-Master Replication Manager for MySQL（mysql 主主复制管理器） 的简称， 是 Google 的开源项目（Perl 脚本） 。  MMM 基于 MySQL Replication 做的扩展架构， 主要用来监控 mysql 主主复制并做失败转移。 其原理是将真实数据库节点的IP（RIP） 映射为虚拟 IP（VIP） 集。mysql-mmm 的监管端会提供多个虚拟 IP（VIP） ， 包括一个可写 VIP，多个可读 VIP， 通过监管的管理， 这些 IP 会绑定在可用 mysql 之上， 当某一台 mysql 宕机时， 监管会将 VIP迁移至其他 mysql。在整个监管过程中， 需要在 mysql 中添加相关授权用户， 以便让 mysql 可以支持监理机的维护。 授权的用户包括一个mmm_monitor...</div></div></div></a></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/butterfly-icon.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">Yuanz</div><div class="author-info-description">Yuanz的个人博客</div><div class="site-data"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">176</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">0</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">0</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>Announcement</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>Contents</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#kubesphere-2-1-x-Devops%E9%85%8D%E7%BD%AEGitee%E9%87%87%E5%9D%91%E8%AE%B0%E5%BD%95-devops-java-sample"><span class="toc-number">1.</span> <span class="toc-text">kubesphere(2.1.x) Devops配置Gitee采坑记录(devops-java-sample)</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#0-%E6%9C%AC%E6%AC%A1%E9%83%A8%E7%BD%B2%E4%B8%BAkubersphere%E6%9E%84%E5%BB%BA%E6%B5%81%E6%B0%B4%E7%BA%BF%E7%9A%84%E6%B5%8B%E8%AF%95%E9%A1%B9%E7%9B%AEdevops-java-sample"><span class="toc-number">1.1.</span> <span class="toc-text">0. 本次部署为kubersphere构建流水线的测试项目devops-java-sample</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E4%B8%BA%E4%BB%80%E4%B9%88%E6%88%91%E8%A6%81%E4%BD%BF%E7%94%A8Gitee"><span class="toc-number">1.2.</span> <span class="toc-text">1. 为什么我要使用Gitee?</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E9%85%8D%E7%BD%AEJenkinsfile"><span class="toc-number">1.3.</span> <span class="toc-text">2.配置Jenkinsfile</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-Jenkinsfile-online"><span class="toc-number">1.4.</span> <span class="toc-text">3.Jenkinsfile-online</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Posts</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/06/02/hello-world/" title="Hello World">Hello World</a><time datetime="2026-06-02T07:15:27.184Z" title="Created 2026-06-02 15:15:27">2026-06-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/06/02/%E8%B0%B7%E7%B2%92%E5%95%86%E5%9F%8E--%E6%B3%A8%E5%86%8C%E4%B8%AD%E5%BF%83%E9%85%8D%E7%BD%AE%E4%B8%AD%E5%BF%83%E5%8F%8A%E7%BD%91%E5%85%B3--%E7%AC%94%E8%AE%B0%E4%BA%8C/" title="谷粒商城--注册中心配置中心及网关--笔记二">谷粒商城--注册中心配置中心及网关--笔记二</a><time datetime="2026-06-01T23:59:20.000Z" title="Created 2026-06-02 07:59:20">2026-06-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/06/02/%E8%B0%B7%E7%B2%92%E5%95%86%E5%9F%8E--%E5%89%8D%E7%AB%AF%E5%9F%BA%E7%A1%80--es6--%E7%AC%94%E8%AE%B0%E4%B8%89/" title="谷粒商城--前端基础--es6--笔记三">谷粒商城--前端基础--es6--笔记三</a><time datetime="2026-06-01T23:59:13.000Z" title="Created 2026-06-02 07:59:13">2026-06-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/06/02/%E8%B0%B7%E7%B2%92%E5%95%86%E5%9F%8E-vue-%E7%AC%94%E8%AE%B0%E5%9B%9B/" title="谷粒商城-vue-笔记四">谷粒商城-vue-笔记四</a><time datetime="2026-06-01T23:59:06.000Z" title="Created 2026-06-02 07:59:06">2026-06-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/06/02/%E8%B0%B7%E7%B2%92%E5%95%86%E5%9F%8E-%E6%A0%91%E5%BD%A2%E7%9B%AE%E5%BD%95%E5%BC%80%E5%8F%91-%E7%AC%94%E8%AE%B0%E4%BA%94/" title="谷粒商城-树形目录开发-笔记五">谷粒商城-树形目录开发-笔记五</a><time datetime="2026-06-01T23:58:59.000Z" title="Created 2026-06-02 07:58:59">2026-06-02</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2025 - 2026 By Yuanz</span><span class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 8.1.2</a><span class="footer-separator">|</span><span>Theme </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.5.5-b1</a></span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="Reading Mode"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="Toggle Between Light and Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle Between Single-column and Double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="Settings"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="Table of Contents"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="Back to Top"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.5.5-b1"></script><script src="/js/main.js?v=5.5.5-b1"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
