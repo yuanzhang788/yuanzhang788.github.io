@@ -9,7 +9,9 @@ $fileIndex = 1
 
 foreach ($md in $mdFiles) {
     $mdFile = $md.FullName
+    # 清理文件名中的特殊字符，只保留字母、数字、中文、下划线和连字符
     $mdName = [System.IO.Path]::GetFileNameWithoutExtension($mdFile)
+    $mdName = $mdName -replace '[^\w\s\u4e00-\u9fa5-]', '' -replace '\s+', ''
 
     # 读取文件
     $content = Get-Content $mdFile -Raw -Encoding UTF8
