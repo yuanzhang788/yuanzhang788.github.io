@@ -1,0 +1,895 @@
+<!DOCTYPE html><html lang="cn" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>HivisionIDPhoto Docker部署以及Springboot接口对接(AI证件照制作) | Yuanz</title><meta name="author" content="Yuanz"><meta name="copyright" content="Yuanz"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="项目简介项目以及官方文档地址 HivisionIDPhoto 旨在开发一种实用、系统性的证件照智能制作算法。 它利用一套完善的AI模型工作流程，实现对多种用户拍照场景的识别、抠图与证件照生成。 HivisionIDPhoto 可以做到：  轻量级抠图（纯离线，仅需 CPU 即可快速推理） 根据不同尺寸规格生成不同的标准证件照、六寸排版照 支持 纯离线 或 端云 推理 美颜 智能换正装（waitin">
+<meta property="og:type" content="article">
+<meta property="og:title" content="HivisionIDPhoto Docker部署以及Springboot接口对接(AI证件照制作)">
+<meta property="og:url" content="https://yuanzhang788.github.io/2024/10/25/HivisionIDPhoto%20Docker%E9%83%A8%E7%BD%B2%E4%BB%A5%E5%8F%8ASpringboot%E6%8E%A5%E5%8F%A3%E5%AF%B9%E6%8E%A5(AI%E8%AF%81%E4%BB%B6%E7%85%A7%E5%88%B6%E4%BD%9C)/index.html">
+<meta property="og:site_name" content="Yuanz">
+<meta property="og:description" content="项目简介项目以及官方文档地址 HivisionIDPhoto 旨在开发一种实用、系统性的证件照智能制作算法。 它利用一套完善的AI模型工作流程，实现对多种用户拍照场景的识别、抠图与证件照生成。 HivisionIDPhoto 可以做到：  轻量级抠图（纯离线，仅需 CPU 即可快速推理） 根据不同尺寸规格生成不同的标准证件照、六寸排版照 支持 纯离线 或 端云 推理 美颜 智能换正装（waitin">
+<meta property="og:locale">
+<meta property="og:image" content="https://yuanzhang788.github.io/img/butterfly-icon.png">
+<meta property="article:published_time" content="2024-10-25T05:59:04.000Z">
+<meta property="article:modified_time" content="2026-06-08T03:35:05.769Z">
+<meta property="article:author" content="Yuanz">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://yuanzhang788.github.io/img/butterfly-icon.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "HivisionIDPhoto Docker部署以及Springboot接口对接(AI证件照制作)",
+  "url": "https://yuanzhang788.github.io/2024/10/25/HivisionIDPhoto%20Docker%E9%83%A8%E7%BD%B2%E4%BB%A5%E5%8F%8ASpringboot%E6%8E%A5%E5%8F%A3%E5%AF%B9%E6%8E%A5(AI%E8%AF%81%E4%BB%B6%E7%85%A7%E5%88%B6%E4%BD%9C)/",
+  "image": "https://yuanzhang788.github.io/img/butterfly-icon.png",
+  "datePublished": "2024-10-25T05:59:04.000Z",
+  "dateModified": "2026-06-08T03:35:05.769Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "Yuanz",
+      "url": "https://yuanzhang788.github.io"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://yuanzhang788.github.io/2024/10/25/HivisionIDPhoto%20Docker%E9%83%A8%E7%BD%B2%E4%BB%A5%E5%8F%8ASpringboot%E6%8E%A5%E5%8F%A3%E5%AF%B9%E6%8E%A5(AI%E8%AF%81%E4%BB%B6%E7%85%A7%E5%88%B6%E4%BD%9C)/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=5.5.5-b1"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: 'Copy Successful',
+    error: 'Copy Failed',
+    noSupport: 'Browser Not Supported'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: 'Just now',
+    min: 'minutes ago',
+    hour: 'hours ago',
+    day: 'days ago',
+    month: 'months ago'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.0/dist/infinitegrid.min.js',
+    buttonText: 'Load More'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'HivisionIDPhoto Docker部署以及Springboot接口对接(AI证件照制作)',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><meta name="generator" content="Hexo 8.1.2"></head><body><div class="post" id="body-wrap"><header class="post-bg" id="page-header"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">Yuanz</span></a><a class="nav-page-title" href="/"><span class="site-name">HivisionIDPhoto Docker部署以及Springboot接口对接(AI证件照制作)</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  Back to Home</span></span></a></span><div id="menus"></div></nav><div id="post-info"><h1 class="post-title">HivisionIDPhoto Docker部署以及Springboot接口对接(AI证件照制作)</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2024-10-25T05:59:04.000Z" title="Created 2024-10-25 13:59:04">2024-10-25</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2026-06-08T03:35:05.769Z" title="Updated 2026-06-08 11:35:05">2026-06-08</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">Post Views:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><h2 id="项目简介"><a href="#项目简介" class="headerlink" title="项目简介"></a><font style="color:rgb(31, 35, 40);">项目简介</font></h2><p><a target="_blank" rel="noopener" href="https://github.com/Zeyi-Lin/HivisionIDPhotos/tree/master">项目以及官方文档地址</a></p>
+<p><font style="color:rgb(31, 35, 40);">HivisionIDPhoto 旨在开发一种实用、系统性的证件照智能制作算法。</font></p>
+<p><font style="color:rgb(31, 35, 40);">它利用一套完善的AI模型工作流程，实现对多种用户拍照场景的识别、抠图与证件照生成。</font></p>
+<p><strong><font style="color:rgb(31, 35, 40);">HivisionIDPhoto 可以做到：</font></strong></p>
+<ol>
+<li><font style="color:rgb(31, 35, 40);">轻量级抠图（纯离线，仅需</font><font style="color:rgb(31, 35, 40);"> </font><strong><font style="color:rgb(31, 35, 40);">CPU</font></strong><font style="color:rgb(31, 35, 40);"> </font><font style="color:rgb(31, 35, 40);">即可快速推理）</font></li>
+<li><font style="color:rgb(31, 35, 40);">根据不同尺寸规格生成不同的标准证件照、六寸排版照</font></li>
+<li><font style="color:rgb(31, 35, 40);">支持 纯离线 或 端云 推理</font></li>
+<li><font style="color:rgb(31, 35, 40);">美颜</font></li>
+<li><font style="color:rgb(31, 35, 40);">智能换正装（waiting）</font></li>
+</ol>
+<h2 id="Docker-部署"><a href="#Docker-部署" class="headerlink" title="Docker 部署"></a>Docker 部署</h2><h3 id="拉取镜像"><a href="#拉取镜像" class="headerlink" title="拉取镜像"></a>拉取镜像</h3><blockquote>
+<p>官方再docker hub是有镜像源的,但是因为某些原因可能pull失败,我备份了一份到阿里云镜像仓库(官方版本为1.2.9),如下拉取镜像</p>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker pull registry.cn-hangzhou.aliyuncs.com/zr-dev/hivision_idphotos:v1.0</span><br></pre></td></tr></table></figure>
+
+
+<h3 id="启动-Gradio-Demo-服务"><a href="#启动-Gradio-Demo-服务" class="headerlink" title="启动 Gradio Demo 服务"></a><font style="color:rgb(31, 35, 40);">启动 Gradio Demo 服务</font></h3><p><font style="color:rgb(31, 35, 40);">运行下面的命令，在你的本地访问 </font><a target="_blank" rel="noopener" href="http://127.0.0.1:7860/">http://127.0.0.1:7860</a><font style="color:rgb(31, 35, 40);"> 即可使用。</font></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run -d -p 7860:7860 registry.cn-hangzhou.aliyuncs.com/zr-dev/hivision_idphotos:v1.0</span><br></pre></td></tr></table></figure>
+
+
+<p><img src="/assets/HivisionIDPhotoDocker%E9%83%A8%E7%BD%B2%E4%BB%A5%E5%8F%8ASpringboot%E6%8E%A5%E5%8F%A3%E5%AF%B9%E6%8E%A5AI%E8%AF%81%E4%BB%B6%E7%85%A7%E5%88%B6%E4%BD%9C/d886bcaec10f447cc5e921173d740d0c.png"></p>
+<h3 id="启动-API-后端服务"><a href="#启动-API-后端服务" class="headerlink" title="启动 API 后端服务"></a><strong><font style="color:rgb(31, 35, 40);">启动 API 后端服务</font></strong></h3><blockquote>
+<p>此处我将容器内部的8080端口映射到本机的8087,读者可以自定义想要映射的端口</p>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run -d -p 8087:8080 registry.cn-hangzhou.aliyuncs.com/zr-dev/hivision_idphotos:v1.0 python3 deploy_api.py</span><br></pre></td></tr></table></figure>
+
+
+<blockquote>
+<p>服务启动后咱们就可以调用服务的接口了**(为了防止特殊原因,api文档也备份了一份在文章末尾,并附上官方接口文档地址)**</p>
+</blockquote>
+<h2 id="Springboot-进行接口对接"><a href="#Springboot-进行接口对接" class="headerlink" title="Springboot 进行接口对接"></a>Springboot 进行接口对接</h2><h3 id="抽取配置文件-将HivisionIDPhoto后端服务的地址抽取为配置类"><a href="#抽取配置文件-将HivisionIDPhoto后端服务的地址抽取为配置类" class="headerlink" title="抽取配置文件,将HivisionIDPhoto后端服务的地址抽取为配置类"></a>抽取配置文件,将<font style="color:rgb(31, 35, 40);">HivisionIDPhoto后端服务的地址抽取为配置类</font></h3><figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">photo:</span></span><br><span class="line">  <span class="attr">id-photo-base-url:</span> <span class="string">http://127.0.0.1:8087</span></span><br></pre></td></tr></table></figure>
+
+
+
+
+<h3 id="生成证件照-底透明-添加背景色"><a href="#生成证件照-底透明-添加背景色" class="headerlink" title="生成证件照(底透明)+添加背景色"></a>生成证件照(底透明)+添加背景色</h3><blockquote>
+<ol>
+<li>此处我只需要实现生成证件照的功能,总共需要对接如下两个接口,如果读者还有其他需求可以,参考官方文档</li>
+<li>callIdPhotoApi<ol>
+<li>inputPath: 将图片上传到&#x2F;ai&#x2F;img&#x2F;input&#x2F;2024&#x2F;10&#x2F;24&#x2F;60182299d7d371cbe2b0b7c9f9c8234_20241024111616A001.jpg(即代码中的inputPath)<ol>
+<li>上传代码可以参考我的另一篇文章<a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_31745863/article/details/130904199">SpringBoot 上传图片-指定目录按照日期存储</a></li>
+</ol>
+</li>
+<li>height: 生成证件照的高</li>
+<li>width: 生成证件照的宽</li>
+<li>human_matting_model和face_detect_model可以根据自己的需求更换</li>
+</ol>
+</li>
+<li>addBackground <ol>
+<li>inputImageBase64: 生成的结果(base64图片)</li>
+<li>color: <font style="color:rgb(31, 35, 40);">背景色HEX值，默认为</font>000000</li>
+<li>fileService.upload() :将生成的证件照上传到阿里云oss,生成url</li>
+</ol>
+</li>
+</ol>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> cn.hutool.http.HttpRequest;</span><br><span class="line"><span class="keyword">import</span> cn.hutool.http.HttpResponse;</span><br><span class="line"><span class="keyword">import</span> cn.hutool.http.HttpUtil;</span><br><span class="line"><span class="keyword">import</span> com.alibaba.fastjson2.JSONObject;</span><br><span class="line"><span class="keyword">import</span> com.aliyun.openservices.shade.com.alibaba.fastjson.JSON;</span><br><span class="line"><span class="keyword">import</span> com.hss.common.utils.uuid.UUID;</span><br><span class="line"><span class="keyword">import</span> com.hss.system.service.FileService;</span><br><span class="line"><span class="keyword">import</span> lombok.extern.slf4j.Slf4j;</span><br><span class="line"><span class="keyword">import</span> org.springframework.beans.factory.annotation.Autowired;</span><br><span class="line"><span class="keyword">import</span> org.springframework.beans.factory.annotation.Value;</span><br><span class="line"><span class="keyword">import</span> org.springframework.stereotype.Service;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.io.File;</span><br><span class="line"><span class="keyword">import</span> java.util.Base64;</span><br><span class="line"><span class="keyword">import</span> java.util.HashMap;</span><br><span class="line"><span class="keyword">import</span> java.util.Map;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> zr 2024/10/24</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"></span><br><span class="line"><span class="meta">@Service</span></span><br><span class="line"><span class="meta">@Slf4j</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">ImageProcessor</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> FileService fileService;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Value(&quot;$&#123;photo.id-photo-base-url&#125;&quot;)</span></span><br><span class="line">    <span class="keyword">private</span> String idPhotoBaseUrl;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> String <span class="title function_">callIdPhotoApi</span><span class="params">(String inputPath,Integer height,Integer width)</span> &#123;</span><br><span class="line">        <span class="type">String</span> <span class="variable">url</span> <span class="operator">=</span> idPhotoBaseUrl+<span class="string">&quot;/idphoto&quot;</span>;</span><br><span class="line">        Map&lt;String, String&gt; headers = <span class="keyword">new</span> <span class="title class_">HashMap</span>&lt;&gt;();</span><br><span class="line">        <span class="comment">// 根据需要添加头部信息，例如：</span></span><br><span class="line">        <span class="comment">// headers.put(&quot;Content-Type&quot;, &quot;multipart/form-data&quot;);</span></span><br><span class="line"></span><br><span class="line">        Map&lt;String, Object&gt; parameters = <span class="keyword">new</span> <span class="title class_">HashMap</span>&lt;&gt;();</span><br><span class="line">        parameters.put(<span class="string">&quot;input_image&quot;</span>, <span class="keyword">new</span> <span class="title class_">File</span>(inputPath));</span><br><span class="line">        parameters.put(<span class="string">&quot;height&quot;</span>, height);</span><br><span class="line">        parameters.put(<span class="string">&quot;width&quot;</span>, width);</span><br><span class="line">        parameters.put(<span class="string">&quot;human_matting_model&quot;</span>, <span class="string">&quot;rmbg-1.4&quot;</span>); <span class="comment">//人像分割模型，默认为modnet_photographic_portrait_matting。可选值为modnet_photographic_portrait_matting、hivision_modnet、rmbg-1.4、birefnet-v1-lite</span></span><br><span class="line">        parameters.put(<span class="string">&quot;face_detect_model&quot;</span>, <span class="string">&quot;mtcnn&quot;</span>); <span class="comment">//人脸检测模型，默认为mtcnn。可选值为mtcnn、face_plusplus、retinaface-resnet50</span></span><br><span class="line">        parameters.put(<span class="string">&quot;hd&quot;</span>, <span class="literal">true</span>);</span><br><span class="line">        parameters.put(<span class="string">&quot;dpi&quot;</span>, <span class="number">300</span>);</span><br><span class="line">        parameters.put(<span class="string">&quot;face_alignment&quot;</span>, <span class="literal">true</span>);</span><br><span class="line"></span><br><span class="line">        <span class="type">HttpResponse</span> <span class="variable">response</span> <span class="operator">=</span> httpPost(url, headers, parameters);</span><br><span class="line">        <span class="comment">// 处理响应</span></span><br><span class="line">        <span class="type">String</span> <span class="variable">body</span> <span class="operator">=</span> response.body();</span><br><span class="line">        <span class="type">JSONObject</span> <span class="variable">jsonObject</span> <span class="operator">=</span> com.alibaba.fastjson2.JSON.parseObject(body);</span><br><span class="line">        <span class="type">Boolean</span> <span class="variable">status</span> <span class="operator">=</span> jsonObject.getBoolean(<span class="string">&quot;status&quot;</span>);</span><br><span class="line">        <span class="keyword">if</span> (status)&#123;</span><br><span class="line">            <span class="type">String</span> <span class="variable">imageData</span> <span class="operator">=</span> jsonObject.getString(<span class="string">&quot;image_base64_hd&quot;</span>);</span><br><span class="line">            <span class="keyword">return</span> imageData;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            log.info(<span class="string">&quot;请求失败&#123;&#125;&quot;</span>);</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">null</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> String <span class="title function_">addBackground</span><span class="params">(String inputImageBase64,String color)</span> &#123;</span><br><span class="line">        <span class="type">String</span> <span class="variable">url</span> <span class="operator">=</span> idPhotoBaseUrl+<span class="string">&quot;/add_background&quot;</span>;</span><br><span class="line">        Map&lt;String, String&gt; headers = <span class="keyword">new</span> <span class="title class_">HashMap</span>&lt;&gt;();</span><br><span class="line">        <span class="comment">// 根据需要添加头部信息，例如：</span></span><br><span class="line">        <span class="comment">// headers.put(&quot;Content-Type&quot;, &quot;multipart/form-data&quot;);</span></span><br><span class="line"></span><br><span class="line">        Map&lt;String, Object&gt; parameters = <span class="keyword">new</span> <span class="title class_">HashMap</span>&lt;&gt;();</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 添加请求参数</span></span><br><span class="line">        parameters.put(<span class="string">&quot;input_image_base64&quot;</span>, inputImageBase64);</span><br><span class="line">        parameters.put(<span class="string">&quot;color&quot;</span>, color);</span><br><span class="line"><span class="comment">//        parameters.put(&quot;kb&quot;, kb); //输出照片的 KB 值，默认为None，即不对图像进行KB调整。</span></span><br><span class="line"><span class="comment">//        parameters.put(&quot;render&quot;, render); //渲染模式，默认为0。可选值为0、1、2，分别对应纯色、上下渐变、中心渐变。</span></span><br><span class="line"><span class="comment">//        parameters.put(&quot;dpi&quot;, dpi); //图像分辨率，默认为300</span></span><br><span class="line"></span><br><span class="line">        <span class="type">HttpResponse</span> <span class="variable">response</span> <span class="operator">=</span> httpPost(url, headers, parameters);</span><br><span class="line">        <span class="comment">// 处理响应</span></span><br><span class="line">        <span class="type">String</span> <span class="variable">body</span> <span class="operator">=</span> response.body();</span><br><span class="line">        <span class="type">JSONObject</span> <span class="variable">jsonObject</span> <span class="operator">=</span> com.alibaba.fastjson2.JSON.parseObject(body);</span><br><span class="line">        <span class="type">Boolean</span> <span class="variable">status</span> <span class="operator">=</span> jsonObject.getBoolean(<span class="string">&quot;status&quot;</span>);</span><br><span class="line">        <span class="keyword">if</span> (status)&#123;</span><br><span class="line">            <span class="type">String</span> <span class="variable">imageData</span> <span class="operator">=</span> jsonObject.getString(<span class="string">&quot;image_base64&quot;</span>);</span><br><span class="line">            <span class="comment">// 检查并去掉 Base64 前缀</span></span><br><span class="line">            <span class="keyword">if</span> (imageData.startsWith(<span class="string">&quot;data:image/&quot;</span>)) &#123;</span><br><span class="line">                imageData = imageData.substring(imageData.indexOf(<span class="string">&quot;,&quot;</span>) + <span class="number">1</span>);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="type">byte</span>[] imageBytes = Base64.getDecoder().decode(imageData);</span><br><span class="line">            <span class="type">String</span> <span class="variable">upload</span> <span class="operator">=</span> fileService.upload(imageBytes, UUID.fastUUID() + <span class="string">&quot;.jpg&quot;</span>);</span><br><span class="line">            <span class="keyword">return</span> upload;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            log.info(<span class="string">&quot;请求失败&#123;&#125;&quot;</span>);</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">null</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">private</span> HttpResponse <span class="title function_">httpPost</span><span class="params">(String url,Map&lt;String, String&gt; headers,Map&lt;String, Object&gt; parameter)</span> &#123;</span><br><span class="line">        <span class="type">HttpRequest</span> <span class="variable">httpRequest</span> <span class="operator">=</span> HttpUtil.createPost(url).form(parameter).addHeaders(headers);</span><br><span class="line">        <span class="type">HttpResponse</span> <span class="variable">response</span> <span class="operator">=</span> httpRequest.execute();</span><br><span class="line">        log.info(<span class="string">&quot;Url: &quot;</span>+httpRequest.getUrl());</span><br><span class="line">        log.info(<span class="string">&quot;head: &quot;</span>+JSON.toJSONString(httpRequest.headers()));</span><br><span class="line">        log.info(<span class="string">&quot;parame: &quot;</span>+JSON.toJSONString(httpRequest.form()));</span><br><span class="line">        log.info(<span class="string">&quot;res: &quot;</span>+response.body());</span><br><span class="line">        <span class="keyword">return</span> response;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+
+
+<h3 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> lombok.extern.slf4j.Slf4j;</span><br><span class="line"><span class="keyword">import</span> org.junit.Test;</span><br><span class="line"><span class="keyword">import</span> org.junit.runner.RunWith;</span><br><span class="line"><span class="keyword">import</span> org.springframework.beans.factory.annotation.Autowired;</span><br><span class="line"><span class="keyword">import</span> org.springframework.boot.test.context.SpringBootTest;</span><br><span class="line"><span class="keyword">import</span> org.springframework.test.context.junit4.SpringRunner;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> zr 2024/10/24</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@RunWith(SpringRunner.class)</span></span><br><span class="line"><span class="meta">@SpringBootTest(classes = HssApplication.class)</span></span><br><span class="line"><span class="meta">@Slf4j</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">IdPhotoTest</span> &#123;</span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> ImageProcessor imageProcessor;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">callIdPhotoApi</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="type">String</span> <span class="variable">s</span> <span class="operator">=</span> imageProcessor.callIdPhotoApi(<span class="string">&quot;/ai/img/input/2024/10/24/60182299d7d371cbe2b0b7c9f9c8234_20241024111616A001.jpg&quot;</span>,<span class="number">413</span>,<span class="number">295</span>);</span><br><span class="line">        log.info(s);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">addBackground</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="type">String</span> <span class="variable">s</span> <span class="operator">=</span> imageProcessor.addBackground(imageProcessor.callIdPhotoApi(<span class="string">&quot;/ai/img//input/2024/10/24/23-Authentic-Chinese-Hairstyle-Ideas-00-scaled_20241024133448A001.jpg&quot;</span>,<span class="number">413</span>,<span class="number">295</span>), <span class="string">&quot;638cce&quot;</span>);</span><br><span class="line">        log.info(s);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+<blockquote>
+<p>测试结果</p>
+<ol>
+<li>原图</li>
+</ol>
+</blockquote>
+<p><img src="/assets/HivisionIDPhotoDocker%E9%83%A8%E7%BD%B2%E4%BB%A5%E5%8F%8ASpringboot%E6%8E%A5%E5%8F%A3%E5%AF%B9%E6%8E%A5AI%E8%AF%81%E4%BB%B6%E7%85%A7%E5%88%B6%E4%BD%9C/fc34a118be8a4012ded2ce30eab0ca14.jpeg"></p>
+<blockquote>
+<ol start="2">
+<li>callIdPhotoApi测试结果</li>
+</ol>
+</blockquote>
+<p><img src="/assets/HivisionIDPhotoDocker%E9%83%A8%E7%BD%B2%E4%BB%A5%E5%8F%8ASpringboot%E6%8E%A5%E5%8F%A3%E5%AF%B9%E6%8E%A5AI%E8%AF%81%E4%BB%B6%E7%85%A7%E5%88%B6%E4%BD%9C/9698fe4901d2ae9937be427b8b33aa14.png"></p>
+<blockquote>
+<ol start="2">
+<li>addBackground测试结果</li>
+</ol>
+</blockquote>
+<p><img src="/assets/HivisionIDPhotoDocker%E9%83%A8%E7%BD%B2%E4%BB%A5%E5%8F%8ASpringboot%E6%8E%A5%E5%8F%A3%E5%AF%B9%E6%8E%A5AI%E8%AF%81%E4%BB%B6%E7%85%A7%E5%88%B6%E4%BD%9C/66af6f022534047e3f5f40157f24a320.png"></p>
+<h1 id="API-Docs"><a href="#API-Docs" class="headerlink" title="API Docs"></a>API Docs</h1><p><a target="_blank" rel="noopener" href="https://github.com/Zeyi-Lin/HivisionIDPhotos/blob/master/docs/api_CN.md">官方api文档地址</a></p>
+<h2 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h2><ul>
+<li><a href="#%E5%BC%80%E5%A7%8B%E4%B9%8B%E5%89%8D%E5%BC%80%E5%90%AF%E5%90%8E%E7%AB%AF%E6%9C%8D%E5%8A%A1">开始之前：开启后端服务</a></li>
+<li><a href="#%E6%8E%A5%E5%8F%A3%E5%8A%9F%E8%83%BD%E8%AF%B4%E6%98%8E">接口功能说明</a><ul>
+<li><a href="#1%E7%94%9F%E6%88%90%E8%AF%81%E4%BB%B6%E7%85%A7%E5%BA%95%E9%80%8F%E6%98%8E">1.生成证件照(底透明)</a></li>
+<li><a href="#2%E6%B7%BB%E5%8A%A0%E8%83%8C%E6%99%AF%E8%89%B2">2.添加背景色</a></li>
+<li><a href="#3%E7%94%9F%E6%88%90%E5%85%AD%E5%AF%B8%E6%8E%92%E7%89%88%E7%85%A7">3.生成六寸排版照</a></li>
+<li><a href="#4%E4%BA%BA%E5%83%8F%E6%8A%A0%E5%9B%BE">4.人像抠图</a></li>
+<li><a href="#5%E5%9B%BE%E5%83%8F%E5%8A%A0%E6%B0%B4%E5%8D%B0">5.图像加水印</a></li>
+<li><a href="#6%E8%AE%BE%E7%BD%AE%E5%9B%BE%E5%83%8FKB%E5%A4%A7%E5%B0%8F">6.设置图像KB大小</a></li>
+<li><a href="#7%E8%AF%81%E4%BB%B6%E7%85%A7%E8%A3%81%E5%88%87">7.证件照裁切</a></li>
+</ul>
+</li>
+<li><a href="#curl-%E8%AF%B7%E6%B1%82%E7%A4%BA%E4%BE%8B">cURL 请求示例</a></li>
+<li><a href="#python-%E8%AF%B7%E6%B1%82%E7%A4%BA%E4%BE%8B">Python 请求示例</a></li>
+</ul>
+<h2 id="开始之前：开启后端服务"><a href="#开始之前：开启后端服务" class="headerlink" title="开始之前：开启后端服务"></a>开始之前：开启后端服务</h2><p>在请求 API 之前，请先运行后端服务</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python deploy_api.py</span><br></pre></td></tr></table></figure>
+
+
+<br>
+
+
+<h2 id="接口功能说明"><a href="#接口功能说明" class="headerlink" title="接口功能说明"></a>接口功能说明</h2><h3 id="1-生成证件照-底透明"><a href="#1-生成证件照-底透明" class="headerlink" title="1.生成证件照(底透明)"></a>1.生成证件照(底透明)</h3><p>接口名：<code>idphoto</code></p>
+<p><code>生成证件照</code>接口的逻辑是发送一张 RGB 图像，输出一张标准证件照和一张高清证件照：</p>
+<ul>
+<li><strong>高清证件照</strong>：根据<code>size</code>的宽高比例制作的证件照，文件名为<code>output_image_dir</code>增加<code>_hd</code>后缀</li>
+<li><strong>标准证件照</strong>：尺寸等于<code>size</code>，由高清证件照缩放而来，文件名为<code>output_image_dir</code></li>
+</ul>
+<p>需要注意的是，生成的两张照片都是透明的（RGBA 四通道图像），要生成完整的证件照，还需要下面的<code>添加背景色</code>接口。</p>
+<blockquote>
+<p>问：为什么这么设计？<br>答：因为在实际产品中，经常用户会频繁切换底色预览效果，直接给透明底图像，由前端 js 代码合成颜色是更好体验的做法。</p>
+</blockquote>
+<p><strong>请求参数：</strong></p>
+<table>
+<thead>
+<tr>
+<th align="left">参数名</th>
+<th align="left">类型</th>
+<th align="left">必填</th>
+<th align="left">说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">input_image</td>
+<td align="left">file</td>
+<td align="left">和<code>input_image_base64</code>二选一</td>
+<td align="left">传入的图像文件，图像文件为需为RGB三通道图像。</td>
+</tr>
+<tr>
+<td align="left">input_image_base64</td>
+<td align="left">str</td>
+<td align="left">和<code>input_image</code>二选一</td>
+<td align="left">传入的图像文件的base64编码，图像文件为需为RGB三通道图像。</td>
+</tr>
+<tr>
+<td align="left">height</td>
+<td align="left">int</td>
+<td align="left">否</td>
+<td align="left">标准证件照高度，默认为<code>413</code></td>
+</tr>
+<tr>
+<td align="left">width</td>
+<td align="left">int</td>
+<td align="left">否</td>
+<td align="left">标准证件照宽度，默认为<code>295</code></td>
+</tr>
+<tr>
+<td align="left">human_matting_model</td>
+<td align="left">str</td>
+<td align="left">否</td>
+<td align="left">人像分割模型，默认为<code>modnet_photographic_portrait_matting</code>。可选值为<code>modnet_photographic_portrait_matting</code>、<code>hivision_modnet</code>、<code>rmbg-1.4</code>、<code>birefnet-v1-lite</code></td>
+</tr>
+<tr>
+<td align="left">face_detect_model</td>
+<td align="left">str</td>
+<td align="left">否</td>
+<td align="left">人脸检测模型，默认为<code>mtcnn</code>。可选值为<code>mtcnn</code>、<code>face_plusplus</code>、<code>retinaface-resnet50</code></td>
+</tr>
+<tr>
+<td align="left">hd</td>
+<td align="left">bool</td>
+<td align="left">否</td>
+<td align="left">是否生成高清证件照，默认为<code>true</code></td>
+</tr>
+<tr>
+<td align="left">dpi</td>
+<td align="left">int</td>
+<td align="left">否</td>
+<td align="left">图像分辨率，默认为<code>300</code></td>
+</tr>
+<tr>
+<td align="left">face_alignment</td>
+<td align="left">bool</td>
+<td align="left">否</td>
+<td align="left">是否进行人脸对齐，默认为<code>true</code></td>
+</tr>
+<tr>
+<td align="left">head_measure_ratio</td>
+<td align="left">float</td>
+<td align="left">否</td>
+<td align="left">面部面积与照片面积的比例，默认为<code>0.2</code></td>
+</tr>
+<tr>
+<td align="left">head_height_ratio</td>
+<td align="left">float</td>
+<td align="left">否</td>
+<td align="left">面部中心与照片顶部的高度比例，默认为<code>0.45</code></td>
+</tr>
+<tr>
+<td align="left">top_distance_max</td>
+<td align="left">float</td>
+<td align="left">否</td>
+<td align="left">头部与照片顶部距离的比例最大值，默认为<code>0.12</code></td>
+</tr>
+<tr>
+<td align="left">top_distance_min</td>
+<td align="left">float</td>
+<td align="left">否</td>
+<td align="left">头部与照片顶部距离的比例最小值，默认为<code>0.1</code></td>
+</tr>
+</tbody></table>
+<p><strong>返回参数：</strong></p>
+<table>
+<thead>
+<tr>
+<th align="left">参数名</th>
+<th align="left">类型</th>
+<th align="left">说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">status</td>
+<td align="left">int</td>
+<td align="left">状态码，<code>true</code>表示成功</td>
+</tr>
+<tr>
+<td align="left">image_base64_standard</td>
+<td align="left">str</td>
+<td align="left">标准证件照的base64编码</td>
+</tr>
+<tr>
+<td align="left">image_base64_hd</td>
+<td align="left">str</td>
+<td align="left">高清证件照的base64编码。如<code>hd</code>参数为<code>false</code>，则不返回该参数</td>
+</tr>
+</tbody></table>
+<br>
+
+
+<h3 id="2-添加背景色"><a href="#2-添加背景色" class="headerlink" title="2.添加背景色"></a>2.添加背景色</h3><p>接口名：<code>add_background</code></p>
+<p><code>添加背景色</code>接口的逻辑是接收一张 RGBA 图像（透明图），根据<code>color</code>添加背景色，合成一张 JPG 图像。</p>
+<p><strong>请求参数：</strong></p>
+<table>
+<thead>
+<tr>
+<th align="left">参数名</th>
+<th align="left">类型</th>
+<th align="left">必填</th>
+<th align="left">说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">input_image</td>
+<td align="left">file</td>
+<td align="left">和<code>input_image_base64</code>二选一</td>
+<td align="left">传入的图像文件，图像文件为需为RGBA四通道图像。</td>
+</tr>
+<tr>
+<td align="left">input_image_base64</td>
+<td align="left">str</td>
+<td align="left">和<code>input_image</code>二选一</td>
+<td align="left">传入的图像文件的base64编码，图像文件为需为RGBA四通道图像。</td>
+</tr>
+<tr>
+<td align="left">color</td>
+<td align="left">str</td>
+<td align="left">否</td>
+<td align="left">背景色HEX值，默认为<code>000000</code></td>
+</tr>
+<tr>
+<td align="left">kb</td>
+<td align="left">int</td>
+<td align="left">否</td>
+<td align="left">输出照片的 KB 值，默认为<code>None</code>，即不对图像进行KB调整。</td>
+</tr>
+<tr>
+<td align="left">render</td>
+<td align="left">int</td>
+<td align="left">否</td>
+<td align="left">渲染模式，默认为<code>0</code>。可选值为<code>0</code>、<code>1</code>、<code>2</code>，分别对应<code>纯色</code>、<code>上下渐变</code>、<code>中心渐变</code>。</td>
+</tr>
+<tr>
+<td align="left">dpi</td>
+<td align="left">int</td>
+<td align="left">否</td>
+<td align="left">图像分辨率，默认为<code>300</code></td>
+</tr>
+</tbody></table>
+<p><strong>返回参数：</strong></p>
+<table>
+<thead>
+<tr>
+<th align="left">参数名</th>
+<th align="left">类型</th>
+<th align="left">说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">status</td>
+<td align="left">int</td>
+<td align="left">状态码，<code>true</code>表示成功</td>
+</tr>
+<tr>
+<td align="left">image_base64</td>
+<td align="left">str</td>
+<td align="left">添加背景色之后的图像的base64编码</td>
+</tr>
+</tbody></table>
+<br>
+
+
+<h3 id="3-生成六寸排版照"><a href="#3-生成六寸排版照" class="headerlink" title="3.生成六寸排版照"></a>3.生成六寸排版照</h3><p>接口名：<code>generate_layout_photos</code></p>
+<p><code>生成六寸排版照</code>接口的逻辑是接收一张 RGB 图像（一般为添加背景色之后的证件照），根据<code>size</code>进行照片排布，然后生成一张六寸排版照。</p>
+<p><strong>请求参数：</strong></p>
+<table>
+<thead>
+<tr>
+<th align="left">参数名</th>
+<th align="left">类型</th>
+<th align="left">必填</th>
+<th align="left">说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">input_image</td>
+<td align="left">file</td>
+<td align="left">和<code>input_image_base64</code>二选一</td>
+<td align="left">传入的图像文件，图像文件为需为RGB三通道图像。</td>
+</tr>
+<tr>
+<td align="left">input_image_base64</td>
+<td align="left">str</td>
+<td align="left">和<code>input_image</code>二选一</td>
+<td align="left">传入的图像文件的base64编码，图像文件为需为RGB三通道图像。</td>
+</tr>
+<tr>
+<td align="left">height</td>
+<td align="left">int</td>
+<td align="left">否</td>
+<td align="left">输入图像的高度，默认为<code>413</code></td>
+</tr>
+<tr>
+<td align="left">width</td>
+<td align="left">int</td>
+<td align="left">否</td>
+<td align="left">输入图像的宽度，默认为<code>295</code></td>
+</tr>
+<tr>
+<td align="left">kb</td>
+<td align="left">int</td>
+<td align="left">否</td>
+<td align="left">输出照片的 KB 值，默认为<code>None</code>，即不对图像进行KB调整。</td>
+</tr>
+<tr>
+<td align="left">dpi</td>
+<td align="left">int</td>
+<td align="left">否</td>
+<td align="left">图像分辨率，默认为<code>300</code></td>
+</tr>
+</tbody></table>
+<p><strong>返回参数：</strong></p>
+<table>
+<thead>
+<tr>
+<th align="left">参数名</th>
+<th align="left">类型</th>
+<th align="left">说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">status</td>
+<td align="left">int</td>
+<td align="left">状态码，<code>true</code>表示成功</td>
+</tr>
+<tr>
+<td align="left">image_base64</td>
+<td align="left">str</td>
+<td align="left">六寸排版照的base64编码</td>
+</tr>
+</tbody></table>
+<br>
+
+
+<h3 id="4-人像抠图"><a href="#4-人像抠图" class="headerlink" title="4.人像抠图"></a>4.人像抠图</h3><p>接口名：<code>human_matting</code></p>
+<p><code>人像抠图</code>接口的逻辑是接收一张 RGB 图像，输出一张标准抠图人像照和高清抠图人像照（无任何背景填充）。</p>
+<p><strong>请求参数：</strong></p>
+<table>
+<thead>
+<tr>
+<th align="left">参数名</th>
+<th align="left">类型</th>
+<th align="left">必填</th>
+<th align="left">说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">input_image</td>
+<td align="left">file</td>
+<td align="left">是</td>
+<td align="left">传入的图像文件，图像文件为需为RGB三通道图像。</td>
+</tr>
+<tr>
+<td align="left">human_matting_model</td>
+<td align="left">str</td>
+<td align="left">否</td>
+<td align="left">人像分割模型，默认为<code>modnet_photographic_portrait_matting</code>。可选值为<code>modnet_photographic_portrait_matting</code>、<code>hivision_modnet</code>、<code>rmbg-1.4</code>、<code>birefnet-v1-lite</code></td>
+</tr>
+<tr>
+<td align="left">dpi</td>
+<td align="left">int</td>
+<td align="left">否</td>
+<td align="left">图像分辨率，默认为<code>300</code></td>
+</tr>
+</tbody></table>
+<p><strong>返回参数：</strong></p>
+<table>
+<thead>
+<tr>
+<th align="left">参数名</th>
+<th align="left">类型</th>
+<th align="left">说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">status</td>
+<td align="left">int</td>
+<td align="left">状态码，<code>true</code>表示成功</td>
+</tr>
+<tr>
+<td align="left">image_base64</td>
+<td align="left">str</td>
+<td align="left">抠图人像照的base64编码</td>
+</tr>
+</tbody></table>
+<br>
+
+
+<h3 id="5-图像加水印"><a href="#5-图像加水印" class="headerlink" title="5.图像加水印"></a>5.图像加水印</h3><p>接口名：<code>watermark</code></p>
+<p><code>图像加水印</code>接口的功能是接收一个水印文本，然后在原图上添加指定的水印。用户可以指定水印的位置、透明度和大小等属性，以便将水印无缝地融合到原图中。</p>
+<p><strong>请求参数：</strong></p>
+<table>
+<thead>
+<tr>
+<th align="left">参数名</th>
+<th align="left">类型</th>
+<th align="left">必填</th>
+<th align="left">说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">input_image</td>
+<td align="left">file</td>
+<td align="left">和<code>input_image_base64</code>二选一</td>
+<td align="left">传入的图像文件，图像文件为需为RGB三通道图像。</td>
+</tr>
+<tr>
+<td align="left">input_image_base64</td>
+<td align="left">str</td>
+<td align="left">和<code>input_image</code>二选一</td>
+<td align="left">传入的图像文件的base64编码，图像文件为需为RGB三通道图像。</td>
+</tr>
+<tr>
+<td align="left">text</td>
+<td align="left">str</td>
+<td align="left">否</td>
+<td align="left">水印文本，默认为<code>Hello</code></td>
+</tr>
+<tr>
+<td align="left">size</td>
+<td align="left">int</td>
+<td align="left">否</td>
+<td align="left">水印字体大小，默认为<code>20</code></td>
+</tr>
+<tr>
+<td align="left">opacity</td>
+<td align="left">float</td>
+<td align="left">否</td>
+<td align="left">水印透明度，默认为<code>0.5</code></td>
+</tr>
+<tr>
+<td align="left">angle</td>
+<td align="left">int</td>
+<td align="left">否</td>
+<td align="left">水印旋转角度，默认为<code>30</code></td>
+</tr>
+<tr>
+<td align="left">color</td>
+<td align="left">str</td>
+<td align="left">否</td>
+<td align="left">水印颜色，默认为<code>#000000</code></td>
+</tr>
+<tr>
+<td align="left">space</td>
+<td align="left">int</td>
+<td align="left">否</td>
+<td align="left">水印间距，默认为<code>25</code></td>
+</tr>
+<tr>
+<td align="left">dpi</td>
+<td align="left">int</td>
+<td align="left">否</td>
+<td align="left">图像分辨率，默认为<code>300</code></td>
+</tr>
+</tbody></table>
+<p><strong>返回参数：</strong></p>
+<table>
+<thead>
+<tr>
+<th align="left">参数名</th>
+<th align="left">类型</th>
+<th align="left">说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">status</td>
+<td align="left">int</td>
+<td align="left">状态码，<code>true</code>表示成功</td>
+</tr>
+<tr>
+<td align="left">image_base64</td>
+<td align="left">str</td>
+<td align="left">添加水印之后的图像的base64编码</td>
+</tr>
+</tbody></table>
+<br>
+
+
+<h3 id="6-设置图像KB大小"><a href="#6-设置图像KB大小" class="headerlink" title="6.设置图像KB大小"></a>6.设置图像KB大小</h3><p>接口名：<code>set_kb</code></p>
+<p><code>设置图像KB大小</code>接口的功能是接收一张图像和目标文件大小（以KB为单位），如果设置的KB值小于原文件，则调整压缩率；如果设置的KB值大于源文件，则通过给文件头添加信息的方式调大KB值，目标是让图像的最终大小与设置的KB值一致。</p>
+<p><strong>请求参数：</strong></p>
+<table>
+<thead>
+<tr>
+<th align="left">参数名</th>
+<th align="left">类型</th>
+<th align="left">必填</th>
+<th align="left">说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">input_image</td>
+<td align="left">file</td>
+<td align="left">和<code>input_image_base64</code>二选一</td>
+<td align="left">传入的图像文件，图像文件为需为RGB三通道图像。</td>
+</tr>
+<tr>
+<td align="left">input_image_base64</td>
+<td align="left">str</td>
+<td align="left">和<code>input_image</code>二选一</td>
+<td align="left">传入的图像文件的base64编码，图像文件为需为RGB三通道图像。</td>
+</tr>
+<tr>
+<td align="left">kb</td>
+<td align="left">int</td>
+<td align="left">否</td>
+<td align="left">输出照片的 KB 值，默认为<code>None</code>，即不对图像进行KB调整。</td>
+</tr>
+<tr>
+<td align="left">dpi</td>
+<td align="left">int</td>
+<td align="left">否</td>
+<td align="left">图像分辨率，默认为<code>300</code></td>
+</tr>
+</tbody></table>
+<p><strong>返回参数：</strong></p>
+<table>
+<thead>
+<tr>
+<th align="left">参数名</th>
+<th align="left">类型</th>
+<th align="left">说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">status</td>
+<td align="left">int</td>
+<td align="left">状态码，<code>true</code>表示成功</td>
+</tr>
+<tr>
+<td align="left">image_base64</td>
+<td align="left">str</td>
+<td align="left">设置KB大小之后的图像的base64编码</td>
+</tr>
+</tbody></table>
+<br>
+
+
+<h3 id="7-证件照裁切"><a href="#7-证件照裁切" class="headerlink" title="7.证件照裁切"></a>7.证件照裁切</h3><p>接口名：<code>idphoto_crop</code></p>
+<p><code>证件照裁切</code>接口的功能是接收一张 RBGA 图像（透明图），输出一张标准证件照和一张高清证件照。</p>
+<p><strong>请求参数：</strong></p>
+<table>
+<thead>
+<tr>
+<th align="left">参数名</th>
+<th align="left">类型</th>
+<th align="left">必填</th>
+<th align="left">说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">input_image</td>
+<td align="left">file</td>
+<td align="left">和<code>input_image_base64</code>二选一</td>
+<td align="left">传入的图像文件，图像文件为需为RGBA四通道图像。</td>
+</tr>
+<tr>
+<td align="left">input_image_base64</td>
+<td align="left">str</td>
+<td align="left">和<code>input_image</code>二选一</td>
+<td align="left">传入的图像文件的base64编码，图像文件为需为RGBA四通道图像。</td>
+</tr>
+<tr>
+<td align="left">height</td>
+<td align="left">int</td>
+<td align="left">否</td>
+<td align="left">标准证件照高度，默认为<code>413</code></td>
+</tr>
+<tr>
+<td align="left">width</td>
+<td align="left">int</td>
+<td align="left">否</td>
+<td align="left">标准证件照宽度，默认为<code>295</code></td>
+</tr>
+<tr>
+<td align="left">face_detect_model</td>
+<td align="left">str</td>
+<td align="left">否</td>
+<td align="left">人脸检测模型，默认为<code>mtcnn</code>。可选值为<code>mtcnn</code>、<code>face_plusplus</code>、<code>retinaface-resnet50</code></td>
+</tr>
+<tr>
+<td align="left">hd</td>
+<td align="left">bool</td>
+<td align="left">否</td>
+<td align="left">是否生成高清证件照，默认为<code>true</code></td>
+</tr>
+<tr>
+<td align="left">dpi</td>
+<td align="left">int</td>
+<td align="left">否</td>
+<td align="left">图像分辨率，默认为<code>300</code></td>
+</tr>
+<tr>
+<td align="left">head_measure_ratio</td>
+<td align="left">float</td>
+<td align="left">否</td>
+<td align="left">面部面积与照片面积的比例，默认为<code>0.2</code></td>
+</tr>
+<tr>
+<td align="left">head_height_ratio</td>
+<td align="left">float</td>
+<td align="left">否</td>
+<td align="left">面部中心与照片顶部的高度比例，默认为<code>0.45</code></td>
+</tr>
+<tr>
+<td align="left">top_distance_max</td>
+<td align="left">float</td>
+<td align="left">否</td>
+<td align="left">头部与照片顶部距离的比例最大值，默认为<code>0.12</code></td>
+</tr>
+<tr>
+<td align="left">top_distance_min</td>
+<td align="left">float</td>
+<td align="left">否</td>
+<td align="left">头部与照片顶部距离的比例最小值，默认为<code>0.1</code></td>
+</tr>
+</tbody></table>
+<p><strong>返回参数：</strong></p>
+<table>
+<thead>
+<tr>
+<th align="left">参数名</th>
+<th align="left">类型</th>
+<th align="left">说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">status</td>
+<td align="left">int</td>
+<td align="left">状态码，<code>true</code>表示成功</td>
+</tr>
+<tr>
+<td align="left">image_base64</td>
+<td align="left">str</td>
+<td align="left">证件照裁切之后的图像的base64编码</td>
+</tr>
+<tr>
+<td align="left">image_base64_hd</td>
+<td align="left">str</td>
+<td align="left">高清证件照裁切之后的图像的base64编码，如<code>hd</code>参数为<code>false</code>，则不返回该参数</td>
+</tr>
+</tbody></table>
+<br>
+
+
+<h2 id="cURL-请求示例"><a href="#cURL-请求示例" class="headerlink" title="cURL 请求示例"></a>cURL 请求示例</h2><p>cURL 是一个命令行工具，用于使用各种网络协议传输数据。以下是使用 cURL 调用这些 API 的示例。</p>
+<h3 id="1-生成证件照-底透明-1"><a href="#1-生成证件照-底透明-1" class="headerlink" title="1. 生成证件照(底透明)"></a>1. 生成证件照(底透明)</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">curl -X POST <span class="string">&quot;http://127.0.0.1:8080/idphoto&quot;</span> \</span><br><span class="line">-F <span class="string">&quot;input_image=@demo/images/test0.jpg&quot;</span> \</span><br><span class="line">-F <span class="string">&quot;height=413&quot;</span> \</span><br><span class="line">-F <span class="string">&quot;width=295&quot;</span> \</span><br><span class="line">-F <span class="string">&quot;human_matting_model=modnet_photographic_portrait_matting&quot;</span> \</span><br><span class="line">-F <span class="string">&quot;face_detect_model=mtcnn&quot;</span> \</span><br><span class="line">-F <span class="string">&quot;hd=true&quot;</span> \</span><br><span class="line">-F <span class="string">&quot;dpi=300&quot;</span> \</span><br><span class="line">-F <span class="string">&quot;face_alignment=true&quot;</span></span><br></pre></td></tr></table></figure>
+
+
+<h3 id="2-添加背景色-1"><a href="#2-添加背景色-1" class="headerlink" title="2. 添加背景色"></a>2. 添加背景色</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">curl -X POST <span class="string">&quot;http://127.0.0.1:8080/add_background&quot;</span> \</span><br><span class="line">-F <span class="string">&quot;input_image=@test.png&quot;</span> \</span><br><span class="line">-F <span class="string">&quot;color=638cce&quot;</span> \</span><br><span class="line">-F <span class="string">&quot;kb=200&quot;</span> \</span><br><span class="line">-F <span class="string">&quot;render=0&quot;</span> \</span><br><span class="line">-F <span class="string">&quot;dpi=300&quot;</span></span><br></pre></td></tr></table></figure>
+
+
+<h3 id="3-生成六寸排版照-1"><a href="#3-生成六寸排版照-1" class="headerlink" title="3. 生成六寸排版照"></a>3. 生成六寸排版照</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">curl -X POST <span class="string">&quot;http://127.0.0.1:8080/generate_layout_photos&quot;</span> \</span><br><span class="line">-F <span class="string">&quot;input_image=@test.jpg&quot;</span> \</span><br><span class="line">-F <span class="string">&quot;height=413&quot;</span> \</span><br><span class="line">-F <span class="string">&quot;width=295&quot;</span> \</span><br><span class="line">-F <span class="string">&quot;kb=200&quot;</span> \</span><br><span class="line">-F <span class="string">&quot;dpi=300&quot;</span></span><br></pre></td></tr></table></figure>
+
+
+<h3 id="4-人像抠图-1"><a href="#4-人像抠图-1" class="headerlink" title="4. 人像抠图"></a>4. 人像抠图</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">curl -X POST <span class="string">&quot;http://127.0.0.1:8080/human_matting&quot;</span> \</span><br><span class="line">-F <span class="string">&quot;input_image=@demo/images/test0.jpg&quot;</span> \</span><br><span class="line">-F <span class="string">&quot;human_matting_model=modnet_photographic_portrait_matting&quot;</span> \</span><br><span class="line">-F <span class="string">&quot;dpi=300&quot;</span></span><br></pre></td></tr></table></figure>
+
+
+<h3 id="5-图片加水印"><a href="#5-图片加水印" class="headerlink" title="5. 图片加水印"></a>5. 图片加水印</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">curl -X <span class="string">&#x27;POST&#x27;</span> \</span><br><span class="line">  <span class="string">&#x27;http://127.0.0.1:8080/watermark?size=20&amp;opacity=0.5&amp;angle=30&amp;color=%23000000&amp;space=25&#x27;</span> \</span><br><span class="line">  -H <span class="string">&#x27;accept: application/json&#x27;</span> \</span><br><span class="line">  -H <span class="string">&#x27;Content-Type: multipart/form-data&#x27;</span> \</span><br><span class="line">  -F <span class="string">&#x27;input_image=@demo/images/test0.jpg;type=image/jpeg&#x27;</span> \</span><br><span class="line">  -F <span class="string">&#x27;text=Hello&#x27;</span> \</span><br><span class="line">  -F <span class="string">&#x27;dpi=300&#x27;</span></span><br></pre></td></tr></table></figure>
+
+
+<h3 id="6-设置图像KB大小-1"><a href="#6-设置图像KB大小-1" class="headerlink" title="6. 设置图像KB大小"></a>6. 设置图像KB大小</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">curl -X <span class="string">&#x27;POST&#x27;</span> \</span><br><span class="line">  <span class="string">&#x27;http://127.0.0.1:8080/set_kb&#x27;</span> \</span><br><span class="line">  -H <span class="string">&#x27;accept: application/json&#x27;</span> \</span><br><span class="line">  -H <span class="string">&#x27;Content-Type: multipart/form-data&#x27;</span> \</span><br><span class="line">  -F <span class="string">&#x27;input_image=@demo/images/test0.jpg;type=image/jpeg&#x27;</span> \</span><br><span class="line">  -F <span class="string">&#x27;kb=50&#x27;</span> \</span><br><span class="line">  -F <span class="string">&#x27;dpi=300&#x27;</span></span><br></pre></td></tr></table></figure>
+
+
+<h3 id="7-证件照裁切-1"><a href="#7-证件照裁切-1" class="headerlink" title="7. 证件照裁切"></a>7. 证件照裁切</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">curl -X <span class="string">&#x27;POST&#x27;</span> \</span><br><span class="line">  <span class="string">&#x27;http://127.0.0.1:8080/idphoto_crop?head_measure_ratio=0.2&amp;head_height_ratio=0.45&amp;top_distance_max=0.12&amp;top_distance_min=0.1&#x27;</span> \</span><br><span class="line">  -H <span class="string">&#x27;accept: application/json&#x27;</span> \</span><br><span class="line">  -H <span class="string">&#x27;Content-Type: multipart/form-data&#x27;</span> \</span><br><span class="line">  -F <span class="string">&#x27;input_image=@idphoto_matting.png;type=image/png&#x27;</span> \</span><br><span class="line">  -F <span class="string">&#x27;height=413&#x27;</span> \</span><br><span class="line">  -F <span class="string">&#x27;width=295&#x27;</span> \</span><br><span class="line">  -F <span class="string">&#x27;face_detect_model=mtcnn&#x27;</span> \</span><br><span class="line">  -F <span class="string">&#x27;hd=true&#x27;</span> \</span><br><span class="line">  -F <span class="string">&#x27;dpi=300&#x27;</span></span><br></pre></td></tr></table></figure>
+
+
+<br>
+
+
+<h2 id="Python-请求示例"><a href="#Python-请求示例" class="headerlink" title="Python 请求示例"></a>Python 请求示例</h2><h4 id="1-生成证件照-底透明-2"><a href="#1-生成证件照-底透明-2" class="headerlink" title="1.生成证件照(底透明)"></a>1.生成证件照(底透明)</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"></span><br><span class="line">url = <span class="string">&quot;http://127.0.0.1:8080/idphoto&quot;</span></span><br><span class="line">input_image_path = <span class="string">&quot;demo/images/test0.jpg&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 设置请求参数</span></span><br><span class="line">params = &#123;</span><br><span class="line">    <span class="string">&quot;head_measure_ratio&quot;</span>: <span class="number">0.2</span>,</span><br><span class="line">    <span class="string">&quot;head_height_ratio&quot;</span>: <span class="number">0.45</span>,</span><br><span class="line">    <span class="string">&quot;top_distance_max&quot;</span>: <span class="number">0.12</span>,</span><br><span class="line">    <span class="string">&quot;top_distance_min&quot;</span>: <span class="number">0.1</span>,</span><br><span class="line">&#125;</span><br><span class="line">files = &#123;<span class="string">&quot;input_image&quot;</span>: <span class="built_in">open</span>(input_image_path, <span class="string">&quot;rb&quot;</span>)&#125;</span><br><span class="line">data = &#123;</span><br><span class="line">    <span class="string">&quot;height&quot;</span>: <span class="number">413</span>,</span><br><span class="line">    <span class="string">&quot;width&quot;</span>: <span class="number">295</span>,</span><br><span class="line">    <span class="string">&quot;human_matting_model&quot;</span>: <span class="string">&quot;modnet_photographic_portrait_matting&quot;</span>,</span><br><span class="line">    <span class="string">&quot;face_detect_model&quot;</span>: <span class="string">&quot;mtcnn&quot;</span>,</span><br><span class="line">    <span class="string">&quot;hd&quot;</span>: <span class="literal">True</span>,</span><br><span class="line">    <span class="string">&quot;dpi&quot;</span>: <span class="number">300</span>,</span><br><span class="line">    <span class="string">&quot;face_alignment&quot;</span>: <span class="literal">True</span>,</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">response = requests.post(url, params=params, files=files, data=data).json()</span><br><span class="line"></span><br><span class="line"><span class="comment"># response为一个json格式字典，包含status、image_base64_standard和image_base64_hd三项</span></span><br><span class="line"><span class="built_in">print</span>(response)</span><br></pre></td></tr></table></figure>
+
+
+<h4 id="2-添加背景色-2"><a href="#2-添加背景色-2" class="headerlink" title="2.添加背景色"></a>2.添加背景色</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"></span><br><span class="line">url = <span class="string">&quot;http://127.0.0.1:8080/add_background&quot;</span></span><br><span class="line">input_image_path = <span class="string">&quot;test.png&quot;</span></span><br><span class="line"></span><br><span class="line">files = &#123;<span class="string">&quot;input_image&quot;</span>: <span class="built_in">open</span>(input_image_path, <span class="string">&quot;rb&quot;</span>)&#125;</span><br><span class="line">data = &#123;</span><br><span class="line">    <span class="string">&quot;color&quot;</span>: <span class="string">&#x27;638cce&#x27;</span>,</span><br><span class="line">    <span class="string">&quot;kb&quot;</span>: <span class="literal">None</span>,</span><br><span class="line">    <span class="string">&quot;render&quot;</span>: <span class="number">0</span>,</span><br><span class="line">    <span class="string">&quot;dpi&quot;</span>: <span class="number">300</span>,</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">response = requests.post(url, files=files, data=data).json()</span><br><span class="line"></span><br><span class="line"><span class="comment"># response为一个json格式字典，包含status和image_base64</span></span><br><span class="line"><span class="built_in">print</span>(response)</span><br></pre></td></tr></table></figure>
+
+
+<h4 id="3-生成六寸排版照-2"><a href="#3-生成六寸排版照-2" class="headerlink" title="3.生成六寸排版照"></a>3.生成六寸排版照</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"></span><br><span class="line">url = <span class="string">&quot;http://127.0.0.1:8080/generate_layout_photos&quot;</span></span><br><span class="line">input_image_path = <span class="string">&quot;test.jpg&quot;</span></span><br><span class="line"></span><br><span class="line">files = &#123;<span class="string">&quot;input_image&quot;</span>: <span class="built_in">open</span>(input_image_path, <span class="string">&quot;rb&quot;</span>)&#125;</span><br><span class="line">data = &#123;</span><br><span class="line">    <span class="string">&quot;height&quot;</span>: <span class="number">413</span>,</span><br><span class="line">    <span class="string">&quot;width&quot;</span>: <span class="number">295</span>,</span><br><span class="line">    <span class="string">&quot;kb&quot;</span>: <span class="number">200</span>,</span><br><span class="line">    <span class="string">&quot;dpi&quot;</span>: <span class="number">300</span>,</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">response = requests.post(url, files=files, data=data).json()</span><br><span class="line"></span><br><span class="line"><span class="comment"># response为一个json格式字典，包含status和image_base64</span></span><br><span class="line"><span class="built_in">print</span>(response)</span><br></pre></td></tr></table></figure>
+
+
+<h4 id="4-人像抠图-2"><a href="#4-人像抠图-2" class="headerlink" title="4.人像抠图"></a>4.人像抠图</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"></span><br><span class="line">url = <span class="string">&quot;http://127.0.0.1:8080/human_matting&quot;</span></span><br><span class="line">input_image_path = <span class="string">&quot;test.jpg&quot;</span></span><br><span class="line"></span><br><span class="line">files = &#123;<span class="string">&quot;input_image&quot;</span>: <span class="built_in">open</span>(input_image_path, <span class="string">&quot;rb&quot;</span>)&#125;</span><br><span class="line">data = &#123;</span><br><span class="line">    <span class="string">&quot;human_matting_model&quot;</span>: <span class="string">&quot;modnet_photographic_portrait_matting&quot;</span>,</span><br><span class="line">    <span class="string">&quot;dpi&quot;</span>: <span class="number">300</span>,</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">response = requests.post(url, files=files, data=data).json()</span><br><span class="line"></span><br><span class="line"><span class="comment"># response为一个json格式字典，包含status和image_base64</span></span><br><span class="line"><span class="built_in">print</span>(response)</span><br></pre></td></tr></table></figure>
+
+
+<h4 id="5-图片加水印-1"><a href="#5-图片加水印-1" class="headerlink" title="5.图片加水印"></a>5.图片加水印</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"></span><br><span class="line"><span class="comment"># 设置请求的 URL 和参数</span></span><br><span class="line">url = <span class="string">&quot;http://127.0.0.1:8080/watermark&quot;</span></span><br><span class="line">params = &#123;</span><br><span class="line">    <span class="string">&quot;size&quot;</span>: <span class="number">20</span>,</span><br><span class="line">    <span class="string">&quot;opacity&quot;</span>: <span class="number">0.5</span>,</span><br><span class="line">    <span class="string">&quot;angle&quot;</span>: <span class="number">30</span>,</span><br><span class="line">    <span class="string">&quot;color&quot;</span>: <span class="string">&quot;#000000&quot;</span>,</span><br><span class="line">    <span class="string">&quot;space&quot;</span>: <span class="number">25</span>,</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 设置文件和其他表单数据</span></span><br><span class="line">input_image_path = <span class="string">&quot;demo/images/test0.jpg&quot;</span></span><br><span class="line">files = &#123;<span class="string">&quot;input_image&quot;</span>: <span class="built_in">open</span>(input_image_path, <span class="string">&quot;rb&quot;</span>)&#125;</span><br><span class="line">data = &#123;<span class="string">&quot;text&quot;</span>: <span class="string">&quot;Hello&quot;</span>, <span class="string">&quot;dpi&quot;</span>: <span class="number">300</span>&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 发送 POST 请求</span></span><br><span class="line">response = requests.post(url, params=params, files=files, data=data)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 检查响应</span></span><br><span class="line"><span class="keyword">if</span> response.ok:</span><br><span class="line">    <span class="comment"># 输出响应内容</span></span><br><span class="line">    <span class="built_in">print</span>(response.json())</span><br><span class="line"><span class="keyword">else</span>:</span><br><span class="line">    <span class="comment"># 输出错误信息</span></span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&quot;Request failed with status code <span class="subst">&#123;response.status_code&#125;</span>: <span class="subst">&#123;response.text&#125;</span>&quot;</span>)</span><br></pre></td></tr></table></figure>
+
+
+<h3 id="6-设置图像KB大小-2"><a href="#6-设置图像KB大小-2" class="headerlink" title="6. 设置图像KB大小"></a>6. 设置图像KB大小</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"></span><br><span class="line"><span class="comment"># 设置请求的 URL</span></span><br><span class="line">url = <span class="string">&quot;http://127.0.0.1:8080/set_kb&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 设置文件和其他表单数据</span></span><br><span class="line">input_image_path = <span class="string">&quot;demo/images/test0.jpg&quot;</span></span><br><span class="line">files = &#123;<span class="string">&quot;input_image&quot;</span>: <span class="built_in">open</span>(input_image_path, <span class="string">&quot;rb&quot;</span>)&#125;</span><br><span class="line">data = &#123;<span class="string">&quot;kb&quot;</span>: <span class="number">50</span>, <span class="string">&quot;dpi&quot;</span>: <span class="number">300</span>&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 发送 POST 请求</span></span><br><span class="line">response = requests.post(url, files=files, data=data)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 检查响应</span></span><br><span class="line"><span class="keyword">if</span> response.ok:</span><br><span class="line">    <span class="comment"># 输出响应内容</span></span><br><span class="line">    <span class="built_in">print</span>(response.json())</span><br><span class="line"><span class="keyword">else</span>:</span><br><span class="line">    <span class="comment"># 输出错误信息</span></span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&quot;Request failed with status code <span class="subst">&#123;response.status_code&#125;</span>: <span class="subst">&#123;response.text&#125;</span>&quot;</span>)</span><br></pre></td></tr></table></figure>
+
+
+<h3 id="7-证件照裁切-2"><a href="#7-证件照裁切-2" class="headerlink" title="7. 证件照裁切"></a>7. 证件照裁切</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"></span><br><span class="line"><span class="comment"># 设置请求的 URL</span></span><br><span class="line">url = <span class="string">&quot;http://127.0.0.1:8080/idphoto_crop&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 设置请求参数</span></span><br><span class="line">params = &#123;</span><br><span class="line">    <span class="string">&quot;head_measure_ratio&quot;</span>: <span class="number">0.2</span>,</span><br><span class="line">    <span class="string">&quot;head_height_ratio&quot;</span>: <span class="number">0.45</span>,</span><br><span class="line">    <span class="string">&quot;top_distance_max&quot;</span>: <span class="number">0.12</span>,</span><br><span class="line">    <span class="string">&quot;top_distance_min&quot;</span>: <span class="number">0.1</span>,</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 设置文件和其他表单数据</span></span><br><span class="line">input_image_path = <span class="string">&quot;idphoto_matting.png&quot;</span></span><br><span class="line">files = &#123;<span class="string">&quot;input_image&quot;</span>: (<span class="string">&quot;idphoto_matting.png&quot;</span>, <span class="built_in">open</span>(input_image_path, <span class="string">&quot;rb&quot;</span>), <span class="string">&quot;image/png&quot;</span>)&#125;</span><br><span class="line">data = &#123;</span><br><span class="line">    <span class="string">&quot;height&quot;</span>: <span class="number">413</span>,</span><br><span class="line">    <span class="string">&quot;width&quot;</span>: <span class="number">295</span>,</span><br><span class="line">    <span class="string">&quot;face_detect_model&quot;</span>: <span class="string">&quot;mtcnn&quot;</span>,</span><br><span class="line">    <span class="string">&quot;hd&quot;</span>: <span class="string">&quot;true&quot;</span>,</span><br><span class="line">    <span class="string">&quot;dpi&quot;</span>: <span class="number">300</span>,</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 发送 POST 请求</span></span><br><span class="line">response = requests.post(url, params=params, files=files, data=data)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 检查响应</span></span><br><span class="line"><span class="keyword">if</span> response.ok:</span><br><span class="line">    <span class="comment"># 输出响应内容</span></span><br><span class="line">    <span class="built_in">print</span>(response.json())</span><br><span class="line"><span class="keyword">else</span>:</span><br><span class="line">    <span class="comment"># 输出错误信息</span></span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&quot;Request failed with status code <span class="subst">&#123;response.status_code&#125;</span>: <span class="subst">&#123;response.text&#125;</span>&quot;</span>)</span><br></pre></td></tr></table></figure>
+
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>Author: </span><span class="post-copyright-info"><a href="https://yuanzhang788.github.io">Yuanz</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>Link: </span><span class="post-copyright-info"><a href="https://yuanzhang788.github.io/2024/10/25/HivisionIDPhoto%20Docker%E9%83%A8%E7%BD%B2%E4%BB%A5%E5%8F%8ASpringboot%E6%8E%A5%E5%8F%A3%E5%AF%B9%E6%8E%A5(AI%E8%AF%81%E4%BB%B6%E7%85%A7%E5%88%B6%E4%BD%9C)/">https://yuanzhang788.github.io/2024/10/25/HivisionIDPhoto%20Docker%E9%83%A8%E7%BD%B2%E4%BB%A5%E5%8F%8ASpringboot%E6%8E%A5%E5%8F%A3%E5%AF%B9%E6%8E%A5(AI%E8%AF%81%E4%BB%B6%E7%85%A7%E5%88%B6%E4%BD%9C)/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>Copyright Notice: </span><span class="post-copyright-info">All articles on this blog are licensed under <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless otherwise stated.</span></div></div><div class="tag_share"><div class="post-share"><div class="social-share" data-image="/img/butterfly-icon.png" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2024/10/29/Windows10%20%E4%BB%BB%E5%8A%A1%E6%A0%8F%E7%BC%A9%E7%95%A5%E5%9B%BE(%E9%A2%84%E8%A7%88)%E5%A4%A7%E5%B0%8F%E8%AE%BE%E7%BD%AE%E8%84%9A%E6%9C%AC&amp;%E8%BF%98%E5%8E%9F%E8%84%9A%E6%9C%AC/" title="Windows10 任务栏缩略图(预览)大小设置脚本&amp;还原脚本"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info"><div class="info-1"><div class="info-item-1">Previous</div><div class="info-item-2">Windows10 任务栏缩略图(预览)大小设置脚本&还原脚本</div></div><div class="info-2"><div class="info-item-1"> 主要目的是修改下图缩略图的大小(缩略图初始大小)     新建一个脚本文件SetTaskbarThumbnailSize.ps1(脚本代码如下) 脚本内容解释: 注册表HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Taskband下新增MinThumbSizePx 参数 注册表HKCU:\Software\Microsoft\Windows\DWM下新增ThumbnailSize 参数   $previewWidth &#x3D; 500 此处我设置的宽度为500px(读者有需要的可自行修改)   使用PowerShell运行      执行后的效果(比原来的缩略图初始大小大得多),不光能变大也能变小,通过修改代码中的$previewWidth &#x3D; 500来进行修改 有什么作用,自行体会        12345678910111213141516171819202122232425262728293031323334353637# PowerShell Script to Change Taskba...</div></div></div></a><a class="pagination-related" href="/2024/10/17/Springboot&amp;Mybatis-Plus%E5%AE%9E%E7%8E%B0%E4%B8%9A%E5%8A%A1%E6%92%A4%E9%94%80%E5%9B%9E%E6%BB%9A%E5%8A%9F%E8%83%BD/" title="Springboot&amp;Mybatis-Plus实现业务撤销回滚功能"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">Next</div><div class="info-item-2">Springboot&Mybatis-Plus实现业务撤销回滚功能</div></div><div class="info-2"><div class="info-item-1">操作记录表12345678910111213CREATE TABLE `operation_record` (  `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT &#x27;自增id&#x27;,  `check_id` bigint(20) NOT NULL COMMENT &#x27;检测id&#x27;,  `status` varchar(64) DEFAULT NULL COMMENT &#x27;检测old状态-检测new状态&#x27;,  `operation` varchar(255) NOT NULL COMMENT &#x27;操作事件&#x27;,  `deleted` tinyint(1) DEFAULT &#x27;0&#x27; COMMENT &#x27;是否删除&#x27;,  `created_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT &#x27;创建时间&#x27;,  `created_by_id` bigint(20) DEFAULT ...</div></div></div></a></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/butterfly-icon.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">Yuanz</div><div class="author-info-description">Yuanz的个人博客</div><div class="site-data"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">176</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">0</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">0</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>Announcement</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>Contents</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%A1%B9%E7%9B%AE%E7%AE%80%E4%BB%8B"><span class="toc-number">1.</span> <span class="toc-text">项目简介</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Docker-%E9%83%A8%E7%BD%B2"><span class="toc-number">2.</span> <span class="toc-text">Docker 部署</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%8B%89%E5%8F%96%E9%95%9C%E5%83%8F"><span class="toc-number">2.1.</span> <span class="toc-text">拉取镜像</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%90%AF%E5%8A%A8-Gradio-Demo-%E6%9C%8D%E5%8A%A1"><span class="toc-number">2.2.</span> <span class="toc-text">启动 Gradio Demo 服务</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%90%AF%E5%8A%A8-API-%E5%90%8E%E7%AB%AF%E6%9C%8D%E5%8A%A1"><span class="toc-number">2.3.</span> <span class="toc-text">启动 API 后端服务</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Springboot-%E8%BF%9B%E8%A1%8C%E6%8E%A5%E5%8F%A3%E5%AF%B9%E6%8E%A5"><span class="toc-number">3.</span> <span class="toc-text">Springboot 进行接口对接</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%8A%BD%E5%8F%96%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6-%E5%B0%86HivisionIDPhoto%E5%90%8E%E7%AB%AF%E6%9C%8D%E5%8A%A1%E7%9A%84%E5%9C%B0%E5%9D%80%E6%8A%BD%E5%8F%96%E4%B8%BA%E9%85%8D%E7%BD%AE%E7%B1%BB"><span class="toc-number">3.1.</span> <span class="toc-text">抽取配置文件,将HivisionIDPhoto后端服务的地址抽取为配置类</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%94%9F%E6%88%90%E8%AF%81%E4%BB%B6%E7%85%A7-%E5%BA%95%E9%80%8F%E6%98%8E-%E6%B7%BB%E5%8A%A0%E8%83%8C%E6%99%AF%E8%89%B2"><span class="toc-number">3.2.</span> <span class="toc-text">生成证件照(底透明)+添加背景色</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B5%8B%E8%AF%95"><span class="toc-number">3.3.</span> <span class="toc-text">测试</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#API-Docs"><span class="toc-number">4.</span> <span class="toc-text">API Docs</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%9B%AE%E5%BD%95"><span class="toc-number">4.1.</span> <span class="toc-text">目录</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BC%80%E5%A7%8B%E4%B9%8B%E5%89%8D%EF%BC%9A%E5%BC%80%E5%90%AF%E5%90%8E%E7%AB%AF%E6%9C%8D%E5%8A%A1"><span class="toc-number">4.2.</span> <span class="toc-text">开始之前：开启后端服务</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%8E%A5%E5%8F%A3%E5%8A%9F%E8%83%BD%E8%AF%B4%E6%98%8E"><span class="toc-number">4.3.</span> <span class="toc-text">接口功能说明</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E7%94%9F%E6%88%90%E8%AF%81%E4%BB%B6%E7%85%A7-%E5%BA%95%E9%80%8F%E6%98%8E"><span class="toc-number">4.3.1.</span> <span class="toc-text">1.生成证件照(底透明)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E6%B7%BB%E5%8A%A0%E8%83%8C%E6%99%AF%E8%89%B2"><span class="toc-number">4.3.2.</span> <span class="toc-text">2.添加背景色</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-%E7%94%9F%E6%88%90%E5%85%AD%E5%AF%B8%E6%8E%92%E7%89%88%E7%85%A7"><span class="toc-number">4.3.3.</span> <span class="toc-text">3.生成六寸排版照</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-%E4%BA%BA%E5%83%8F%E6%8A%A0%E5%9B%BE"><span class="toc-number">4.3.4.</span> <span class="toc-text">4.人像抠图</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-%E5%9B%BE%E5%83%8F%E5%8A%A0%E6%B0%B4%E5%8D%B0"><span class="toc-number">4.3.5.</span> <span class="toc-text">5.图像加水印</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-%E8%AE%BE%E7%BD%AE%E5%9B%BE%E5%83%8FKB%E5%A4%A7%E5%B0%8F"><span class="toc-number">4.3.6.</span> <span class="toc-text">6.设置图像KB大小</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-%E8%AF%81%E4%BB%B6%E7%85%A7%E8%A3%81%E5%88%87"><span class="toc-number">4.3.7.</span> <span class="toc-text">7.证件照裁切</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#cURL-%E8%AF%B7%E6%B1%82%E7%A4%BA%E4%BE%8B"><span class="toc-number">4.4.</span> <span class="toc-text">cURL 请求示例</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E7%94%9F%E6%88%90%E8%AF%81%E4%BB%B6%E7%85%A7-%E5%BA%95%E9%80%8F%E6%98%8E-1"><span class="toc-number">4.4.1.</span> <span class="toc-text">1. 生成证件照(底透明)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E6%B7%BB%E5%8A%A0%E8%83%8C%E6%99%AF%E8%89%B2-1"><span class="toc-number">4.4.2.</span> <span class="toc-text">2. 添加背景色</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-%E7%94%9F%E6%88%90%E5%85%AD%E5%AF%B8%E6%8E%92%E7%89%88%E7%85%A7-1"><span class="toc-number">4.4.3.</span> <span class="toc-text">3. 生成六寸排版照</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-%E4%BA%BA%E5%83%8F%E6%8A%A0%E5%9B%BE-1"><span class="toc-number">4.4.4.</span> <span class="toc-text">4. 人像抠图</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-%E5%9B%BE%E7%89%87%E5%8A%A0%E6%B0%B4%E5%8D%B0"><span class="toc-number">4.4.5.</span> <span class="toc-text">5. 图片加水印</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-%E8%AE%BE%E7%BD%AE%E5%9B%BE%E5%83%8FKB%E5%A4%A7%E5%B0%8F-1"><span class="toc-number">4.4.6.</span> <span class="toc-text">6. 设置图像KB大小</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-%E8%AF%81%E4%BB%B6%E7%85%A7%E8%A3%81%E5%88%87-1"><span class="toc-number">4.4.7.</span> <span class="toc-text">7. 证件照裁切</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Python-%E8%AF%B7%E6%B1%82%E7%A4%BA%E4%BE%8B"><span class="toc-number">4.5.</span> <span class="toc-text">Python 请求示例</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-%E7%94%9F%E6%88%90%E8%AF%81%E4%BB%B6%E7%85%A7-%E5%BA%95%E9%80%8F%E6%98%8E-2"><span class="toc-number">4.5.1.</span> <span class="toc-text">1.生成证件照(底透明)</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-%E6%B7%BB%E5%8A%A0%E8%83%8C%E6%99%AF%E8%89%B2-2"><span class="toc-number">4.5.2.</span> <span class="toc-text">2.添加背景色</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-%E7%94%9F%E6%88%90%E5%85%AD%E5%AF%B8%E6%8E%92%E7%89%88%E7%85%A7-2"><span class="toc-number">4.5.3.</span> <span class="toc-text">3.生成六寸排版照</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4-%E4%BA%BA%E5%83%8F%E6%8A%A0%E5%9B%BE-2"><span class="toc-number">4.5.4.</span> <span class="toc-text">4.人像抠图</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#5-%E5%9B%BE%E7%89%87%E5%8A%A0%E6%B0%B4%E5%8D%B0-1"><span class="toc-number">4.5.5.</span> <span class="toc-text">5.图片加水印</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-%E8%AE%BE%E7%BD%AE%E5%9B%BE%E5%83%8FKB%E5%A4%A7%E5%B0%8F-2"><span class="toc-number">4.5.6.</span> <span class="toc-text">6. 设置图像KB大小</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-%E8%AF%81%E4%BB%B6%E7%85%A7%E8%A3%81%E5%88%87-2"><span class="toc-number">4.5.7.</span> <span class="toc-text">7. 证件照裁切</span></a></li></ol></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Posts</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/06/05/hello-world/" title="Hello World">Hello World</a><time datetime="2026-06-05T09:30:56.120Z" title="Created 2026-06-05 17:30:56">2026-06-05</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/05/28/%E4%BB%8E%E9%9B%B6%E5%BC%80%E5%A7%8B%EF%BC%8C%E5%9F%BA%E4%BA%8E-Hexo-GitHub-Pages-%E6%90%AD%E5%BB%BA%E4%B8%80%E4%B8%AA%E5%B1%9E%E4%BA%8E%E8%87%AA%E5%B7%B1%E7%9A%84%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2%EF%BC%8C%E5%B9%B6%E5%AE%8C%E6%88%90%E4%B8%BB%E9%A2%98%E5%88%87%E6%8D%A2%E4%B8%8E%E9%83%A8%E7%BD%B2%E3%80%82%EF%BC%88%E8%B6%85%E8%AF%A6%E7%BB%86%E6%95%99%E7%A8%8B%EF%BC%89/" title="从零开始，基于 Hexo + GitHub Pages 搭建一个属于自己的个人博客，并完成主题切换与部署。（超详细教程）">从零开始，基于 Hexo + GitHub Pages 搭建一个属于自己的个人博客，并完成主题切换与部署。（超详细教程）</a><time datetime="2026-05-28T06:27:02.000Z" title="Created 2026-05-28 14:27:02">2026-05-28</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/05/22/%E7%AC%AC%E4%B8%80%E7%AF%87-Github-Pages%E5%8D%9A%E5%AE%A2/" title="第一篇 Github Pages博客">第一篇 Github Pages博客</a><time datetime="2026-05-22T09:25:44.000Z" title="Created 2026-05-22 17:25:44">2026-05-22</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/05/20/Java%20Excel%E5%AF%BC%E5%87%BA%EF%BC%9A%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E8%87%AA%E5%AE%9A%E4%B9%89%E8%A1%A8%E5%A4%B4%E4%B8%8E%E5%AD%97%E6%AE%B5%E9%A1%BA%E5%BA%8F%E7%9A%84%E5%AE%8C%E5%85%A8%E6%8E%A7%E5%88%B6/" title="Java Excel导出：如何实现自定义表头与字段顺序的完全控制">Java Excel导出：如何实现自定义表头与字段顺序的完全控制</a><time datetime="2026-05-20T10:02:18.000Z" title="Created 2026-05-20 18:02:18">2026-05-20</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/05/07/Docker%20%E5%AE%89%E8%A3%85%20%E6%95%B0%E6%8D%AE%E5%BA%93%E5%B7%A5%E5%8D%95%E7%B3%BB%E7%BB%9FYearning%E4%BB%A5%E5%8F%8A%E4%BD%BF%E7%94%A8/" title="Docker 安装 数据库工单系统Yearning以及使用">Docker 安装 数据库工单系统Yearning以及使用</a><time datetime="2026-05-07T06:10:08.000Z" title="Created 2026-05-07 14:10:08">2026-05-07</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2025 - 2026 By Yuanz</span><span class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 8.1.2</a><span class="footer-separator">|</span><span>Theme </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.5.5-b1</a></span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="Reading Mode"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="Toggle Between Light and Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle Between Single-column and Double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="Settings"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="Table of Contents"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="Back to Top"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.5.5-b1"></script><script src="/js/main.js?v=5.5.5-b1"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>

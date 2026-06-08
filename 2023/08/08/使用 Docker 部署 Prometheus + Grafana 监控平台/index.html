@@ -1,0 +1,332 @@
+<!DOCTYPE html><html lang="cn" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>使用 Docker 部署 Prometheus + Grafana 监控平台 | Yuanz</title><meta name="author" content="Yuanz"><meta name="copyright" content="Yuanz"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="使用 Docker 部署 Prometheus + Grafana 监控平台 默认docker 已经安装好,我使用的是CentOS7 &#x3D;&#x3D;注意一定要开启服务器对应的端口&#x3D;&#x3D;  1. 安装Prometheus1docker run -itd --name&#x3D;prometheus --restart&#x3D;always -p 9090:9090 prom&#x2F;prometh">
+<meta property="og:type" content="article">
+<meta property="og:title" content="使用 Docker 部署 Prometheus + Grafana 监控平台">
+<meta property="og:url" content="https://yuanzhang788.github.io/2023/08/08/%E4%BD%BF%E7%94%A8%20Docker%20%E9%83%A8%E7%BD%B2%20Prometheus%20+%20Grafana%20%E7%9B%91%E6%8E%A7%E5%B9%B3%E5%8F%B0/index.html">
+<meta property="og:site_name" content="Yuanz">
+<meta property="og:description" content="使用 Docker 部署 Prometheus + Grafana 监控平台 默认docker 已经安装好,我使用的是CentOS7 &#x3D;&#x3D;注意一定要开启服务器对应的端口&#x3D;&#x3D;  1. 安装Prometheus1docker run -itd --name&#x3D;prometheus --restart&#x3D;always -p 9090:9090 prom&#x2F;prometh">
+<meta property="og:locale">
+<meta property="og:image" content="https://yuanzhang788.github.io/img/butterfly-icon.png">
+<meta property="article:published_time" content="2023-08-08T06:39:57.000Z">
+<meta property="article:modified_time" content="2026-06-08T03:35:09.724Z">
+<meta property="article:author" content="Yuanz">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://yuanzhang788.github.io/img/butterfly-icon.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "使用 Docker 部署 Prometheus + Grafana 监控平台",
+  "url": "https://yuanzhang788.github.io/2023/08/08/%E4%BD%BF%E7%94%A8%20Docker%20%E9%83%A8%E7%BD%B2%20Prometheus%20+%20Grafana%20%E7%9B%91%E6%8E%A7%E5%B9%B3%E5%8F%B0/",
+  "image": "https://yuanzhang788.github.io/img/butterfly-icon.png",
+  "datePublished": "2023-08-08T06:39:57.000Z",
+  "dateModified": "2026-06-08T03:35:09.724Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "Yuanz",
+      "url": "https://yuanzhang788.github.io"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://yuanzhang788.github.io/2023/08/08/%E4%BD%BF%E7%94%A8%20Docker%20%E9%83%A8%E7%BD%B2%20Prometheus%20+%20Grafana%20%E7%9B%91%E6%8E%A7%E5%B9%B3%E5%8F%B0/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=5.5.5-b1"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: 'Copy Successful',
+    error: 'Copy Failed',
+    noSupport: 'Browser Not Supported'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: 'Just now',
+    min: 'minutes ago',
+    hour: 'hours ago',
+    day: 'days ago',
+    month: 'months ago'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.0/dist/infinitegrid.min.js',
+    buttonText: 'Load More'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '使用 Docker 部署 Prometheus + Grafana 监控平台',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><meta name="generator" content="Hexo 8.1.2"></head><body><div class="post" id="body-wrap"><header class="post-bg" id="page-header"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">Yuanz</span></a><a class="nav-page-title" href="/"><span class="site-name">使用 Docker 部署 Prometheus + Grafana 监控平台</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  Back to Home</span></span></a></span><div id="menus"></div></nav><div id="post-info"><h1 class="post-title">使用 Docker 部署 Prometheus + Grafana 监控平台</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2023-08-08T06:39:57.000Z" title="Created 2023-08-08 14:39:57">2023-08-08</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2026-06-08T03:35:09.724Z" title="Updated 2026-06-08 11:35:09">2026-06-08</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">Post Views:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><h1 id="使用-Docker-部署-Prometheus-Grafana-监控平台"><a href="#使用-Docker-部署-Prometheus-Grafana-监控平台" class="headerlink" title="使用 Docker 部署 Prometheus + Grafana 监控平台"></a>使用 Docker 部署 Prometheus + Grafana 监控平台</h1><blockquote>
+<p>默认docker 已经安装好,我使用的是CentOS7</p>
+<p>&#x3D;&#x3D;注意一定要开启服务器对应的端口&#x3D;&#x3D;</p>
+</blockquote>
+<h2 id="1-安装Prometheus"><a href="#1-安装Prometheus" class="headerlink" title="1. 安装Prometheus"></a>1. 安装Prometheus</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run -itd --name=prometheus --restart=always -p 9090:9090 prom/prometheus</span><br></pre></td></tr></table></figure>
+
+
+<p><img src="/assets/%E4%BD%BF%E7%94%A8Docker%E9%83%A8%E7%BD%B2PrometheusGrafana%E7%9B%91%E6%8E%A7%E5%B9%B3%E5%8F%B0/baa2a74fd52741baa64caf924093581d.png" alt="image-20230808101033449"></p>
+<blockquote>
+<p>访问:<a target="_blank" rel="noopener" href="http://ip:9090/">http://ip:9090</a></p>
+</blockquote>
+<p><img src="/assets/%E4%BD%BF%E7%94%A8Docker%E9%83%A8%E7%BD%B2PrometheusGrafana%E7%9B%91%E6%8E%A7%E5%B9%B3%E5%8F%B0/5d9da58cf2f5c859231c0a98290002ac.png" alt="image-20230808101421257"></p>
+<h2 id="2-安装Grafana"><a href="#2-安装Grafana" class="headerlink" title="2.安装Grafana"></a>2.安装Grafana</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">#</span><span class="language-bash">这里的<span class="variable">$PWD</span>就是你的当前位置,我当前位置在/root,那么grafana-storage就会生成在/root下</span></span><br><span class="line">docker run -itd --name=grafana \</span><br><span class="line"><span class="meta prompt_">&gt; </span><span class="language-bash">--restart=always \</span></span><br><span class="line"><span class="language-bash">&gt; -p 3000:3000 \</span></span><br><span class="line"><span class="language-bash">&gt; -v <span class="variable">$PWD</span>/grafana-storage:/var/lib/grafana \</span></span><br><span class="line"><span class="language-bash">&gt; grafana/grafana</span></span><br></pre></td></tr></table></figure>
+
+
+<p><img src="/assets/%E4%BD%BF%E7%94%A8Docker%E9%83%A8%E7%BD%B2PrometheusGrafana%E7%9B%91%E6%8E%A7%E5%B9%B3%E5%8F%B0/f2125203142743d6a3ac067c365a527d.png" alt="image-20230808101909595"></p>
+<blockquote>
+<p>访问:<a target="_blank" rel="noopener" href="http://ip:3000/">http://ip:3000</a></p>
+<p>账号密码都是admin</p>
+</blockquote>
+<p><img src="/assets/%E4%BD%BF%E7%94%A8Docker%E9%83%A8%E7%BD%B2PrometheusGrafana%E7%9B%91%E6%8E%A7%E5%B9%B3%E5%8F%B0/01250107005025dca178fa7e87f7cedb.png" alt="image-20230808102011319"></p>
+<blockquote>
+<p>登录进来后此处可以修改密码</p>
+</blockquote>
+<p><img src="/assets/%E4%BD%BF%E7%94%A8Docker%E9%83%A8%E7%BD%B2PrometheusGrafana%E7%9B%91%E6%8E%A7%E5%B9%B3%E5%8F%B0/1a927aebcd7e41e83ddfa96ef0e806d8.png" alt="image-20230808102158030"></p>
+<h2 id="3-安装Node-exporter"><a href="#3-安装Node-exporter" class="headerlink" title="3. 安装Node_exporter"></a>3. 安装Node_exporter</h2><blockquote>
+<p>&#x3D;&#x3D;因为Prometheus 本身不具备监控功能，所以想要通过Prometheus 收集数据的话，需要安装对应的exporter。&#x3D;&#x3D;</p>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">docker run -itd --name=node-exporter \</span><br><span class="line">--restart=always \</span><br><span class="line">-p 9100:9100 \</span><br><span class="line">-v &quot;/proc:/host/proc:ro&quot; \</span><br><span class="line">-v &quot;/sys:/host/sys:ro&quot; \</span><br><span class="line">-v &quot;/:/rootfs:ro&quot; \</span><br><span class="line">prom/node-exporter</span><br></pre></td></tr></table></figure>
+
+
+<p><img src="/assets/%E4%BD%BF%E7%94%A8Docker%E9%83%A8%E7%BD%B2PrometheusGrafana%E7%9B%91%E6%8E%A7%E5%B9%B3%E5%8F%B0/f2a7532ae4c4136a7218b183369dd2e6.png" alt="image-20230808102618497"></p>
+<blockquote>
+<p><a target="_blank" rel="noopener" href="http://ip:9100/metrics">http://ip:9100/metrics</a></p>
+</blockquote>
+<p><img src="/assets/%E4%BD%BF%E7%94%A8Docker%E9%83%A8%E7%BD%B2PrometheusGrafana%E7%9B%91%E6%8E%A7%E5%B9%B3%E5%8F%B0/76e5b5367a9a4d4bb2cca0af78a1d8a1.png" alt="image-20230808102735852"></p>
+<h2 id="4-配置-Prometheus-监控Node节点"><a href="#4-配置-Prometheus-监控Node节点" class="headerlink" title="4. 配置 Prometheus 监控Node节点"></a>4. 配置 Prometheus 监控Node节点</h2><h3 id="4-1-修改Prometheus主配置文件"><a href="#4-1-修改Prometheus主配置文件" class="headerlink" title="4.1 修改Prometheus主配置文件"></a>4.1 修改Prometheus主配置文件</h3><blockquote>
+<p>先将配置文件拷贝出来</p>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash"> <span class="variable">$PWD</span> 当前目录在/root</span></span><br><span class="line">docker cp prometheus:/etc/prometheus/prometheus.yml $PWD</span><br></pre></td></tr></table></figure>
+
+
+<p><img src="/assets/%E4%BD%BF%E7%94%A8Docker%E9%83%A8%E7%BD%B2PrometheusGrafana%E7%9B%91%E6%8E%A7%E5%B9%B3%E5%8F%B0/08bf947ab93e81a4eed653d841f22c93.png" alt="image-20230808102916846"></p>
+<blockquote>
+<p>在Prometheus配置文件按以下内容修改：</p>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">my global config</span></span><br><span class="line">global:</span><br><span class="line">  scrape_interval: 15s # Set the scrape interval to every 15 seconds. Default is every 1 minute.</span><br><span class="line">  evaluation_interval: 15s # Evaluate rules every 15 seconds. The default is every 1 minute.</span><br><span class="line"><span class="meta prompt_">  # </span><span class="language-bash">scrape_timeout is <span class="built_in">set</span> to the global default (10s).</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">Alertmanager configuration</span></span><br><span class="line">alerting:</span><br><span class="line">  alertmanagers:</span><br><span class="line">    - static_configs:</span><br><span class="line">        - targets:</span><br><span class="line">          # - alertmanager:9093</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">Load rules once and periodically evaluate them according to the global <span class="string">&#x27;evaluation_interval&#x27;</span>.</span></span><br><span class="line">rule_files:</span><br><span class="line"><span class="meta prompt_">  # </span><span class="language-bash">- <span class="string">&quot;first_rules.yml&quot;</span></span></span><br><span class="line"><span class="meta prompt_">  # </span><span class="language-bash">- <span class="string">&quot;second_rules.yml&quot;</span></span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">A scrape configuration containing exactly one endpoint to scrape:</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">Here it<span class="string">&#x27;s Prometheus itself.</span></span></span><br><span class="line">scrape_configs:</span><br><span class="line"><span class="meta prompt_">  # </span><span class="language-bash"><span class="string">The job name is added as a label `job=&lt;job_name&gt;` to any timeseries scraped from this config.</span></span></span><br><span class="line">  - job_name: &quot;prometheus&quot;</span><br><span class="line"></span><br><span class="line">    # metrics_path defaults to &#x27;/metrics&#x27;</span><br><span class="line">    # scheme defaults to &#x27;http&#x27;.</span><br><span class="line"></span><br><span class="line">    static_configs:</span><br><span class="line">      - targets: [&quot;localhost:9090&quot;]</span><br><span class="line">  - job_name: linux</span><br><span class="line">    static_configs:</span><br><span class="line">    - targets: [&#x27;Node_exporter所在ip:9100&#x27;]         #被监控端的IP地址和端口号(有多个被监控端可用 逗号 隔开)</span><br><span class="line">      labels:</span><br><span class="line">        instance: linux01  #示例名称随便起</span><br></pre></td></tr></table></figure>
+
+
+<p><img src="/assets/%E4%BD%BF%E7%94%A8Docker%E9%83%A8%E7%BD%B2PrometheusGrafana%E7%9B%91%E6%8E%A7%E5%B9%B3%E5%8F%B0/97a09ccd71b0e04aa33f377c0458ea1d.png" alt="image-20230808103432319"></p>
+<blockquote>
+<p>修改完成后在拷贝回去</p>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker cp $PWD/prometheus.yml prometheus:/etc/prometheus/prometheus.yml</span><br></pre></td></tr></table></figure>
+
+
+<blockquote>
+<p>重启prometheus,使配置生效</p>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker restart prometheus</span><br></pre></td></tr></table></figure>
+
+
+
+
+<h2 id="5-配置prometheus-Grafana"><a href="#5-配置prometheus-Grafana" class="headerlink" title="5. 配置prometheus+Grafana"></a>5. 配置prometheus+Grafana</h2><blockquote>
+<p>使用浏览器访问http:&#x2F; &#x2F;ip:3000来将Node节点监控</p>
+</blockquote>
+<ol>
+<li>添加数据源</li>
+</ol>
+<p><img src="/assets/%E4%BD%BF%E7%94%A8Docker%E9%83%A8%E7%BD%B2PrometheusGrafana%E7%9B%91%E6%8E%A7%E5%B9%B3%E5%8F%B0/d61c8d4b21bc70b14b7414edacf0d31b.png" alt="image-20230808104015355"></p>
+<ol start="2">
+<li>选择prometheus数据源</li>
+</ol>
+<p><img src="/assets/%E4%BD%BF%E7%94%A8Docker%E9%83%A8%E7%BD%B2PrometheusGrafana%E7%9B%91%E6%8E%A7%E5%B9%B3%E5%8F%B0/6f025173bd6ddebaa0b0a30eb5b09f8c.png" alt="image-20230808104048785"></p>
+<ol start="3">
+<li>配置数据源</li>
+</ol>
+<p><img src="/assets/%E4%BD%BF%E7%94%A8Docker%E9%83%A8%E7%BD%B2PrometheusGrafana%E7%9B%91%E6%8E%A7%E5%B9%B3%E5%8F%B0/e07ff4a234c88b027f2d1d4e916aa2e0.png" alt="image-20230808104235436"></p>
+<ol start="4">
+<li>滑动到底部保存</li>
+</ol>
+<p><img src="/assets/%E4%BD%BF%E7%94%A8Docker%E9%83%A8%E7%BD%B2PrometheusGrafana%E7%9B%91%E6%8E%A7%E5%B9%B3%E5%8F%B0/5b4a9ef5dd0944e87fb1f7e0e12435f4.png" alt="image-20230808104356587"></p>
+<ol start="5">
+<li>找到我们配置的数据源</li>
+</ol>
+<p><img src="/assets/%E4%BD%BF%E7%94%A8Docker%E9%83%A8%E7%BD%B2PrometheusGrafana%E7%9B%91%E6%8E%A7%E5%B9%B3%E5%8F%B0/6b7db63bdb3dc03baef07d6d04919bff.png" alt="image-20230808104704014"></p>
+<ol start="6">
+<li>为该数据源 导入仪表盘,当然你可以用自己创建</li>
+</ol>
+<p><img src="/assets/%E4%BD%BF%E7%94%A8Docker%E9%83%A8%E7%BD%B2PrometheusGrafana%E7%9B%91%E6%8E%A7%E5%B9%B3%E5%8F%B0/cb1e46aff0a57a32d18c1fd2078e42bf.png" alt="image-20230808105119632"></p>
+<p><img src="/assets/%E4%BD%BF%E7%94%A8Docker%E9%83%A8%E7%BD%B2PrometheusGrafana%E7%9B%91%E6%8E%A7%E5%B9%B3%E5%8F%B0/20f8ede64a5cb11a110ae055b4fb4c07.png" alt="image-20230808105139562"></p>
+<ol start="7">
+<li><p>导入仪表盘</p>
+<blockquote>
+<p>模板网站<a target="_blank" rel="noopener" href="https://grafana.com/grafana/dashboards/">https://grafana.com/grafana/dashboards/</a></p>
+</blockquote>
+</li>
+</ol>
+<p><img src="/assets/%E4%BD%BF%E7%94%A8Docker%E9%83%A8%E7%BD%B2PrometheusGrafana%E7%9B%91%E6%8E%A7%E5%B9%B3%E5%8F%B0/f252c836a780121a20ecce2e745f29ad.png" alt="image-20230808105319659"></p>
+<blockquote>
+<p>打开模板网站找到自己喜欢的仪表盘导入即可</p>
+<p>因为我们现在只导出了Node_exporter,所以找Node_exporter仪表盘就行了</p>
+</blockquote>
+<p><img src="/assets/%E4%BD%BF%E7%94%A8Docker%E9%83%A8%E7%BD%B2PrometheusGrafana%E7%9B%91%E6%8E%A7%E5%B9%B3%E5%8F%B0/757590a4ca6f63dc88e8102587c0d03a.png" alt="image-20230808105558397"></p>
+<blockquote>
+<p>复制仪表盘id</p>
+</blockquote>
+<p><img src="/assets/%E4%BD%BF%E7%94%A8Docker%E9%83%A8%E7%BD%B2PrometheusGrafana%E7%9B%91%E6%8E%A7%E5%B9%B3%E5%8F%B0/62980e94793212a5605611aae7404152.png" alt="image-20230808105646174"></p>
+<blockquote>
+<p>粘贴回来导入</p>
+</blockquote>
+<p><img src="/assets/%E4%BD%BF%E7%94%A8Docker%E9%83%A8%E7%BD%B2PrometheusGrafana%E7%9B%91%E6%8E%A7%E5%B9%B3%E5%8F%B0/d733bc93bc68d3355549bc47fde870a1.png" alt="image-20230808105733534"></p>
+<ol start="8">
+<li>为仪表板选择数据源</li>
+</ol>
+<p><img src="/assets/%E4%BD%BF%E7%94%A8Docker%E9%83%A8%E7%BD%B2PrometheusGrafana%E7%9B%91%E6%8E%A7%E5%B9%B3%E5%8F%B0/d0857f80b0d850d293aa5aedb9fbf5f2.png" alt="image-20230808105834472"></p>
+<ol start="9">
+<li>导入成功</li>
+</ol>
+<p><img src="/assets/%E4%BD%BF%E7%94%A8Docker%E9%83%A8%E7%BD%B2PrometheusGrafana%E7%9B%91%E6%8E%A7%E5%B9%B3%E5%8F%B0/524550280a1abe4f3d127a8918df7636.png" alt="image-20230808105901369"></p>
+<p><img src="/assets/%E4%BD%BF%E7%94%A8Docker%E9%83%A8%E7%BD%B2PrometheusGrafana%E7%9B%91%E6%8E%A7%E5%B9%B3%E5%8F%B0/282020b400320ed0bd6992bb3c7958d8.png" alt="image-20230808105912805"></p>
+<h2 id="6-配置-Prometheus-监控Mysql"><a href="#6-配置-Prometheus-监控Mysql" class="headerlink" title="6. 配置 Prometheus 监控Mysql"></a>6. 配置 Prometheus 监控Mysql</h2><blockquote>
+<ul>
+<li>我们可以直接在Grafana通过配置数据源的方式监控mysql</li>
+<li>也可以通过为Prometheus配置mysql_exporter,Grafana通过Prometheus数据(本次采用)</li>
+<li>&#x3D;&#x3D;mysql对应账号一定要开启远程访问&#x3D;&#x3D;</li>
+</ul>
+</blockquote>
+<ol>
+<li><p>下载mysqld_exporter</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">#</span><span class="language-bash">下载</span></span><br><span class="line">wget https://github.com/prometheus/mysqld_exporter/releases/download/v0.13.0/mysqld_exporter-0.13.0.linux-amd64.tar.gz</span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">解压到当前目录</span></span><br><span class="line">tar -zxvf mysqld_exporter-0.13.0.linux-amd64.tar.gz</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>解压</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">mv mysqld_exporter-0.13.0.linux-amd64 /usr/local/mysql_exporter</span><br><span class="line">cd /usr/local/mysql_exporter</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>配置</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vim /usr/local/mysql_exporter/.my.cnf</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">[client]</span><br><span class="line">host=mysql地址</span><br><span class="line">port=3306</span><br><span class="line">user=root</span><br><span class="line">password=xxxx</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>启动</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nohup /usr/local/mysql_exporter/mysqld_exporter --config.my-cnf=/usr/local/mysql_exporter/.my.cnf  &amp;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>访问测试<a target="_blank" rel="noopener" href="http://ip:9104/metrics">http://ip:9104/metrics</a></p>
+</li>
+</ol>
+<p><img src="/assets/%E4%BD%BF%E7%94%A8Docker%E9%83%A8%E7%BD%B2PrometheusGrafana%E7%9B%91%E6%8E%A7%E5%B9%B3%E5%8F%B0/c3e7475f662412ba80c9f4a87b0972dd.png" alt="image-20230808115453331"></p>
+<ol start="6">
+<li><p>修改Prometheus主配置文件 &#x3D;&#x3D;参考4.1章节&#x3D;&#x3D;,配置完成cp回去,然后重启Prometheus</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">- job_name: mysql</span><br><span class="line">  static_configs:</span><br><span class="line">  - targets: [&#x27;ip:9104&#x27;]         #被监控端的IP地址和端口号(有多个被监控端可用 逗号 隔开)</span><br><span class="line">    labels:</span><br><span class="line">      instance: mysql01</span><br></pre></td></tr></table></figure></li>
+</ol>
+<p><img src="/assets/%E4%BD%BF%E7%94%A8Docker%E9%83%A8%E7%BD%B2PrometheusGrafana%E7%9B%91%E6%8E%A7%E5%B9%B3%E5%8F%B0/4dd2b57364117f93086022d7d9e3f354.png" alt="image-20230808115855997"></p>
+<ol start="7">
+<li>检查Prometheus检测mysql是否成功  <a target="_blank" rel="noopener" href="http://34.92.127.194:9090/">http://34.92.127.194:9090/</a></li>
+</ol>
+<p><img src="/assets/%E4%BD%BF%E7%94%A8Docker%E9%83%A8%E7%BD%B2PrometheusGrafana%E7%9B%91%E6%8E%A7%E5%B9%B3%E5%8F%B0/3a97cee165badd2937d774e8ff1cf7bb.png" alt="image-20230808163046636"></p>
+<ol start="8">
+<li><p>导入mysql 仪表盘</p>
+<blockquote>
+<p>模板网站<a target="_blank" rel="noopener" href="https://grafana.com/grafana/dashboards/">https://grafana.com/grafana/dashboards/</a></p>
+<p>搜索mysql</p>
+</blockquote>
+</li>
+</ol>
+<p><img src="/assets/%E4%BD%BF%E7%94%A8Docker%E9%83%A8%E7%BD%B2PrometheusGrafana%E7%9B%91%E6%8E%A7%E5%B9%B3%E5%8F%B0/e324e77969636619675c4df1be6d8e72.png" alt="image-20230808140352789"></p>
+<blockquote>
+<p>复制id,导入仪表盘,导入方法参照之前导入nodeNode_exporter</p>
+</blockquote>
+<p><img src="/assets/%E4%BD%BF%E7%94%A8Docker%E9%83%A8%E7%BD%B2PrometheusGrafana%E7%9B%91%E6%8E%A7%E5%B9%B3%E5%8F%B0/04c5a7997011b19a2d932b446872cf21.png" alt="image-20230808142745589"></p>
+<p><img src="/assets/%E4%BD%BF%E7%94%A8Docker%E9%83%A8%E7%BD%B2PrometheusGrafana%E7%9B%91%E6%8E%A7%E5%B9%B3%E5%8F%B0/4bdebae3cb78087c54242d9a2567d37d.png" alt="image-20230808143344427"></p>
+<h2 id="7-todo-整合AlertManager实现报警微信-邮件推送"><a href="#7-todo-整合AlertManager实现报警微信-邮件推送" class="headerlink" title="7.  todo 整合AlertManager实现报警微信&#x2F;邮件推送"></a>7.  todo 整合AlertManager实现报警微信&#x2F;邮件推送</h2></article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>Author: </span><span class="post-copyright-info"><a href="https://yuanzhang788.github.io">Yuanz</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>Link: </span><span class="post-copyright-info"><a href="https://yuanzhang788.github.io/2023/08/08/%E4%BD%BF%E7%94%A8%20Docker%20%E9%83%A8%E7%BD%B2%20Prometheus%20+%20Grafana%20%E7%9B%91%E6%8E%A7%E5%B9%B3%E5%8F%B0/">https://yuanzhang788.github.io/2023/08/08/%E4%BD%BF%E7%94%A8%20Docker%20%E9%83%A8%E7%BD%B2%20Prometheus%20+%20Grafana%20%E7%9B%91%E6%8E%A7%E5%B9%B3%E5%8F%B0/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>Copyright Notice: </span><span class="post-copyright-info">All articles on this blog are licensed under <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless otherwise stated.</span></div></div><div class="tag_share"><div class="post-share"><div class="social-share" data-image="/img/butterfly-icon.png" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2023/08/28/kubernetes%E6%90%AD%E5%BB%BA%E5%8F%8A%E5%9F%BA%E6%9C%AC%E4%BD%BF%E7%94%A8/" title="kubernetes搭建及基本使用"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info"><div class="info-1"><div class="info-item-1">Previous</div><div class="info-item-2">kubernetes搭建及基本使用</div></div><div class="info-2"><div class="info-item-1">1. 前置要求准备  一台或多台机器，操作系统 CentOS7.x-86_x64 硬件配置：2GB 或更多 RAM，2 个 CPU 或更多 CPU，硬盘 30GB 或更多 集群中所有机器之间网络互通 可以访问外网，需要拉取镜像 禁止 swap 分区    &#x3D;&#x3D;此处我是白嫖的谷歌云的三台香港服务器,所以不会出现墙相关的问题&#x3D;&#x3D;  k8s-1为主节点,其他两个为工作节点    2. 部署步骤 在所有节点上安装 Docker 和 kubeadm 部署 Kubernetes Master 部署容器网络插件 部署 Kubernetes Node，将节点加入 Kubernetes 集群中 部署 Dashboard Web 页面，可视化查看 Kubernetes 资源  3. 使用ssh工具连接服务器3.1 配置root密码以及服务器使用ssh密码登录 使用控制台的ssh登录上服务器  小技巧: 在ssh窗口中按下ctrl+insert是复制窗口选中的内容 在ssh窗口中按下shift+insert是将我们复制的内容粘贴到ssh窗口      切换至ro...</div></div></div></a><a class="pagination-related" href="/2023/07/24/JasperReport%E4%B8%8ESpringBoot%E6%95%B4%E5%90%88%E5%8F%8A%E6%A8%A1%E6%9D%BF%E5%88%B6%E4%BD%9C/" title="JasperReport与SpringBoot整合及模板制作"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">Next</div><div class="info-item-2">JasperReport与SpringBoot整合及模板制作</div></div><div class="info-2"><div class="info-item-1">0. 示例代码&#x3D;&#x3D;示例代码地址&#x3D;&#x3D; 1. 报表介绍1.1 为什么要使用报表? 在企业级应用开发中，报表生成、报表打印下载是其重要的一个环节。除了Excel报表之外，PDF报表也有广泛的应用场景，必须用户详细资料，用户简历等  目前世面上比较流行的制作PDF报表的工具如下：    名称 介绍    Jasper Report 是一个强大、灵活的报表生成工具，能够展示丰富的页面内容，并将之转换成PDF   Openoffice openoffice是开源软件且能在windows和linux平台下运行，可以灵活的将word或者Excel转化为PDF文档。   iText PDF iText是著名的开放项目，是用于生成PDF文档的一个java类库。通过iText不仅可以生成PDF或rtf的文档，而且可以将XML、Html文件转化为PDF文件。   2. JasperReport2.1 框架介绍 JasperReport是一个强大、灵活的报表生成工具，能够展示丰富的页面内容，并将之转换成PDF，HTML，或者XML格式。**该库完全由Java写成，可...</div></div></div></a></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/butterfly-icon.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">Yuanz</div><div class="author-info-description">Yuanz的个人博客</div><div class="site-data"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">176</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">0</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">0</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>Announcement</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>Contents</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8-Docker-%E9%83%A8%E7%BD%B2-Prometheus-Grafana-%E7%9B%91%E6%8E%A7%E5%B9%B3%E5%8F%B0"><span class="toc-number">1.</span> <span class="toc-text">使用 Docker 部署 Prometheus + Grafana 监控平台</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E5%AE%89%E8%A3%85Prometheus"><span class="toc-number">1.1.</span> <span class="toc-text">1. 安装Prometheus</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E5%AE%89%E8%A3%85Grafana"><span class="toc-number">1.2.</span> <span class="toc-text">2.安装Grafana</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-%E5%AE%89%E8%A3%85Node-exporter"><span class="toc-number">1.3.</span> <span class="toc-text">3. 安装Node_exporter</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-%E9%85%8D%E7%BD%AE-Prometheus-%E7%9B%91%E6%8E%A7Node%E8%8A%82%E7%82%B9"><span class="toc-number">1.4.</span> <span class="toc-text">4. 配置 Prometheus 监控Node节点</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#4-1-%E4%BF%AE%E6%94%B9Prometheus%E4%B8%BB%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6"><span class="toc-number">1.4.1.</span> <span class="toc-text">4.1 修改Prometheus主配置文件</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-%E9%85%8D%E7%BD%AEprometheus-Grafana"><span class="toc-number">1.5.</span> <span class="toc-text">5. 配置prometheus+Grafana</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-%E9%85%8D%E7%BD%AE-Prometheus-%E7%9B%91%E6%8E%A7Mysql"><span class="toc-number">1.6.</span> <span class="toc-text">6. 配置 Prometheus 监控Mysql</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#7-todo-%E6%95%B4%E5%90%88AlertManager%E5%AE%9E%E7%8E%B0%E6%8A%A5%E8%AD%A6%E5%BE%AE%E4%BF%A1-%E9%82%AE%E4%BB%B6%E6%8E%A8%E9%80%81"><span class="toc-number">1.7.</span> <span class="toc-text">7.  todo 整合AlertManager实现报警微信&#x2F;邮件推送</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Posts</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/06/05/hello-world/" title="Hello World">Hello World</a><time datetime="2026-06-05T09:30:56.120Z" title="Created 2026-06-05 17:30:56">2026-06-05</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/05/28/%E4%BB%8E%E9%9B%B6%E5%BC%80%E5%A7%8B%EF%BC%8C%E5%9F%BA%E4%BA%8E-Hexo-GitHub-Pages-%E6%90%AD%E5%BB%BA%E4%B8%80%E4%B8%AA%E5%B1%9E%E4%BA%8E%E8%87%AA%E5%B7%B1%E7%9A%84%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2%EF%BC%8C%E5%B9%B6%E5%AE%8C%E6%88%90%E4%B8%BB%E9%A2%98%E5%88%87%E6%8D%A2%E4%B8%8E%E9%83%A8%E7%BD%B2%E3%80%82%EF%BC%88%E8%B6%85%E8%AF%A6%E7%BB%86%E6%95%99%E7%A8%8B%EF%BC%89/" title="从零开始，基于 Hexo + GitHub Pages 搭建一个属于自己的个人博客，并完成主题切换与部署。（超详细教程）">从零开始，基于 Hexo + GitHub Pages 搭建一个属于自己的个人博客，并完成主题切换与部署。（超详细教程）</a><time datetime="2026-05-28T06:27:02.000Z" title="Created 2026-05-28 14:27:02">2026-05-28</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/05/22/%E7%AC%AC%E4%B8%80%E7%AF%87-Github-Pages%E5%8D%9A%E5%AE%A2/" title="第一篇 Github Pages博客">第一篇 Github Pages博客</a><time datetime="2026-05-22T09:25:44.000Z" title="Created 2026-05-22 17:25:44">2026-05-22</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/05/20/Java%20Excel%E5%AF%BC%E5%87%BA%EF%BC%9A%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E8%87%AA%E5%AE%9A%E4%B9%89%E8%A1%A8%E5%A4%B4%E4%B8%8E%E5%AD%97%E6%AE%B5%E9%A1%BA%E5%BA%8F%E7%9A%84%E5%AE%8C%E5%85%A8%E6%8E%A7%E5%88%B6/" title="Java Excel导出：如何实现自定义表头与字段顺序的完全控制">Java Excel导出：如何实现自定义表头与字段顺序的完全控制</a><time datetime="2026-05-20T10:02:18.000Z" title="Created 2026-05-20 18:02:18">2026-05-20</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/05/07/Docker%20%E5%AE%89%E8%A3%85%20%E6%95%B0%E6%8D%AE%E5%BA%93%E5%B7%A5%E5%8D%95%E7%B3%BB%E7%BB%9FYearning%E4%BB%A5%E5%8F%8A%E4%BD%BF%E7%94%A8/" title="Docker 安装 数据库工单系统Yearning以及使用">Docker 安装 数据库工单系统Yearning以及使用</a><time datetime="2026-05-07T06:10:08.000Z" title="Created 2026-05-07 14:10:08">2026-05-07</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2025 - 2026 By Yuanz</span><span class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 8.1.2</a><span class="footer-separator">|</span><span>Theme </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.5.5-b1</a></span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="Reading Mode"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="Toggle Between Light and Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle Between Single-column and Double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="Settings"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="Table of Contents"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="Back to Top"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.5.5-b1"></script><script src="/js/main.js?v=5.5.5-b1"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>

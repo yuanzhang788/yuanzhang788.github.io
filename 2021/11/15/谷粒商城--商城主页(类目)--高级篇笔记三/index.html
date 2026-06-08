@@ -1,0 +1,330 @@
+<!DOCTYPE html><html lang="cn" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>谷粒商城--商城主页(类目)--高级篇笔记三 | Yuanz</title><meta name="author" content="Yuanz"><meta name="copyright" content="Yuanz"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="谷粒商城–商城主页(类目)–高级篇笔记三1. 首页代码 2. 导入thymeleaf依赖 gulimall-product&#x2F;pom.xml  12345&lt;!--模板引擎thymeleaf--&gt;       &lt;dependency&gt;           &lt;groupId&gt;org.springframework.boot&lt;&#x2F;groupId&gt;">
+<meta property="og:type" content="article">
+<meta property="og:title" content="谷粒商城--商城主页(类目)--高级篇笔记三">
+<meta property="og:url" content="https://yuanzhang788.github.io/2021/11/15/%E8%B0%B7%E7%B2%92%E5%95%86%E5%9F%8E--%E5%95%86%E5%9F%8E%E4%B8%BB%E9%A1%B5(%E7%B1%BB%E7%9B%AE)--%E9%AB%98%E7%BA%A7%E7%AF%87%E7%AC%94%E8%AE%B0%E4%B8%89/index.html">
+<meta property="og:site_name" content="Yuanz">
+<meta property="og:description" content="谷粒商城–商城主页(类目)–高级篇笔记三1. 首页代码 2. 导入thymeleaf依赖 gulimall-product&#x2F;pom.xml  12345&lt;!--模板引擎thymeleaf--&gt;       &lt;dependency&gt;           &lt;groupId&gt;org.springframework.boot&lt;&#x2F;groupId&gt;">
+<meta property="og:locale">
+<meta property="og:image" content="https://yuanzhang788.github.io/img/butterfly-icon.png">
+<meta property="article:published_time" content="2021-11-15T03:48:37.000Z">
+<meta property="article:modified_time" content="2026-06-08T03:35:11.009Z">
+<meta property="article:author" content="Yuanz">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://yuanzhang788.github.io/img/butterfly-icon.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "谷粒商城--商城主页(类目)--高级篇笔记三",
+  "url": "https://yuanzhang788.github.io/2021/11/15/%E8%B0%B7%E7%B2%92%E5%95%86%E5%9F%8E--%E5%95%86%E5%9F%8E%E4%B8%BB%E9%A1%B5(%E7%B1%BB%E7%9B%AE)--%E9%AB%98%E7%BA%A7%E7%AF%87%E7%AC%94%E8%AE%B0%E4%B8%89/",
+  "image": "https://yuanzhang788.github.io/img/butterfly-icon.png",
+  "datePublished": "2021-11-15T03:48:37.000Z",
+  "dateModified": "2026-06-08T03:35:11.009Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "Yuanz",
+      "url": "https://yuanzhang788.github.io"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://yuanzhang788.github.io/2021/11/15/%E8%B0%B7%E7%B2%92%E5%95%86%E5%9F%8E--%E5%95%86%E5%9F%8E%E4%B8%BB%E9%A1%B5(%E7%B1%BB%E7%9B%AE)--%E9%AB%98%E7%BA%A7%E7%AF%87%E7%AC%94%E8%AE%B0%E4%B8%89/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=5.5.5-b1"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: 'Copy Successful',
+    error: 'Copy Failed',
+    noSupport: 'Browser Not Supported'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: 'Just now',
+    min: 'minutes ago',
+    hour: 'hours ago',
+    day: 'days ago',
+    month: 'months ago'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.0/dist/infinitegrid.min.js',
+    buttonText: 'Load More'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '谷粒商城--商城主页(类目)--高级篇笔记三',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><meta name="generator" content="Hexo 8.1.2"></head><body><div class="post" id="body-wrap"><header class="post-bg" id="page-header"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">Yuanz</span></a><a class="nav-page-title" href="/"><span class="site-name">谷粒商城--商城主页(类目)--高级篇笔记三</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  Back to Home</span></span></a></span><div id="menus"></div></nav><div id="post-info"><h1 class="post-title">谷粒商城--商城主页(类目)--高级篇笔记三</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2021-11-15T03:48:37.000Z" title="Created 2021-11-15 11:48:37">2021-11-15</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2026-06-08T03:35:11.009Z" title="Updated 2026-06-08 11:35:11">2026-06-08</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">Post Views:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><h1 id="谷粒商城–商城主页-类目-–高级篇笔记三"><a href="#谷粒商城–商城主页-类目-–高级篇笔记三" class="headerlink" title="谷粒商城–商城主页(类目)–高级篇笔记三"></a>谷粒商城–商城主页(类目)–高级篇笔记三</h1><h2 id="1-首页代码"><a href="#1-首页代码" class="headerlink" title="1. 首页代码"></a>1. 首页代码</h2><p><img src="/assets/%E8%B0%B7%E7%B2%92%E5%95%86%E5%9F%8E--%E5%95%86%E5%9F%8E%E4%B8%BB%E9%A1%B5%E7%B1%BB%E7%9B%AE--%E9%AB%98%E7%BA%A7%E7%AF%87%E7%AC%94%E8%AE%B0%E4%B8%89/9ba23a20ccd88ec0fdc3c546fc58b3a0.png" alt="image-20211027151031357"></p>
+<h2 id="2-导入thymeleaf依赖"><a href="#2-导入thymeleaf依赖" class="headerlink" title="2. 导入thymeleaf依赖"></a>2. 导入thymeleaf依赖</h2><blockquote>
+<p>gulimall-product&#x2F;pom.xml</p>
+</blockquote>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!--模板引擎thymeleaf--&gt;</span></span><br><span class="line">       <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-thymeleaf<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">       <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+
+
+
+<h2 id="3-首页与静态资源复制"><a href="#3-首页与静态资源复制" class="headerlink" title="3. 首页与静态资源复制"></a>3. 首页与静态资源复制</h2><p><img src="/assets/%E8%B0%B7%E7%B2%92%E5%95%86%E5%9F%8E--%E5%95%86%E5%9F%8E%E4%B8%BB%E9%A1%B5%E7%B1%BB%E7%9B%AE--%E9%AB%98%E7%BA%A7%E7%AF%87%E7%AC%94%E8%AE%B0%E4%B8%89/0dd533f33a296329e3e2336d73b764e1.png" alt="image-20211027151347416"></p>
+<p><img src="/assets/%E8%B0%B7%E7%B2%92%E5%95%86%E5%9F%8E--%E5%95%86%E5%9F%8E%E4%B8%BB%E9%A1%B5%E7%B1%BB%E7%9B%AE--%E9%AB%98%E7%BA%A7%E7%AF%87%E7%AC%94%E8%AE%B0%E4%B8%89/6709f5b68499ba5b0e7626aab97de208.png" alt="image-20211027151420688"></p>
+<h2 id="4-重启gulimall-product服务"><a href="#4-重启gulimall-product服务" class="headerlink" title="4. 重启gulimall-product服务"></a>4. 重启gulimall-product服务</h2><blockquote>
+<p>访问gulimall-product服务</p>
+</blockquote>
+<p><img src="/assets/%E8%B0%B7%E7%B2%92%E5%95%86%E5%9F%8E--%E5%95%86%E5%9F%8E%E4%B8%BB%E9%A1%B5%E7%B1%BB%E7%9B%AE--%E9%AB%98%E7%BA%A7%E7%AF%87%E7%AC%94%E8%AE%B0%E4%B8%89/830b47b1b79bb1b103f6155d360c1c3c.png" alt="image-20211027151626797"></p>
+<blockquote>
+<p>此页面为静态有页面</p>
+</blockquote>
+<h2 id="5-编写查询一级目录列表接口"><a href="#5-编写查询一级目录列表接口" class="headerlink" title="5. 编写查询一级目录列表接口"></a>5. 编写查询一级目录列表接口</h2><blockquote>
+<p>因为使用的thymeleaf,所以直接返回的页面,新建一个web包,用来专门存储thymeleaf相关controller</p>
+<p>将原来的controller包修改为app包</p>
+</blockquote>
+<p><img src="/assets/%E8%B0%B7%E7%B2%92%E5%95%86%E5%9F%8E--%E5%95%86%E5%9F%8E%E4%B8%BB%E9%A1%B5%E7%B1%BB%E7%9B%AE--%E9%AB%98%E7%BA%A7%E7%AF%87%E7%AC%94%E8%AE%B0%E4%B8%89/72343ccf81d71f326f134b830270e9f3.png" alt="image-20211027151925931"></p>
+<blockquote>
+<p>新增gulimall-product&#x2F;src&#x2F;main&#x2F;java&#x2F;site&#x2F;zhourui&#x2F;gulimall&#x2F;product&#x2F;web&#x2F;IndexController.java</p>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> site.zhourui.gulimall.product.web;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> org.bouncycastle.math.raw.Mod;</span><br><span class="line"><span class="keyword">import</span> org.springframework.beans.factory.annotation.Autowired;</span><br><span class="line"><span class="keyword">import</span> org.springframework.stereotype.Controller;</span><br><span class="line"><span class="keyword">import</span> org.springframework.ui.Model;</span><br><span class="line"><span class="keyword">import</span> org.springframework.web.bind.annotation.GetMapping;</span><br><span class="line"><span class="keyword">import</span> site.zhourui.gulimall.product.entity.CategoryEntity;</span><br><span class="line"><span class="keyword">import</span> site.zhourui.gulimall.product.service.CategoryService;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.util.List;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> zr</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@date</span> 2021/10/27 15:23</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@Controller</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">IndexController</span> &#123;</span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    CategoryService categoryService;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@GetMapping(&#123;&quot;/&quot;,&quot;index.html&quot;&#125;)</span></span><br><span class="line">    <span class="keyword">public</span> String <span class="title function_">indexPage</span><span class="params">(Model model)</span>&#123;</span><br><span class="line">        <span class="comment">// TODO 1、查出所有1级分类</span></span><br><span class="line">        List&lt;CategoryEntity&gt; categoryEntitys = categoryService.getLevel1Categorys();</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;index&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+
+
+<blockquote>
+<p>gulimall-product&#x2F;src&#x2F;main&#x2F;java&#x2F;site&#x2F;zhourui&#x2F;gulimall&#x2F;product&#x2F;service&#x2F;CategoryService.java</p>
+<p>新增接口</p>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">List&lt;CategoryEntity&gt; <span class="title function_">getLevel1Categorys</span><span class="params">()</span>;</span><br></pre></td></tr></table></figure>
+
+
+
+
+<blockquote>
+<p>gulimall-product&#x2F;src&#x2F;main&#x2F;java&#x2F;site&#x2F;zhourui&#x2F;gulimall&#x2F;product&#x2F;service&#x2F;impl&#x2F;CategoryServiceImpl.java</p>
+<p>实现新增接口</p>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">   * 查询一级分类。</span></span><br><span class="line"><span class="comment">   * 父ID是0， 或者  层级是1</span></span><br><span class="line"><span class="comment">   */</span></span><br><span class="line">  <span class="meta">@Override</span></span><br><span class="line">  <span class="keyword">public</span> List&lt;CategoryEntity&gt; <span class="title function_">getLevel1Categorys</span><span class="params">()</span> &#123;</span><br><span class="line">      System.out.println(<span class="string">&quot;调用了 getLevel1Categorys  查询了数据库........【一级分类】&quot;</span>);</span><br><span class="line">      <span class="keyword">return</span> baseMapper.selectList(<span class="keyword">new</span> <span class="title class_">QueryWrapper</span>&lt;CategoryEntity&gt;().eq(<span class="string">&quot;parent_cid&quot;</span>, <span class="number">0</span>));</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+
+
+
+
+
+<h2 id="6-修改首页"><a href="#6-修改首页" class="headerlink" title="6. 修改首页"></a>6. 修改首页</h2><blockquote>
+<p>首页使用thymeleaf</p>
+<p>html标签上加上<strong>xmlns:th&#x3D;”<a target="_blank" rel="noopener" href="http://www.thymeleaf.org/">http://www.thymeleaf.org</a>“</strong></p>
+</blockquote>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">html</span> <span class="attr">lang</span>=<span class="string">&quot;en&quot;</span> <span class="attr">xmlns:th</span>=<span class="string">&quot;http://www.thymeleaf.org&quot;</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+
+
+
+<blockquote>
+<p>遍历IndexController 传过来的categorys</p>
+</blockquote>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;header_main_left&quot;</span>&gt;</span></span><br><span class="line">   <span class="tag">&lt;<span class="name">ul</span>&gt;</span></span><br><span class="line">     <span class="tag">&lt;<span class="name">li</span> <span class="attr">th:each</span>=<span class="string">&quot; category : $&#123;categorys&#125;&quot;</span>&gt;</span></span><br><span class="line">       <span class="tag">&lt;<span class="name">a</span> <span class="attr">href</span>=<span class="string">&quot;http://search.gulimall.com/&quot;</span> <span class="attr">class</span>=<span class="string">&quot;header_main_left_a&quot;</span> <span class="attr">th:attr</span>=<span class="string">&quot;ctg-data=$&#123;category.catId&#125;&quot;</span>&gt;</span><span class="tag">&lt;<span class="name">b</span> <span class="attr">th:text</span>=<span class="string">&quot;$&#123;category.name&#125;&quot;</span>&gt;</span>家用电器<span class="tag">&lt;/<span class="name">b</span>&gt;</span><span class="tag">&lt;/<span class="name">a</span>&gt;</span></span><br><span class="line">     <span class="tag">&lt;/<span class="name">li</span>&gt;</span></span><br><span class="line">   <span class="tag">&lt;/<span class="name">ul</span>&gt;</span></span><br><span class="line"></span><br><span class="line"> <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+
+
+
+
+
+<blockquote>
+<p>重启商品服务</p>
+<p>一级目录变为数据库查询出的目录</p>
+</blockquote>
+<p><img src="/assets/%E8%B0%B7%E7%B2%92%E5%95%86%E5%9F%8E--%E5%95%86%E5%9F%8E%E4%B8%BB%E9%A1%B5%E7%B1%BB%E7%9B%AE--%E9%AB%98%E7%BA%A7%E7%AF%87%E7%AC%94%E8%AE%B0%E4%B8%89/3cfec0c68bb43cbe005af5bd90cef955.png" alt="image-20211027154132182"></p>
+<h2 id="7-devtools"><a href="#7-devtools" class="headerlink" title="7. devtools"></a>7. devtools</h2><blockquote>
+<p>导入依赖</p>
+<p><code>&lt;optional&gt;true&lt;/optional&gt;</code>才会生效</p>
+</blockquote>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!--devtools--&gt;</span></span><br><span class="line">       <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-devtools<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">optional</span>&gt;</span>true<span class="tag">&lt;/<span class="name">optional</span>&gt;</span></span><br><span class="line">       <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+
+
+
+<blockquote>
+<p>关闭thymeleaf缓存</p>
+</blockquote>
+<p><img src="/assets/%E8%B0%B7%E7%B2%92%E5%95%86%E5%9F%8E--%E5%95%86%E5%9F%8E%E4%B8%BB%E9%A1%B5%E7%B1%BB%E7%9B%AE--%E9%AB%98%E7%BA%A7%E7%AF%87%E7%AC%94%E8%AE%B0%E4%B8%89/2872e6e2c5638ecfe13036da6f705797.png" alt="image-20211027155545951"></p>
+<blockquote>
+<p>含有thymeleaf的html页面修改后可以单独重新编译此页面,也可以编译整个项目</p>
+</blockquote>
+<p><img src="/assets/%E8%B0%B7%E7%B2%92%E5%95%86%E5%9F%8E--%E5%95%86%E5%9F%8E%E4%B8%BB%E9%A1%B5%E7%B1%BB%E7%9B%AE--%E9%AB%98%E7%BA%A7%E7%AF%87%E7%AC%94%E8%AE%B0%E4%B8%89/71756fe170f2ee216da60b48d44e7c52.png" alt="image-20211027154635900"></p>
+<h2 id="8-商品二级分类三级分类-结构分析"><a href="#8-商品二级分类三级分类-结构分析" class="headerlink" title="8. 商品二级分类三级分类 结构分析"></a>8. 商品二级分类三级分类 结构分析</h2><p>商品二级三级分类的数据在gulimall-product&#x2F;src&#x2F;main&#x2F;resources&#x2F;static&#x2F;index&#x2F;json&#x2F;catalog.json</p>
+<p><img src="/assets/%E8%B0%B7%E7%B2%92%E5%95%86%E5%9F%8E--%E5%95%86%E5%9F%8E%E4%B8%BB%E9%A1%B5%E7%B1%BB%E7%9B%AE--%E9%AB%98%E7%BA%A7%E7%AF%87%E7%AC%94%E8%AE%B0%E4%B8%89/ff0e6212137d7fa03cd8b74666ab3448.png" alt="image-20211027155817198"></p>
+<blockquote>
+<p>我们需要封装与catalog.json结构相同的数据</p>
+</blockquote>
+<blockquote>
+<p>将catalog.json格式化</p>
+<p>发现是一个map类型的结构  key为一级类目id的值,value为一级类目下的所有二级目录的数组</p>
+</blockquote>
+<p><img src="/assets/%E8%B0%B7%E7%B2%92%E5%95%86%E5%9F%8E--%E5%95%86%E5%9F%8E%E4%B8%BB%E9%A1%B5%E7%B1%BB%E7%9B%AE--%E9%AB%98%E7%BA%A7%E7%AF%87%E7%AC%94%E8%AE%B0%E4%B8%89/fee7b20e5e0c138cb85c8dc654d2a827.png" alt="image-20211027160346325"></p>
+<blockquote>
+<p>打开二级目录数组</p>
+<p>发现一个对象数组,每一个对象代表一个二级分类,catalog3List就是该二级分类的三级分类的集合</p>
+</blockquote>
+<p><img src="/assets/%E8%B0%B7%E7%B2%92%E5%95%86%E5%9F%8E--%E5%95%86%E5%9F%8E%E4%B8%BB%E9%A1%B5%E7%B1%BB%E7%9B%AE--%E9%AB%98%E7%BA%A7%E7%AF%87%E7%AC%94%E8%AE%B0%E4%B8%89/c08928a9aaf74ef76b096c463643c344.png" alt="image-20211027161916363"></p>
+<blockquote>
+<p>打开catalog3List </p>
+<p>是一个一个的三级分类</p>
+</blockquote>
+<p><img src="/assets/%E8%B0%B7%E7%B2%92%E5%95%86%E5%9F%8E--%E5%95%86%E5%9F%8E%E4%B8%BB%E9%A1%B5%E7%B1%BB%E7%9B%AE--%E9%AB%98%E7%BA%A7%E7%AF%87%E7%AC%94%E8%AE%B0%E4%B8%89/6108610fde0f0712567b4e3355299244.png" alt="image-20211027162041402"></p>
+<h2 id="9-新增根据一级类目id查询二级三级分类"><a href="#9-新增根据一级类目id查询二级三级分类" class="headerlink" title="9. 新增根据一级类目id查询二级三级分类"></a>9. 新增根据一级类目id查询二级三级分类</h2><blockquote>
+<p>发现gulimall-product&#x2F;src&#x2F;main&#x2F;resources&#x2F;static&#x2F;index&#x2F;js&#x2F;catalogLoader.js处调用了catalog.json</p>
+</blockquote>
+<p><img src="/assets/%E8%B0%B7%E7%B2%92%E5%95%86%E5%9F%8E--%E5%95%86%E5%9F%8E%E4%B8%BB%E9%A1%B5%E7%B1%BB%E7%9B%AE--%E9%AB%98%E7%BA%A7%E7%AF%87%E7%AC%94%E8%AE%B0%E4%B8%89/193e87ad2c378838e019dba088a843a7.png" alt="image-20211027162225339"></p>
+<h3 id="9-1-新增Catalog2Vo实体类"><a href="#9-1-新增Catalog2Vo实体类" class="headerlink" title="9.1 新增Catalog2Vo实体类"></a>9.1 新增Catalog2Vo实体类</h3><blockquote>
+<p>按照章节8分析的结构创建</p>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> site.zhourui.gulimall.product.vo;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> lombok.AllArgsConstructor;</span><br><span class="line"><span class="keyword">import</span> lombok.Data;</span><br><span class="line"><span class="keyword">import</span> lombok.NoArgsConstructor;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.util.List;</span><br><span class="line"></span><br><span class="line"><span class="meta">@NoArgsConstructor</span></span><br><span class="line"><span class="meta">@AllArgsConstructor</span></span><br><span class="line"><span class="meta">@Data</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Catalog2Vo</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> String catalog1Id;  <span class="comment">// 1级父分类ID</span></span><br><span class="line">    <span class="keyword">private</span> List&lt;Catalog3Vo&gt; catalog3List;<span class="comment">// 3级子分类集合</span></span><br><span class="line">    <span class="keyword">private</span> String id;  <span class="comment">// 2级分类ID</span></span><br><span class="line">    <span class="keyword">private</span> String name;  <span class="comment">// 2级分类name</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 三级分类Vo</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@NoArgsConstructor</span></span><br><span class="line">    <span class="meta">@AllArgsConstructor</span></span><br><span class="line">    <span class="meta">@Data</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">class</span> <span class="title class_">Catalog3Vo</span> &#123;</span><br><span class="line">        <span class="keyword">private</span> String catalog2Id;  <span class="comment">// 2级父分类ID</span></span><br><span class="line">        <span class="keyword">private</span> String id;  <span class="comment">// 3级分类ID</span></span><br><span class="line">        <span class="keyword">private</span> String name;  <span class="comment">// 3级分类name</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+
+
+<h3 id="9-2-新增接口"><a href="#9-2-新增接口" class="headerlink" title="9.2 新增接口"></a>9.2 新增接口</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 查出三级分类</span></span><br><span class="line"><span class="comment"> * 1级分类作为key，2级引用List</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@ResponseBody</span></span><br><span class="line"><span class="meta">@GetMapping(&quot;/index/catalog.json&quot;)</span></span><br><span class="line"><span class="keyword">public</span> Map&lt;String, List&lt;Catalog2Vo&gt;&gt; <span class="title function_">getCatalogJson</span><span class="params">()</span> &#123;</span><br><span class="line">    Map&lt;String, List&lt;Catalog2Vo&gt;&gt; map = categoryService.getCatalogJson();</span><br><span class="line">    <span class="keyword">return</span> map;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+
+<blockquote>
+<p>gulimall-product&#x2F;src&#x2F;main&#x2F;java&#x2F;com&#x2F;atguigu&#x2F;gulimall&#x2F;product&#x2F;service&#x2F;CategoryService.java</p>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Map&lt;String, List&lt;Catalog2Vo&gt;&gt; <span class="title function_">getCatalogJson</span><span class="params">()</span>;</span><br></pre></td></tr></table></figure>
+
+
+
+
+<blockquote>
+<p>gulimall-product&#x2F;src&#x2F;main&#x2F;java&#x2F;com&#x2F;atguigu&#x2F;gulimall&#x2F;product&#x2F;service&#x2F;impl&#x2F;CategoryServiceImpl.java</p>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> Map&lt;String, List&lt;Catalog2Vo&gt;&gt; <span class="title function_">getCatalogJson</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="comment">// 一次性获取所有 数据</span></span><br><span class="line">        List&lt;CategoryEntity&gt; selectList = baseMapper.selectList(<span class="literal">null</span>);</span><br><span class="line">        System.out.println(<span class="string">&quot;调用了 getCatalogJson  查询了数据库........【三级分类】&quot;</span>);</span><br><span class="line">        <span class="comment">// 1）、所有1级分类</span></span><br><span class="line">        List&lt;CategoryEntity&gt; level1Categorys = getParent_cid(selectList, <span class="number">0L</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 2）、封装数据</span></span><br><span class="line">        Map&lt;String, List&lt;Catalog2Vo&gt;&gt; collect = level1Categorys.stream().collect(Collectors.toMap(k -&gt; k.getCatId().toString(), level1 -&gt; &#123;</span><br><span class="line">            <span class="comment">// 查到当前1级分类的2级分类</span></span><br><span class="line">            List&lt;CategoryEntity&gt; category2level = getParent_cid(selectList, level1.getCatId());</span><br><span class="line">            List&lt;Catalog2Vo&gt; catalog2Vos = <span class="literal">null</span>;</span><br><span class="line">            <span class="keyword">if</span> (category2level != <span class="literal">null</span>) &#123;</span><br><span class="line">                catalog2Vos = category2level.stream().map(level12 -&gt; &#123;</span><br><span class="line">                    <span class="comment">// 查询当前2级分类的3级分类</span></span><br><span class="line">                    List&lt;CategoryEntity&gt; category3level = getParent_cid(selectList, level12.getCatId());</span><br><span class="line">                    List&lt;Catalog2Vo.Catalog3Vo&gt; catalog3Vos = <span class="literal">null</span>;</span><br><span class="line">                    <span class="keyword">if</span> (category3level != <span class="literal">null</span>) &#123;</span><br><span class="line">                        catalog3Vos = category3level.stream().map(level13 -&gt; &#123;</span><br><span class="line">                            <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">Catalog2Vo</span>.Catalog3Vo(level12.getCatId().toString(), level13.getCatId().toString(), level13.getName());</span><br><span class="line">                        &#125;).collect(Collectors.toList());</span><br><span class="line">                    &#125;</span><br><span class="line">                    <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">Catalog2Vo</span>(level1.getCatId().toString(), catalog3Vos, level12.getCatId().toString(), level12.getName());</span><br><span class="line">                &#125;).collect(Collectors.toList());</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">return</span> catalog2Vos;</span><br><span class="line">        &#125;));</span><br><span class="line">        <span class="keyword">return</span> collect;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+
+
+
+<h3 id="9-3-新增查询出父ID为-parent-cid的List集合"><a href="#9-3-新增查询出父ID为-parent-cid的List集合" class="headerlink" title="9.3 新增查询出父ID为 parent_cid的List集合"></a>9.3 新增查询出父ID为 parent_cid的List集合</h3><blockquote>
+<p>gulimall-product&#x2F;src&#x2F;main&#x2F;java&#x2F;com&#x2F;atguigu&#x2F;gulimall&#x2F;product&#x2F;service&#x2F;impl&#x2F;CategoryServiceImpl.java</p>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 查询出父ID为 parent_cid的List集合</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> List&lt;CategoryEntity&gt; <span class="title function_">getParent_cid</span><span class="params">(List&lt;CategoryEntity&gt; selectList, Long parent_cid)</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> selectList.stream().filter(item -&gt; item.getParentCid() == parent_cid).collect(Collectors.toList());</span><br><span class="line">        <span class="comment">//return baseMapper.selectList(new QueryWrapper&lt;CategoryEntity&gt;().eq(&quot;parent_cid&quot;, level.getCatId()));</span></span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+
+
+
+<h3 id="9-4-修改请求"><a href="#9-4-修改请求" class="headerlink" title="9.4 修改请求"></a>9.4 修改请求</h3><blockquote>
+<p>gulimall-product&#x2F;src&#x2F;main&#x2F;resources&#x2F;static&#x2F;index&#x2F;js&#x2F;catalogLoader.js</p>
+<p>修改请求路径为章节9新增的接口路径index&#x2F;catalog.json</p>
+</blockquote>
+<h3 id="9-5-重启服务并测试"><a href="#9-5-重启服务并测试" class="headerlink" title="9.5 重启服务并测试"></a>9.5 重启服务并测试</h3><blockquote>
+<p>数据库修改三级分类名</p>
+</blockquote>
+<p><img src="/assets/%E8%B0%B7%E7%B2%92%E5%95%86%E5%9F%8E--%E5%95%86%E5%9F%8E%E4%B8%BB%E9%A1%B5%E7%B1%BB%E7%9B%AE--%E9%AB%98%E7%BA%A7%E7%AF%87%E7%AC%94%E8%AE%B0%E4%B8%89/81fa042c09955ca40b3ee0ad35c50d35.png" alt="image-20211027171226401"></p>
+<blockquote>
+<p>页面刷新后也相应改变,说明使用的是后台来的数据</p>
+</blockquote>
+<p><img src="/assets/%E8%B0%B7%E7%B2%92%E5%95%86%E5%9F%8E--%E5%95%86%E5%9F%8E%E4%B8%BB%E9%A1%B5%E7%B1%BB%E7%9B%AE--%E9%AB%98%E7%BA%A7%E7%AF%87%E7%AC%94%E8%AE%B0%E4%B8%89/252979f6d99ce7a3ea344febed2c2852.png" alt="image-20211027171153020"></p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>Author: </span><span class="post-copyright-info"><a href="https://yuanzhang788.github.io">Yuanz</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>Link: </span><span class="post-copyright-info"><a href="https://yuanzhang788.github.io/2021/11/15/%E8%B0%B7%E7%B2%92%E5%95%86%E5%9F%8E--%E5%95%86%E5%9F%8E%E4%B8%BB%E9%A1%B5(%E7%B1%BB%E7%9B%AE)--%E9%AB%98%E7%BA%A7%E7%AF%87%E7%AC%94%E8%AE%B0%E4%B8%89/">https://yuanzhang788.github.io/2021/11/15/%E8%B0%B7%E7%B2%92%E5%95%86%E5%9F%8E--%E5%95%86%E5%9F%8E%E4%B8%BB%E9%A1%B5(%E7%B1%BB%E7%9B%AE)--%E9%AB%98%E7%BA%A7%E7%AF%87%E7%AC%94%E8%AE%B0%E4%B8%89/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>Copyright Notice: </span><span class="post-copyright-info">All articles on this blog are licensed under <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless otherwise stated.</span></div></div><div class="tag_share"><div class="post-share"><div class="social-share" data-image="/img/butterfly-icon.png" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2021/11/15/%E8%B0%B7%E7%B2%92%E5%95%86%E5%9F%8E--nginx--%E9%AB%98%E7%BA%A7%E7%AF%87%E7%AC%94%E8%AE%B0%E5%9B%9B/" title="谷粒商城--nginx--高级篇笔记四"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info"><div class="info-1"><div class="info-item-1">Previous</div><div class="info-item-2">谷粒商城--nginx--高级篇笔记四</div></div><div class="info-2"><div class="info-item-1">谷粒商城–nginx–高级篇笔记四1. nginx搭建域名访问 (反向代理)1.1 动静分离 1.2 正向代理与反向代理 正向代理隐藏客户端 反向代理隐藏服务端   1.3 nginx与windows搭建域名访问环境 为什么能够通过修改host文件来实现域名访问?  众所周知域名解析是通过dns来解析的,但是在通过网络的dns解析之前需要找到本机的host文件查询是否有对应的域名映射,如果有就通过映射的域名地址访问,如果没有再访问dns 1.3.1 通过改host文件的方法就可以实现host文件地址C:\Windows\System32\drivers\etc  也可以使用工具SwitchHosts 注意:启动SwitchHosts必须以管理员身份启动  1.3.2 配置host 新建本地方案,IP地址为虚拟机地址 192.168.157.128 gulimall.com   1.3.3 域名测试 之前虚拟机配置的nginx的index.html页面显示出来了,域名访问配置成功   1.1.4 nginx搭建域名访问(nginx转发网关)1.1.4.1 实现 1.1.4.1 ng...</div></div></div></a><a class="pagination-related" href="/2021/11/15/%E8%B0%B7%E7%B2%92%E5%95%86%E5%9F%8E--%E5%95%86%E5%93%81%E4%B8%8A%E6%9E%B6--%E9%AB%98%E7%BA%A7%E7%AF%87%E7%AC%94%E8%AE%B0%E4%BA%8C/" title="谷粒商城--商品上架--高级篇笔记二"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">Next</div><div class="info-item-2">谷粒商城--商品上架--高级篇笔记二</div></div><div class="info-2"><div class="info-item-1">谷粒商城–商品上架–高级篇笔记二1. 新增商品索引1234567891011121314151617181920212223242526272829303132333435363738394041424344454647484950515253545556575859606162636465666768697071PUT product&#123;  &quot;mappings&quot;: &#123;    &quot;properties&quot;: &#123;      &quot;skuId&quot;: &#123;        &quot;type&quot;: &quot;long&quot;      &#125;,      &quot;spuId&quot;: &#123;        &quot;type&quot;: &quot;keyword&quot;      &#125;,      &quot;skuTitle&quot;: &#123;        &quot;type&quot;: &quot;text&quot;,      ...</div></div></div></a></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/butterfly-icon.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">Yuanz</div><div class="author-info-description">Yuanz的个人博客</div><div class="site-data"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">176</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">0</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">0</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>Announcement</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>Contents</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E8%B0%B7%E7%B2%92%E5%95%86%E5%9F%8E%E2%80%93%E5%95%86%E5%9F%8E%E4%B8%BB%E9%A1%B5-%E7%B1%BB%E7%9B%AE-%E2%80%93%E9%AB%98%E7%BA%A7%E7%AF%87%E7%AC%94%E8%AE%B0%E4%B8%89"><span class="toc-number">1.</span> <span class="toc-text">谷粒商城–商城主页(类目)–高级篇笔记三</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E9%A6%96%E9%A1%B5%E4%BB%A3%E7%A0%81"><span class="toc-number">1.1.</span> <span class="toc-text">1. 首页代码</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E5%AF%BC%E5%85%A5thymeleaf%E4%BE%9D%E8%B5%96"><span class="toc-number">1.2.</span> <span class="toc-text">2. 导入thymeleaf依赖</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-%E9%A6%96%E9%A1%B5%E4%B8%8E%E9%9D%99%E6%80%81%E8%B5%84%E6%BA%90%E5%A4%8D%E5%88%B6"><span class="toc-number">1.3.</span> <span class="toc-text">3. 首页与静态资源复制</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-%E9%87%8D%E5%90%AFgulimall-product%E6%9C%8D%E5%8A%A1"><span class="toc-number">1.4.</span> <span class="toc-text">4. 重启gulimall-product服务</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-%E7%BC%96%E5%86%99%E6%9F%A5%E8%AF%A2%E4%B8%80%E7%BA%A7%E7%9B%AE%E5%BD%95%E5%88%97%E8%A1%A8%E6%8E%A5%E5%8F%A3"><span class="toc-number">1.5.</span> <span class="toc-text">5. 编写查询一级目录列表接口</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-%E4%BF%AE%E6%94%B9%E9%A6%96%E9%A1%B5"><span class="toc-number">1.6.</span> <span class="toc-text">6. 修改首页</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#7-devtools"><span class="toc-number">1.7.</span> <span class="toc-text">7. devtools</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#8-%E5%95%86%E5%93%81%E4%BA%8C%E7%BA%A7%E5%88%86%E7%B1%BB%E4%B8%89%E7%BA%A7%E5%88%86%E7%B1%BB-%E7%BB%93%E6%9E%84%E5%88%86%E6%9E%90"><span class="toc-number">1.8.</span> <span class="toc-text">8. 商品二级分类三级分类 结构分析</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#9-%E6%96%B0%E5%A2%9E%E6%A0%B9%E6%8D%AE%E4%B8%80%E7%BA%A7%E7%B1%BB%E7%9B%AEid%E6%9F%A5%E8%AF%A2%E4%BA%8C%E7%BA%A7%E4%B8%89%E7%BA%A7%E5%88%86%E7%B1%BB"><span class="toc-number">1.9.</span> <span class="toc-text">9. 新增根据一级类目id查询二级三级分类</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#9-1-%E6%96%B0%E5%A2%9ECatalog2Vo%E5%AE%9E%E4%BD%93%E7%B1%BB"><span class="toc-number">1.9.1.</span> <span class="toc-text">9.1 新增Catalog2Vo实体类</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#9-2-%E6%96%B0%E5%A2%9E%E6%8E%A5%E5%8F%A3"><span class="toc-number">1.9.2.</span> <span class="toc-text">9.2 新增接口</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#9-3-%E6%96%B0%E5%A2%9E%E6%9F%A5%E8%AF%A2%E5%87%BA%E7%88%B6ID%E4%B8%BA-parent-cid%E7%9A%84List%E9%9B%86%E5%90%88"><span class="toc-number">1.9.3.</span> <span class="toc-text">9.3 新增查询出父ID为 parent_cid的List集合</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#9-4-%E4%BF%AE%E6%94%B9%E8%AF%B7%E6%B1%82"><span class="toc-number">1.9.4.</span> <span class="toc-text">9.4 修改请求</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#9-5-%E9%87%8D%E5%90%AF%E6%9C%8D%E5%8A%A1%E5%B9%B6%E6%B5%8B%E8%AF%95"><span class="toc-number">1.9.5.</span> <span class="toc-text">9.5 重启服务并测试</span></a></li></ol></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Posts</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/06/05/hello-world/" title="Hello World">Hello World</a><time datetime="2026-06-05T09:30:56.120Z" title="Created 2026-06-05 17:30:56">2026-06-05</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/05/28/%E4%BB%8E%E9%9B%B6%E5%BC%80%E5%A7%8B%EF%BC%8C%E5%9F%BA%E4%BA%8E-Hexo-GitHub-Pages-%E6%90%AD%E5%BB%BA%E4%B8%80%E4%B8%AA%E5%B1%9E%E4%BA%8E%E8%87%AA%E5%B7%B1%E7%9A%84%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2%EF%BC%8C%E5%B9%B6%E5%AE%8C%E6%88%90%E4%B8%BB%E9%A2%98%E5%88%87%E6%8D%A2%E4%B8%8E%E9%83%A8%E7%BD%B2%E3%80%82%EF%BC%88%E8%B6%85%E8%AF%A6%E7%BB%86%E6%95%99%E7%A8%8B%EF%BC%89/" title="从零开始，基于 Hexo + GitHub Pages 搭建一个属于自己的个人博客，并完成主题切换与部署。（超详细教程）">从零开始，基于 Hexo + GitHub Pages 搭建一个属于自己的个人博客，并完成主题切换与部署。（超详细教程）</a><time datetime="2026-05-28T06:27:02.000Z" title="Created 2026-05-28 14:27:02">2026-05-28</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/05/22/%E7%AC%AC%E4%B8%80%E7%AF%87-Github-Pages%E5%8D%9A%E5%AE%A2/" title="第一篇 Github Pages博客">第一篇 Github Pages博客</a><time datetime="2026-05-22T09:25:44.000Z" title="Created 2026-05-22 17:25:44">2026-05-22</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/05/20/Java%20Excel%E5%AF%BC%E5%87%BA%EF%BC%9A%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E8%87%AA%E5%AE%9A%E4%B9%89%E8%A1%A8%E5%A4%B4%E4%B8%8E%E5%AD%97%E6%AE%B5%E9%A1%BA%E5%BA%8F%E7%9A%84%E5%AE%8C%E5%85%A8%E6%8E%A7%E5%88%B6/" title="Java Excel导出：如何实现自定义表头与字段顺序的完全控制">Java Excel导出：如何实现自定义表头与字段顺序的完全控制</a><time datetime="2026-05-20T10:02:18.000Z" title="Created 2026-05-20 18:02:18">2026-05-20</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/05/07/Docker%20%E5%AE%89%E8%A3%85%20%E6%95%B0%E6%8D%AE%E5%BA%93%E5%B7%A5%E5%8D%95%E7%B3%BB%E7%BB%9FYearning%E4%BB%A5%E5%8F%8A%E4%BD%BF%E7%94%A8/" title="Docker 安装 数据库工单系统Yearning以及使用">Docker 安装 数据库工单系统Yearning以及使用</a><time datetime="2026-05-07T06:10:08.000Z" title="Created 2026-05-07 14:10:08">2026-05-07</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2025 - 2026 By Yuanz</span><span class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 8.1.2</a><span class="footer-separator">|</span><span>Theme </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.5.5-b1</a></span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="Reading Mode"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="Toggle Between Light and Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle Between Single-column and Double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="Settings"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="Table of Contents"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="Back to Top"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.5.5-b1"></script><script src="/js/main.js?v=5.5.5-b1"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>

@@ -1,0 +1,1176 @@
+<!DOCTYPE html><html lang="cn" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>集群(mysql,redis,elasticsearch,rabbitmq) | Yuanz</title><meta name="author" content="Yuanz"><meta name="copyright" content="Yuanz"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="集群 1. 集群的目标 高可用（High Availability），是当一台服务器停止服务后，对于业务及用户毫无影响。 停止服务的原因可能由于网卡、路由器、机房、CPU负载过高、内存溢出、自然灾害等不可预期的原因导致，在很多时候也称单点问题。 突破数据量限制，一台服务器不能储存大量数据，需要多台分担，每个存储一部分，共同存储完整个集群数据。最好能做到互相备份，即使单节点故障，也能在其他节点找到数">
+<meta property="og:type" content="article">
+<meta property="og:title" content="集群(mysql,redis,elasticsearch,rabbitmq)">
+<meta property="og:url" content="https://yuanzhang788.github.io/2022/02/15/%E9%9B%86%E7%BE%A4(mysql,redis,elasticsearch,rabbitmq)/index.html">
+<meta property="og:site_name" content="Yuanz">
+<meta property="og:description" content="集群 1. 集群的目标 高可用（High Availability），是当一台服务器停止服务后，对于业务及用户毫无影响。 停止服务的原因可能由于网卡、路由器、机房、CPU负载过高、内存溢出、自然灾害等不可预期的原因导致，在很多时候也称单点问题。 突破数据量限制，一台服务器不能储存大量数据，需要多台分担，每个存储一部分，共同存储完整个集群数据。最好能做到互相备份，即使单节点故障，也能在其他节点找到数">
+<meta property="og:locale">
+<meta property="og:image" content="https://yuanzhang788.github.io/img/butterfly-icon.png">
+<meta property="article:published_time" content="2022-02-15T07:55:23.000Z">
+<meta property="article:modified_time" content="2026-06-08T03:35:11.711Z">
+<meta property="article:author" content="Yuanz">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://yuanzhang788.github.io/img/butterfly-icon.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "集群(mysql,redis,elasticsearch,rabbitmq)",
+  "url": "https://yuanzhang788.github.io/2022/02/15/%E9%9B%86%E7%BE%A4(mysql,redis,elasticsearch,rabbitmq)/",
+  "image": "https://yuanzhang788.github.io/img/butterfly-icon.png",
+  "datePublished": "2022-02-15T07:55:23.000Z",
+  "dateModified": "2026-06-08T03:35:11.711Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "Yuanz",
+      "url": "https://yuanzhang788.github.io"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://yuanzhang788.github.io/2022/02/15/%E9%9B%86%E7%BE%A4(mysql,redis,elasticsearch,rabbitmq)/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=5.5.5-b1"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: 'Copy Successful',
+    error: 'Copy Failed',
+    noSupport: 'Browser Not Supported'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: 'Just now',
+    min: 'minutes ago',
+    hour: 'hours ago',
+    day: 'days ago',
+    month: 'months ago'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.0/dist/infinitegrid.min.js',
+    buttonText: 'Load More'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '集群(mysql,redis,elasticsearch,rabbitmq)',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><meta name="generator" content="Hexo 8.1.2"></head><body><div class="post" id="body-wrap"><header class="post-bg" id="page-header"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">Yuanz</span></a><a class="nav-page-title" href="/"><span class="site-name">集群(mysql,redis,elasticsearch,rabbitmq)</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  Back to Home</span></span></a></span><div id="menus"></div></nav><div id="post-info"><h1 class="post-title">集群(mysql,redis,elasticsearch,rabbitmq)</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2022-02-15T07:55:23.000Z" title="Created 2022-02-15 15:55:23">2022-02-15</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2026-06-08T03:35:11.711Z" title="Updated 2026-06-08 11:35:11">2026-06-08</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">Post Views:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><p>集群</p>
+<h2 id="1-集群的目标"><a href="#1-集群的目标" class="headerlink" title="1. 集群的目标"></a>1. 集群的目标</h2><ul>
+<li><code>高可用</code>（High Availability），是当一台服务器停止服务后，对于业务及用户毫无影响。 停止服务的原因可能由于网卡、路由器、机房、CPU负载过高、内存溢出、自然灾害等不可预期的原因导致，在很多时候也称单点问题。</li>
+<li><code>突破数据量限制</code>，一台服务器不能储存大量数据，需要多台分担，每个存储一部分，共同存储完整个集群数据。最好能做到互相备份，即使单节点故障，也能在其他节点找到数据。</li>
+<li><code>数据备份容灾</code>，单点故障后，存储的数据仍然可以在别的地方拉起。</li>
+<li><code>压力分担</code>，由于多个服务器都能完成各自一部分工作，所以尽量的避免了单点压力的存在</li>
+</ul>
+<h2 id="2-集群的基础基础形式"><a href="#2-集群的基础基础形式" class="headerlink" title="2. 集群的基础基础形式"></a>2. 集群的基础基础形式</h2><h3 id="2-1-主从式"><a href="#2-1-主从式" class="headerlink" title="2.1 主从式"></a>2.1 主从式</h3><p><img src="/assets/%E9%9B%86%E7%BE%A4mysqlrediselasticsearchrabbitmq/d4bc13bbcaa974709ec202fc969ab107.png" alt="image-20220126103859028"></p>
+<h3 id="2-2-分片式"><a href="#2-2-分片式" class="headerlink" title="2.2 分片式"></a>2.2 分片式</h3><p><img src="/assets/%E9%9B%86%E7%BE%A4mysqlrediselasticsearchrabbitmq/8100a76735f9ffe2af69d3e429526ee1.png" alt="image-20220126103926537"></p>
+<h3 id="2-3-选主式"><a href="#2-3-选主式" class="headerlink" title="2.3 选主式"></a>2.3 选主式</h3><p><img src="/assets/%E9%9B%86%E7%BE%A4mysqlrediselasticsearchrabbitmq/3b174514389d8790fe7915bb2f053bac.png" alt="image-20220126103957890"></p>
+<h2 id="3-mysql集群"><a href="#3-mysql集群" class="headerlink" title="3. mysql集群"></a>3. mysql集群</h2><h3 id="3-1-企业中常用的数据库解决方案"><a href="#3-1-企业中常用的数据库解决方案" class="headerlink" title="3.1 企业中常用的数据库解决方案"></a>3.1 企业中常用的数据库解决方案</h3><p><img src="/assets/%E9%9B%86%E7%BE%A4mysqlrediselasticsearchrabbitmq/277eebda37e043037d94ca683f0e972d.png" alt="image-20220126113803316"></p>
+<h3 id="3-2-mysql常见的几种集群方式"><a href="#3-2-mysql常见的几种集群方式" class="headerlink" title="3.2 mysql常见的几种集群方式"></a>3.2 mysql常见的几种集群方式</h3><h4 id="3-2-1-MYSQl-MMM-Master-Master-Replication-Manager-for-MySQL"><a href="#3-2-1-MYSQl-MMM-Master-Master-Replication-Manager-for-MySQL" class="headerlink" title="3.2.1 MYSQl-MMM(Master-Master Replication Manager for MySQL"></a>3.2.1 MYSQl-MMM(Master-Master Replication Manager for MySQL</h4><p>MySQL-MMM 是 Master-Master Replication Manager for MySQL（<strong>mysql 主主复制管理器</strong>） 的简称， 是 Google 的开源项目（Perl 脚本） 。 </p>
+<p>MMM 基于 MySQL Replication 做的扩展架构， 主要用来监控 mysql 主主复制并做失败转移。 <strong>其原理是将真实数据库节点的IP（RIP） 映射为虚拟 IP（VIP） 集</strong>。mysql-mmm 的监管端会提供多个虚拟 IP（VIP） ， 包括一个可写 VIP，多个可读 VIP， 通过监管的管理， 这些 IP 会绑定在可用 mysql 之上， 当某一台 mysql 宕机时， 监管会将 VIP迁移至其他 mysql。在整个监管过程中， 需要在 mysql 中添加相关授权用户， 以便让 mysql 可以支持监理机的维护。 授权的用户包括一个mmm_monitor 用户和一个mmm_agent用户， 如果想使用 mmm 的备份工具则还要添加一个 mmm_tools 用户。    </p>
+<p><img src="/assets/%E9%9B%86%E7%BE%A4mysqlrediselasticsearchrabbitmq/eda50a3145fe3571bd83c7cbe2c7dffb.png" alt="image-20220126114321488"></p>
+<h4 id="3-2-2-MYSQL-MHA-mysql-主主复制管理器"><a href="#3-2-2-MYSQL-MHA-mysql-主主复制管理器" class="headerlink" title="3.2.2 MYSQL-MHA(mysql 主主复制管理器)"></a>3.2.2 MYSQL-MHA(mysql 主主复制管理器)</h4><p>MHA（Master High Availability） 目前在 MySQL 高可用方面是一个相对成熟的解决方案,由日本 DeNA 公司 youshimaton（现就职于 Facebook 公司） 开发， 是一套优秀的作为MySQL高可用性环境下故障切换和主从提升的高可用软件。在 MySQL故障切换过程中，MHA 能做到在 0~30 秒之内自动完成数据库的故障切换操作（以 2019 年的眼光来说太慢了） ， 并且在进行故障切换的过程中， MHA 能在最大程度上保证数据的一致性， 以<br>达到真正意义上的高可用。  </p>
+<h4 id="3-2-3-InnoDB-Cluster"><a href="#3-2-3-InnoDB-Cluster" class="headerlink" title="3.2.3 InnoDB Cluster"></a>3.2.3 InnoDB Cluster</h4><p>InnoDB Cluster 支持自动 Failover、 强一致性、 读写分离、 读库高可用、 读请求负载均衡， 横向扩展的特性， 是比较完备的一套方案。</p>
+<p>但是部署起来复杂， 想要解决 router单点问题好需要新增组件， 如没有其他更好的方案可考虑该方案。 InnoDB Cluster 主要由 <code>MySQL Shell</code>、 <code>MySQL Router</code> 和 <code>MySQL 服务器集群</code>组成， 三者协同工作， 共同为MySQL 提供完整的高可用性解决方案。</p>
+<p><code>MySQL Shell</code> 对管理人员提供管理接口， 可以很方便的对集群进行配置和管理</p>
+<p><code>MySQL Router</code> 可以根据部署的集群状况自动的初始化， 是客户端连接实例。 如果有节点 down 机， 集群会自动更新配置。 集群包含<code>单点写入</code>和<code>多点写入</code>两种模式。 在单主模式下， 如果主节点 down 掉， 从节点自动替换上来，MySQL Router 会<code>自动探测</code>， 并将客户端连接到新节点。  </p>
+<p><img src="/assets/%E9%9B%86%E7%BE%A4mysqlrediselasticsearchrabbitmq/050ac6fb19a3ef9d63fa43922fb310fa.png" alt="image-20220126155235446"></p>
+<h3 id="3-3-Docker-安装模拟-MySQL-主从复制集群"><a href="#3-3-Docker-安装模拟-MySQL-主从复制集群" class="headerlink" title="3.3 Docker 安装模拟 MySQL 主从复制集群"></a>3.3 Docker 安装模拟 MySQL 主从复制集群</h3><h4 id="3-3-1-下载-mysql-镜像"><a href="#3-3-1-下载-mysql-镜像" class="headerlink" title="3.3.1 下载 mysql 镜像"></a>3.3.1 下载 mysql 镜像</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker pull mysql:5.7</span><br></pre></td></tr></table></figure>
+
+
+
+
+<h4 id="3-3-2-主节点创建"><a href="#3-3-2-主节点创建" class="headerlink" title="3.3.2 主节点创建"></a>3.3.2 主节点创建</h4><h5 id="3-3-2-1-创建-Master-实例并启动"><a href="#3-3-2-1-创建-Master-实例并启动" class="headerlink" title="3.3.2.1  创建 Master 实例并启动"></a>3.3.2.1  创建 Master 实例并启动</h5><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">docker run -p 3307:3306 --name mysql-master \</span><br><span class="line">-v /mydata/mysql/master/log:/var/log/mysql \</span><br><span class="line">-v /mydata/mysql/master/data:/var/lib/mysql \</span><br><span class="line">-v /mydata/mysql/master/conf:/etc/mysql \</span><br><span class="line">-e MYSQL_ROOT_PASSWORD=root \</span><br><span class="line">-d mysql:5.7</span><br></pre></td></tr></table></figure>
+
+
+
+
+<blockquote>
+<p>参数说明</p>
+</blockquote>
+<p>-p 3307:3306： 将容器的 3306 端口映射到主机的 3307 端口</p>
+<p>-v &#x2F;mydata&#x2F;mysql&#x2F;master&#x2F;conf:&#x2F;etc&#x2F;mysql： 将配置文件夹挂在到主机</p>
+<p>-v &#x2F;mydata&#x2F;mysql&#x2F;master&#x2F;log:&#x2F;var&#x2F;log&#x2F;mysql： 将日志文件夹挂载到主机 </p>
+<p>-v &#x2F;mydata&#x2F;mysql&#x2F;master&#x2F;data:&#x2F;var&#x2F;lib&#x2F;mysql&#x2F;： 将配置文件夹挂载到主机</p>
+<p>-e MYSQL_ROOT_PASSWORD&#x3D;root： 初始化 root 用户的密码</p>
+<h5 id="3-3-2-2-修改-master-基本配置"><a href="#3-3-2-2-修改-master-基本配置" class="headerlink" title="3.3.2.2 修改 master 基本配置"></a>3.3.2.2 修改 master 基本配置</h5><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vim /mydata/mysql/master/conf/my.cnf</span><br></pre></td></tr></table></figure>
+
+
+<blockquote>
+<p>为my.cnf写入一下配置 基本上就是设置字符集</p>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">[client]</span><br><span class="line">default-character-set=utf8</span><br><span class="line">[mysql]</span><br><span class="line">default-character-set=utf8</span><br><span class="line">[mysqld]</span><br><span class="line">init_connect=&#x27;SET collation_connection = utf8_unicode_ci&#x27;</span><br><span class="line">init_connect=&#x27;SET NAMES utf8&#x27;</span><br><span class="line">character-set-server=utf8</span><br><span class="line">collation-server=utf8_unicode_ci</span><br><span class="line">skip-character-set-client-handshake</span><br><span class="line">skip-name-resolve</span><br></pre></td></tr></table></figure>
+
+
+
+
+<p><strong>注意： skip-name-resolve 一定要加， 不然连接 mysql 会超级慢</strong></p>
+<h5 id="3-3-2-3-添加-master-主从复制部分配置"><a href="#3-3-2-3-添加-master-主从复制部分配置" class="headerlink" title="3.3.2.3 添加 master 主从复制部分配置"></a>3.3.2.3 添加 master 主从复制部分配置</h5><blockquote>
+<p>为my.cnf写入一下配置</p>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">server_id=1				 #指定集群id</span><br><span class="line">log-bin=mysql-bin	     #打开二进制日志功能</span><br><span class="line">read-only=0       		#关闭只读,可读可写</span><br><span class="line">binlog-do-db=gulimall_ums	#指定mysql的binlog日志记录哪个db</span><br><span class="line">binlog-do-db=gulimall_pms</span><br><span class="line">binlog-do-db=gulimall_oms</span><br><span class="line">binlog-do-db=gulimall_sms</span><br><span class="line">binlog-do-db=gulimall_wms</span><br><span class="line">binlog-do-db=gulimall_admin</span><br><span class="line">replicate-ignore-db=mysql  #用来设置不需要同步的库,此处指定的mysql系统库</span><br><span class="line">replicate-ignore-db=sys</span><br><span class="line">replicate-ignore-db=information_schema</span><br><span class="line">replicate-ignore-db=performance_schema</span><br></pre></td></tr></table></figure>
+
+
+
+
+<h5 id="3-3-2-4-重启master"><a href="#3-3-2-4-重启master" class="headerlink" title="3.3.2.4 重启master"></a>3.3.2.4 重启master</h5><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker restart mysql-master</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+
+
+
+<h4 id="3-3-3-从节点创建"><a href="#3-3-3-从节点创建" class="headerlink" title="3.3.3  从节点创建"></a>3.3.3  从节点创建</h4><h5 id="3-3-3-1-创建-Master-实例并启动"><a href="#3-3-3-1-创建-Master-实例并启动" class="headerlink" title="3.3.3.1  创建 Master 实例并启动"></a>3.3.3.1  创建 Master 实例并启动</h5><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">docker run -p 3317:3306 --name mysql-slaver-01 \</span><br><span class="line">-v /mydata/mysql/slaver/log:/var/log/mysql \</span><br><span class="line">-v /mydata/mysql/slaver/data:/var/lib/mysql \</span><br><span class="line">-v /mydata/mysql/slaver/conf:/etc/mysql \</span><br><span class="line">-e MYSQL_ROOT_PASSWORD=root \</span><br><span class="line">-d mysql:5.7</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+
+<h5 id="3-3-3-2-修改-slaver-01基本配置"><a href="#3-3-3-2-修改-slaver-01基本配置" class="headerlink" title="3.3.3.2 修改 slaver-01基本配置"></a>3.3.3.2 修改 slaver-01基本配置</h5><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vim /mydata/mysql/slaver/conf/my.cnf</span><br></pre></td></tr></table></figure>
+
+
+
+
+<blockquote>
+<p>为my.cnf写入一下配置 基本上就是设置字符集</p>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">[client]</span><br><span class="line">default-character-set=utf8</span><br><span class="line">[mysql]</span><br><span class="line">default-character-set=utf8</span><br><span class="line">[mysqld]</span><br><span class="line">init_connect=&#x27;SET collation_connection = utf8_unicode_ci&#x27;</span><br><span class="line">init_connect=&#x27;SET NAMES utf8&#x27;</span><br><span class="line">character-set-server=utf8</span><br><span class="line">collation-server=utf8_unicode_ci</span><br><span class="line">skip-character-set-client-handshake</span><br><span class="line">skip-name-resolve</span><br></pre></td></tr></table></figure>
+
+
+
+
+<h5 id="3-3-3-3-添加-master-主从复制部分配置"><a href="#3-3-3-3-添加-master-主从复制部分配置" class="headerlink" title="3.3.3.3 添加 master 主从复制部分配置"></a>3.3.3.3 添加 master 主从复制部分配置</h5><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">server_id=2                  #注意此处id不能与主节点相同</span><br><span class="line">log-bin=mysql-bin</span><br><span class="line">read-only=1binlog-do-db=gulimall_ums</span><br><span class="line">binlog-do-db=gulimall_pms</span><br><span class="line">binlog-do-db=gulimall_oms</span><br><span class="line">binlog-do-db=gulimall_sms</span><br><span class="line">binlog-do-db=gulimall_wms</span><br><span class="line">binlog-do-db=gulimall_admin</span><br><span class="line">replicate-ignore-db=mysql</span><br><span class="line">replicate-ignore-db=sys</span><br><span class="line">replicate-ignore-db=information_schema</span><br><span class="line">replicate-ignore-db=performance_schema</span><br></pre></td></tr></table></figure>
+
+
+
+
+<h5 id="3-3-3-4-重启slaver-01"><a href="#3-3-3-4-重启slaver-01" class="headerlink" title="3.3.3.4 重启slaver-01"></a>3.3.3.4 重启slaver-01</h5><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker restart mysql-master</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+
+<h4 id="3-3-4-为-master-授权用户来他的同步数据"><a href="#3-3-4-为-master-授权用户来他的同步数据" class="headerlink" title="3.3.4 为 master 授权用户来他的同步数据"></a>3.3.4 为 master 授权用户来他的同步数据</h4><h5 id="3-3-4-1-进入docker容器"><a href="#3-3-4-1-进入docker容器" class="headerlink" title="3.3.4.1 进入docker容器"></a>3.3.4.1 进入docker容器</h5><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker exec -it mysql-master /bin/bash</span><br></pre></td></tr></table></figure>
+
+
+<h5 id="3-3-4-2-进入mysql内部"><a href="#3-3-4-2-进入mysql内部" class="headerlink" title="3.3.4.2 进入mysql内部"></a>3.3.4.2 进入mysql内部</h5><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">mysql –uroot -p</span><br><span class="line">Enter password: root</span><br></pre></td></tr></table></figure>
+
+
+<h6 id="3-3-4-2-1-授权-root-可以远程访问-（-主从无关，-为了方便我们远程连接-mysql）"><a href="#3-3-4-2-1-授权-root-可以远程访问-（-主从无关，-为了方便我们远程连接-mysql）" class="headerlink" title="3.3.4.2.1 授权 root 可以远程访问  （ 主从无关， 为了方便我们远程连接 mysql）"></a>3.3.4.2.1 授权 root 可以远程访问  （ 主从无关， 为了方便我们远程连接 mysql）</h6><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">#</span><span class="language-bash">授权</span></span><br><span class="line">grant all privileges on *.* to &#x27;root&#x27;@&#x27;%&#x27; identified by &#x27;root&#x27; with grant option;</span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">刷新权限</span></span><br><span class="line">flush privileges;</span><br></pre></td></tr></table></figure>
+
+
+
+
+<h6 id="3-3-4-2-2-添加用来同步的用户"><a href="#3-3-4-2-2-添加用来同步的用户" class="headerlink" title="3.3.4.2.2 添加用来同步的用户"></a>3.3.4.2.2 添加用来同步的用户</h6><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">GRANT REPLICATION SLAVE ON *.* to &#x27;backup&#x27;@&#x27;%&#x27; identified by &#x27;123456&#x27;;</span><br></pre></td></tr></table></figure>
+
+
+<blockquote>
+<p><code>backup</code>为账号名,<code>123456</code>为账号密码</p>
+</blockquote>
+<h5 id="3-3-4-3-查看master状态"><a href="#3-3-4-3-查看master状态" class="headerlink" title="3.3.4.3 查看master状态"></a>3.3.4.3 查看master状态</h5><p><img src="/assets/%E9%9B%86%E7%BE%A4mysqlrediselasticsearchrabbitmq/f81e6e983448b56e0682ba30c6a2cd18.png" alt="image-20220127111912773"></p>
+<h4 id="3-3-5-为-slaver-01授权用户来他的同步数据"><a href="#3-3-5-为-slaver-01授权用户来他的同步数据" class="headerlink" title="3.3.5 为 slaver-01授权用户来他的同步数据"></a>3.3.5 为 slaver-01授权用户来他的同步数据</h4><h5 id="3-3-5-1-进入docker容器"><a href="#3-3-5-1-进入docker容器" class="headerlink" title="3.3.5.1 进入docker容器"></a>3.3.5.1 进入docker容器</h5><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker exec -it mysql-slaver-01 /bin/bash</span><br></pre></td></tr></table></figure>
+
+
+<h5 id="3-3-5-2-进入mysql内部"><a href="#3-3-5-2-进入mysql内部" class="headerlink" title="3.3.5.2 进入mysql内部"></a>3.3.5.2 进入mysql内部</h5><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">mysql –uroot -p</span><br><span class="line">Enter password: root</span><br></pre></td></tr></table></figure>
+
+
+<h6 id="3-3-5-2-1-授权-root-可以远程访问-（-主从无关，-为了方便我们远程连接-mysql）"><a href="#3-3-5-2-1-授权-root-可以远程访问-（-主从无关，-为了方便我们远程连接-mysql）" class="headerlink" title="3.3.5.2.1 授权 root 可以远程访问  （ 主从无关， 为了方便我们远程连接 mysql）"></a>3.3.5.2.1 授权 root 可以远程访问  （ 主从无关， 为了方便我们远程连接 mysql）</h6><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">#</span><span class="language-bash">授权</span></span><br><span class="line">grant all privileges on *.* to &#x27;root&#x27;@&#x27;%&#x27; identified by &#x27;root&#x27; with grant option;</span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">刷新权限</span></span><br><span class="line">flush privileges;</span><br></pre></td></tr></table></figure>
+
+
+
+
+<h6 id="3-3-5-2-2-设置主库连接"><a href="#3-3-5-2-2-设置主库连接" class="headerlink" title="3.3.5.2.2 设置主库连接"></a>3.3.5.2.2 设置主库连接</h6><p><img src="/assets/%E9%9B%86%E7%BE%A4mysqlrediselasticsearchrabbitmq/4c31996b2f2866d4f9c1f9231ea970be.png" alt="image-20220214101624075"></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">change master to master_host=&#x27;192.168.157.128&#x27;,master_user=&#x27;backup&#x27;,master_password=&#x27;123456&#x27;,master_log_file=&#x27;mysql-bin.000001&#x27;,master_log_pos=0,master_port=3307;</span><br></pre></td></tr></table></figure>
+
+
+<blockquote>
+<p>master_host:主节点虚拟机ip</p>
+<p>master_user:用于连接主机的集群账号</p>
+<p>master_password:用于连接主机的集群密码</p>
+<p>master_log_file必须与3.3.4.3的File字段一致,Position不用一致后面会自动同步</p>
+</blockquote>
+<h6 id="3-3-5-2-3-启用主从同步"><a href="#3-3-5-2-3-启用主从同步" class="headerlink" title="3.3.5.2.3 启用主从同步"></a>3.3.5.2.3 启用主从同步</h6><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">start slave;</span><br></pre></td></tr></table></figure>
+
+
+
+
+<h5 id="3-3-5-3-查看从库状态"><a href="#3-3-5-3-查看从库状态" class="headerlink" title="3.3.5.3 查看从库状态"></a>3.3.5.3 查看从库状态</h5><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">show slave status</span><br></pre></td></tr></table></figure>
+
+
+
+
+<p><img src="/assets/%E9%9B%86%E7%BE%A4mysqlrediselasticsearchrabbitmq/c3f4c207342dd3ed2fbe20f71f836b51.png" alt="image-20220127134312608"></p>
+<h3 id="3-4-主从同步测试"><a href="#3-4-主从同步测试" class="headerlink" title="3.4 主从同步测试"></a>3.4 主从同步测试</h3><blockquote>
+<p>主节点新建数据库gulimall_admin,从机刷新后也有相同数据库,只要此处同步其实就代表成功了</p>
+</blockquote>
+<p><img src="/assets/%E9%9B%86%E7%BE%A4mysqlrediselasticsearchrabbitmq/d2f8f383444dc583cf42c3658bc28b80.png" alt="image-20220127134812174"></p>
+<blockquote>
+<p>在主节点执行gulimall_admin.sql文件</p>
+</blockquote>
+<p><img src="/assets/%E9%9B%86%E7%BE%A4mysqlrediselasticsearchrabbitmq/3f761bdc1cd2c72641814ec98042f5c6.png" alt="image-20220127114709649"></p>
+<blockquote>
+<p>主节点的表结构与数据也同步过来了</p>
+</blockquote>
+<p><img src="/assets/%E9%9B%86%E7%BE%A4mysqlrediselasticsearchrabbitmq/d9b18d53e25a6f7e26f8ec753eeddb5c.png" alt="image-20220127135008622"></p>
+<h3 id="3-5-mysql主从配置总结"><a href="#3-5-mysql主从配置总结" class="headerlink" title="3.5  mysql主从配置总结"></a>3.5  mysql主从配置总结</h3><ol>
+<li>主从数据库在自己配置文件中声明需要同步哪个数据库， 忽略哪个数据库等信息。并且 server-id 不能一样</li>
+<li>主库授权某个账号密码来同步自己的数据</li>
+<li>从库使用这个账号密码连接主库来同步数据</li>
+</ol>
+<h3 id="3-6-mysql分库-分表-读写分离-shardingsphere"><a href="#3-6-mysql分库-分表-读写分离-shardingsphere" class="headerlink" title="3.6 mysql分库,分表,读写分离(shardingsphere)"></a>3.6 mysql分库,分表,读写分离(shardingsphere)</h3><p>Apache ShardingSphere 产品定位为 <code>Database Plus</code>，旨在构建异构数据库上层的标准和生态。 它关注如何充分合理地利用数据库的计算和存储能力，而并非实现一个全新的数据库。ShardingSphere 站在数据库的上层视角，关注他们之间的协作多于数据库自身。</p>
+<p><code>连接</code>、<code>增量</code>和<code>可插拔</code>是 Apache ShardingSphere 的核心概念。</p>
+<ul>
+<li><code>连接</code>：通过对数据库协议、SQL 方言以及数据库存储的灵活适配，快速的连接应用与多模式的异构数据库；</li>
+<li><code>增量</code>：获取数据库的访问流量，并提供<strong>流量重定向（数据分片、读写分离、影子库）</strong>、流量变形（数据加密、数据脱敏）、<strong>流量鉴权（安全、审计、权限）</strong>、流量治理（熔断、限流）以及**流量分析（服务质量分析、可观察性）**等透明化增量功能；</li>
+<li><code>可插拔</code>：项目采用<strong>微内核 + 三层可插拔模型</strong>，使内核、功能组件以及生态对接完全能够灵活的方式进行插拔式扩展，开发者能够像使用积木一样定制属于自己的独特系统。</li>
+</ul>
+<p>Apache ShardingSphere 由 <code>JDBC</code>、<code>Proxy</code> 和 <code>Sidecar</code>（规划中）这 3 款<strong>既能够独立部署，又支持混合部署配合使用的产品组成</strong>。 它们均提供标准化的基于数据库作为存储节点的增量功能，可适用于如 Java 同构、异构语言、云原生等各种多样化的应用场景。</p>
+<h4 id="3-6-1-shardingsphere三大组件"><a href="#3-6-1-shardingsphere三大组件" class="headerlink" title="3.6.1 shardingsphere三大组件"></a>3.6.1 shardingsphere三大组件</h4><h5 id="3-6-1-1-ShardingSphere-JDBC"><a href="#3-6-1-1-ShardingSphere-JDBC" class="headerlink" title="3.6.1.1 ShardingSphere-JDBC"></a>3.6.1.1 ShardingSphere-JDBC</h5><p>定位为轻量级 Java 框架，在 Java 的 JDBC 层提供的额外服务。 它使用客户端直连数据库，以 jar 包形式提供服务，无需额外部署和依赖，可理解为增强版的 JDBC 驱动，完全兼容 JDBC 和各种 ORM 框架。</p>
+<ul>
+<li>适用于任何基于 JDBC 的 ORM 框架，如：JPA, Hibernate, Mybatis, Spring JDBC Template 或直接使用 JDBC；</li>
+<li>支持任何第三方的数据库连接池，如：DBCP, C3P0, BoneCP, HikariCP 等；</li>
+<li>支持任意实现 JDBC 规范的数据库，目前支持 MySQL，PostgreSQL，Oracle，SQLServer 以及任何可使用 JDBC 访问的数据库。</li>
+</ul>
+<p><img src="/assets/%E9%9B%86%E7%BE%A4mysqlrediselasticsearchrabbitmq/8f405902ad580cbe0eaf9203ebae8dcf.png" alt="ShardingSphere-JDBC Architecture"></p>
+<h5 id="3-6-1-2-ShardingSphere-Proxy"><a href="#3-6-1-2-ShardingSphere-Proxy" class="headerlink" title="3.6.1.2 ShardingSphere-Proxy"></a>3.6.1.2 ShardingSphere-Proxy</h5><p>定位为透明化的数据库代理端，提供封装了数据库二进制协议的服务端版本，用于完成对异构语言的支持。 目前提供 MySQL 和 PostgreSQL（兼容 openGauss 等基于 PostgreSQL 的数据库）版本，它可以使用任何兼容 MySQL&#x2F;PostgreSQL 协议的访问客户端（如：MySQL Command Client, MySQL Workbench, Navicat 等）操作数据，对 DBA 更加友好。</p>
+<ul>
+<li>向应用程序完全透明，可直接当做 MySQL&#x2F;PostgreSQL 使用；</li>
+<li>适用于任何兼容 MySQL&#x2F;PostgreSQL 协议的的客户端。</li>
+</ul>
+<p><img src="/assets/%E9%9B%86%E7%BE%A4mysqlrediselasticsearchrabbitmq/6741dccf30128189a8401d0e29030d93.png" alt="ShardingSphere-Proxy Architecture"></p>
+<h5 id="3-6-1-3-ShardingSphere-Sidecar（TODO）"><a href="#3-6-1-3-ShardingSphere-Sidecar（TODO）" class="headerlink" title="3.6.1.3 ShardingSphere-Sidecar（TODO）"></a>3.6.1.3 ShardingSphere-Sidecar（TODO）</h5><p>定位为 Kubernetes 的云原生数据库代理，以 Sidecar 的形式代理所有对数据库的访问。 通过无中心、零侵入的方案提供与数据库交互的啮合层，即 <code>Database Mesh</code>，又可称数据库网格。</p>
+<p>Database Mesh 的关注重点在于如何将分布式的数据访问应用与数据库有机串联起来，它更加关注的是交互，是将杂乱无章的应用与数据库之间的交互进行有效地梳理。 使用 Database Mesh，访问数据库的应用和数据库终将形成一个巨大的网格体系，应用和数据库只需在网格体系中对号入座即可，它们都是被啮合层所治理的对象。</p>
+<p><img src="/assets/%E9%9B%86%E7%BE%A4mysqlrediselasticsearchrabbitmq/ebff156061adcee171dc62b1568e39cb.png" alt="ShardingSphere-Sidecar Architecture"></p>
+<h5 id="3-6-1-4-对比-独立部署"><a href="#3-6-1-4-对比-独立部署" class="headerlink" title="3.6.1.4 对比(独立部署)"></a>3.6.1.4 对比(独立部署)</h5><table>
+<thead>
+<tr>
+<th align="left"></th>
+<th align="left"><em>ShardingSphere-JDBC</em></th>
+<th align="left"><em>ShardingSphere-Proxy</em></th>
+<th align="left"><em>ShardingSphere-Sidecar</em></th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">数据库</td>
+<td align="left">任意</td>
+<td align="left">MySQL&#x2F;PostgreSQL</td>
+<td align="left">MySQL&#x2F;PostgreSQL</td>
+</tr>
+<tr>
+<td align="left">连接消耗数</td>
+<td align="left">高</td>
+<td align="left">低</td>
+<td align="left">高</td>
+</tr>
+<tr>
+<td align="left">异构语言</td>
+<td align="left">仅 Java</td>
+<td align="left">任意</td>
+<td align="left">任意</td>
+</tr>
+<tr>
+<td align="left">性能</td>
+<td align="left">损耗低</td>
+<td align="left">损耗略高</td>
+<td align="left">损耗低</td>
+</tr>
+<tr>
+<td align="left">无中心化</td>
+<td align="left">是</td>
+<td align="left">否</td>
+<td align="left">是</td>
+</tr>
+<tr>
+<td align="left">静态入口</td>
+<td align="left">无</td>
+<td align="left">有</td>
+<td align="left">无</td>
+</tr>
+</tbody></table>
+<h5 id="3-6-1-5-混合架构"><a href="#3-6-1-5-混合架构" class="headerlink" title="3.6.1.5 混合架构"></a>3.6.1.5 混合架构</h5><p>ShardingSphere-JDBC 采用无中心化架构，与应用程序共享资源，适用于 Java 开发的高性能的轻量级 OLTP 应用； ShardingSphere-Proxy 提供静态入口以及异构语言的支持，独立于应用程序部署，适用于 OLAP 应用以及对分片数据库进行管理和运维的场景。</p>
+<p>Apache ShardingSphere 是多接入端共同组成的生态圈。 通过混合使用 ShardingSphere-JDBC 和 ShardingSphere-Proxy，并采用同一注册中心统一配置分片策略，能够灵活的搭建适用于各种场景的应用系统，使得架构师更加自由地调整适合于当前业务的最佳系统架构。</p>
+<p><img src="/assets/%E9%9B%86%E7%BE%A4mysqlrediselasticsearchrabbitmq/75d0a1b91de80d86f1a9a95515e80550.png" alt="ShardingSphere Hybrid Architecture"></p>
+<h5 id="3-6-1-6-解决方案"><a href="#3-6-1-6-解决方案" class="headerlink" title="3.6.1.6 解决方案"></a>3.6.1.6 解决方案</h5><table>
+<thead>
+<tr>
+<th align="left"><em>解决方案&#x2F;功能</em></th>
+<th align="left"><em>分布式数据库</em></th>
+<th align="left"><em>数据安全</em></th>
+<th align="left"><em>数据库网关</em></th>
+<th align="left"><em>全链路压测</em></th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left"></td>
+<td align="left">数据分片</td>
+<td align="left">数据加密</td>
+<td align="left">异构数据库支持</td>
+<td align="left">影子库</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left">读写分离</td>
+<td align="left">行级权限（TODO）</td>
+<td align="left">SQL 方言转换（TODO）</td>
+<td align="left">可观测性</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left">分布式事务</td>
+<td align="left">SQL 审计（TODO）</td>
+<td align="left"></td>
+<td align="left"></td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left">弹性伸缩</td>
+<td align="left">SQL 防火墙（TODO）</td>
+<td align="left"></td>
+<td align="left"></td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left">高可用</td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left"></td>
+</tr>
+</tbody></table>
+<h4 id="3-6-2-ShardingSphere-Proxy实现分库分表-读写分离"><a href="#3-6-2-ShardingSphere-Proxy实现分库分表-读写分离" class="headerlink" title="3.6.2 ShardingSphere-Proxy实现分库分表,读写分离"></a>3.6.2 ShardingSphere-Proxy实现分库分表,读写分离</h4><p><img src="/assets/%E9%9B%86%E7%BE%A4mysqlrediselasticsearchrabbitmq/633201feedf66d41a125d6caa09c974a.png" alt="image-20220127152338488"></p>
+<h5 id="3-6-2-1-下载-ShardingSphere-Proxy-的最新发行版。"><a href="#3-6-2-1-下载-ShardingSphere-Proxy-的最新发行版。" class="headerlink" title="3.6.2.1 下载 ShardingSphere-Proxy 的最新发行版。"></a>3.6.2.1 下载 ShardingSphere-Proxy 的最新发行版。</h5><p><a target="_blank" rel="noopener" href="https://archive.apache.org/dist/shardingsphere/">ShardingSphere-Proxy历史版本下载地址</a></p>
+<blockquote>
+<p>此处我使用的4.1.1版本老师使用的4.0.0版本我没有找到</p>
+</blockquote>
+<h5 id="3-6-2-2-数据库驱动-jdbc下载"><a href="#3-6-2-2-数据库驱动-jdbc下载" class="headerlink" title="3.6.2.2 数据库驱动-jdbc下载"></a>3.6.2.2 数据库驱动-jdbc下载</h5><p><a target="_blank" rel="noopener" href="https://downloads.mysql.com/archives/c-j/">mysql-jdbc下载地址</a></p>
+<p>将 MySQL 的 JDBC 驱动程序复制至目录 <code>lib</code>目录下。</p>
+<h5 id="3-6-2-3-修改配置文件"><a href="#3-6-2-3-修改配置文件" class="headerlink" title="3.6.2.3 修改配置文件"></a>3.6.2.3 修改配置文件</h5><p>解压缩后修改 <code>conf/server.yaml</code> 和以 <code>config-</code> 前缀开头的文件，如：<code>conf/config-xxx.yaml</code> 文件，进行分片规则、读写分离规则配置。配置方式请参考<a target="_blank" rel="noopener" href="https://shardingsphere.apache.org/document/legacy/4.x/document/cn/manual/sharding-proxy/configuration/">配置手册</a>。</p>
+<h6 id="3-6-2-3-1-配置认证信息-server-yaml"><a href="#3-6-2-3-1-配置认证信息-server-yaml" class="headerlink" title="3.6.2.3.1 配置认证信息(server.yaml)"></a>3.6.2.3.1 配置认证信息(server.yaml)</h6><blockquote>
+<p>可配置注册中心,认证信息,及一些共有属性</p>
+</blockquote>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">authentication:</span></span><br><span class="line">  <span class="attr">users:</span></span><br><span class="line">    <span class="attr">root:</span></span><br><span class="line">      <span class="attr">password:</span> <span class="string">root</span></span><br><span class="line">    <span class="attr">sharding:</span></span><br><span class="line">      <span class="attr">password:</span> <span class="string">sharding</span> </span><br><span class="line">      <span class="attr">authorizedSchemas:</span> <span class="string">sharding_db</span></span><br><span class="line"></span><br><span class="line"><span class="attr">props:</span></span><br><span class="line"><span class="comment">#  max.connections.size.per.query: 1</span></span><br><span class="line"><span class="comment">#  acceptor.size: 16  # The default value is available processors count * 2.</span></span><br><span class="line">  <span class="attr">executor.size:</span> <span class="number">16</span>  <span class="comment"># Infinite by default.</span></span><br><span class="line"><span class="comment">#  proxy.frontend.flush.threshold: 128  # The default value is 128.</span></span><br><span class="line"><span class="comment">#    # LOCAL: Proxy will run with LOCAL transaction.</span></span><br><span class="line"><span class="comment">#    # XA: Proxy will run with XA transaction.</span></span><br><span class="line"><span class="comment">#    # BASE: Proxy will run with B.A.S.E transaction.</span></span><br><span class="line"><span class="comment">#  proxy.transaction.type: LOCAL</span></span><br><span class="line"><span class="comment">#  proxy.opentracing.enabled: false</span></span><br><span class="line"><span class="comment">#  proxy.hint.enabled: false</span></span><br><span class="line"><span class="comment">#  query.with.cipher.column: true</span></span><br><span class="line">  <span class="attr">sql.show:</span> <span class="literal">true</span></span><br><span class="line"><span class="comment">#  allow.range.query.with.inline.sharding: false</span></span><br></pre></td></tr></table></figure>
+
+
+
+
+
+
+<p><img src="/assets/%E9%9B%86%E7%BE%A4mysqlrediselasticsearchrabbitmq/30a08e17fc908f8a9b00b571a9748b62.png" alt="image-20220207155520956"></p>
+<h6 id="3-6-2-3-2-分库分表配置-conf-config-sharding-yaml"><a href="#3-6-2-3-2-分库分表配置-conf-config-sharding-yaml" class="headerlink" title="3.6.2.3.2 分库分表配置(conf/config-sharding.yaml)"></a>3.6.2.3.2 分库分表配置(<code>conf/config-sharding.yaml</code>)</h6><blockquote>
+<p>配置mysql的分库分表策略</p>
+</blockquote>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment"># Licensed to the Apache Software Foundation (ASF) under one or more</span></span><br><span class="line"><span class="comment"># contributor license agreements.  See the NOTICE file distributed with</span></span><br><span class="line"><span class="comment"># this work for additional information regarding copyright ownership.</span></span><br><span class="line"><span class="comment"># The ASF licenses this file to You under the Apache License, Version 2.0</span></span><br><span class="line"><span class="comment"># (the &quot;License&quot;); you may not use this file except in compliance with</span></span><br><span class="line"><span class="comment"># the License.  You may obtain a copy of the License at</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment">#     http://www.apache.org/licenses/LICENSE-2.0</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment"># Unless required by applicable law or agreed to in writing, software</span></span><br><span class="line"><span class="comment"># distributed under the License is distributed on an &quot;AS IS&quot; BASIS,</span></span><br><span class="line"><span class="comment"># WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.</span></span><br><span class="line"><span class="comment"># See the License for the specific language governing permissions and</span></span><br><span class="line"><span class="comment"># limitations under the License.</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"></span><br><span class="line"><span class="comment">######################################################################################################</span></span><br><span class="line"><span class="comment"># </span></span><br><span class="line"><span class="comment"># Here you can configure the rules for the proxy.</span></span><br><span class="line"><span class="comment"># This example is configuration of sharding rule.</span></span><br><span class="line"><span class="comment">#   </span></span><br><span class="line"><span class="comment"># If you want to use sharding, please refer to this file; </span></span><br><span class="line"><span class="comment"># if you want to use master-slave, please refer to the config-master_slave.yaml.</span></span><br><span class="line"><span class="comment"># </span></span><br><span class="line"><span class="comment">######################################################################################################</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment">#schemaName: sharding_db</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment">#dataSources:</span></span><br><span class="line"><span class="comment">#  ds_0:</span></span><br><span class="line"><span class="comment">#    url: jdbc:postgresql://127.0.0.1:5432/demo_ds_0?serverTimezone=UTC&amp;useSSL=false</span></span><br><span class="line"><span class="comment">#    username: postgres</span></span><br><span class="line"><span class="comment">#    password: postgres</span></span><br><span class="line"><span class="comment">#    connectionTimeoutMilliseconds: 30000</span></span><br><span class="line"><span class="comment">#    idleTimeoutMilliseconds: 60000</span></span><br><span class="line"><span class="comment">#    maxLifetimeMilliseconds: 1800000</span></span><br><span class="line"><span class="comment">#    maxPoolSize: 50</span></span><br><span class="line"><span class="comment">#  ds_1:</span></span><br><span class="line"><span class="comment">#    url: jdbc:postgresql://127.0.0.1:5432/demo_ds_1?serverTimezone=UTC&amp;useSSL=false</span></span><br><span class="line"><span class="comment">#    username: postgres</span></span><br><span class="line"><span class="comment">#    password: postgres</span></span><br><span class="line"><span class="comment">#    connectionTimeoutMilliseconds: 30000</span></span><br><span class="line"><span class="comment">#    idleTimeoutMilliseconds: 60000</span></span><br><span class="line"><span class="comment">#    maxLifetimeMilliseconds: 1800000</span></span><br><span class="line"><span class="comment">#    maxPoolSize: 50</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment">#shardingRule:</span></span><br><span class="line"><span class="comment">#  tables:</span></span><br><span class="line"><span class="comment">#    t_order:</span></span><br><span class="line"><span class="comment">#      actualDataNodes: ds_$&#123;0..1&#125;.t_order_$&#123;0..1&#125;</span></span><br><span class="line"><span class="comment">#      tableStrategy:</span></span><br><span class="line"><span class="comment">#        inline:</span></span><br><span class="line"><span class="comment">#          shardingColumn: order_id</span></span><br><span class="line"><span class="comment">#          algorithmExpression: t_order_$&#123;order_id % 2&#125;</span></span><br><span class="line"><span class="comment">#      keyGenerator:</span></span><br><span class="line"><span class="comment">#        type: SNOWFLAKE</span></span><br><span class="line"><span class="comment">#        column: order_id</span></span><br><span class="line"><span class="comment">#    t_order_item:</span></span><br><span class="line"><span class="comment">#      actualDataNodes: ds_$&#123;0..1&#125;.t_order_item_$&#123;0..1&#125;</span></span><br><span class="line"><span class="comment">#      tableStrategy:</span></span><br><span class="line"><span class="comment">#        inline:</span></span><br><span class="line"><span class="comment">#          shardingColumn: order_id</span></span><br><span class="line"><span class="comment">#          algorithmExpression: t_order_item_$&#123;order_id % 2&#125;</span></span><br><span class="line"><span class="comment">#      keyGenerator:</span></span><br><span class="line"><span class="comment">#        type: SNOWFLAKE</span></span><br><span class="line"><span class="comment">#        column: order_item_id</span></span><br><span class="line"><span class="comment">#  bindingTables:</span></span><br><span class="line"><span class="comment">#    - t_order,t_order_item</span></span><br><span class="line"><span class="comment">#  defaultDatabaseStrategy:</span></span><br><span class="line"><span class="comment">#    inline:</span></span><br><span class="line"><span class="comment">#      shardingColumn: user_id</span></span><br><span class="line"><span class="comment">#      algorithmExpression: ds_$&#123;user_id % 2&#125;</span></span><br><span class="line"><span class="comment">#  defaultTableStrategy:</span></span><br><span class="line"><span class="comment">#    none:</span></span><br><span class="line"></span><br><span class="line"><span class="comment">######################################################################################################</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment"># If you want to connect to MySQL, you should manually copy MySQL driver to lib directory.</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment">######################################################################################################</span></span><br><span class="line"></span><br><span class="line"><span class="attr">schemaName:</span> <span class="string">sharding_db</span></span><br><span class="line"></span><br><span class="line"><span class="attr">dataSources:</span>   <span class="comment">#数据源配置</span></span><br><span class="line">  <span class="attr">ds_0:</span></span><br><span class="line">    <span class="attr">url:</span> <span class="string">jdbc:mysql://192.168.157.128:3307/demo_ds_0?serverTimezone=UTC&amp;useSSL=false</span></span><br><span class="line">    <span class="attr">username:</span> <span class="string">root</span></span><br><span class="line">    <span class="attr">password:</span> <span class="string">root</span></span><br><span class="line">    <span class="attr">connectionTimeoutMilliseconds:</span> <span class="number">30000</span></span><br><span class="line">    <span class="attr">idleTimeoutMilliseconds:</span> <span class="number">60000</span></span><br><span class="line">    <span class="attr">maxLifetimeMilliseconds:</span> <span class="number">1800000</span></span><br><span class="line">    <span class="attr">maxPoolSize:</span> <span class="number">50</span></span><br><span class="line">  <span class="attr">ds_1:</span></span><br><span class="line">    <span class="attr">url:</span> <span class="string">jdbc:mysql://192.168.157.128:3307/demo_ds_1?serverTimezone=UTC&amp;useSSL=false</span></span><br><span class="line">    <span class="attr">username:</span> <span class="string">root</span></span><br><span class="line">    <span class="attr">password:</span> <span class="string">root</span></span><br><span class="line">    <span class="attr">connectionTimeoutMilliseconds:</span> <span class="number">30000</span></span><br><span class="line">    <span class="attr">idleTimeoutMilliseconds:</span> <span class="number">60000</span></span><br><span class="line">    <span class="attr">maxLifetimeMilliseconds:</span> <span class="number">1800000</span></span><br><span class="line">    <span class="attr">maxPoolSize:</span> <span class="number">50</span></span><br><span class="line"></span><br><span class="line"><span class="attr">shardingRule:</span>  <span class="comment">#分片规则</span></span><br><span class="line">  <span class="attr">tables:</span>      <span class="comment">#针对那几张表</span></span><br><span class="line">    <span class="attr">t_order:</span></span><br><span class="line">      <span class="attr">actualDataNodes:</span> <span class="string">ds_$&#123;0..1&#125;.t_order_$&#123;0..1&#125;</span>       <span class="comment">#真实的数据节点对应上面配置的数据源</span></span><br><span class="line">      <span class="attr">tableStrategy:</span>                                    <span class="comment">#分库策略</span></span><br><span class="line">        <span class="attr">inline:</span>                                                             </span><br><span class="line">          <span class="attr">shardingColumn:</span> <span class="string">order_id</span>                      <span class="comment">#根据什么字段</span></span><br><span class="line">          <span class="attr">algorithmExpression:</span> <span class="string">t_order_$&#123;order_id</span> <span class="string">%</span> <span class="number">2</span><span class="string">&#125;</span>  <span class="comment">#分片算法</span></span><br><span class="line">      <span class="attr">keyGenerator:</span>                                     <span class="comment">#主键生成策略</span></span><br><span class="line">        <span class="attr">type:</span> <span class="string">SNOWFLAKE</span>                                 <span class="comment">#类型</span></span><br><span class="line">        <span class="attr">column:</span> <span class="string">order_id</span>                                <span class="comment">#主键字段</span></span><br><span class="line">    <span class="attr">t_order_item:</span></span><br><span class="line">      <span class="attr">actualDataNodes:</span> <span class="string">ds_$&#123;0..1&#125;.t_order_item_$&#123;0..1&#125;</span></span><br><span class="line">      <span class="attr">tableStrategy:</span></span><br><span class="line">        <span class="attr">inline:</span></span><br><span class="line">          <span class="attr">shardingColumn:</span> <span class="string">order_id</span></span><br><span class="line">          <span class="attr">algorithmExpression:</span> <span class="string">t_order_item_$&#123;order_id</span> <span class="string">%</span> <span class="number">2</span><span class="string">&#125;</span></span><br><span class="line">      <span class="attr">keyGenerator:</span></span><br><span class="line">        <span class="attr">type:</span> <span class="string">SNOWFLAKE</span></span><br><span class="line">        <span class="attr">column:</span> <span class="string">order_item_id</span></span><br><span class="line">  <span class="attr">bindingTables:</span>        <span class="comment">#绑定表，即分片规则一致的关系表，互为绑定表关系。绑定表之间的多表关联查询不会出现笛卡尔积关联，可以提升关联查询效率。</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">t_order,t_order_item</span></span><br><span class="line">  <span class="attr">defaultDatabaseStrategy:</span>                              <span class="comment">#默认分库策略</span></span><br><span class="line">    <span class="attr">inline:</span></span><br><span class="line">      <span class="attr">shardingColumn:</span> <span class="string">user_id</span></span><br><span class="line">      <span class="attr">algorithmExpression:</span> <span class="string">ds_$&#123;user_id</span> <span class="string">%</span> <span class="number">2</span><span class="string">&#125;</span></span><br><span class="line">  <span class="attr">defaultTableStrategy:</span>                                 <span class="comment">#默认分表策略</span></span><br><span class="line">    <span class="attr">none:</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+
+
+<blockquote>
+<p>注意事项</p>
+</blockquote>
+<p><img src="/assets/%E9%9B%86%E7%BE%A4mysqlrediselasticsearchrabbitmq/daf848b4b3fa371d159ff348c50b431d.png" alt="image-20220207103902444"></p>
+<h6 id="3-6-2-3-3-主从读写分离配置-conf-config-master-slave-yaml"><a href="#3-6-2-3-3-主从读写分离配置-conf-config-master-slave-yaml" class="headerlink" title="3.6.2.3.3 主从读写分离配置(conf/config-master_slave.yaml)"></a>3.6.2.3.3 主从读写分离配置(<code>conf/config-master_slave.yaml</code>)</h6><blockquote>
+<p>配置两主两从</p>
+<p>config-master_slave.yaml改名config-master_slave1.yaml,再复制config-master_slave2.yaml</p>
+</blockquote>
+<blockquote>
+<p>config-master_slave1.yaml</p>
+</blockquote>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment"># Licensed to the Apache Software Foundation (ASF) under one or more</span></span><br><span class="line"><span class="comment"># contributor license agreements.  See the NOTICE file distributed with</span></span><br><span class="line"><span class="comment"># this work for additional information regarding copyright ownership.</span></span><br><span class="line"><span class="comment"># The ASF licenses this file to You under the Apache License, Version 2.0</span></span><br><span class="line"><span class="comment"># (the &quot;License&quot;); you may not use this file except in compliance with</span></span><br><span class="line"><span class="comment"># the License.  You may obtain a copy of the License at</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment">#     http://www.apache.org/licenses/LICENSE-2.0</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment"># Unless required by applicable law or agreed to in writing, software</span></span><br><span class="line"><span class="comment"># distributed under the License is distributed on an &quot;AS IS&quot; BASIS,</span></span><br><span class="line"><span class="comment"># WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.</span></span><br><span class="line"><span class="comment"># See the License for the specific language governing permissions and</span></span><br><span class="line"><span class="comment"># limitations under the License.</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"></span><br><span class="line"><span class="comment">######################################################################################################</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment"># Here you can configure the rules for the proxy.</span></span><br><span class="line"><span class="comment"># This example is configuration of master-slave rule.</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment"># If you want to use master-slave, please refer to this file;</span></span><br><span class="line"><span class="comment"># if you want to use sharding, please refer to the config-sharding.yaml.</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment">######################################################################################################</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment">#schemaName: master_slave_db</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment">#dataSources:</span></span><br><span class="line"><span class="comment">#  master_ds:</span></span><br><span class="line"><span class="comment">#    url: jdbc:postgresql://127.0.0.1:5432/demo_ds_master?serverTimezone=UTC&amp;useSSL=false</span></span><br><span class="line"><span class="comment">#    username: postgres</span></span><br><span class="line"><span class="comment">#    password: postgres</span></span><br><span class="line"><span class="comment">#    connectionTimeoutMilliseconds: 30000</span></span><br><span class="line"><span class="comment">#    idleTimeoutMilliseconds: 60000</span></span><br><span class="line"><span class="comment">#    maxLifetimeMilliseconds: 1800000</span></span><br><span class="line"><span class="comment">#    maxPoolSize: 50</span></span><br><span class="line"><span class="comment">#  slave_ds_0:</span></span><br><span class="line"><span class="comment">#    url: jdbc:postgresql://127.0.0.1:5432/demo_ds_slave_0?serverTimezone=UTC&amp;useSSL=false</span></span><br><span class="line"><span class="comment">#    username: postgres</span></span><br><span class="line"><span class="comment">#    password: postgres</span></span><br><span class="line"><span class="comment">#    connectionTimeoutMilliseconds: 30000</span></span><br><span class="line"><span class="comment">#    idleTimeoutMilliseconds: 60000</span></span><br><span class="line"><span class="comment">#    maxLifetimeMilliseconds: 1800000</span></span><br><span class="line"><span class="comment">#    maxPoolSize: 50</span></span><br><span class="line"><span class="comment">#  slave_ds_1:</span></span><br><span class="line"><span class="comment">#    url: jdbc:postgresql://127.0.0.1:5432/demo_ds_slave_1?serverTimezone=UTC&amp;useSSL=false</span></span><br><span class="line"><span class="comment">#    username: postgres</span></span><br><span class="line"><span class="comment">#    password: postgres</span></span><br><span class="line"><span class="comment">#    connectionTimeoutMilliseconds: 30000</span></span><br><span class="line"><span class="comment">#    idleTimeoutMilliseconds: 60000</span></span><br><span class="line"><span class="comment">#    maxLifetimeMilliseconds: 1800000</span></span><br><span class="line"><span class="comment">#    maxPoolSize: 50</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment">#masterSlaveRule:</span></span><br><span class="line"><span class="comment">#  name: ms_ds</span></span><br><span class="line"><span class="comment">#  masterDataSourceName: master_ds</span></span><br><span class="line"><span class="comment">#  slaveDataSourceNames:</span></span><br><span class="line"><span class="comment">#    - slave_ds_0</span></span><br><span class="line"><span class="comment">#    - slave_ds_1</span></span><br><span class="line"></span><br><span class="line"><span class="comment">######################################################################################################</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment"># If you want to connect to MySQL, you should manually copy MySQL driver to lib directory.</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment">######################################################################################################</span></span><br><span class="line"></span><br><span class="line"><span class="attr">schemaName:</span> <span class="string">sharding_db_2</span></span><br><span class="line"></span><br><span class="line"><span class="attr">dataSources:</span></span><br><span class="line">  <span class="attr">master_0_ds:</span></span><br><span class="line">    <span class="attr">url:</span> <span class="string">jdbc:mysql://192.168.157.128:3307/demo_ds_0?serverTimezone=UTC&amp;useSSL=false</span></span><br><span class="line">    <span class="attr">username:</span> <span class="string">root</span></span><br><span class="line">    <span class="attr">password:</span> <span class="string">root</span></span><br><span class="line">    <span class="attr">connectionTimeoutMilliseconds:</span> <span class="number">30000</span></span><br><span class="line">    <span class="attr">idleTimeoutMilliseconds:</span> <span class="number">60000</span></span><br><span class="line">    <span class="attr">maxLifetimeMilliseconds:</span> <span class="number">1800000</span></span><br><span class="line">    <span class="attr">maxPoolSize:</span> <span class="number">50</span></span><br><span class="line">  <span class="attr">slave_ds_0:</span></span><br><span class="line">    <span class="attr">url:</span> <span class="string">jdbc:mysql://192.168.157.128:3317/demo_ds_0?serverTimezone=UTC&amp;useSSL=false</span></span><br><span class="line">    <span class="attr">username:</span> <span class="string">root</span></span><br><span class="line">    <span class="attr">password:</span> <span class="string">root</span></span><br><span class="line">    <span class="attr">connectionTimeoutMilliseconds:</span> <span class="number">30000</span></span><br><span class="line">    <span class="attr">idleTimeoutMilliseconds:</span> <span class="number">60000</span></span><br><span class="line">    <span class="attr">maxLifetimeMilliseconds:</span> <span class="number">1800000</span></span><br><span class="line">    <span class="attr">maxPoolSize:</span> <span class="number">50</span></span><br><span class="line">    </span><br><span class="line"><span class="attr">masterSlaveRule:</span></span><br><span class="line">  <span class="attr">name:</span> <span class="string">ms_ds</span></span><br><span class="line">  <span class="attr">masterDataSourceName:</span> <span class="string">master_0_ds</span></span><br><span class="line">  <span class="attr">slaveDataSourceNames:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">slave_ds_0</span></span><br><span class="line"><span class="comment">#    - slave_ds_1</span></span><br><span class="line">  <span class="attr">loadBalanceAlgorithmType:</span> <span class="string">ROUND_ROBIN</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+
+
+<blockquote>
+<p>config-master_slave2.yaml</p>
+</blockquote>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment"># Licensed to the Apache Software Foundation (ASF) under one or more</span></span><br><span class="line"><span class="comment"># contributor license agreements.  See the NOTICE file distributed with</span></span><br><span class="line"><span class="comment"># this work for additional information regarding copyright ownership.</span></span><br><span class="line"><span class="comment"># The ASF licenses this file to You under the Apache License, Version 2.0</span></span><br><span class="line"><span class="comment"># (the &quot;License&quot;); you may not use this file except in compliance with</span></span><br><span class="line"><span class="comment"># the License.  You may obtain a copy of the License at</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment">#     http://www.apache.org/licenses/LICENSE-2.0</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment"># Unless required by applicable law or agreed to in writing, software</span></span><br><span class="line"><span class="comment"># distributed under the License is distributed on an &quot;AS IS&quot; BASIS,</span></span><br><span class="line"><span class="comment"># WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.</span></span><br><span class="line"><span class="comment"># See the License for the specific language governing permissions and</span></span><br><span class="line"><span class="comment"># limitations under the License.</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"></span><br><span class="line"><span class="comment">######################################################################################################</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment"># Here you can configure the rules for the proxy.</span></span><br><span class="line"><span class="comment"># This example is configuration of master-slave rule.</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment"># If you want to use master-slave, please refer to this file;</span></span><br><span class="line"><span class="comment"># if you want to use sharding, please refer to the config-sharding.yaml.</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment">######################################################################################################</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment">#schemaName: master_slave_db</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment">#dataSources:</span></span><br><span class="line"><span class="comment">#  master_ds:</span></span><br><span class="line"><span class="comment">#    url: jdbc:postgresql://127.0.0.1:5432/demo_ds_master?serverTimezone=UTC&amp;useSSL=false</span></span><br><span class="line"><span class="comment">#    username: postgres</span></span><br><span class="line"><span class="comment">#    password: postgres</span></span><br><span class="line"><span class="comment">#    connectionTimeoutMilliseconds: 30000</span></span><br><span class="line"><span class="comment">#    idleTimeoutMilliseconds: 60000</span></span><br><span class="line"><span class="comment">#    maxLifetimeMilliseconds: 1800000</span></span><br><span class="line"><span class="comment">#    maxPoolSize: 50</span></span><br><span class="line"><span class="comment">#  slave_ds_0:</span></span><br><span class="line"><span class="comment">#    url: jdbc:postgresql://127.0.0.1:5432/demo_ds_slave_0?serverTimezone=UTC&amp;useSSL=false</span></span><br><span class="line"><span class="comment">#    username: postgres</span></span><br><span class="line"><span class="comment">#    password: postgres</span></span><br><span class="line"><span class="comment">#    connectionTimeoutMilliseconds: 30000</span></span><br><span class="line"><span class="comment">#    idleTimeoutMilliseconds: 60000</span></span><br><span class="line"><span class="comment">#    maxLifetimeMilliseconds: 1800000</span></span><br><span class="line"><span class="comment">#    maxPoolSize: 50</span></span><br><span class="line"><span class="comment">#  slave_ds_1:</span></span><br><span class="line"><span class="comment">#    url: jdbc:postgresql://127.0.0.1:5432/demo_ds_slave_1?serverTimezone=UTC&amp;useSSL=false</span></span><br><span class="line"><span class="comment">#    username: postgres</span></span><br><span class="line"><span class="comment">#    password: postgres</span></span><br><span class="line"><span class="comment">#    connectionTimeoutMilliseconds: 30000</span></span><br><span class="line"><span class="comment">#    idleTimeoutMilliseconds: 60000</span></span><br><span class="line"><span class="comment">#    maxLifetimeMilliseconds: 1800000</span></span><br><span class="line"><span class="comment">#    maxPoolSize: 50</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment">#masterSlaveRule:</span></span><br><span class="line"><span class="comment">#  name: ms_ds</span></span><br><span class="line"><span class="comment">#  masterDataSourceName: master_ds</span></span><br><span class="line"><span class="comment">#  slaveDataSourceNames:</span></span><br><span class="line"><span class="comment">#    - slave_ds_0</span></span><br><span class="line"><span class="comment">#    - slave_ds_1</span></span><br><span class="line"></span><br><span class="line"><span class="comment">######################################################################################################</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment"># If you want to connect to MySQL, you should manually copy MySQL driver to lib directory.</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment">######################################################################################################</span></span><br><span class="line"></span><br><span class="line"><span class="attr">schemaName:</span> <span class="string">sharding_db_1</span></span><br><span class="line"></span><br><span class="line"><span class="attr">dataSources:</span>    </span><br><span class="line">  <span class="attr">master_1_ds:</span></span><br><span class="line">    <span class="attr">url:</span> <span class="string">jdbc:mysql://192.168.157.128:3307/demo_ds_1?serverTimezone=UTC&amp;useSSL=false</span></span><br><span class="line">    <span class="attr">username:</span> <span class="string">root</span></span><br><span class="line">    <span class="attr">password:</span> <span class="string">root</span></span><br><span class="line">    <span class="attr">connectionTimeoutMilliseconds:</span> <span class="number">30000</span></span><br><span class="line">    <span class="attr">idleTimeoutMilliseconds:</span> <span class="number">60000</span></span><br><span class="line">    <span class="attr">maxLifetimeMilliseconds:</span> <span class="number">1800000</span></span><br><span class="line">    <span class="attr">maxPoolSize:</span> <span class="number">50</span></span><br><span class="line">  <span class="attr">slave_ds_1:</span></span><br><span class="line">    <span class="attr">url:</span> <span class="string">jdbc:mysql://192.168.157.128:3317/demo_ds_1?serverTimezone=UTC&amp;useSSL=false</span></span><br><span class="line">    <span class="attr">username:</span> <span class="string">root</span></span><br><span class="line">    <span class="attr">password:</span> <span class="string">root</span></span><br><span class="line">    <span class="attr">connectionTimeoutMilliseconds:</span> <span class="number">30000</span></span><br><span class="line">    <span class="attr">idleTimeoutMilliseconds:</span> <span class="number">60000</span></span><br><span class="line">    <span class="attr">maxLifetimeMilliseconds:</span> <span class="number">1800000</span></span><br><span class="line">    <span class="attr">maxPoolSize:</span> <span class="number">50</span></span><br><span class="line"></span><br><span class="line"><span class="attr">masterSlaveRule:</span></span><br><span class="line">  <span class="attr">name:</span> <span class="string">ms_ds</span></span><br><span class="line">  <span class="attr">masterDataSourceName:</span> <span class="string">master_1_ds</span></span><br><span class="line">  <span class="attr">slaveDataSourceNames:</span></span><br><span class="line"><span class="comment">#    - slave_ds_0</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">slave_ds_1</span></span><br><span class="line">  <span class="attr">loadBalanceAlgorithmType:</span> <span class="string">ROUND_ROBIN</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+
+
+
+
+<blockquote>
+<p>启动测试</p>
+<p>出现以下日志信息,代表没有找到对应的数据源信息,只需要创建对应数据库即可</p>
+</blockquote>
+<p><img src="/assets/%E9%9B%86%E7%BE%A4mysqlrediselasticsearchrabbitmq/59cbd5911716427a3d2b6304c27350bf.png" alt="image-20220207114856649"></p>
+<h6 id="3-6-2-3-4-新增主从复制关联数据库"><a href="#3-6-2-3-4-新增主从复制关联数据库" class="headerlink" title="3.6.2.3.4 新增主从复制关联数据库"></a>3.6.2.3.4 新增主从复制关联数据库</h6><blockquote>
+<p>修改主节点配置</p>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vim /mydata/mysql/master/conf/my.cnf</span><br></pre></td></tr></table></figure>
+
+
+
+
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">#</span><span class="language-bash">新增以下配置</span></span><br><span class="line">binlog-do-db=demo_ds_0</span><br><span class="line">binlog-do-db=demo_ds_1</span><br></pre></td></tr></table></figure>
+
+
+
+
+<blockquote>
+<p>修改从节点配置</p>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vim /mydata/mysql/slaver/conf/my.cnf</span><br></pre></td></tr></table></figure>
+
+
+
+
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">#</span><span class="language-bash">新增以下配置</span></span><br><span class="line">binlog-do-db=demo_ds_0</span><br><span class="line">binlog-do-db=demo_ds_1</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+
+<blockquote>
+<p>重启mysql集群</p>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker restart mysql-master mysql-slaver-01</span><br></pre></td></tr></table></figure>
+
+
+
+
+<blockquote>
+<p>在主节点新建数据库demo_ds_0 demo_ds_1,因为之前配置的主从复制在从节点中也会增加两个对应的数据库</p>
+</blockquote>
+<p><img src="/assets/%E9%9B%86%E7%BE%A4mysqlrediselasticsearchrabbitmq/f852b6bcf4d196f9a2000395c07a6996.png" alt="image-20220207141040928"></p>
+<p><img src="/assets/%E9%9B%86%E7%BE%A4mysqlrediselasticsearchrabbitmq/931d923b094f76aab491eb71b73bcd32.png" alt="image-20220207141138072"></p>
+<h6 id="3-6-2-3-5-启动连接测试"><a href="#3-6-2-3-5-启动连接测试" class="headerlink" title="3.6.2.3.5 启动连接测试"></a>3.6.2.3.5 启动连接测试</h6><blockquote>
+<p>启动成功</p>
+</blockquote>
+<p><img src="/assets/%E9%9B%86%E7%BE%A4mysqlrediselasticsearchrabbitmq/a53546358600f4b9effac5f50a9a10ea.png" alt="image-20220207155651890"></p>
+<blockquote>
+<p>指定端口启动 </p>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">C:\Users\eric\Desktop\apache-shardingsphere-4.1.1-sharding-proxy-bin\bin&gt;start.bat 3388</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+
+<h6 id="3-6-2-3-6-Navicat天坑注意"><a href="#3-6-2-3-6-Navicat天坑注意" class="headerlink" title="3.6.2.3.6 Navicat天坑注意"></a>3.6.2.3.6 Navicat天坑注意</h6><blockquote>
+<p>使用Navicat连接测试</p>
+<p>此处我遇到了一个天坑要注意,我可以正常使用Navicat连上代理,但是就是有问题,jdbc驱动换了5.1.47和8.0.11都不行,推测是我的Navicat版本和老师的不一样</p>
+</blockquote>
+<p><img src="/assets/%E9%9B%86%E7%BE%A4mysqlrediselasticsearchrabbitmq/442ebc0c359191ee555961a9bde889eb.png" alt="image-20220208092806538"></p>
+<p><img src="/assets/%E9%9B%86%E7%BE%A4mysqlrediselasticsearchrabbitmq/49e9b84c3a2dc0abc52ac788c65d2b9a.png" alt="image-20220208092921072"></p>
+<p><strong>最后我使用命令行的方式连接代理,就是正常的whats up,10.0.0.124是我本机地址</strong></p>
+<p><img src="/assets/%E9%9B%86%E7%BE%A4mysqlrediselasticsearchrabbitmq/15acc977cffa4031a5f2da689f86dd49.png" alt="image-20220208093054353"></p>
+<h6 id="3-6-2-3-7-分库分表测试"><a href="#3-6-2-3-7-分库分表测试" class="headerlink" title="3.6.2.3.7 分库分表测试"></a>3.6.2.3.7 分库分表测试</h6><blockquote>
+<p>切换到sharding_db数据库</p>
+</blockquote>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">use sharding_db</span><br></pre></td></tr></table></figure>
+
+
+
+
+<blockquote>
+<p>创建测试表<code>t_order</code></p>
+</blockquote>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE TABLE</span> `t_order` (</span><br><span class="line">`order_id` <span class="type">bigint</span>(<span class="number">20</span>) <span class="keyword">NOT NULL</span>,</span><br><span class="line">`user_id` <span class="type">int</span>(<span class="number">11</span>) <span class="keyword">NOT NULL</span>,</span><br><span class="line">`status` <span class="type">varchar</span>(<span class="number">50</span>) <span class="keyword">COLLATE</span> utf8_bin <span class="keyword">DEFAULT</span> <span class="keyword">NULL</span>,</span><br><span class="line"><span class="keyword">PRIMARY KEY</span> (`order_id`)</span><br><span class="line">) ENGINE<span class="operator">=</span>InnoDB <span class="keyword">DEFAULT</span> CHARSET<span class="operator">=</span>utf8 <span class="keyword">COLLATE</span><span class="operator">=</span>utf8_bin;</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+
+<blockquote>
+<p>创建测试表<code>t_order_item</code></p>
+</blockquote>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE TABLE</span> `t_order_item` (</span><br><span class="line">`order_item_id` <span class="type">bigint</span>(<span class="number">20</span>) <span class="keyword">NOT NULL</span>,</span><br><span class="line">`order_id` <span class="type">bigint</span>(<span class="number">20</span>) <span class="keyword">NOT NULL</span>,</span><br><span class="line">`user_id` <span class="type">int</span>(<span class="number">11</span>) <span class="keyword">NOT NULL</span>,</span><br><span class="line">`content` <span class="type">varchar</span>(<span class="number">255</span>) <span class="keyword">COLLATE</span> utf8_bin <span class="keyword">DEFAULT</span> <span class="keyword">NULL</span>,</span><br><span class="line">`status` <span class="type">varchar</span>(<span class="number">50</span>) <span class="keyword">COLLATE</span> utf8_bin <span class="keyword">DEFAULT</span> <span class="keyword">NULL</span>,</span><br><span class="line"><span class="keyword">PRIMARY KEY</span> (`order_item_id`)</span><br><span class="line">) ENGINE<span class="operator">=</span>InnoDB <span class="keyword">DEFAULT</span> CHARSET<span class="operator">=</span>utf8 <span class="keyword">COLLATE</span><span class="operator">=</span>utf8_bin;</span><br></pre></td></tr></table></figure>
+
+
+
+
+<blockquote>
+<p>向<code>t_order</code>插入数据</p>
+</blockquote>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">INSERT INTO</span> t_order (user_id, status) <span class="keyword">VALUES</span> (<span class="number">1</span>, <span class="number">1</span>);</span><br><span class="line"><span class="keyword">INSERT INTO</span> t_order (user_id, status) <span class="keyword">VALUES</span> (<span class="number">2</span>, <span class="number">1</span>);</span><br><span class="line"><span class="keyword">INSERT INTO</span> t_order (user_id, status) <span class="keyword">VALUES</span> (<span class="number">3</span>, <span class="number">1</span>);</span><br><span class="line"><span class="keyword">INSERT INTO</span> t_order (user_id, status) <span class="keyword">VALUES</span> (<span class="number">4</span>, <span class="number">1</span>);</span><br><span class="line"><span class="keyword">INSERT INTO</span> t_order (user_id, status) <span class="keyword">VALUES</span> (<span class="number">5</span>, <span class="number">1</span>);</span><br><span class="line"><span class="keyword">INSERT INTO</span> t_order (user_id, status) <span class="keyword">VALUES</span> (<span class="number">6</span>, <span class="number">1</span>);</span><br><span class="line"><span class="keyword">INSERT INTO</span> t_order (user_id, status) <span class="keyword">VALUES</span> (<span class="number">7</span>, <span class="number">1</span>);</span><br></pre></td></tr></table></figure>
+
+
+
+
+<blockquote>
+<p>查询sharding_db中<code>t_order</code>的数据</p>
+</blockquote>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> t_order;</span><br></pre></td></tr></table></figure>
+
+
+
+
+<p><img src="/assets/%E9%9B%86%E7%BE%A4mysqlrediselasticsearchrabbitmq/bc3f3a6e364483e9982f500577a73e25.png" alt="image-20220208101548516"></p>
+<blockquote>
+<p>查询主节点,demo_ds_0分库的t_order_0分表<code>无数据</code></p>
+</blockquote>
+<p><img src="/assets/%E9%9B%86%E7%BE%A4mysqlrediselasticsearchrabbitmq/8be6919d433295f4b6630a871cc884b1.png" alt="image-20220208101845448"></p>
+<blockquote>
+<p>查询主节点,demo_ds_0分库的t_order_1分表<code>有三条数据</code></p>
+</blockquote>
+<p><img src="/assets/%E9%9B%86%E7%BE%A4mysqlrediselasticsearchrabbitmq/b30e023ca5f0f54579e7bb1a7ecd14a2.png" alt="image-20220208101929959"></p>
+<blockquote>
+<p>查询主节点,demo_ds_1分库的t_order_0分表<code>有四条数据</code></p>
+</blockquote>
+<p><img src="/assets/%E9%9B%86%E7%BE%A4mysqlrediselasticsearchrabbitmq/8a9cf6812e73db0b9cfc8192c8b429e7.png" alt="image-20220208102044006"></p>
+<blockquote>
+<p>查询主节点,demo_ds_1分库的t_order_1分表<code>无数据</code></p>
+</blockquote>
+<p><img src="/assets/%E9%9B%86%E7%BE%A4mysqlrediselasticsearchrabbitmq/ab57010bb98c3ad41f2d266b9b6da3c3.png" alt="image-20220208102132161"></p>
+<h2 id="4-Redis集群"><a href="#4-Redis集群" class="headerlink" title="4. Redis集群"></a>4. Redis集群</h2><h3 id="4-1-redis集群形式"><a href="#4-1-redis集群形式" class="headerlink" title="4.1 redis集群形式"></a>4.1 redis集群形式</h3><h4 id="4-1-1-数据分区方案"><a href="#4-1-1-数据分区方案" class="headerlink" title="4.1.1 数据分区方案"></a>4.1.1 数据分区方案</h4><p><img src="/assets/%E9%9B%86%E7%BE%A4mysqlrediselasticsearchrabbitmq/1a9a6d5766f6f855a86126aa31be82e5.png" alt="image-20220208104809029"></p>
+<p><strong>优点:</strong></p>
+<p><strong>不使用 第三方中间件， 分区逻辑 可控， 配置 简单， 节点之间无关联， 容易 线性扩展， 灵活性强。</strong>  </p>
+<p><strong>缺点:</strong></p>
+<p>**客户端 无法 动态增删 服务节点， 客户端需要自行维护 分发逻辑， 客户端之间 无连接共享，会造成 连接浪费。 **</p>
+<h4 id="4-1-2-代理分区"><a href="#4-1-2-代理分区" class="headerlink" title="4.1.2 代理分区"></a>4.1.2 代理分区</h4><p><img src="/assets/%E9%9B%86%E7%BE%A4mysqlrediselasticsearchrabbitmq/ebe0acb90d93587c3d856eb091c7e73b.png" alt="image-20220208105104155"></p>
+<p>代理分区常用方案有 Twemproxy 和 Codis,<strong>类似于mysql的sharding proxy</strong>。  </p>
+<h4 id="4-1-3-redis-cluster"><a href="#4-1-3-redis-cluster" class="headerlink" title="4.1.3 redis-cluster"></a>4.1.3 redis-cluster</h4><p><img src="/assets/%E9%9B%86%E7%BE%A4mysqlrediselasticsearchrabbitmq/7a1ca696e1f1a1cc1d7bbc212dc0788a.png" alt="image-20220208105551709"></p>
+<p>Redis Cluster 是 Redis 原生的数据分片实现，可以自动在多个节点上分布数据，不需要依赖任何外部的工具。</p>
+<p><strong>优点:</strong></p>
+<ol>
+<li><code>高性能</code><ul>
+<li>Redis Cluster 的性能与单节点部署是同级别的。</li>
+</ul>
+</li>
+<li><code>高可用</code><ul>
+<li>Redis Cluster 支持标准的 <code>master-replica</code> 配置来保障高可用和高可靠。</li>
+<li>Redis Cluster 也实现了一个类似 Raft 的共识方式，来保障整个集群的可用性。</li>
+</ul>
+</li>
+<li><code>易扩展</code><ul>
+<li>向 Redis Cluster 中添加新节点，或者移除节点，都是透明的，不需要停机。水平、垂直方向都非常容易扩展。</li>
+</ul>
+</li>
+<li><code>原生</code><ul>
+<li>部署 Redis Cluster 不需要其他的代理或者工具，而且 Redis Cluster 和单机 Redis 几乎完全兼容。</li>
+</ul>
+</li>
+</ol>
+<p><strong>缺点(限制):</strong></p>
+<ol>
+<li><p><code>需要客户端支持</code></p>
+<ul>
+<li>客户端需要修改，以便支持 Redis Cluster。虽然 Redis Cluster 已经发布有几年时间了，但仍然有些客户端是不支持的，所以需要到 Redis 官网去查询一下。</li>
+</ul>
+</li>
+<li><p><code>只支持一个数据库</code></p>
+<ul>
+<li>不像单机Redis，Redis Cluster 只支持一个数据库（database 0），<code>select</code> 命令就不能用了，但实际也很少有人使用多数据库，所以这个限制并没<strong>什么影响</strong>。</li>
+</ul>
+</li>
+<li><p>Multi-Key 操作受限</p>
+<ul>
+<li><p>Redis Cluster 要求，只有这些 key 都在同一个 slot 时才能执行。</p>
+<ul>
+<li><p>例如，有2个key，key1 和 key2。</p>
+<p>key1 是映射到 5500 这个 slot 上，存储在 Node A。</p>
+<p>key2 是映射到 5501 这个 slot 上，存储在 Node B。</p>
+<p>那么就不能对 key1 和 key2 做事务操作。</p>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ol>
+<h5 id="4-1-3-1-Multi-Key-限制的处理"><a href="#4-1-3-1-Multi-Key-限制的处理" class="headerlink" title="4.1.3.1 Multi-Key 限制的处理"></a>4.1.3.1 Multi-Key 限制的处理</h5><p>对于多key场景，需要做好数据空间的设计，Redis Cluster 提供了一个 <code>hash tag</code> 的机制，可以让我们把一组key 映射到同一个 slot。</p>
+<p>例如：<code>user1000.following</code> 这个 key 保存用户 user1000 关注的用户；<code>user1000.followers</code> 保存用户 user1000 的粉丝。</p>
+<p>这两个 key 有一个共同的部分 <code>user1000</code>，可以指定对这个共同的部分做 slot 映射计算，这样他们就可以在同一个槽中了。</p>
+<p>使用方式：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;user1000&#125;.following 和 &#123;user1000&#125;.followers</span><br></pre></td></tr></table></figure>
+
+
+<p>就是把共同的部分使用 <code>{ }</code> 包起来，计算 slot 值时，如果发现了花括号，就会只对其中的部分进行计算。</p>
+<p>Multi-Key 这一点是 Redis Cluster 对于我们日常使用中最大的限制，一定要注意，如果多key不在同一个 slot 中就会报错，例如：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(error) CROSSSLOT Keys in request don&#x27;t hash to the same slot</span><br></pre></td></tr></table></figure>
+
+
+<p>需要使用 <code>hash tag</code> 设计好 key 的空间。</p>
+<h3 id="4-2-高可用方式"><a href="#4-2-高可用方式" class="headerlink" title="4.2 高可用方式"></a>4.2 高可用方式</h3><h4 id="4-2-1-Sentinel（-哨兵机制）-支持高可用"><a href="#4-2-1-Sentinel（-哨兵机制）-支持高可用" class="headerlink" title="4.2.1 Sentinel（ 哨兵机制） 支持高可用"></a>4.2.1 Sentinel（ 哨兵机制） 支持高可用</h4><p>前面介绍了主从机制， 但是从运维角度来看， 主节点出现了问题我们还需要通过人工干预的方式把从节点设为主节点， 还要通知应用程序更新主节点地址， 这种方式非常繁琐笨重， 而且主节点的读写能力都十分有限， 有没有较好的办法解决这两个问题， 哨兵机制就是针对第一个问题的有效解决方案， 第二个问题则有赖于集群！ 哨兵的作用就是监控 Redis 系统的运行状况， 其功能主要是包括以下三个：</p>
+<ul>
+<li><code>监控(Monitoring)</code>: 哨兵(sentinel) 会不断地检查你的 Master 和 Slave 是否运作正常。</li>
+<li><code>提醒(Notification)</code>: 当被监控的某个 Redis 出现问题时, 哨兵(sentinel) 可以通过 API向管理员或者其他应用程序发送通知。</li>
+<li><code>自动故障迁移(Automatic failover)</code>: 当主数据库出现故障时自动将从数据库转换为主数据库。</li>
+</ul>
+<p><img src="/assets/%E9%9B%86%E7%BE%A4mysqlrediselasticsearchrabbitmq/fc3e434715bbcb99fcd429e9004a7a61.png" alt="image-20220208113907371"></p>
+<p>4.2.1.1  哨兵原理</p>
+<p>Redis 哨兵的三个定时任务， Redis 哨兵判定一个 Redis 节点故障不可达主要就是通过三个定时监控任务来完成的：  </p>
+<ul>
+<li>每隔 10 秒每个哨兵节点会向主节点和从节点发送”info replication” 命令来获取最新的拓扑结构</li>
+</ul>
+<p><img src="/assets/%E9%9B%86%E7%BE%A4mysqlrediselasticsearchrabbitmq/1a10c0ade02ed1286246d60025b44476.png" alt="image-20220208114041526"></p>
+<ul>
+<li><p>每隔 2 秒每个哨兵节点会向 Redis 节点的_sentinel_:hello 频道发送自己对主节点是否故障的判断以及自身的节点信息， 并且其他的哨兵节点也会订阅这个频道来了解其他哨兵节点的信息以及对主节点的判断</p>
+</li>
+<li><p>每隔 1 秒每个哨兵会向主节点、 从节点、 其他的哨兵节点发送一个 “ping” 命令来做心跳检测</p>
+</li>
+</ul>
+<p><img src="/assets/%E9%9B%86%E7%BE%A4mysqlrediselasticsearchrabbitmq/03837fdfd093c4a8806dac74b866fcc3.png" alt="image-20220208114111461"></p>
+<p>如果在定时 Job3 检测不到节点的心跳， 会判断为**“主观下线”<strong>。 如果该节点还是主节点那么还会通知到其他的哨兵对该主节点进行心跳检测， 这时主观下线的票数超过了<quorum>数时， 那么这个主节点确实就可能是故障不可达了， 这时就由原来的主观下线变为了</strong>“客观下线”**。</p>
+<p>故障转移和 Leader 选举<br>如果主节点被判定为客观下线之后， 就要选取一个哨兵节点来完成后面的故障转移工作， 选举出一个 leader， 这里面采用的选举<strong>算法为 Raft</strong>。 选举出来的哨兵 leader 就要来完成故障转移工作， 也就是在从节点中选出一个节点来当新的主节点， 这部分的具体流程可参考引用  </p>
+<h4 id="4-2-2-Redis-Cluster"><a href="#4-2-2-Redis-Cluster" class="headerlink" title="4.2.2 Redis-Cluster"></a>4.2.2 Redis-Cluster</h4><p><img src="/assets/%E9%9B%86%E7%BE%A4mysqlrediselasticsearchrabbitmq/16c273d836ff1ac706c52004ba14ac16.png" alt="image-20220208105551709"></p>
+<p><a target="_blank" rel="noopener" href="https://redis.io/topics/cluster-tutorial/">https://redis.io/topics/cluster-tutorial/</a><br>Redis 的官方多机部署方案， Redis Cluster。 一组 Redis Cluster 是由多个 Redis 实例组成， 官方推荐我们使用 6 实例， 其中 3 个为主节点， 3 个为从结点。 一旦有主节点发生故障的时候，Redis Cluster 可以选举出对应的从结点成为新的主节点， 继续对外服务， 从而保证服务的高可用性。那么对于客户端来说， 知道知道对应的 key 是要路由到哪一个节点呢？ Redis Cluster把所有的数据划分为 16384 个不同的槽位， 可以根据机器的性能把不同的槽位分配给不同的 Redis 实例， 对于 Redis 实例来说， 他们只会存储部分的 Redis 数据， 当然， 槽的数据是可以迁移的， 不同的实例之间， 可以通过一定的协议， 进行数据迁移。  </p>
+<h5 id="4-2-2-1-槽"><a href="#4-2-2-1-槽" class="headerlink" title="4.2.2.1 槽"></a>4.2.2.1 槽</h5><p><img src="/assets/%E9%9B%86%E7%BE%A4mysqlrediselasticsearchrabbitmq/14c005781ce98a8fe38ee6ddf113e03c.png" alt="image-20220209115002413"></p>
+<p>Redis 集群的功能限制； Redis 集群相对 单机 在功能上存在一些限制， 需要 开发人员 提前了解， 在使用时做好规避。 [JAVA CRC16 校验算法](<a target="_blank" rel="noopener" href="https://blog.csdn.net/key_xyes/article/details/93614373?depth_1-utm_source=distribute.pc_relevant.none-task&utm_source=distribute.pc_relevant.none-task">JAVA CRC16校验算法_Levent的博客-CSDN博客_javacrc16校验</a>)</p>
+<ul>
+<li><p><strong>key 批量操作 支持有限。</strong></p>
+<ul>
+<li>类似 mset、 mget 操作， <strong>目前只支持对具有相同 slot 值的 key 执行 批量操作</strong>。对于 映射为不同 slot 值的 key 由于执行 mget、 mget 等操作可能存在于多个节点上， 因此不被支持。</li>
+</ul>
+</li>
+<li><p><strong>key 事务操作 支持有限。</strong></p>
+<ul>
+<li>只支持 多 key 在 同一 节点上 的 事务操作， <strong>当多个 key 分布在 不同 的节点上时 无法 使用事务功能</strong>。</li>
+</ul>
+</li>
+<li><p><strong>key 作为 数据分区 的最小粒度</strong></p>
+</li>
+<li><p><strong>不能将一个 大的键值 对象如 hash、 list 等映射到 不同的节点。</strong></p>
+</li>
+<li><p><strong>不支持 多数据库空间</strong></p>
+<ul>
+<li>单机 下的 Redis 可以支持 16 个数据库（db0 ~ db15） ， <strong>集群模式 下只能使用 一个 数据库空间， 即 db0。</strong></li>
+</ul>
+</li>
+<li><p><strong>复制结构 只支持一层</strong></p>
+<ul>
+<li>从节点 只能复制 主节点， 不支持 嵌套树状复制 结构。</li>
+</ul>
+</li>
+<li><p><strong>命令大多会重定向， 耗时多</strong></p>
+</li>
+</ul>
+<p><img src="/assets/%E9%9B%86%E7%BE%A4mysqlrediselasticsearchrabbitmq/0844c466a07226420381f1f7d4e515b0.png" alt="image-20220209115446487"></p>
+<h5 id="4-2-2-2-一致性-hash"><a href="#4-2-2-2-一致性-hash" class="headerlink" title="4.2.2.2 一致性 hash"></a>4.2.2.2 一致性 hash</h5><p>一致哈希 是一种特殊的哈希算法。在使用一致哈希算法后，哈希表槽位数（大小）的改变平均只需要对 K&#x2F;n 个关键字重新映射，其中K是关键字的数量， n是槽位数量。然而在传统的哈希表中，添加或删除一个槽位的几乎需要对所有关键字进行重新映射。</p>
+<p><img src="/assets/%E9%9B%86%E7%BE%A4mysqlrediselasticsearchrabbitmq/f28dce92bb6ce03fd36dce90d0194c54.png" alt="image-20220209115600911"></p>
+<blockquote>
+<p>对一致性哈希的理解</p>
+<p>原文链接：<a target="_blank" rel="noopener" href="https://juejin.cn/post/6844903750860013576">https://juejin.cn/post/6844903750860013576</a></p>
+</blockquote>
+<p>简单的说，一致性哈希是将整个哈希值空间组织成一个虚拟的圆环，如假设哈希函数H的值空间为0-2^32-1（哈希值是32位无符号整形），整个哈希空间环如下：</p>
+<p><img src="/assets/%E9%9B%86%E7%BE%A4mysqlrediselasticsearchrabbitmq/e7b4fb5ebb188fb03fb8fee1069350ae.png" alt="1545916990776"></p>
+<p>整个空间按顺时针方向组织，0和2^32-1在零点中方向重合。</p>
+<p>接下来，把服务器按照IP或主机名作为关键字进行哈希，这样就能确定其在哈希环的位置。</p>
+<p><img src="/assets/%E9%9B%86%E7%BE%A4mysqlrediselasticsearchrabbitmq/22de1d15a7e9df9812b6a6cb513b9dd9.png" alt="1545917087577"></p>
+<p>然后，我们就可以使用哈希函数H计算值为key的数据在哈希环的具体位置h，根据h确定在环中的具体位置，从此位置沿顺时针滚动，遇到的第一台服务器就是其应该定位到的服务器。</p>
+<p>例如我们有A、B、C、D四个数据对象，经过哈希计算后，在环空间上的位置如下：</p>
+<p><img src="/assets/%E9%9B%86%E7%BE%A4mysqlrediselasticsearchrabbitmq/a2dd0b1f173a7c9b61569b6ddf526575.png" alt="1545917163991"></p>
+<p>根据一致性哈希算法，数据A会被定为到Server 1上，数据B被定为到Server 2上，而C、D被定为到Server 3上。</p>
+<h6 id="4-2-2-2-1-一致性hash-hash倾斜问题"><a href="#4-2-2-2-1-一致性hash-hash倾斜问题" class="headerlink" title="4.2.2.2.1 一致性hash,hash倾斜问题"></a>4.2.2.2.1 一致性hash,hash倾斜问题</h6><p>如果节点很少， 容易出现倾斜， 负载不均衡问题。 一致性哈希算法， 引入了虚拟节点， 在整个环上， 均衡增加若干个节点。 比如 a1， a2， b1， b2， c1， c2， a1 和 a2 都是属于 A 节点的。 解决 hash 倾斜问题  </p>
+<blockquote>
+<p>具体做法</p>
+</blockquote>
+<p>具体做法可以在服务器IP或主机名的后面增加编号来实现，例如上面的情况，可以为每个服务节点增加三个虚拟节点，于是可以分为 RedisService1#1、 RedisService1#2、 RedisService1#3、 RedisService2#1、 RedisService2#2、 RedisService2#3，具体位置如下图所示：</p>
+<p><img src="/assets/%E9%9B%86%E7%BE%A4mysqlrediselasticsearchrabbitmq/117334e01f91a89b4582cde736b60095.png" alt="1545978062568"></p>
+<p>对于数据定位的hash算法仍然不变，只是增加了虚拟节点到实际节点的映射。例如，数据C保存到虚拟节点Redis1#2，实际上数据保存到Redis1中。这样，就能解决服务节点少时数据不平均的问题。在实际应用中，通常将虚拟节点数设置为<strong>32甚至更大</strong>，因此即使<strong>很少的服务节点</strong>也能做到相对<strong>均匀的数据分布</strong>。</p>
+<h4 id="4-2-3-部署Cluster"><a href="#4-2-3-部署Cluster" class="headerlink" title="4.2.3 部署Cluster"></a>4.2.3 部署Cluster</h4><p><img src="/assets/%E9%9B%86%E7%BE%A4mysqlrediselasticsearchrabbitmq/540976fdfb7207e6ad803117f6213593.png" alt="image-20220214113959175"></p>
+<h5 id="4-2-3-1-创建6个redis节点-3-主-3-从方式，从为了同步备份，主进行-slot-数据分片"><a href="#4-2-3-1-创建6个redis节点-3-主-3-从方式，从为了同步备份，主进行-slot-数据分片" class="headerlink" title="4.2.3.1 创建6个redis节点(3 主 3 从方式，从为了同步备份，主进行 slot 数据分片 )"></a>4.2.3.1 创建6个redis节点(3 主 3 从方式，从为了同步备份，主进行 slot 数据分片 )</h5><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">for port in $(seq 7001 7006); \</span><br><span class="line">do \</span><br><span class="line">mkdir -p /mydata/redis/node-$&#123;port&#125;/conf</span><br><span class="line">touch /mydata/redis/node-$&#123;port&#125;/conf/redis.conf</span><br><span class="line">cat &lt;&lt; EOF &gt;/mydata/redis/node-$&#123;port&#125;/conf/redis.conf</span><br><span class="line">port $&#123;port&#125;</span><br><span class="line">cluster-enabled yes</span><br><span class="line">cluster-config-file nodes.conf</span><br><span class="line">cluster-node-timeout 5000</span><br><span class="line">cluster-announce-ip 192.168.157.128</span><br><span class="line">cluster-announce-port $&#123;port&#125;</span><br><span class="line">cluster-announce-bus-port 1$&#123;port&#125;</span><br><span class="line">appendonly yes</span><br><span class="line">EOF</span><br><span class="line">docker run -p $&#123;port&#125;:$&#123;port&#125; -p 1$&#123;port&#125;:1$&#123;port&#125; --name redis-$&#123;port&#125; \</span><br><span class="line">-v /mydata/redis/node-$&#123;port&#125;/data:/data \</span><br><span class="line">-v /mydata/redis/node-$&#123;port&#125;/conf/redis.conf:/etc/redis/redis.conf \</span><br><span class="line">-d redis:5.0.7 redis-server /etc/redis/redis.conf; \</span><br><span class="line">done</span><br></pre></td></tr></table></figure>
+
+
+<ul>
+<li><code>port</code>：节点端口；</li>
+<li><code>requirepass</code>：添加访问认证；</li>
+<li><code>masterauth</code>：如果主节点开启了访问认证，从节点访问主节点需要认证；</li>
+<li><code>protected-mode</code>：保护模式，默认值 yes，即开启。开启保护模式以后，需配置 <code>bind ip</code> 或者设置访问密码；关闭保护模式，外部网络可以直接访问；</li>
+<li><code>daemonize</code>：是否以守护线程的方式启动（后台启动），默认 no；</li>
+<li><code>appendonly</code>：是否开启 AOF 持久化模式，默认 no；</li>
+<li><code>cluster-enabled</code>：是否开启集群模式，默认 no；</li>
+<li><code>cluster-config-file</code>：集群节点信息文件；</li>
+<li><code>cluster-node-timeout</code>：集群节点连接超时时间；</li>
+<li><code>cluster-announce-ip</code>：集群节点 IP，填写宿主机的 IP；</li>
+<li><code>cluster-announce-port</code>：集群节点映射端口；</li>
+<li><code>cluster-announce-bus-port</code>：集群节点总线端口。</li>
+</ul>
+<p><img src="/assets/%E9%9B%86%E7%BE%A4mysqlrediselasticsearchrabbitmq/32400d9fca8112c4d5de93850573bf3a.png" alt="image-20220214095327251"></p>
+<p><img src="/assets/%E9%9B%86%E7%BE%A4mysqlrediselasticsearchrabbitmq/0f87f6931ac6b0ddf0e981e83704e5e5.png" alt="image-20220214095408169"></p>
+<blockquote>
+<p>如想停用或删除所有节点</p>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">#</span><span class="language-bash">停用所有节点</span></span><br><span class="line">docker stop $(docker ps -a |grep redis-700 | awk &#x27;&#123; print $1&#125;&#x27;)</span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">删除所有容器</span></span><br><span class="line">docker rm $(docker ps -a |grep redis-700 | awk &#x27;&#123; print $1&#125;&#x27;)</span><br></pre></td></tr></table></figure>
+
+
+
+
+<h5 id="4-2-3-2-使用redis建立集群"><a href="#4-2-3-2-使用redis建立集群" class="headerlink" title="4.2.3.2 使用redis建立集群"></a>4.2.3.2 使用redis建立集群</h5><p>这里我们将redis-7001作为主节点</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">#</span><span class="language-bash">进入redis-7001容器</span></span><br><span class="line">docker exec -it redis-7001 bash</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">创建一个集群,拉入集群成员</span></span><br><span class="line">redis-cli --cluster create 192.168.157.128:7001 192.168.157.128:7002 192.168.157.128:7003 192.168.157.128:7004 192.168.157.128:7005 192.168.157.128:7006 --cluster-replicas 1</span><br></pre></td></tr></table></figure>
+
+
+<blockquote>
+<p>redis-cluster会为我们自动分配节点</p>
+</blockquote>
+<p><img src="/assets/%E9%9B%86%E7%BE%A4mysqlrediselasticsearchrabbitmq/8c60f5be072e1e3c04274b9af50b6fd6.png" alt="image-20220214100631506"></p>
+<h5 id="4-2-3-3-测试集群效果"><a href="#4-2-3-3-测试集群效果" class="headerlink" title="4.2.3.3 测试集群效果"></a>4.2.3.3 测试集群效果</h5><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">#</span><span class="language-bash">随便进入一个redis容器</span></span><br><span class="line">docker exec -it redis-7002 /bin/bash</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">使用 redis-cli 的 cluster 方式进行连接(get/set命令可以对其他节点进行操作)</span></span><br><span class="line">redis-cli -c -h 192.168.157.128 -p 7006</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">获取节点信息</span></span><br><span class="line">cluster info</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">获取集群节点</span></span><br><span class="line">cluster nodes</span><br></pre></td></tr></table></figure>
+
+
+
+
+<p><img src="/assets/%E9%9B%86%E7%BE%A4mysqlrediselasticsearchrabbitmq/044fced3785a552562a432757e307eda.png" alt="image-20220214105108219"></p>
+<blockquote>
+<p>之前set了一个key为hello的数据,被重定向到7001,使用redis-manager连上7001及7001的从机7006看看</p>
+</blockquote>
+<p><img src="/assets/%E9%9B%86%E7%BE%A4mysqlrediselasticsearchrabbitmq/bca73d202f1e43c51254e9602d41cfad.png" alt="image-20220214111753406"></p>
+<p><img src="/assets/%E9%9B%86%E7%BE%A4mysqlrediselasticsearchrabbitmq/27fa390b2ffcd08c767efb2a9e2ec0db.png" alt="image-20220214105621181"></p>
+<p><img src="/assets/%E9%9B%86%E7%BE%A4mysqlrediselasticsearchrabbitmq/2faa58da4701e94785434b91f3aaeca6.png" alt="image-20220214111812085"></p>
+<h6 id="4-2-3-3-1-模拟主节点宕机"><a href="#4-2-3-3-1-模拟主节点宕机" class="headerlink" title="4.2.3.3.1 模拟主节点宕机"></a>4.2.3.3.1 模拟主节点宕机</h6><blockquote>
+<p>关闭主节点7001</p>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker stop redis-7001</span><br></pre></td></tr></table></figure>
+
+
+
+
+<blockquote>
+<p>查看节点信息<br>7001节点失去连接,其从节点7006变为主节点</p>
+</blockquote>
+<p><img src="/assets/%E9%9B%86%E7%BE%A4mysqlrediselasticsearchrabbitmq/1621250ea872803103f080474b2956eb.png" alt="image-20220214113624684"></p>
+<blockquote>
+<p>重启7001,查看节点信息<br>7001变为7006的从节点</p>
+</blockquote>
+<p><img src="/assets/%E9%9B%86%E7%BE%A4mysqlrediselasticsearchrabbitmq/80a99b80dcbb1b638006070308f98a0b.png" alt="image-20220214113847548"></p>
+<h2 id="5-ElasticSearch集群"><a href="#5-ElasticSearch集群" class="headerlink" title="5. ElasticSearch集群"></a>5. ElasticSearch集群</h2><h3 id="5-1-ElasticSearch集群原理"><a href="#5-1-ElasticSearch集群原理" class="headerlink" title="5.1 ElasticSearch集群原理"></a>5.1 ElasticSearch集群原理</h3><p><a target="_blank" rel="noopener" href="https://www.elastic.co/guide/cn/elasticsearch/guide/current/distributed-cluster.html">集群内的原理 | Elasticsearch: 权威指南 | Elastic</a></p>
+<p>elasticsearch 是天生支持集群的， 他不需要依赖其他的服务发现和注册的组件， 如 zookeeper这些， 因为他内置了一个名字叫 <code>ZenDiscovery</code> 的模块， 是 elasticsearch 自己实现的一套用于节点发现和选主等功能的组件， 所以 elasticsearch 做起集群来非常简单， 不需要太多额外的配置和安装额外的第三方组件。  </p>
+<h4 id="5-1-1-单节点"><a href="#5-1-1-单节点" class="headerlink" title="5.1.1 单节点"></a>5.1.1 单节点</h4><ul>
+<li>一个运行中的 Elasticsearch 实例称为一个节点， 而<strong>集群是由一个或者多个拥有相同cluster.name 配置的节点组成， 它们共同承担数据和负载的压力。</strong> <strong>当有节点加入集群中或者从集群中移除节点时， 集群将会重新平均分布所有的数据。</strong></li>
+<li>当一个节点被选举成为 <strong>主节点</strong>时， <strong>它将负责管理集群范围内的所有变更， 例如增加、删除索引， 或者增加、 删除节点等。</strong> **而主节点并不需要涉及到文档级别的变更和搜索等操作， 所以当集群只拥有一个主节点的情况下， 即使流量的增加它也不会成为瓶颈。**任何节点都可以成为主节点。 我们的示例集群就只有一个节点， 所以它同时也成为了主节点。</li>
+<li>作为用户， 我们可以将请求发送到 集群中的任何节点 ， 包括主节点。 **每个节点都知道任意文档所处的位置， 并且能够将我们的请求直接转发到存储我们所需文档的节点。**无论我们将请求发送到哪个节点， 它都能负责从各个包含我们所需文档的节点收集回数据， 并将最终结果返回給客户端。 Elasticsearch 对这一切的管理都是透明的。</li>
+</ul>
+<h4 id="5-1-2-集群健康"><a href="#5-1-2-集群健康" class="headerlink" title="5.1.2 集群健康"></a>5.1.2 集群健康</h4><p>Elasticsearch 的集群监控信息中包含了许多的统计数据， 其中最为重要的一项就是 集群健康 ， 它在 status 字段中展示为 <code>green</code> 、 <code>yellow</code> 或者 <code>red</code> 。  </p>
+<figure class="highlight elm"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">GET</span> /_cluster/health</span><br></pre></td></tr></table></figure>
+
+
+<p>status 字段指示着当前集群在总体上是否工作正常。 它的三种颜色含义如下：<br><code>green</code>： 所有的主分片和副本分片都正常运行。<br><code>yellow</code>： 所有的主分片都正常运行， 但不是所有的副本分片都正常运行。<br><code>red</code>： 有主分片没能正常运行。  </p>
+<h4 id="5-1-3-分片"><a href="#5-1-3-分片" class="headerlink" title="5.1.3 分片"></a>5.1.3 分片</h4><ul>
+<li>一个 分片 是一个底层的 工作单元 ， 它仅保存了全部数据中的一部分。 <strong>我们的文档被存储和索引到分片内， 但是应用程序是直接与索引而不是与分片进行交互。</strong> 分片就认为是一个数据区</li>
+<li>一个分片可以是 <code>主分片</code>或者 <code>副本分片</code>。 <strong>索引内任意一个文档都归属于一个主分片，所以主分片的数目决定着索引能够保存的最大数据量。</strong></li>
+<li><strong>在索引建立的时候就已经确定了主分片数， 但是副本分片数可以随时修改</strong>。</li>
+<li>让我们在包含一个空节点的集群内创建名为 blogs 的索引。 索引在默认情况下会被分配 5 个主分片， 但是为了演示目的， 我们将分配 3 个主分片和一份副本（每个主分片拥有一个副本分片） ：</li>
+</ul>
+<figure class="highlight elm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">PUT</span> /blogs&#123;</span><br><span class="line">	<span class="string">&quot;settings&quot;</span> : &#123;</span><br><span class="line">	<span class="string">&quot;number_of_shards&quot;</span> : <span class="number">3</span>,  #分片数量</span><br><span class="line">	<span class="string">&quot;number_of_replicas&quot;</span> : <span class="number">1</span>  #副本数量</span><br><span class="line">&#125;&#125;</span><br></pre></td></tr></table></figure>
+
+
+<p><img src="/assets/%E9%9B%86%E7%BE%A4mysqlrediselasticsearchrabbitmq/b9eac0ec3440e033a5137bc425f0fdca.png" alt="image-20220214135901575"></p>
+<p>此时集群的健康状况为 yellow 则表示全部 主分片都正常运行（集群可以正常服务所有请求） ， 但是 副本 分片没有全部处在正常状态。 实际上， 所有 3 个副本分片都是 unassigned—— 它们都没有被分配到任何节点。 在同一个节点上既保存原始数据又保存副本是没有意义的， 因为一旦失去了那个节点， 我们也将丢失该节点上的所有副本数据。当前我们的集群是正常运行的， 但是在硬件故障时有丢失数据的风险。  </p>
+<h4 id="5-1-4-新增节点-绿色框代表主分片"><a href="#5-1-4-新增节点-绿色框代表主分片" class="headerlink" title="5.1.4 新增节点(绿色框代表主分片)"></a>5.1.4 新增节点(绿色框代表主分片)</h4><p>当你在同一台机器上启动了第二个节点时， <strong>只要它和第一个节点有同样的 cluster.name 配置， 它就会自动发现集群并加入到其中。</strong> <strong>但是在不同机器上启动节点的时候， 为了加入到同一集群， 你需要配置一个可连接到的单播主机列表。</strong> 详细信息请查看最好使用单播代替组播  </p>
+<p><img src="/assets/%E9%9B%86%E7%BE%A4mysqlrediselasticsearchrabbitmq/b95c135eb28b3da40025852b22447991.png" alt="image-20220214140214816"></p>
+<p>此时， cluster-health 现在展示的状态为 green ， 这表示所有 6 个分片（包括 3 个主分片和3 个副本分片） 都在正常运行。 我们的集群现在不仅仅是正常运行的， 并且还处于 始终可用 的状态。  </p>
+<h4 id="5-1-5-水平扩容-启动第三个节点-绿色框代表主分片"><a href="#5-1-5-水平扩容-启动第三个节点-绿色框代表主分片" class="headerlink" title="5.1.5 水平扩容-启动第三个节点  (绿色框代表主分片)"></a>5.1.5 水平扩容-启动第三个节点  (绿色框代表主分片)</h4><p><img src="/assets/%E9%9B%86%E7%BE%A4mysqlrediselasticsearchrabbitmq/069d09d528f800091b19043372ed2749.png" alt="image-20220214140313589"></p>
+<p>Node 1 和 Node 2 上各有一个分片被迁移到了新的 Node 3 节点， 现在每个节点上都拥有 2 个分片， 而不是之前的 3 个。 这表示每个节点的硬件资源（CPU, RAM, I&#x2F;O） 将被更少的分片所共享， 每个分片的性能将会得到提升。  </p>
+<p>在运行中的集群上是可以动态调整副本分片数目的， 我们可以按需伸缩集群。 让我们把副本数从默认的 1 增加到 2  </p>
+<figure class="highlight elm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">PUT</span> /blogs/_settings</span><br><span class="line">&#123;</span><br><span class="line">	<span class="string">&quot;number_of_replicas&quot;</span> : <span class="number">2</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+
+<p>blogs 索引现在拥有 9 个分片： 3 个主分片和 6 个副本分片。 这意味着我们可以将集群扩容到 9 个节点， 每个节点上一个分片。 相比原来 3 个节点时， 集群搜索性能可以提升 3 倍。  </p>
+<p><img src="/assets/%E9%9B%86%E7%BE%A4mysqlrediselasticsearchrabbitmq/a73dd3fab7a1867fac23c7ee5aedd18f.png" alt="image-20220214140525111"></p>
+<h4 id="5-1-6-应对故障"><a href="#5-1-6-应对故障" class="headerlink" title="5.1.6 应对故障"></a>5.1.6 应对故障</h4><p><img src="/assets/%E9%9B%86%E7%BE%A4mysqlrediselasticsearchrabbitmq/2931be6ce3b3e4be4f40ef80e96de14b.png" alt="image-20220214140639062"></p>
+<ul>
+<li>我们关闭的节点是一个主节点。 而集群必须拥有一个主节点来保证正常工作， <strong>所以发生的第一件事情就是选举一个新的主节点： Node 2 。</strong></li>
+<li>在我们关闭 Node 1 的同时也失去了主分片 1 和 2 ， 并且在缺失主分片的时候索引也不能正常工作。 如果此时来检查集群的状况， <strong>我们看到的状态将会为 red</strong> ： 不是所有主分片都在正常工作。</li>
+<li>幸运的是， 在其它节点上存在着这两个主分片的完整副本， 所以新的主节点立即将这些分片在 Node 2 和 Node 3 上对应的副本分片提升为主分片， <strong>此时集群的状态将会为 yellow</strong> 。 这个<strong>提升主分片的过程是瞬间发生的</strong>， 如同按下一个开关一般。</li>
+<li>为什么我们集群状态是 yellow 而不是 green 呢？ <strong>虽然我们拥有所有的三个主分片，但是同时设置了每个主分片需要对应 2 份副本分片， 而此时只存在一份副本分片。</strong> 所以集群不能为 green 的状态， 不过我们不必过于担心： <strong>如果我们同样关闭了 Node 2 ，我们的程序 依然 可以保持在不丢任何数据的情况下运行， 因为 Node 3 为每一个分片都保留着一份副本。</strong></li>
+<li><strong>如果我们重新启动 Node 1 ， 集群可以将缺失的副本分片再次进行分配。 如果 Node 1依然拥有着之前的分片， 它将尝试去重用它们， 同时仅从主分片复制发生了修改的数据文件。</strong></li>
+</ul>
+<h4 id="5-1-7-问题与解决"><a href="#5-1-7-问题与解决" class="headerlink" title="5.1.7 问题与解决"></a>5.1.7 问题与解决</h4><h5 id="5-1-7-1-主节点"><a href="#5-1-7-1-主节点" class="headerlink" title="5.1.7.1 主节点"></a>5.1.7.1 主节点</h5><p>主节点<strong>负责创建索引、 删除索引、 分配分片、 追踪集群中的节点状态等工作</strong>。 Elasticsearch中的主节点的工作量相对较轻， 用户的请求可以发往集群中任何一个节点， 由该节点负责分发和返回结果， 而不需要经过主节点转发。 而主节点是由候选主节点通过 ZenDiscovery 机制选举出来的， 所以要<strong>想成为主节点， 首先要先成为候选主节点。</strong>  </p>
+<h5 id="5-1-7-2-候选主节点"><a href="#5-1-7-2-候选主节点" class="headerlink" title="5.1.7.2 候选主节点"></a>5.1.7.2 候选主节点</h5><p>在 elasticsearch 集群初始化或者主节点宕机的情况下， <strong>由候选主节点中选举其中一个作为主节点。 指定候选主节点的配置为： node.master: true。</strong></p>
+<p>当主节点负载压力过大， 或者集中环境中的网络问题， 导致其他节点与主节点通讯的时候，主节点没来的及响应， 这样的话， 某些节点就认为主节点宕机， 重新选择新的主节点， 这样的话整个集群的工作就有问题了， 比如我们集群中有 10 个节点， 其中 7 个候选主节点， 1个候选主节点成为了主节点， 这种情况是正常的情况。 但是<strong>如果现在出现了我们上面所说的主节点响应不及时， 导致其他某些节点认为主节点宕机而重选主节点， 那就有问题了， 这剩下的 6 个候选主节点可能有 3 个候选主节点去重选主节点， 最后集群中就出现了两个主节点</strong><br><strong>的情况，</strong> 这种情况官方成为**“脑裂现象”**；</p>
+<blockquote>
+<p>脑裂现象导致的问题</p>
+</blockquote>
+<p>集群中不同的节点对于 master 的选择出现了分歧， 出现了多个 master 竞争， 导致主分片和副本的识别也发生了分歧， 对一些分歧中的分片标识为了坏片。  </p>
+<h5 id="5-1-7-3-数据节点"><a href="#5-1-7-3-数据节点" class="headerlink" title="5.1.7.3 数据节点"></a>5.1.7.3 数据节点</h5><p>数据节点<strong>负责数据的存储和相关具体操作， 比如 CRUD、 搜索、 聚合。 所以， 数据节点对机器配置要求比较高， 首先需要有足够的磁盘空间来存储数据， 其次数据操作对系统 CPU、Memory 和 IO 的性能消耗都很大。</strong> 通常随着集群的扩大， 需要增加更多的数据节点来提高可用性。 <strong>指定数据节点的配置： node.data: true。</strong></p>
+<p><strong>elasticsearch 是允许一个节点既做候选主节点也做数据节点的， 但是数据节点的负载较重，所以需要考虑将二者分离开， 设置专用的候选主节点和数据节点， 避免因数据节点负载重导致主节点不响应。</strong>  </p>
+<h5 id="5-1-7-4-客户端节点"><a href="#5-1-7-4-客户端节点" class="headerlink" title="5.1.7.4 客户端节点"></a>5.1.7.4 客户端节点</h5><p>客户端节点就是<strong>既不做候选主节点也不做数据节点的节点， 只负责请求的分发、 汇总等等，<strong>但是这样的工作， 其实任何一个节点都可以完成， 因为在 elasticsearch 中一个集群内的节点都可以执行任何请求， 其会负责将请求转发给对应的节点进行处理。 所以</strong>单独增加这样的节点更多是为了负载均衡</strong>。 指定该节点的配置为：<br><strong>node.master: false</strong><br><strong>node.data: false</strong>  </p>
+<h5 id="5-1-7-5-脑裂问题可能的原因"><a href="#5-1-7-5-脑裂问题可能的原因" class="headerlink" title="5.1.7.5 脑裂问题可能的原因"></a>5.1.7.5 脑裂问题可能的原因</h5><ol>
+<li><code>网络问题</code>： 集群间的网络延迟导致一些节点访问不到 master， 认为 master 挂掉了从而选举出新的 master， 并对 master 上的分片和副本标红， 分配新的主分片</li>
+<li><code>节点负载</code>： 主节点的角色既为 master 又为 data， 访问量较大时可能会导致 ES 停止响应造成大面积延迟， 此时其他节点得不到主节点的响应认为主节点挂掉了， 会重新选取主节点。</li>
+<li><code>内存回收</code>： data 节点上的 ES 进程占用的内存较大， 引发 JVM 的大规模内存回收， 造成 ES进程失去响应。</li>
+</ol>
+<h6 id="5-1-7-5-1-脑裂问题的解决方案"><a href="#5-1-7-5-1-脑裂问题的解决方案" class="headerlink" title="5.1.7.5.1 脑裂问题的解决方案"></a>5.1.7.5.1 脑裂问题的解决方案</h6><ul>
+<li><p><code>角色分离</code>： 即 master 节点与 data 节点分离， 限制角色； 数据节点是需要承担存储和搜索的工作的， 压力会很大。 所以如果该节点同时作为候选主节点和数据节点，那么一旦选上它作为主节点了， 这时主节点的工作压力将会非常大， 出现脑裂现象的概率就增加了。</p>
+</li>
+<li><p><code>减少误判</code>： 配置主节点的响应时间， 在默认情况下， 主节点 3 秒没有响应， 其他节点就认为主节点宕机了， 那我们可以把该时间设置的长一点， 该配置是：discovery.zen.ping_timeout: 5</p>
+</li>
+<li><p><code>选举触发</code>： discovery.zen.minimum_master_nodes:1（默认是 1） ， 该属性定义的是为了形成一个集群， 有主节点资格并互相连接的节点的最小数目。</p>
+<ul>
+<li><p>一 个 有 10 节 点 的 集 群 ， 且 每 个 节 点 都 有 成 为 主 节 点 的 资 格 ，<br>discovery.zen.minimum_master_nodes 参数设置为 6。</p>
+</li>
+<li><p>正常情况下， 10 个节点， 互相连接， 大于 6， 就可以形成一个集群。</p>
+</li>
+<li><p>若某个时刻， 其中有 3 个节点断开连接。 剩下 7 个节点， 大于 6， 继续运行之<br>前的集群。 而断开的 3 个节点， 小于 6， 不能形成一个集群。</p>
+</li>
+<li><p>该参数就是为了防止”脑裂”的产生。</p>
+</li>
+<li><p>建议设置为(候选主节点数 &#x2F; 2) + 1,</p>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="5-2-ElasticSearch集群搭建"><a href="#5-2-ElasticSearch集群搭建" class="headerlink" title="5.2 ElasticSearch集群搭建"></a>5.2 ElasticSearch集群搭建</h3><p><img src="/assets/%E9%9B%86%E7%BE%A4mysqlrediselasticsearchrabbitmq/d6792f6190fb259c4d054489dc0a0783.png" alt="image-20220214175858666"></p>
+<p><strong>注意:需要将虚拟机的内存和核心数调大一点不然elasticsearch集群启动后有些节点会自动退出,我使用的4核8g内存</strong></p>
+<h4 id="5-2-1-修改最大map数-准备工作"><a href="#5-2-1-修改最大map数-准备工作" class="headerlink" title="5.2.1 修改最大map数(准备工作)"></a>5.2.1 修改最大map数(准备工作)</h4><blockquote>
+<p>防止 JVM 报错,设置最大map数，该参数确保内核允许创建至少<code>262144</code>个内存映射区</p>
+</blockquote>
+<p>所有之前先运行： </p>
+<p><img src="/assets/%E9%9B%86%E7%BE%A4mysqlrediselasticsearchrabbitmq/4a68a4035204f0658b8e07ead12b1563.png" alt="image-20220214152946463"></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sysctl -w vm.max_map_count=262144</span><br></pre></td></tr></table></figure>
+
+
+<p>我们只是测试， 所以临时修改。 永久修改使用下面</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">echo vm.max_map_count=262144 &gt;&gt; /etc/sysctl.conf</span><br><span class="line">sysctl -p  </span><br></pre></td></tr></table></figure>
+
+
+
+
+<h4 id="5-2-2-准备docker网络-准备工作"><a href="#5-2-2-准备docker网络-准备工作" class="headerlink" title="5.2.2 准备docker网络(准备工作)"></a>5.2.2 准备docker网络(准备工作)</h4><p>Docker 创建容器时默认采用 bridge 网络， 自行分配 ip， 不允许自己指定。</p>
+<p>在实际部署中， 我们需要指定容器 ip， 不允许其自行分配 ip， 尤其是搭建集群时， 固定 ip是必须的。</p>
+<p>我们可以创建自己的 bridge 网络 ： mynet， 创建容器的时候指定网络为 mynet 并指定 ip即可。</p>
+<blockquote>
+<p>查看网络模式 </p>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker network ls</span><br></pre></td></tr></table></figure>
+
+
+<p><img src="/assets/%E9%9B%86%E7%BE%A4mysqlrediselasticsearchrabbitmq/e80882580c786ff3011d9c66fc0b2b6b.png" alt="image-20220214153020563"></p>
+<blockquote>
+<p>创建一个新的 bridge 网络</p>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker network create --driver bridge --subnet=172.18.12.0/16 --gateway=172.18.1.1 mynet</span><br></pre></td></tr></table></figure>
+
+
+<p><img src="/assets/%E9%9B%86%E7%BE%A4mysqlrediselasticsearchrabbitmq/72f3801c0f1e5c115f709f8a471b5c04.png" alt="image-20220214153057189"></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">#</span><span class="language-bash">再次查看网络模式</span></span><br><span class="line">docker network ls</span><br></pre></td></tr></table></figure>
+
+
+
+
+<p><img src="/assets/%E9%9B%86%E7%BE%A4mysqlrediselasticsearchrabbitmq/3bc4fc47ae93f9ffaacb4cd1a95bff30.png" alt="image-20220214153141993"></p>
+<blockquote>
+<p>查看网络信息</p>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker network inspect mynet</span><br></pre></td></tr></table></figure>
+
+
+<p><img src="/assets/%E9%9B%86%E7%BE%A4mysqlrediselasticsearchrabbitmq/c94e18d107710be3eabd76148ce18c29.png" alt="image-20220214153323212"></p>
+<blockquote>
+<p>以后使用–network&#x3D;mynet –ip 172.18.12.x 指定 ip  (就可以在docker中使用这个网段的ip了)</p>
+</blockquote>
+<h4 id="5-2-3-Master节点创建"><a href="#5-2-3-Master节点创建" class="headerlink" title="5.2.3 Master节点创建"></a>5.2.3 Master节点创建</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">for port in $(seq 1 3); \</span><br><span class="line">do \</span><br><span class="line">mkdir -p /mydata/elasticsearch/master-$&#123;port&#125;/config</span><br><span class="line">mkdir -p /mydata/elasticsearch/master-$&#123;port&#125;/data</span><br><span class="line">chmod -R 777 /mydata/elasticsearch/master-$&#123;port&#125;</span><br><span class="line">cat &lt;&lt; EOF &gt;/mydata/elasticsearch/master-$&#123;port&#125;/config/elasticsearch.yml</span><br><span class="line">cluster.name: my-es #集群的名称， 同一个集群该值必须设置成相同的</span><br><span class="line">node.name: es-master-$&#123;port&#125; #该节点的名字</span><br><span class="line">node.master: true #该节点有机会成为 master 节点</span><br><span class="line">node.data: false #该节点可以存储数据</span><br><span class="line">network.host: 0.0.0.0</span><br><span class="line">http.host: 0.0.0.0 #所有 http 均可访问</span><br><span class="line">http.port: 920$&#123;port&#125;</span><br><span class="line">transport.tcp.port: 930$&#123;port&#125;</span><br><span class="line">discovery.zen.minimum_master_nodes: 2 #设置这个参数来保证集群中的节点可以知道其它 N 个有 master 资格的节点。</span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">官方推荐（N/2） +1</span></span><br><span class="line">discovery.zen.ping_timeout: 10s #设置集群中自动发现其他节点时 ping 连接的超时时间</span><br><span class="line">discovery.seed_hosts: [&quot;172.18.12.21:9301&quot;, &quot;172.18.12.22:9302&quot;, &quot;172.18.12.23:9303&quot;] #设置集群中的 Master 节点#的初始列表， 可以通过这些节点来自动发现其他新加入集群的节点， es7的新增配置</span><br><span class="line">cluster.initial_master_nodes: [&quot;172.18.12.21&quot;] #新集群初始时的候选主节点， es7 的新增配置</span><br><span class="line">EOF</span><br><span class="line">docker run --name elasticsearch-node-$&#123;port&#125; \</span><br><span class="line">-p 920$&#123;port&#125;:920$&#123;port&#125; -p 930$&#123;port&#125;:930$&#123;port&#125; \</span><br><span class="line">--network=mynet --ip 172.18.12.2$&#123;port&#125; \-e ES_JAVA_OPTS=&quot;-Xms300m -Xmx300m&quot; \</span><br><span class="line">-v /mydata/elasticsearch/master-$&#123;port&#125;/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml \</span><br><span class="line">-v /mydata/elasticsearch/master-$&#123;port&#125;/data:/usr/share/elasticsearch/data \</span><br><span class="line">-v /mydata/elasticsearch/master-$&#123;port&#125;/plugins:/usr/share/elasticsearch/plugins \</span><br><span class="line">-d elasticsearch:7.4.2</span><br><span class="line">done</span><br></pre></td></tr></table></figure>
+
+
+
+
+<h5 id="5-2-3-1-WARNING-IPv4-forwarding-is-disabled-Networking-will-not-work-问题"><a href="#5-2-3-1-WARNING-IPv4-forwarding-is-disabled-Networking-will-not-work-问题" class="headerlink" title="5.2.3.1 WARNING: IPv4 forwarding is disabled. Networking will not work.问题"></a>5.2.3.1 WARNING: IPv4 forwarding is disabled. Networking will not work.问题</h5><blockquote>
+<p>在启动elasticsearch集群容器时出现IPv4 forwarding is disabled. Networking will not work.问题</p>
+</blockquote>
+<p><img src="/assets/%E9%9B%86%E7%BE%A4mysqlrediselasticsearchrabbitmq/73a6de858a12b637ff8b410756d4f477.png" alt="image-20220214160600791"></p>
+<blockquote>
+<p>解决方案</p>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">#</span><span class="language-bash">修改配置文件</span></span><br><span class="line">vim /usr/lib/sysctl.d/00-system.conf</span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">追加</span></span><br><span class="line">net.ipv4.ip_forward=1</span><br><span class="line"><span class="meta prompt_"> </span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">重启网络</span></span><br><span class="line">systemctl restart network</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+
+<h5 id="5-2-3-2-再次启动elasticsearch集群"><a href="#5-2-3-2-再次启动elasticsearch集群" class="headerlink" title="5.2.3.2 再次启动elasticsearch集群"></a>5.2.3.2 再次启动elasticsearch集群</h5><blockquote>
+<p>清除之前操作遗留</p>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">#</span><span class="language-bash">删除之前创建的文件夹</span></span><br><span class="line">rm -rf /mydata/elasticsearch master-1 master-2 master-3</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">停止elasticsearch集群容器</span></span><br><span class="line">docker stop $(docker ps -a |grep elasticsearch-node-* | awk &#x27;&#123; print $1&#125;&#x27;)</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">删除elasticsearch集群容器</span></span><br><span class="line">docker rm $(docker ps -a |grep elasticsearch-node-* | awk &#x27;&#123; print $1&#125;&#x27;)</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">再次使用5.2.3章节shell</span></span><br></pre></td></tr></table></figure>
+
+
+
+
+
+
+<h4 id="5-2-4-Data-Node-创建"><a href="#5-2-4-Data-Node-创建" class="headerlink" title="5.2.4 Data-Node 创建"></a>5.2.4 Data-Node 创建</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">for port in $(seq 4 6); \</span><br><span class="line">do \</span><br><span class="line">mkdir -p /mydata/elasticsearch/node-$&#123;port&#125;/config</span><br><span class="line">mkdir -p /mydata/elasticsearch/node-$&#123;port&#125;/data</span><br><span class="line">chmod -R 777 /mydata/elasticsearch/node-$&#123;port&#125;</span><br><span class="line">cat &lt;&lt; EOF &gt;/mydata/elasticsearch/node-$&#123;port&#125;/config/elasticsearch.yml</span><br><span class="line">cluster.name: my-es #集群的名称， 同一个集群该值必须设置成相同的</span><br><span class="line">node.name: es-node-$&#123;port&#125; #该节点的名字</span><br><span class="line">node.master: false #该节点有机会成为 master 节点</span><br><span class="line">node.data: true #该节点可以存储数据</span><br><span class="line">network.host: 0.0.0.0</span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">network.publish_host: 192.168.157.128 <span class="comment">#互相通信 ip， 要设置为本机可被外界访问的 ip， 否则无法通信</span></span></span><br><span class="line">http.host: 0.0.0.0 #所有 http 均可访问</span><br><span class="line">http.port: 920$&#123;port&#125;</span><br><span class="line">transport.tcp.port: 930$&#123;port&#125;</span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">discovery.zen.minimum_master_nodes: 2 <span class="comment">#设置这个参数来保证集群中的节点可以知道其它 N 个有 master 资格的节点。</span></span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">官方推荐（N/2） +1</span></span><br><span class="line">discovery.zen.ping_timeout: 10s #设置集群中自动发现其他节点时 ping 连接的超时时间</span><br><span class="line">discovery.seed_hosts: [&quot;172.18.12.21:9301&quot;, &quot;172.18.12.22:9302&quot;, &quot;172.18.12.23:9303&quot;] #设置集群中的 Master 节点#的初始列表， 可以通过这些节点来自动发现其他新加入集群的节点， es7的新增配置</span><br><span class="line">cluster.initial_master_nodes: [&quot;172.18.12.21&quot;] #新集群初始时的候选主节点， es7 的新增配置</span><br><span class="line">EOF</span><br><span class="line">docker run --name elasticsearch-node-$&#123;port&#125; \</span><br><span class="line">-p 920$&#123;port&#125;:920$&#123;port&#125; -p 930$&#123;port&#125;:930$&#123;port&#125; \</span><br><span class="line">--network=mynet --ip 172.18.12.2$&#123;port&#125; \</span><br><span class="line">-e ES_JAVA_OPTS=&quot;-Xms300m -Xmx300m&quot; \</span><br><span class="line">-v /mydata/elasticsearch/node-$&#123;port&#125;/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml \</span><br><span class="line">-v /mydata/elasticsearch/node-$&#123;port&#125;/data:/usr/share/elasticsearch/data \</span><br><span class="line">-v /mydata/elasticsearch/node-$&#123;port&#125;/plugins:/usr/share/elasticsearch/plugins \</span><br><span class="line">-d elasticsearch:7.4.2</span><br><span class="line">done</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+
+<h4 id="5-2-5-测试集群"><a href="#5-2-5-测试集群" class="headerlink" title="5.2.5 测试集群"></a>5.2.5 测试集群</h4><figure class="highlight elm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">$ curl localhost:<span class="number">9200</span>/_cat</span><br><span class="line">/_cat/allocation</span><br><span class="line">/_cat/shards</span><br><span class="line">/_cat/shards/&#123;index&#125;</span><br><span class="line">/_cat/master</span><br><span class="line">/_cat/nodes</span><br><span class="line">/_cat/indices</span><br><span class="line">/_cat/indices/&#123;index&#125;</span><br><span class="line">/_cat/segments</span><br><span class="line">/_cat/segments/&#123;index&#125;</span><br><span class="line">/_cat/count</span><br><span class="line">/_cat/count/&#123;index&#125;</span><br><span class="line">/_cat/recovery</span><br><span class="line">/_cat/recovery/&#123;index&#125;</span><br><span class="line">/_cat/health</span><br><span class="line">/_cat/pending_tasks</span><br><span class="line">/_cat/aliases</span><br><span class="line">/_cat/aliases/&#123;<span class="keyword">alias</span>&#125;</span><br><span class="line">/_cat/thread_pool</span><br><span class="line">/_cat/plugins</span><br><span class="line">/_cat/fielddata</span><br><span class="line">/_cat/fielddata/&#123;fields&#125;</span><br><span class="line">/_cat/nodeattrs</span><br><span class="line">/_cat/repositories</span><br><span class="line">/_cat/snapshots/&#123;repository&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+
+<blockquote>
+<p>分别查看<a href="http://192.168.157.128:920(1-6)/,所有节点都如下图就代表成功了">http://192.168.157.128:920(1-6)/,所有节点都如下图就代表成功了</a></p>
+</blockquote>
+<p><img src="/assets/%E9%9B%86%E7%BE%A4mysqlrediselasticsearchrabbitmq/284a3013e2d157465c5541e1a502a7f0.png" alt="image-20220214170000283"></p>
+<p><a target="_blank" rel="noopener" href="http://192.168.157.128:9201/_nodes/process?pretty">http://192.168.157.128:9201/_nodes/process?pretty</a> 查看节点状况</p>
+<p><a target="_blank" rel="noopener" href="http://192.168.157.128:9201/_cluster/stats?pretty">http://192.168.157.128:9201/_cluster/stats?pretty</a> 查看集群状态<br><a target="_blank" rel="noopener" href="http://192.168.157.128:9201/_cluster/health?pretty">http://192.168.157.128:9201/_cluster/health?pretty</a> 查看集群健康状况</p>
+<p><img src="/assets/%E9%9B%86%E7%BE%A4mysqlrediselasticsearchrabbitmq/41799f95827a5b95a2adb08b08c65ced.png" alt="image-20220214170636904"></p>
+<p><a target="_blank" rel="noopener" href="http://192.168.157.128:9202/_cat/nodes">http://192.168.157.128:9202/_cat/nodes</a> 查看各个节点信息  </p>
+<p><img src="/assets/%E9%9B%86%E7%BE%A4mysqlrediselasticsearchrabbitmq/261ed50272af4e94adf9b5ca8afcdf9b.png" alt="image-20220214170526283"></p>
+<h5 id="5-2-5-1-关闭主节点测试"><a href="#5-2-5-1-关闭主节点测试" class="headerlink" title="5.2.5.1 关闭主节点测试"></a>5.2.5.1 关闭主节点测试</h5><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">#</span><span class="language-bash">关闭主节点</span></span><br><span class="line">docker stop elasticsearch-node-1</span><br></pre></td></tr></table></figure>
+
+
+<p><a target="_blank" rel="noopener" href="http://192.168.157.128:9202/_cat/nodes">192.168.157.128:9202&#x2F;_cat&#x2F;nodes</a>查看各个节点健康状况</p>
+<p>主节点切换到之前的备选主节点es-master-3</p>
+<p><img src="/assets/%E9%9B%86%E7%BE%A4mysqlrediselasticsearchrabbitmq/525c2c54064ae6c230dadca979866017.png" alt="image-20220214171116716"></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">#</span><span class="language-bash">启动主节点</span></span><br><span class="line">docker start elasticsearch-node-1</span><br></pre></td></tr></table></figure>
+
+
+<p><a target="_blank" rel="noopener" href="http://192.168.157.128:9202/_cat/nodes">192.168.157.128:9202&#x2F;_cat&#x2F;nodes</a>查看各个节点健康状况</p>
+<p>es-node-1变为备选主节点,es-node-3变为主节点</p>
+<p><img src="/assets/%E9%9B%86%E7%BE%A4mysqlrediselasticsearchrabbitmq/2239ec7e04e01e11f6bfb7930893eddb.png" alt="image-20220214171335617"></p>
+<h2 id="6-RabbitMQ集群"><a href="#6-RabbitMQ集群" class="headerlink" title="6. RabbitMQ集群"></a>6. RabbitMQ集群</h2><h3 id="6-1-集群形式"><a href="#6-1-集群形式" class="headerlink" title="6.1 集群形式"></a>6.1 集群形式</h3><p>RabbiMQ 是用 Erlang 开发的， 集群非常方便， 因为 Erlang 天生就是一门分布式语言， 但其本身并不支持负载均衡。</p>
+<p>RabbitMQ 集群中节点包括<strong>内存节点(RAM)、 磁盘节点(Disk， 消息持久化)</strong>， <strong>集群中至少有一个 Disk 节点。</strong>  </p>
+<h4 id="6-1-1-普通模式-默认"><a href="#6-1-1-普通模式-默认" class="headerlink" title="6.1.1 普通模式(默认)"></a>6.1.1 普通模式(默认)</h4><p>对于普通模式， <strong>集群中各节点有相同的队列结构</strong>， 但<strong>消息只会存在于集群中的一个节点</strong>。 对于消费者来说， 若消息进入 A 节点的 Queue 中， 当从 B 节点拉取时， RabbitMQ 会将消息从 A 中取出， 并经过 B 发送给消费者。</p>
+<blockquote>
+<p>应用场景： <strong>该模式各适合于消息无需持久化的场合</strong>， 如日志队列。 当队列非持久化， 且创建该队列的节点宕机， 客户端才可以重连集群其他节点， 并重新创建队列。 <strong>若为持久化，只能等故障节点恢复</strong>。</p>
+</blockquote>
+<h4 id="6-1-2-镜像模式"><a href="#6-1-2-镜像模式" class="headerlink" title="6.1.2 镜像模式"></a>6.1.2 镜像模式</h4><p><strong>与普通模式不同之处是消息实体会主动在镜像节点间同步， 而不是在取数据时临时拉取</strong>， 高可用； 该模式下， mirror queue 有一套选举算法， 即 1 个 master、 n 个 slaver， <strong>生产者、 消费者的请求都会转至 master</strong>。</p>
+<blockquote>
+<p>应用场景： <strong>可靠性要求较高场合</strong>， 如下单、 库存队列。<br>缺点： <strong>若镜像队列过多， 且消息体量大， 集群内部网络带宽将会被此种同步通讯所消耗</strong>。<br>（1） <strong>镜像集群也是基于普通集群</strong>， 即只有先搭建普通集群， 然后才能设置镜像队列。<br>（2） <strong>若消费过程中， master 挂掉， 则选举新 master， 若未来得及确认， 则可能会重复消费</strong>。</p>
+</blockquote>
+<h3 id="6-2-搭建集群-普通模式"><a href="#6-2-搭建集群-普通模式" class="headerlink" title="6.2 搭建集群(普通模式)"></a>6.2 搭建集群(普通模式)</h3><h4 id="6-2-1-首先创建容器映射目录"><a href="#6-2-1-首先创建容器映射目录" class="headerlink" title="6.2.1 首先创建容器映射目录"></a>6.2.1 首先创建容器映射目录</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">#</span><span class="language-bash">创建rabbitmq用于存放rabbitmq集群映射信息</span></span><br><span class="line">mkdir /mydata/rabbitmq</span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">分别创建各集群映射目录</span></span><br><span class="line">cd rabbitmq/</span><br><span class="line">mkdir rabbitmq01 rabbitmq02 rabbitmq03</span><br></pre></td></tr></table></figure>
+
+
+
+
+<h4 id="6-2-2-启动集群镜像容器"><a href="#6-2-2-启动集群镜像容器" class="headerlink" title="6.2.2 启动集群镜像容器"></a>6.2.2 启动集群镜像容器</h4><blockquote>
+<p>rabbitmq01</p>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run -d --hostname rabbitmq01 --name rabbitmq01 -v /mydata/rabbitmq/rabbitmq01:/var/lib/rabbitmq -p 15673:15672 -p 5673:5672 -e RABBITMQ_ERLANG_COOKIE=&#x27;zr&#x27; rabbitmq:3.8.2-management</span><br></pre></td></tr></table></figure>
+
+
+<blockquote>
+<p>rabbitmq02</p>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run -d --hostname rabbitmq02 --name rabbitmq02 -v/mydata/rabbitmq/rabbitmq02:/var/lib/rabbitmq -p 15674:15672 -p 5674:5672 -e RABBITMQ_ERLANG_COOKIE=&#x27;zr&#x27; --link rabbitmq01:rabbitmq01 rabbitmq:3.8.2-management</span><br></pre></td></tr></table></figure>
+
+
+<blockquote>
+<p>rabbitmq03</p>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run -d --hostname rabbitmq03 --name rabbitmq03 -v /mydata/rabbitmq/rabbitmq03:/var/lib/rabbitmq -p 15675:15672 -p 5675:5672 -e RABBITMQ_ERLANG_COOKIE=&#x27;zr&#x27; --link rabbitmq01:rabbitmq01 --link rabbitmq02:rabbitmq02 rabbitmq:3.8.2-management</span><br></pre></td></tr></table></figure>
+
+
+
+
+<blockquote>
+<p>注意事项:</p>
+<p>–hostname 设置容器的主机名 </p>
+<p><code>RABBITMQ_ERLANG_COOKIE</code> 节点认证作用， 部署集成时 需要同步该值</p>
+<p>RABBITMQ_ERLANG_COOKIE 为rabbitmq多节点之间通信所用到的cookie，rabbitmq集群就是利用这一特性实现的</p>
+</blockquote>
+<p>启动成功后</p>
+<p><a target="_blank" rel="noopener" href="http://192.168.157.128:15673/#/">http://192.168.157.128:15673/#/</a></p>
+<p><a target="_blank" rel="noopener" href="http://192.168.157.128:15674/#/">http://192.168.157.128:15674/#/</a></p>
+<p><a target="_blank" rel="noopener" href="http://192.168.157.128:15675/#/">http://192.168.157.128:15675/#/</a></p>
+<p>账号:guest</p>
+<p>密码:guest</p>
+<p>登录查看一下,目前都是单节点</p>
+<p><img src="/assets/%E9%9B%86%E7%BE%A4mysqlrediselasticsearchrabbitmq/d66b37599f2a80c0812e66418bd11b05.png" alt="image-20220215101357418"></p>
+<h4 id="6-2-3-节点加入集群"><a href="#6-2-3-节点加入集群" class="headerlink" title="6.2.3  节点加入集群"></a>6.2.3  节点加入集群</h4><blockquote>
+<p>设置rabbitmq01为主节点</p>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">docker exec -it rabbitmq01 /bin/bash</span><br><span class="line">rabbitmqctl stop_app</span><br><span class="line">rabbitmqctl reset</span><br><span class="line">rabbitmqctl start_app</span><br><span class="line">Exit</span><br></pre></td></tr></table></figure>
+
+
+<p><img src="/assets/%E9%9B%86%E7%BE%A4mysqlrediselasticsearchrabbitmq/37de83a09167c2384c38522375d80bc3.png" alt="image-20220215135114298"></p>
+<blockquote>
+<p>如果出现以下情况说明rabbitmq版本太高了,新拉一个镜像3.8.2(老师对应的),当然也可以按照高版本的配置</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker pull rabbitmq:3.8.2</span><br></pre></td></tr></table></figure></blockquote>
+<p><img src="/assets/%E9%9B%86%E7%BE%A4mysqlrediselasticsearchrabbitmq/4376c1a865b27d9f0008f7a4ac017376.png" alt="image-20220215101805732"></p>
+<blockquote>
+<p>将rabbitmq02加入rabbitmq01</p>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">docker exec -it rabbitmq02 /bin/bash</span><br><span class="line">rabbitmqctl stop_app</span><br><span class="line">rabbitmqctl reset</span><br><span class="line">rabbitmqctl join_cluster --ram rabbit@rabbitmq01</span><br><span class="line">rabbitmqctl start_app</span><br><span class="line">exit</span><br></pre></td></tr></table></figure>
+
+
+<p><img src="/assets/%E9%9B%86%E7%BE%A4mysqlrediselasticsearchrabbitmq/3318e730a40f036c14cb8a651ea613a3.png" alt="image-20220215135252946"></p>
+<blockquote>
+<p>将rabbitmq02加入rabbitmq01</p>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">docker exec -it rabbitmq03 bash</span><br><span class="line">rabbitmqctl stop_app</span><br><span class="line">rabbitmqctl reset</span><br><span class="line">rabbitmqctl join_cluster --ram rabbit@rabbitmq01</span><br><span class="line">rabbitmqctl start_app</span><br><span class="line">exit</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+
+<blockquote>
+<p>最后能看到其他节点信息也就成功了(普通模式)</p>
+</blockquote>
+<p><img src="/assets/%E9%9B%86%E7%BE%A4mysqlrediselasticsearchrabbitmq/efad31e914fae9c2c1aeac3cd1c2a68f.png" alt="image-20220215144605136"></p>
+<h4 id="6-2-4-普通模式集群测试"><a href="#6-2-4-普通模式集群测试" class="headerlink" title="6.2.4 普通模式集群测试"></a>6.2.4 普通模式集群测试</h4><p><strong>说明一下端口15673为rabbitmq01 ,15674为rabbitmq02,15675为rabbitmq03</strong></p>
+<blockquote>
+<p>在rabbitmq01新建test队列</p>
+</blockquote>
+<p><img src="/assets/%E9%9B%86%E7%BE%A4mysqlrediselasticsearchrabbitmq/41cead65c5a915a6d83b035d9774bfd8.png" alt="image-20220215151141519"></p>
+<blockquote>
+<p>在rabbitmq01新建test交换机,并绑定关系</p>
+</blockquote>
+<p><img src="/assets/%E9%9B%86%E7%BE%A4mysqlrediselasticsearchrabbitmq/a3e78e640b45ffd81088ef55826eb683.png" alt="image-20220215151220134"></p>
+<p><img src="/assets/%E9%9B%86%E7%BE%A4mysqlrediselasticsearchrabbitmq/8da7db7cc3f30d4f6c47060304d428ca.png" alt="image-20220215151239622"></p>
+<blockquote>
+<p>同时发现rabbitmq02,rabbitmq03中也创建了相同的交换机,队列,绑定关系</p>
+</blockquote>
+<p><img src="/assets/%E9%9B%86%E7%BE%A4mysqlrediselasticsearchrabbitmq/851ffa5b8124e2c0f87e1ce509b10e7b.png" alt="image-20220215151031646"></p>
+<p><img src="/assets/%E9%9B%86%E7%BE%A4mysqlrediselasticsearchrabbitmq/e1dfddf60714b9a164d3e7cef417a6e4.png" alt="image-20220215151048670"></p>
+<blockquote>
+<p>向rabbitmq01的交换机发送消息</p>
+</blockquote>
+<p><img src="/assets/%E9%9B%86%E7%BE%A4mysqlrediselasticsearchrabbitmq/ffb6955a54798b1195eb497bee49a314.png" alt="image-20220215150817861"></p>
+<blockquote>
+<p>在rabbitmq02 rabbitmq03中也能拿到消息</p>
+</blockquote>
+<p><img src="/assets/%E9%9B%86%E7%BE%A4mysqlrediselasticsearchrabbitmq/15eaf1b129fcdaac85670cb1fe9ca5ec.png" alt="image-20220215150838292"></p>
+<p><img src="/assets/%E9%9B%86%E7%BE%A4mysqlrediselasticsearchrabbitmq/4e448f6d21ab5774b869b3cc029865b0.png" alt="image-20220215151453656"></p>
+<blockquote>
+<p>在一个节点中消费了该消息,其他节点中将不会存在该消息</p>
+</blockquote>
+<h3 id="6-3-实现镜像集群"><a href="#6-3-实现镜像集群" class="headerlink" title="6.3 实现镜像集群"></a>6.3 实现镜像集群</h3><blockquote>
+<p>在普通模式集群的条件下才能搭建镜像集群,并且需要选择一个主节点,此处我们选择rabbitmq01为主节点</p>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">#</span><span class="language-bash">进入rabbitmq01容器</span></span><br><span class="line">docker exec -it rabbitmq01 bash</span><br></pre></td></tr></table></figure>
+
+
+
+
+<blockquote>
+<p>首先查看此时的策略什么,发现为空,默认普通模式</p>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rabbitmqctl list_policies -p /</span><br></pre></td></tr></table></figure>
+
+
+<p><img src="/assets/%E9%9B%86%E7%BE%A4mysqlrediselasticsearchrabbitmq/929cad3a73e4fdbd2dc670c3fca5d5ca.png" alt="image-20220215153330610"></p>
+<blockquote>
+<p>增加镜像模式策略</p>
+<p>策略模式 all 即复制到所有节点， 包含新增节点， </p>
+<p>策略正则表达式为 “^” 表示所有匹配所有队列名称。</p>
+<p> “^hello”表示只匹配名为 hello 开始的队列</p>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rabbitmqctl set_policy -p / ha &quot;^&quot; &#x27;&#123;&quot;ha-mode&quot;:&quot;all&quot;,&quot;ha-sync-mode&quot;:&quot;automatic&quot;&#125;&#x27;</span><br></pre></td></tr></table></figure>
+
+
+
+
+<blockquote>
+<p>查看此时的策略</p>
+</blockquote>
+<p><img src="/assets/%E9%9B%86%E7%BE%A4mysqlrediselasticsearchrabbitmq/ee2cf2d90cfb420f3aeb34de815e5cf7.png" alt="image-20220215153454610"></p>
+<blockquote>
+<p>管理页面查看</p>
+</blockquote>
+<p><img src="/assets/%E9%9B%86%E7%BE%A4mysqlrediselasticsearchrabbitmq/e9f391660ce25b7471f66126e848955b.png" alt="image-20220215153854045"></p>
+<p><img src="/assets/%E9%9B%86%E7%BE%A4mysqlrediselasticsearchrabbitmq/d0cdb70b4f2a4af3cf1f117286a16094.png" alt="image-20220215153922741"></p>
+<blockquote>
+<p>再次向rabbitma01的test交换机发送信息,正常情况与普通模式一致</p>
+</blockquote>
+<p>当我向rabbitma01发送消息后,宕机了,普通模式由于本质是其他节点比如rabbitma02去拿rabbitma01的消息再转交给我,所以当rabbitma01宕机后就拿不到消息了.</p>
+<p>镜像模式由于是同步的,当rabbitma01宕机后客户端是直接可以向其他节点拿到消息的</p>
+<p><strong>(个人理解普通模式就是代理,源头断了也就什么都没有了;镜像模式就是复制cv,一个地方断掉了,但是还可以从其他地方还能拿到)</strong></p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>Author: </span><span class="post-copyright-info"><a href="https://yuanzhang788.github.io">Yuanz</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>Link: </span><span class="post-copyright-info"><a href="https://yuanzhang788.github.io/2022/02/15/%E9%9B%86%E7%BE%A4(mysql,redis,elasticsearch,rabbitmq)/">https://yuanzhang788.github.io/2022/02/15/%E9%9B%86%E7%BE%A4(mysql,redis,elasticsearch,rabbitmq)/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>Copyright Notice: </span><span class="post-copyright-info">All articles on this blog are licensed under <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless otherwise stated.</span></div></div><div class="tag_share"><div class="post-share"><div class="social-share" data-image="/img/butterfly-icon.png" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2022/03/07/kettle%E6%95%B0%E6%8D%AE%E8%BF%81%E7%A7%BB/" title="kettle数据迁移"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info"><div class="info-1"><div class="info-item-1">Previous</div><div class="info-item-2">kettle数据迁移</div></div><div class="info-2"><div class="info-item-1">kettle数据迁移此处是将mysql数据库中的表修改表名与字段名迁移至另一个mysql数据库 1. kettle安装1.1 kettle下载8.3.0.0-371版本 Kettle各个版本下载地址  1.2 下载连接驱动包mysql驱动下载  选择对应版本(我的mysql是5.7版本的我选用5.1.49;mysql8.x版本可下载最新的) 如果5.7版本使用8.x驱动kettle会连不上数据     将驱动放至lib目录下   1.3 运行spoon.bat,打开spoon图形界面1.3.1 乱码问题 为防止乱码问题首先修改Spoon.bat的jvm启动参数  1&quot;-Dfile.encoding=UTF-8&quot;    1.3.2  为kettle连接(数据库保存数据)   登录  默认账号:admin 默认密码:admin   kettle的所有数据都保存在指定的数据库    如果需要迁移配置或文件可以拷贝数据库实现   1.4 新建转换1.4.1 连接需要迁移的数据库  同时也需要设置字符集   1.4.2 新建转换 1.4.2.1 表输入 1.4.2.2 ...</div></div></div></a><a class="pagination-related" href="/2022/02/15/RabbitMQ%E9%9B%86%E7%BE%A4/" title="RabbitMQ集群"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">Next</div><div class="info-item-2">RabbitMQ集群</div></div><div class="info-2"><div class="info-item-1">6. RabbitMQ集群6.1 集群形式RabbiMQ 是用 Erlang 开发的， 集群非常方便， 因为 Erlang 天生就是一门分布式语言， 但其本身并不支持负载均衡。 RabbitMQ 集群中节点包括内存节点(RAM)、 磁盘节点(Disk， 消息持久化)， 集群中至少有一个 Disk 节点。   6.1.1 普通模式(默认)对于普通模式， 集群中各节点有相同的队列结构， 但消息只会存在于集群中的一个节点。 对于消费者来说， 若消息进入 A 节点的 Queue 中， 当从 B 节点拉取时， RabbitMQ 会将消息从 A 中取出， 并经过 B 发送给消费者。  应用场景： 该模式各适合于消息无需持久化的场合， 如日志队列。 当队列非持久化， 且创建该队列的节点宕机， 客户端才可以重连集群其他节点， 并重新创建队列。 若为持久化，只能等故障节点恢复。  6.1.2 镜像模式与普通模式不同之处是消息实体会主动在镜像节点间同步， 而不是在取数据时临时拉取， 高可用； 该模式下， mirror queue 有一套选举算法， 即 1 个 master、 n 个 slaver， ...</div></div></div></a></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/butterfly-icon.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">Yuanz</div><div class="author-info-description">Yuanz的个人博客</div><div class="site-data"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">176</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">0</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">0</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>Announcement</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>Contents</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E9%9B%86%E7%BE%A4%E7%9A%84%E7%9B%AE%E6%A0%87"><span class="toc-number">1.</span> <span class="toc-text">1. 集群的目标</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E9%9B%86%E7%BE%A4%E7%9A%84%E5%9F%BA%E7%A1%80%E5%9F%BA%E7%A1%80%E5%BD%A2%E5%BC%8F"><span class="toc-number">2.</span> <span class="toc-text">2. 集群的基础基础形式</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-%E4%B8%BB%E4%BB%8E%E5%BC%8F"><span class="toc-number">2.1.</span> <span class="toc-text">2.1 主从式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-2-%E5%88%86%E7%89%87%E5%BC%8F"><span class="toc-number">2.2.</span> <span class="toc-text">2.2 分片式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-3-%E9%80%89%E4%B8%BB%E5%BC%8F"><span class="toc-number">2.3.</span> <span class="toc-text">2.3 选主式</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-mysql%E9%9B%86%E7%BE%A4"><span class="toc-number">3.</span> <span class="toc-text">3. mysql集群</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-%E4%BC%81%E4%B8%9A%E4%B8%AD%E5%B8%B8%E7%94%A8%E7%9A%84%E6%95%B0%E6%8D%AE%E5%BA%93%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88"><span class="toc-number">3.1.</span> <span class="toc-text">3.1 企业中常用的数据库解决方案</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-2-mysql%E5%B8%B8%E8%A7%81%E7%9A%84%E5%87%A0%E7%A7%8D%E9%9B%86%E7%BE%A4%E6%96%B9%E5%BC%8F"><span class="toc-number">3.2.</span> <span class="toc-text">3.2 mysql常见的几种集群方式</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#3-2-1-MYSQl-MMM-Master-Master-Replication-Manager-for-MySQL"><span class="toc-number">3.2.1.</span> <span class="toc-text">3.2.1 MYSQl-MMM(Master-Master Replication Manager for MySQL</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-2-2-MYSQL-MHA-mysql-%E4%B8%BB%E4%B8%BB%E5%A4%8D%E5%88%B6%E7%AE%A1%E7%90%86%E5%99%A8"><span class="toc-number">3.2.2.</span> <span class="toc-text">3.2.2 MYSQL-MHA(mysql 主主复制管理器)</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-2-3-InnoDB-Cluster"><span class="toc-number">3.2.3.</span> <span class="toc-text">3.2.3 InnoDB Cluster</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-3-Docker-%E5%AE%89%E8%A3%85%E6%A8%A1%E6%8B%9F-MySQL-%E4%B8%BB%E4%BB%8E%E5%A4%8D%E5%88%B6%E9%9B%86%E7%BE%A4"><span class="toc-number">3.3.</span> <span class="toc-text">3.3 Docker 安装模拟 MySQL 主从复制集群</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#3-3-1-%E4%B8%8B%E8%BD%BD-mysql-%E9%95%9C%E5%83%8F"><span class="toc-number">3.3.1.</span> <span class="toc-text">3.3.1 下载 mysql 镜像</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-3-2-%E4%B8%BB%E8%8A%82%E7%82%B9%E5%88%9B%E5%BB%BA"><span class="toc-number">3.3.2.</span> <span class="toc-text">3.3.2 主节点创建</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#3-3-2-1-%E5%88%9B%E5%BB%BA-Master-%E5%AE%9E%E4%BE%8B%E5%B9%B6%E5%90%AF%E5%8A%A8"><span class="toc-number">3.3.2.1.</span> <span class="toc-text">3.3.2.1  创建 Master 实例并启动</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#3-3-2-2-%E4%BF%AE%E6%94%B9-master-%E5%9F%BA%E6%9C%AC%E9%85%8D%E7%BD%AE"><span class="toc-number">3.3.2.2.</span> <span class="toc-text">3.3.2.2 修改 master 基本配置</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#3-3-2-3-%E6%B7%BB%E5%8A%A0-master-%E4%B8%BB%E4%BB%8E%E5%A4%8D%E5%88%B6%E9%83%A8%E5%88%86%E9%85%8D%E7%BD%AE"><span class="toc-number">3.3.2.3.</span> <span class="toc-text">3.3.2.3 添加 master 主从复制部分配置</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#3-3-2-4-%E9%87%8D%E5%90%AFmaster"><span class="toc-number">3.3.2.4.</span> <span class="toc-text">3.3.2.4 重启master</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-3-3-%E4%BB%8E%E8%8A%82%E7%82%B9%E5%88%9B%E5%BB%BA"><span class="toc-number">3.3.3.</span> <span class="toc-text">3.3.3  从节点创建</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#3-3-3-1-%E5%88%9B%E5%BB%BA-Master-%E5%AE%9E%E4%BE%8B%E5%B9%B6%E5%90%AF%E5%8A%A8"><span class="toc-number">3.3.3.1.</span> <span class="toc-text">3.3.3.1  创建 Master 实例并启动</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#3-3-3-2-%E4%BF%AE%E6%94%B9-slaver-01%E5%9F%BA%E6%9C%AC%E9%85%8D%E7%BD%AE"><span class="toc-number">3.3.3.2.</span> <span class="toc-text">3.3.3.2 修改 slaver-01基本配置</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#3-3-3-3-%E6%B7%BB%E5%8A%A0-master-%E4%B8%BB%E4%BB%8E%E5%A4%8D%E5%88%B6%E9%83%A8%E5%88%86%E9%85%8D%E7%BD%AE"><span class="toc-number">3.3.3.3.</span> <span class="toc-text">3.3.3.3 添加 master 主从复制部分配置</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#3-3-3-4-%E9%87%8D%E5%90%AFslaver-01"><span class="toc-number">3.3.3.4.</span> <span class="toc-text">3.3.3.4 重启slaver-01</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-3-4-%E4%B8%BA-master-%E6%8E%88%E6%9D%83%E7%94%A8%E6%88%B7%E6%9D%A5%E4%BB%96%E7%9A%84%E5%90%8C%E6%AD%A5%E6%95%B0%E6%8D%AE"><span class="toc-number">3.3.4.</span> <span class="toc-text">3.3.4 为 master 授权用户来他的同步数据</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#3-3-4-1-%E8%BF%9B%E5%85%A5docker%E5%AE%B9%E5%99%A8"><span class="toc-number">3.3.4.1.</span> <span class="toc-text">3.3.4.1 进入docker容器</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#3-3-4-2-%E8%BF%9B%E5%85%A5mysql%E5%86%85%E9%83%A8"><span class="toc-number">3.3.4.2.</span> <span class="toc-text">3.3.4.2 进入mysql内部</span></a><ol class="toc-child"><li class="toc-item toc-level-6"><a class="toc-link" href="#3-3-4-2-1-%E6%8E%88%E6%9D%83-root-%E5%8F%AF%E4%BB%A5%E8%BF%9C%E7%A8%8B%E8%AE%BF%E9%97%AE-%EF%BC%88-%E4%B8%BB%E4%BB%8E%E6%97%A0%E5%85%B3%EF%BC%8C-%E4%B8%BA%E4%BA%86%E6%96%B9%E4%BE%BF%E6%88%91%E4%BB%AC%E8%BF%9C%E7%A8%8B%E8%BF%9E%E6%8E%A5-mysql%EF%BC%89"><span class="toc-number">3.3.4.2.1.</span> <span class="toc-text">3.3.4.2.1 授权 root 可以远程访问  （ 主从无关， 为了方便我们远程连接 mysql）</span></a></li><li class="toc-item toc-level-6"><a class="toc-link" href="#3-3-4-2-2-%E6%B7%BB%E5%8A%A0%E7%94%A8%E6%9D%A5%E5%90%8C%E6%AD%A5%E7%9A%84%E7%94%A8%E6%88%B7"><span class="toc-number">3.3.4.2.2.</span> <span class="toc-text">3.3.4.2.2 添加用来同步的用户</span></a></li></ol></li><li class="toc-item toc-level-5"><a class="toc-link" href="#3-3-4-3-%E6%9F%A5%E7%9C%8Bmaster%E7%8A%B6%E6%80%81"><span class="toc-number">3.3.4.3.</span> <span class="toc-text">3.3.4.3 查看master状态</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-3-5-%E4%B8%BA-slaver-01%E6%8E%88%E6%9D%83%E7%94%A8%E6%88%B7%E6%9D%A5%E4%BB%96%E7%9A%84%E5%90%8C%E6%AD%A5%E6%95%B0%E6%8D%AE"><span class="toc-number">3.3.5.</span> <span class="toc-text">3.3.5 为 slaver-01授权用户来他的同步数据</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#3-3-5-1-%E8%BF%9B%E5%85%A5docker%E5%AE%B9%E5%99%A8"><span class="toc-number">3.3.5.1.</span> <span class="toc-text">3.3.5.1 进入docker容器</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#3-3-5-2-%E8%BF%9B%E5%85%A5mysql%E5%86%85%E9%83%A8"><span class="toc-number">3.3.5.2.</span> <span class="toc-text">3.3.5.2 进入mysql内部</span></a><ol class="toc-child"><li class="toc-item toc-level-6"><a class="toc-link" href="#3-3-5-2-1-%E6%8E%88%E6%9D%83-root-%E5%8F%AF%E4%BB%A5%E8%BF%9C%E7%A8%8B%E8%AE%BF%E9%97%AE-%EF%BC%88-%E4%B8%BB%E4%BB%8E%E6%97%A0%E5%85%B3%EF%BC%8C-%E4%B8%BA%E4%BA%86%E6%96%B9%E4%BE%BF%E6%88%91%E4%BB%AC%E8%BF%9C%E7%A8%8B%E8%BF%9E%E6%8E%A5-mysql%EF%BC%89"><span class="toc-number">3.3.5.2.1.</span> <span class="toc-text">3.3.5.2.1 授权 root 可以远程访问  （ 主从无关， 为了方便我们远程连接 mysql）</span></a></li><li class="toc-item toc-level-6"><a class="toc-link" href="#3-3-5-2-2-%E8%AE%BE%E7%BD%AE%E4%B8%BB%E5%BA%93%E8%BF%9E%E6%8E%A5"><span class="toc-number">3.3.5.2.2.</span> <span class="toc-text">3.3.5.2.2 设置主库连接</span></a></li><li class="toc-item toc-level-6"><a class="toc-link" href="#3-3-5-2-3-%E5%90%AF%E7%94%A8%E4%B8%BB%E4%BB%8E%E5%90%8C%E6%AD%A5"><span class="toc-number">3.3.5.2.3.</span> <span class="toc-text">3.3.5.2.3 启用主从同步</span></a></li></ol></li><li class="toc-item toc-level-5"><a class="toc-link" href="#3-3-5-3-%E6%9F%A5%E7%9C%8B%E4%BB%8E%E5%BA%93%E7%8A%B6%E6%80%81"><span class="toc-number">3.3.5.3.</span> <span class="toc-text">3.3.5.3 查看从库状态</span></a></li></ol></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-4-%E4%B8%BB%E4%BB%8E%E5%90%8C%E6%AD%A5%E6%B5%8B%E8%AF%95"><span class="toc-number">3.4.</span> <span class="toc-text">3.4 主从同步测试</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-5-mysql%E4%B8%BB%E4%BB%8E%E9%85%8D%E7%BD%AE%E6%80%BB%E7%BB%93"><span class="toc-number">3.5.</span> <span class="toc-text">3.5  mysql主从配置总结</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-6-mysql%E5%88%86%E5%BA%93-%E5%88%86%E8%A1%A8-%E8%AF%BB%E5%86%99%E5%88%86%E7%A6%BB-shardingsphere"><span class="toc-number">3.6.</span> <span class="toc-text">3.6 mysql分库,分表,读写分离(shardingsphere)</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#3-6-1-shardingsphere%E4%B8%89%E5%A4%A7%E7%BB%84%E4%BB%B6"><span class="toc-number">3.6.1.</span> <span class="toc-text">3.6.1 shardingsphere三大组件</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#3-6-1-1-ShardingSphere-JDBC"><span class="toc-number">3.6.1.1.</span> <span class="toc-text">3.6.1.1 ShardingSphere-JDBC</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#3-6-1-2-ShardingSphere-Proxy"><span class="toc-number">3.6.1.2.</span> <span class="toc-text">3.6.1.2 ShardingSphere-Proxy</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#3-6-1-3-ShardingSphere-Sidecar%EF%BC%88TODO%EF%BC%89"><span class="toc-number">3.6.1.3.</span> <span class="toc-text">3.6.1.3 ShardingSphere-Sidecar（TODO）</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#3-6-1-4-%E5%AF%B9%E6%AF%94-%E7%8B%AC%E7%AB%8B%E9%83%A8%E7%BD%B2"><span class="toc-number">3.6.1.4.</span> <span class="toc-text">3.6.1.4 对比(独立部署)</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#3-6-1-5-%E6%B7%B7%E5%90%88%E6%9E%B6%E6%9E%84"><span class="toc-number">3.6.1.5.</span> <span class="toc-text">3.6.1.5 混合架构</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#3-6-1-6-%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88"><span class="toc-number">3.6.1.6.</span> <span class="toc-text">3.6.1.6 解决方案</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-6-2-ShardingSphere-Proxy%E5%AE%9E%E7%8E%B0%E5%88%86%E5%BA%93%E5%88%86%E8%A1%A8-%E8%AF%BB%E5%86%99%E5%88%86%E7%A6%BB"><span class="toc-number">3.6.2.</span> <span class="toc-text">3.6.2 ShardingSphere-Proxy实现分库分表,读写分离</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#3-6-2-1-%E4%B8%8B%E8%BD%BD-ShardingSphere-Proxy-%E7%9A%84%E6%9C%80%E6%96%B0%E5%8F%91%E8%A1%8C%E7%89%88%E3%80%82"><span class="toc-number">3.6.2.1.</span> <span class="toc-text">3.6.2.1 下载 ShardingSphere-Proxy 的最新发行版。</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#3-6-2-2-%E6%95%B0%E6%8D%AE%E5%BA%93%E9%A9%B1%E5%8A%A8-jdbc%E4%B8%8B%E8%BD%BD"><span class="toc-number">3.6.2.2.</span> <span class="toc-text">3.6.2.2 数据库驱动-jdbc下载</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#3-6-2-3-%E4%BF%AE%E6%94%B9%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6"><span class="toc-number">3.6.2.3.</span> <span class="toc-text">3.6.2.3 修改配置文件</span></a><ol class="toc-child"><li class="toc-item toc-level-6"><a class="toc-link" href="#3-6-2-3-1-%E9%85%8D%E7%BD%AE%E8%AE%A4%E8%AF%81%E4%BF%A1%E6%81%AF-server-yaml"><span class="toc-number">3.6.2.3.1.</span> <span class="toc-text">3.6.2.3.1 配置认证信息(server.yaml)</span></a></li><li class="toc-item toc-level-6"><a class="toc-link" href="#3-6-2-3-2-%E5%88%86%E5%BA%93%E5%88%86%E8%A1%A8%E9%85%8D%E7%BD%AE-conf-config-sharding-yaml"><span class="toc-number">3.6.2.3.2.</span> <span class="toc-text">3.6.2.3.2 分库分表配置(conf&#x2F;config-sharding.yaml)</span></a></li><li class="toc-item toc-level-6"><a class="toc-link" href="#3-6-2-3-3-%E4%B8%BB%E4%BB%8E%E8%AF%BB%E5%86%99%E5%88%86%E7%A6%BB%E9%85%8D%E7%BD%AE-conf-config-master-slave-yaml"><span class="toc-number">3.6.2.3.3.</span> <span class="toc-text">3.6.2.3.3 主从读写分离配置(conf&#x2F;config-master_slave.yaml)</span></a></li><li class="toc-item toc-level-6"><a class="toc-link" href="#3-6-2-3-4-%E6%96%B0%E5%A2%9E%E4%B8%BB%E4%BB%8E%E5%A4%8D%E5%88%B6%E5%85%B3%E8%81%94%E6%95%B0%E6%8D%AE%E5%BA%93"><span class="toc-number">3.6.2.3.4.</span> <span class="toc-text">3.6.2.3.4 新增主从复制关联数据库</span></a></li><li class="toc-item toc-level-6"><a class="toc-link" href="#3-6-2-3-5-%E5%90%AF%E5%8A%A8%E8%BF%9E%E6%8E%A5%E6%B5%8B%E8%AF%95"><span class="toc-number">3.6.2.3.5.</span> <span class="toc-text">3.6.2.3.5 启动连接测试</span></a></li><li class="toc-item toc-level-6"><a class="toc-link" href="#3-6-2-3-6-Navicat%E5%A4%A9%E5%9D%91%E6%B3%A8%E6%84%8F"><span class="toc-number">3.6.2.3.6.</span> <span class="toc-text">3.6.2.3.6 Navicat天坑注意</span></a></li><li class="toc-item toc-level-6"><a class="toc-link" href="#3-6-2-3-7-%E5%88%86%E5%BA%93%E5%88%86%E8%A1%A8%E6%B5%8B%E8%AF%95"><span class="toc-number">3.6.2.3.7.</span> <span class="toc-text">3.6.2.3.7 分库分表测试</span></a></li></ol></li></ol></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-Redis%E9%9B%86%E7%BE%A4"><span class="toc-number">4.</span> <span class="toc-text">4. Redis集群</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#4-1-redis%E9%9B%86%E7%BE%A4%E5%BD%A2%E5%BC%8F"><span class="toc-number">4.1.</span> <span class="toc-text">4.1 redis集群形式</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#4-1-1-%E6%95%B0%E6%8D%AE%E5%88%86%E5%8C%BA%E6%96%B9%E6%A1%88"><span class="toc-number">4.1.1.</span> <span class="toc-text">4.1.1 数据分区方案</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4-1-2-%E4%BB%A3%E7%90%86%E5%88%86%E5%8C%BA"><span class="toc-number">4.1.2.</span> <span class="toc-text">4.1.2 代理分区</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4-1-3-redis-cluster"><span class="toc-number">4.1.3.</span> <span class="toc-text">4.1.3 redis-cluster</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#4-1-3-1-Multi-Key-%E9%99%90%E5%88%B6%E7%9A%84%E5%A4%84%E7%90%86"><span class="toc-number">4.1.3.1.</span> <span class="toc-text">4.1.3.1 Multi-Key 限制的处理</span></a></li></ol></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-2-%E9%AB%98%E5%8F%AF%E7%94%A8%E6%96%B9%E5%BC%8F"><span class="toc-number">4.2.</span> <span class="toc-text">4.2 高可用方式</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#4-2-1-Sentinel%EF%BC%88-%E5%93%A8%E5%85%B5%E6%9C%BA%E5%88%B6%EF%BC%89-%E6%94%AF%E6%8C%81%E9%AB%98%E5%8F%AF%E7%94%A8"><span class="toc-number">4.2.1.</span> <span class="toc-text">4.2.1 Sentinel（ 哨兵机制） 支持高可用</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4-2-2-Redis-Cluster"><span class="toc-number">4.2.2.</span> <span class="toc-text">4.2.2 Redis-Cluster</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#4-2-2-1-%E6%A7%BD"><span class="toc-number">4.2.2.1.</span> <span class="toc-text">4.2.2.1 槽</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#4-2-2-2-%E4%B8%80%E8%87%B4%E6%80%A7-hash"><span class="toc-number">4.2.2.2.</span> <span class="toc-text">4.2.2.2 一致性 hash</span></a><ol class="toc-child"><li class="toc-item toc-level-6"><a class="toc-link" href="#4-2-2-2-1-%E4%B8%80%E8%87%B4%E6%80%A7hash-hash%E5%80%BE%E6%96%9C%E9%97%AE%E9%A2%98"><span class="toc-number">4.2.2.2.1.</span> <span class="toc-text">4.2.2.2.1 一致性hash,hash倾斜问题</span></a></li></ol></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4-2-3-%E9%83%A8%E7%BD%B2Cluster"><span class="toc-number">4.2.3.</span> <span class="toc-text">4.2.3 部署Cluster</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#4-2-3-1-%E5%88%9B%E5%BB%BA6%E4%B8%AAredis%E8%8A%82%E7%82%B9-3-%E4%B8%BB-3-%E4%BB%8E%E6%96%B9%E5%BC%8F%EF%BC%8C%E4%BB%8E%E4%B8%BA%E4%BA%86%E5%90%8C%E6%AD%A5%E5%A4%87%E4%BB%BD%EF%BC%8C%E4%B8%BB%E8%BF%9B%E8%A1%8C-slot-%E6%95%B0%E6%8D%AE%E5%88%86%E7%89%87"><span class="toc-number">4.2.3.1.</span> <span class="toc-text">4.2.3.1 创建6个redis节点(3 主 3 从方式，从为了同步备份，主进行 slot 数据分片 )</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#4-2-3-2-%E4%BD%BF%E7%94%A8redis%E5%BB%BA%E7%AB%8B%E9%9B%86%E7%BE%A4"><span class="toc-number">4.2.3.2.</span> <span class="toc-text">4.2.3.2 使用redis建立集群</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#4-2-3-3-%E6%B5%8B%E8%AF%95%E9%9B%86%E7%BE%A4%E6%95%88%E6%9E%9C"><span class="toc-number">4.2.3.3.</span> <span class="toc-text">4.2.3.3 测试集群效果</span></a><ol class="toc-child"><li class="toc-item toc-level-6"><a class="toc-link" href="#4-2-3-3-1-%E6%A8%A1%E6%8B%9F%E4%B8%BB%E8%8A%82%E7%82%B9%E5%AE%95%E6%9C%BA"><span class="toc-number">4.2.3.3.1.</span> <span class="toc-text">4.2.3.3.1 模拟主节点宕机</span></a></li></ol></li></ol></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-ElasticSearch%E9%9B%86%E7%BE%A4"><span class="toc-number">5.</span> <span class="toc-text">5. ElasticSearch集群</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#5-1-ElasticSearch%E9%9B%86%E7%BE%A4%E5%8E%9F%E7%90%86"><span class="toc-number">5.1.</span> <span class="toc-text">5.1 ElasticSearch集群原理</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#5-1-1-%E5%8D%95%E8%8A%82%E7%82%B9"><span class="toc-number">5.1.1.</span> <span class="toc-text">5.1.1 单节点</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#5-1-2-%E9%9B%86%E7%BE%A4%E5%81%A5%E5%BA%B7"><span class="toc-number">5.1.2.</span> <span class="toc-text">5.1.2 集群健康</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#5-1-3-%E5%88%86%E7%89%87"><span class="toc-number">5.1.3.</span> <span class="toc-text">5.1.3 分片</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#5-1-4-%E6%96%B0%E5%A2%9E%E8%8A%82%E7%82%B9-%E7%BB%BF%E8%89%B2%E6%A1%86%E4%BB%A3%E8%A1%A8%E4%B8%BB%E5%88%86%E7%89%87"><span class="toc-number">5.1.4.</span> <span class="toc-text">5.1.4 新增节点(绿色框代表主分片)</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#5-1-5-%E6%B0%B4%E5%B9%B3%E6%89%A9%E5%AE%B9-%E5%90%AF%E5%8A%A8%E7%AC%AC%E4%B8%89%E4%B8%AA%E8%8A%82%E7%82%B9-%E7%BB%BF%E8%89%B2%E6%A1%86%E4%BB%A3%E8%A1%A8%E4%B8%BB%E5%88%86%E7%89%87"><span class="toc-number">5.1.5.</span> <span class="toc-text">5.1.5 水平扩容-启动第三个节点  (绿色框代表主分片)</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#5-1-6-%E5%BA%94%E5%AF%B9%E6%95%85%E9%9A%9C"><span class="toc-number">5.1.6.</span> <span class="toc-text">5.1.6 应对故障</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#5-1-7-%E9%97%AE%E9%A2%98%E4%B8%8E%E8%A7%A3%E5%86%B3"><span class="toc-number">5.1.7.</span> <span class="toc-text">5.1.7 问题与解决</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#5-1-7-1-%E4%B8%BB%E8%8A%82%E7%82%B9"><span class="toc-number">5.1.7.1.</span> <span class="toc-text">5.1.7.1 主节点</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#5-1-7-2-%E5%80%99%E9%80%89%E4%B8%BB%E8%8A%82%E7%82%B9"><span class="toc-number">5.1.7.2.</span> <span class="toc-text">5.1.7.2 候选主节点</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#5-1-7-3-%E6%95%B0%E6%8D%AE%E8%8A%82%E7%82%B9"><span class="toc-number">5.1.7.3.</span> <span class="toc-text">5.1.7.3 数据节点</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#5-1-7-4-%E5%AE%A2%E6%88%B7%E7%AB%AF%E8%8A%82%E7%82%B9"><span class="toc-number">5.1.7.4.</span> <span class="toc-text">5.1.7.4 客户端节点</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#5-1-7-5-%E8%84%91%E8%A3%82%E9%97%AE%E9%A2%98%E5%8F%AF%E8%83%BD%E7%9A%84%E5%8E%9F%E5%9B%A0"><span class="toc-number">5.1.7.5.</span> <span class="toc-text">5.1.7.5 脑裂问题可能的原因</span></a><ol class="toc-child"><li class="toc-item toc-level-6"><a class="toc-link" href="#5-1-7-5-1-%E8%84%91%E8%A3%82%E9%97%AE%E9%A2%98%E7%9A%84%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88"><span class="toc-number">5.1.7.5.1.</span> <span class="toc-text">5.1.7.5.1 脑裂问题的解决方案</span></a></li></ol></li></ol></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-2-ElasticSearch%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA"><span class="toc-number">5.2.</span> <span class="toc-text">5.2 ElasticSearch集群搭建</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#5-2-1-%E4%BF%AE%E6%94%B9%E6%9C%80%E5%A4%A7map%E6%95%B0-%E5%87%86%E5%A4%87%E5%B7%A5%E4%BD%9C"><span class="toc-number">5.2.1.</span> <span class="toc-text">5.2.1 修改最大map数(准备工作)</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#5-2-2-%E5%87%86%E5%A4%87docker%E7%BD%91%E7%BB%9C-%E5%87%86%E5%A4%87%E5%B7%A5%E4%BD%9C"><span class="toc-number">5.2.2.</span> <span class="toc-text">5.2.2 准备docker网络(准备工作)</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#5-2-3-Master%E8%8A%82%E7%82%B9%E5%88%9B%E5%BB%BA"><span class="toc-number">5.2.3.</span> <span class="toc-text">5.2.3 Master节点创建</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#5-2-3-1-WARNING-IPv4-forwarding-is-disabled-Networking-will-not-work-%E9%97%AE%E9%A2%98"><span class="toc-number">5.2.3.1.</span> <span class="toc-text">5.2.3.1 WARNING: IPv4 forwarding is disabled. Networking will not work.问题</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#5-2-3-2-%E5%86%8D%E6%AC%A1%E5%90%AF%E5%8A%A8elasticsearch%E9%9B%86%E7%BE%A4"><span class="toc-number">5.2.3.2.</span> <span class="toc-text">5.2.3.2 再次启动elasticsearch集群</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#5-2-4-Data-Node-%E5%88%9B%E5%BB%BA"><span class="toc-number">5.2.4.</span> <span class="toc-text">5.2.4 Data-Node 创建</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#5-2-5-%E6%B5%8B%E8%AF%95%E9%9B%86%E7%BE%A4"><span class="toc-number">5.2.5.</span> <span class="toc-text">5.2.5 测试集群</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#5-2-5-1-%E5%85%B3%E9%97%AD%E4%B8%BB%E8%8A%82%E7%82%B9%E6%B5%8B%E8%AF%95"><span class="toc-number">5.2.5.1.</span> <span class="toc-text">5.2.5.1 关闭主节点测试</span></a></li></ol></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-RabbitMQ%E9%9B%86%E7%BE%A4"><span class="toc-number">6.</span> <span class="toc-text">6. RabbitMQ集群</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#6-1-%E9%9B%86%E7%BE%A4%E5%BD%A2%E5%BC%8F"><span class="toc-number">6.1.</span> <span class="toc-text">6.1 集群形式</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#6-1-1-%E6%99%AE%E9%80%9A%E6%A8%A1%E5%BC%8F-%E9%BB%98%E8%AE%A4"><span class="toc-number">6.1.1.</span> <span class="toc-text">6.1.1 普通模式(默认)</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#6-1-2-%E9%95%9C%E5%83%8F%E6%A8%A1%E5%BC%8F"><span class="toc-number">6.1.2.</span> <span class="toc-text">6.1.2 镜像模式</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-2-%E6%90%AD%E5%BB%BA%E9%9B%86%E7%BE%A4-%E6%99%AE%E9%80%9A%E6%A8%A1%E5%BC%8F"><span class="toc-number">6.2.</span> <span class="toc-text">6.2 搭建集群(普通模式)</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#6-2-1-%E9%A6%96%E5%85%88%E5%88%9B%E5%BB%BA%E5%AE%B9%E5%99%A8%E6%98%A0%E5%B0%84%E7%9B%AE%E5%BD%95"><span class="toc-number">6.2.1.</span> <span class="toc-text">6.2.1 首先创建容器映射目录</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#6-2-2-%E5%90%AF%E5%8A%A8%E9%9B%86%E7%BE%A4%E9%95%9C%E5%83%8F%E5%AE%B9%E5%99%A8"><span class="toc-number">6.2.2.</span> <span class="toc-text">6.2.2 启动集群镜像容器</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#6-2-3-%E8%8A%82%E7%82%B9%E5%8A%A0%E5%85%A5%E9%9B%86%E7%BE%A4"><span class="toc-number">6.2.3.</span> <span class="toc-text">6.2.3  节点加入集群</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#6-2-4-%E6%99%AE%E9%80%9A%E6%A8%A1%E5%BC%8F%E9%9B%86%E7%BE%A4%E6%B5%8B%E8%AF%95"><span class="toc-number">6.2.4.</span> <span class="toc-text">6.2.4 普通模式集群测试</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-3-%E5%AE%9E%E7%8E%B0%E9%95%9C%E5%83%8F%E9%9B%86%E7%BE%A4"><span class="toc-number">6.3.</span> <span class="toc-text">6.3 实现镜像集群</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Posts</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/06/05/hello-world/" title="Hello World">Hello World</a><time datetime="2026-06-05T09:30:56.120Z" title="Created 2026-06-05 17:30:56">2026-06-05</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/05/28/%E4%BB%8E%E9%9B%B6%E5%BC%80%E5%A7%8B%EF%BC%8C%E5%9F%BA%E4%BA%8E-Hexo-GitHub-Pages-%E6%90%AD%E5%BB%BA%E4%B8%80%E4%B8%AA%E5%B1%9E%E4%BA%8E%E8%87%AA%E5%B7%B1%E7%9A%84%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2%EF%BC%8C%E5%B9%B6%E5%AE%8C%E6%88%90%E4%B8%BB%E9%A2%98%E5%88%87%E6%8D%A2%E4%B8%8E%E9%83%A8%E7%BD%B2%E3%80%82%EF%BC%88%E8%B6%85%E8%AF%A6%E7%BB%86%E6%95%99%E7%A8%8B%EF%BC%89/" title="从零开始，基于 Hexo + GitHub Pages 搭建一个属于自己的个人博客，并完成主题切换与部署。（超详细教程）">从零开始，基于 Hexo + GitHub Pages 搭建一个属于自己的个人博客，并完成主题切换与部署。（超详细教程）</a><time datetime="2026-05-28T06:27:02.000Z" title="Created 2026-05-28 14:27:02">2026-05-28</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/05/22/%E7%AC%AC%E4%B8%80%E7%AF%87-Github-Pages%E5%8D%9A%E5%AE%A2/" title="第一篇 Github Pages博客">第一篇 Github Pages博客</a><time datetime="2026-05-22T09:25:44.000Z" title="Created 2026-05-22 17:25:44">2026-05-22</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/05/20/Java%20Excel%E5%AF%BC%E5%87%BA%EF%BC%9A%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E8%87%AA%E5%AE%9A%E4%B9%89%E8%A1%A8%E5%A4%B4%E4%B8%8E%E5%AD%97%E6%AE%B5%E9%A1%BA%E5%BA%8F%E7%9A%84%E5%AE%8C%E5%85%A8%E6%8E%A7%E5%88%B6/" title="Java Excel导出：如何实现自定义表头与字段顺序的完全控制">Java Excel导出：如何实现自定义表头与字段顺序的完全控制</a><time datetime="2026-05-20T10:02:18.000Z" title="Created 2026-05-20 18:02:18">2026-05-20</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/05/07/Docker%20%E5%AE%89%E8%A3%85%20%E6%95%B0%E6%8D%AE%E5%BA%93%E5%B7%A5%E5%8D%95%E7%B3%BB%E7%BB%9FYearning%E4%BB%A5%E5%8F%8A%E4%BD%BF%E7%94%A8/" title="Docker 安装 数据库工单系统Yearning以及使用">Docker 安装 数据库工单系统Yearning以及使用</a><time datetime="2026-05-07T06:10:08.000Z" title="Created 2026-05-07 14:10:08">2026-05-07</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2025 - 2026 By Yuanz</span><span class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 8.1.2</a><span class="footer-separator">|</span><span>Theme </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.5.5-b1</a></span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="Reading Mode"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="Toggle Between Light and Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle Between Single-column and Double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="Settings"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="Table of Contents"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="Back to Top"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.5.5-b1"></script><script src="/js/main.js?v=5.5.5-b1"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>

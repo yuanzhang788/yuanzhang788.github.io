@@ -1,0 +1,493 @@
+<!DOCTYPE html><html lang="cn" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>JasperReport与SpringBoot整合及模板制作 | Yuanz</title><meta name="author" content="Yuanz"><meta name="copyright" content="Yuanz"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="0. 示例代码&#x3D;&#x3D;示例代码地址&#x3D;&#x3D; 1. 报表介绍1.1 为什么要使用报表? 在企业级应用开发中，报表生成、报表打印下载是其重要的一个环节。除了Excel报表之外，PDF报表也有广泛的应用场景，必须用户详细资料，用户简历等  目前世面上比较流行的制作PDF报表的工具如下：    名称 介绍    Jasper Report 是一个强大、灵活的报表生成工具，能">
+<meta property="og:type" content="article">
+<meta property="og:title" content="JasperReport与SpringBoot整合及模板制作">
+<meta property="og:url" content="https://yuanzhang788.github.io/2023/07/24/JasperReport%E4%B8%8ESpringBoot%E6%95%B4%E5%90%88%E5%8F%8A%E6%A8%A1%E6%9D%BF%E5%88%B6%E4%BD%9C/index.html">
+<meta property="og:site_name" content="Yuanz">
+<meta property="og:description" content="0. 示例代码&#x3D;&#x3D;示例代码地址&#x3D;&#x3D; 1. 报表介绍1.1 为什么要使用报表? 在企业级应用开发中，报表生成、报表打印下载是其重要的一个环节。除了Excel报表之外，PDF报表也有广泛的应用场景，必须用户详细资料，用户简历等  目前世面上比较流行的制作PDF报表的工具如下：    名称 介绍    Jasper Report 是一个强大、灵活的报表生成工具，能">
+<meta property="og:locale">
+<meta property="og:image" content="https://yuanzhang788.github.io/img/butterfly-icon.png">
+<meta property="article:published_time" content="2023-07-24T03:35:36.000Z">
+<meta property="article:modified_time" content="2026-06-08T03:35:05.931Z">
+<meta property="article:author" content="Yuanz">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://yuanzhang788.github.io/img/butterfly-icon.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "JasperReport与SpringBoot整合及模板制作",
+  "url": "https://yuanzhang788.github.io/2023/07/24/JasperReport%E4%B8%8ESpringBoot%E6%95%B4%E5%90%88%E5%8F%8A%E6%A8%A1%E6%9D%BF%E5%88%B6%E4%BD%9C/",
+  "image": "https://yuanzhang788.github.io/img/butterfly-icon.png",
+  "datePublished": "2023-07-24T03:35:36.000Z",
+  "dateModified": "2026-06-08T03:35:05.931Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "Yuanz",
+      "url": "https://yuanzhang788.github.io"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://yuanzhang788.github.io/2023/07/24/JasperReport%E4%B8%8ESpringBoot%E6%95%B4%E5%90%88%E5%8F%8A%E6%A8%A1%E6%9D%BF%E5%88%B6%E4%BD%9C/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=5.5.5-b1"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: 'Copy Successful',
+    error: 'Copy Failed',
+    noSupport: 'Browser Not Supported'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: 'Just now',
+    min: 'minutes ago',
+    hour: 'hours ago',
+    day: 'days ago',
+    month: 'months ago'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.0/dist/infinitegrid.min.js',
+    buttonText: 'Load More'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'JasperReport与SpringBoot整合及模板制作',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><meta name="generator" content="Hexo 8.1.2"></head><body><div class="post" id="body-wrap"><header class="post-bg" id="page-header"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">Yuanz</span></a><a class="nav-page-title" href="/"><span class="site-name">JasperReport与SpringBoot整合及模板制作</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  Back to Home</span></span></a></span><div id="menus"></div></nav><div id="post-info"><h1 class="post-title">JasperReport与SpringBoot整合及模板制作</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2023-07-24T03:35:36.000Z" title="Created 2023-07-24 11:35:36">2023-07-24</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2026-06-08T03:35:05.931Z" title="Updated 2026-06-08 11:35:05">2026-06-08</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">Post Views:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><h1 id="0-示例代码"><a href="#0-示例代码" class="headerlink" title="0. 示例代码"></a>0. 示例代码</h1><p>&#x3D;&#x3D;<a target="_blank" rel="noopener" href="https://gitee.com/zhourui815/jasper-report-demo">示例代码地址</a>&#x3D;&#x3D;</p>
+<h1 id="1-报表介绍"><a href="#1-报表介绍" class="headerlink" title="1. 报表介绍"></a>1. 报表介绍</h1><h2 id="1-1-为什么要使用报表"><a href="#1-1-为什么要使用报表" class="headerlink" title="1.1 为什么要使用报表?"></a>1.1 为什么要使用报表?</h2><blockquote>
+<p>在企业级应用开发中，报表生成、报表打印下载是其重要的一个环节。除了<code>Excel</code>报表之外，<code>PDF</code>报表也有广泛的应用场景，必须用户详细资料，用户简历等</p>
+</blockquote>
+<p>目前世面上比较流行的制作<code>PDF</code>报表的工具如下：</p>
+<table>
+<thead>
+<tr>
+<th>名称</th>
+<th>介绍</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Jasper Report</td>
+<td>是一个强大、灵活的报表生成工具，能够展示丰富的页面内容，并将之转换成PDF</td>
+</tr>
+<tr>
+<td>Openoffice</td>
+<td>openoffice是开源软件且能在windows和linux平台下运行，可以灵活的将word或者Excel转化为PDF文档。</td>
+</tr>
+<tr>
+<td>iText PDF</td>
+<td>iText是著名的开放项目，是用于生成PDF文档的一个java类库。通过iText不仅可以生成PDF或rtf的文档，而且可以将XML、Html文件转化为PDF文件。</td>
+</tr>
+</tbody></table>
+<h1 id="2-JasperReport"><a href="#2-JasperReport" class="headerlink" title="2. JasperReport"></a>2. JasperReport</h1><h2 id="2-1-框架介绍"><a href="#2-1-框架介绍" class="headerlink" title="2.1 框架介绍"></a>2.1 框架介绍</h2><ul>
+<li>JasperReport是一个强大、灵活的报表生成工具，能够展示丰富的页面内容，并将之转换成<code>PDF</code>，<code>HTML</code>，或者<code>XML</code>格式。**该库完全由Java写成，可以用于在各种Java应用程序，包括J2EE，Web应用程序中生成动态内容。**只需要将JasperReport引入工程中即可完成PDF报表的编译、显示、输出等工作。</li>
+<li>在开源的JAVA报表工具中，JASPER Report发展是比较好的，比一些商业的报表引擎做得还好，如<strong>支持了十字交叉报表、统计报表、图形报表，支持多种报表格式的输出，如PDF、RTF、XML、CSV、XHTML、TEXT、DOCX以OpenOffice。</strong></li>
+<li><strong>数据源支持更多</strong>，常用 JDBC SQL查询、XML文件、CSV文件 、HQL（Hibernate查询），HBase，JAVA集合等。还允许你义自己的数据源，通过JASPER文件及数据源，JASPER就能生成最终用户想要的文档格式。</li>
+</ul>
+<h2 id="2-2-相关文件介绍"><a href="#2-2-相关文件介绍" class="headerlink" title="2.2 相关文件介绍"></a>2.2 相关文件介绍</h2><ol>
+<li><code>JRXML</code>：报表填充模板，<strong>本质是一个XML. JasperReport已经封装了一个dtd，只要按照规定的格式写这个xml文件，那么jasperReport就可以将其解析最终生成报表</strong>，但是jasperReport所解析的不是我们常见的.xml文件，<strong>而是.jrxml文件，其实跟xml是一样的，只是后缀不一样。</strong></li>
+<li><code>Jasper</code>：**由JRXML模板编译生成的二进制文件，用于代码填充数据。**解析完成后JasperReport就开始编译.jrxml文件，将其编译成.jasper文件，因为JasperReport只可以对.jasper文件进行填充数据和转换，这步操作就跟我们java中将java文件编译成class文件是一样的</li>
+<li><code>Jrprint</code>：**当用数据填充完Jasper后生成的文件，用于输出报表。**这一步才是JasperReport的核心所在<ul>
+<li>它会根据你在xml里面写好的查询语句来查询指定是数据库</li>
+<li>也可以控制在后台编写查询语句，参数，数据库。在报表填充完后，会再生成一个.jrprint格式的文件（读取jasper文件进行填充，然后生成一个jrprint文件）</li>
+</ul>
+</li>
+<li><code>Exporter</code>：<strong>决定要输出的报表为何种格式，报表输出的管理类。</strong></li>
+</ol>
+<h2 id="2-3-开发流程概述"><a href="#2-3-开发流程概述" class="headerlink" title="2.3 开发流程概述"></a>2.3 开发流程概述</h2><p><img src="/assets/JasperReport%E4%B8%8ESpringBoot%E6%95%B4%E5%90%88%E5%8F%8A%E6%A8%A1%E6%9D%BF%E5%88%B6%E4%BD%9C/62749e50ce8fab857e9b4e53c3410e42.png" alt="image-20230720173908644"></p>
+<h2 id="2-4-模板工具Jaspersoft-Studio"><a href="#2-4-模板工具Jaspersoft-Studio" class="headerlink" title="2.4 模板工具Jaspersoft Studio"></a>2.4 模板工具Jaspersoft Studio</h2><p><code>Jaspersoft Studio</code>是<code>JasperReports库</code>和<code>JasperReports服务器</code>的<strong>基于Eclipse的报告设计器</strong>; 它<strong>可以作为Eclipse插件或作为独立的应用程序使用</strong>。</p>
+<ul>
+<li>Jaspersoft Studio允许您创建包含<code>图表</code>，<code>图像</code>，<code>子报表</code>，<code>交叉表</code>等的复杂布局。</li>
+<li>您可以通过<code>JDBC</code>，<code>TableModels</code>，<code>JavaBeans</code>，<code>XML</code>，<code>Hibernate</code>，<code>大数据（如Hive）</code>，<code>CSV</code>，<code>XML / A</code>以及自定义来源等各种来源访问数据，</li>
+<li>然后将报告发布为<code>PDF</code>，<code>RTF</code>，<code>XML</code>，<code>XLS</code>，<code>CSV</code>，<code>HTML</code>，<code>XHTML</code>，<code>文本</code>，<code>DOCX</code>或<code>OpenOffice</code>。</li>
+<li><code>Jaspersoft Studio</code> 是一个可视化的报表设计工具,使用该软件可以方便地对报表进行可视化的设计，设计结果为格式<code>.jrxml</code>的<code>XML</code> 文件，并且可以把<code>.jrxml</code>文件编译成<code>.jasper</code>格式文件方便<code>JasperReport</code>报表引擎解析、显示。</li>
+</ul>
+<h3 id="2-4-1-Jaspersoft-Studio-CE下载"><a href="#2-4-1-Jaspersoft-Studio-CE下载" class="headerlink" title="2.4.1 Jaspersoft Studio CE下载"></a>2.4.1 Jaspersoft Studio CE下载</h3><p><img src="/assets/JasperReport%E4%B8%8ESpringBoot%E6%95%B4%E5%90%88%E5%8F%8A%E6%A8%A1%E6%9D%BF%E5%88%B6%E4%BD%9C/0b4c84c8728797508e9236c8519e59d9.png" alt="image-20230720174339640"></p>
+<blockquote>
+<p>我下载的是<a target="_blank" rel="noopener" href="https://community.jaspersoft.com/project/jaspersoft-studio/releases?release_id=1214881&download=https://sourceforge.net/projects/jasperstudio/files/JaspersoftStudio-6.20.5/js-studiocomm_6.20.5_windows_x86_64.exe/download">js-studiocomm_6.20.5_windows_x86_64.exe</a></p>
+<p>下载完成后无脑安装就行了</p>
+</blockquote>
+<p><img src="/assets/JasperReport%E4%B8%8ESpringBoot%E6%95%B4%E5%90%88%E5%8F%8A%E6%A8%A1%E6%9D%BF%E5%88%B6%E4%BD%9C/8c5aae971753d83cf70ed25f33496f04.png" alt="image-20230720174442720"></p>
+<h3 id="2-4-2-面板介绍"><a href="#2-4-2-面板介绍" class="headerlink" title="2.4.2 面板介绍"></a>2.4.2 面板介绍</h3><p>左侧切换<code>outline</code>视图，调整视图的位置</p>
+<p><img src="/assets/JasperReport%E4%B8%8ESpringBoot%E6%95%B4%E5%90%88%E5%8F%8A%E6%A8%A1%E6%9D%BF%E5%88%B6%E4%BD%9C/37a5a8728abc5d0766740786777e8047.png" alt="image-20230720174622966"></p>
+<ul>
+<li><p>Report editing area（主编辑区域）	通过拖动，定位，对齐和通过 Designer palette（设计器调色板）对报表元素调整大小</p>
+</li>
+<li><p>Editor Area	</p>
+<ul>
+<li>Design tab: 当你打开一个报告文件，它允许您以图形方式创建报表选中</li>
+<li>Source tab： 包含用于报表的 JRXML 源代码。</li>
+<li>Preview tab： 允许在选择数据源和输出格式后，运行报表预览。</li>
+</ul>
+</li>
+<li><p>Repository Explorer view	包含 JasperServer 生成的连接和可用的数据适配器列表</p>
+</li>
+<li><p>Outline view	在大纲视图中显示了一个树的形式的方式报告的完整结构</p>
+</li>
+<li><p>Properties view	控件属性设置</p>
+</li>
+<li><p>Design tab	以图形方式创建报表中的控件</p>
+</li>
+<li><p>&#x3D;&#x3D;Report Editor Area介绍&#x3D;&#x3D;</p>
+</li>
+</ul>
+<p><img src="/assets/JasperReport%E4%B8%8ESpringBoot%E6%95%B4%E5%90%88%E5%8F%8A%E6%A8%A1%E6%9D%BF%E5%88%B6%E4%BD%9C/e139d4b23816a15703ab8ef6c56ed415.png" alt="image-20230721095503208"></p>
+<ul>
+<li><code>Title</code>(标题):**只在整个报表的第一页的最上端显示。**只在第一页显示，其他页面均不显示</li>
+<li><code>Page Header</code>(页头):<strong>在整个报表中每一页都会显示</strong>。<ul>
+<li>在第一页中，出现的位置在 Title Band的下面。</li>
+<li>在除了第一页的其他页面中Page Header 的内容均在页面的最上端显示。</li>
+</ul>
+</li>
+<li><code>Page Footer</code>(页脚): **在整个报表中每一页都会显示。**显示在页面的最下端。一般用来显示页码。</li>
+<li><code>Detail1</code>(详细) ： <strong>报表内容，每一页都会显示。</strong></li>
+<li><code>Column Header</code>(列头): <strong>Detail中打印的是一张表的话，这Column Header就是表中列的列头。</strong></li>
+<li><code>Column Footer</code>(列脚) :<strong>Detail中打印的是一张表的话，这Column Footer就是表中列的列脚。</strong></li>
+<li><code>Summary</code>(统计): 表格的合计段，<strong>出现在整个报表的最后一页中</strong>，在Detail 1 Band后面。主要是用来做报表的合计显示。</li>
+</ul>
+<h3 id="2-4-3-Paramter，Field和Detail基本组件介绍"><a href="#2-4-3-Paramter，Field和Detail基本组件介绍" class="headerlink" title="2.4.3 Paramter，Field和Detail基本组件介绍"></a>2.4.3 Paramter，Field和Detail基本组件介绍</h3><h4 id="2-4-3-1-Paramters"><a href="#2-4-3-1-Paramters" class="headerlink" title="2.4.3.1 Paramters"></a>2.4.3.1 Paramters</h4><blockquote>
+<ul>
+<li>Paramters是<strong>一张报表中全局的属性</strong>，初始自带了一些属性，也可以自定义属性。大家可以理解为存放一个报表的表头数据</li>
+<li>Paramter的属性可以是任何类型，String，Long，Double，List等等</li>
+<li>&#x3D;&#x3D;Paramter可以用在报表的任何区域&#x3D;&#x3D;，一般用在报表的<code>Title</code>,<code>Page Header</code>,<code>Page Footer</code>区域</li>
+</ul>
+</blockquote>
+<ol>
+<li>Paramters的创建：在左侧的Outline框，在Paramters上右键 Create Paramter 就可以创建一个新的Paramter，在右侧可以设置名称和类型。使用时直接拖拽到相应的区域即可。如下图所示</li>
+</ol>
+<p><img src="/assets/JasperReport%E4%B8%8ESpringBoot%E6%95%B4%E5%90%88%E5%8F%8A%E6%A8%A1%E6%9D%BF%E5%88%B6%E4%BD%9C/b6d4a016bfeffaada5bb494d21b5d80d.png" alt="image-20230724102309270"></p>
+<ol start="2">
+<li><p>在Java程序中可以通过给对应的Paramter赋值，在打印时就可以输出你想要的结果。代码如下所示</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//给Paramter赋值</span></span><br><span class="line">HashMap&lt;String, Object&gt; parameters = <span class="keyword">new</span> <span class="title class_">HashMap</span>&lt;String, Object&gt;();</span><br><span class="line">parameters.put(<span class="string">&quot;name&quot;</span>, <span class="string">&quot;小明&quot;</span>);<span class="comment">//这里的key要和报表中的Paramter的name对应</span></span><br><span class="line">parameters.put(<span class="string">&quot;age&quot;</span>, <span class="string">&quot;18&quot;</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">//中间代码省略</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//核心代码，把Paramters传入JasperReport提供的方法，并返回JasperPrint 对象</span></span><br><span class="line"><span class="type">JasperPrint</span> <span class="variable">jasperPrint</span> <span class="operator">=</span> JasperFillManager.fillReport(jasperStream, parameters, dataSource);</span><br></pre></td></tr></table></figure></li>
+</ol>
+<h4 id="2-4-3-2-Fields"><a href="#2-4-3-2-Fields" class="headerlink" title="2.4.3.2 Fields"></a>2.4.3.2 Fields</h4><blockquote>
+<ul>
+<li><strong>Fields是报表中数据集合中的字段属性</strong>，只能自定义Field字段。大家可以理解为一个报表的明细列表数据</li>
+<li>Field的属性可以是任何类型，String，Long，Double，List等等</li>
+<li>&#x3D;&#x3D;Field只能用在报表的<code>Detail</code>区域&#x3D;&#x3D;</li>
+</ul>
+</blockquote>
+<ol>
+<li>Fields的创建：在左侧的Outline框，在Fields上右键 Create Field 就可以创建一个新的Field，在右侧可以设置名称和类型。使用时直接拖拽到相应的区域即可。如下图所示</li>
+</ol>
+<p><img src="/assets/JasperReport%E4%B8%8ESpringBoot%E6%95%B4%E5%90%88%E5%8F%8A%E6%A8%A1%E6%9D%BF%E5%88%B6%E4%BD%9C/c0a36ea6fa1cbaa9e927b391c0846f60.png" alt="image-20230724102449497"></p>
+<ol start="2">
+<li><p>在Java程序中可以通过集合给集合中的每一条数据的Field字段赋值，在打印时就可以输出你想要的结果。代码如下所示</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//给Field赋值</span></span><br><span class="line">List&lt;HashMap&gt; list = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;&gt;();</span><br><span class="line"><span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>; i &lt; <span class="number">100</span>; i++) &#123;</span><br><span class="line">    HashMap&lt;String, String&gt; item = <span class="keyword">new</span> <span class="title class_">HashMap</span>&lt;String, String&gt;();</span><br><span class="line">    item.put(<span class="string">&quot;Field1&quot;</span>,  <span class="string">&quot;Field1-&quot;</span> + i);</span><br><span class="line">    item.put(<span class="string">&quot;Field2&quot;</span>,  <span class="string">&quot;Field2-&quot;</span> + i);</span><br><span class="line">    item.put(<span class="string">&quot;Field3&quot;</span>,  <span class="string">&quot;Field3-&quot;</span> + i);</span><br><span class="line">    item.put(<span class="string">&quot;Field4&quot;</span>,  <span class="string">&quot;Field4-&quot;</span> + i);</span><br><span class="line">    item.put(<span class="string">&quot;Field5&quot;</span>,  <span class="string">&quot;Field5-&quot;</span> + i);</span><br><span class="line">    list.add(item);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//中间代码省略</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//核心代码，用包含Field字段的集合创建一个JRDataSource，传入JasperReport提供的方法，并返回JasperPrint 对象</span></span><br><span class="line"><span class="type">JRDataSource</span> <span class="variable">dataSource</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">JRBeanCollectionDataSource</span>(list);</span><br><span class="line"><span class="type">JasperPrint</span> <span class="variable">jasperPrint</span> <span class="operator">=</span> JasperFillManager.fillReport(jasperStream, parameters, dataSource);</span><br></pre></td></tr></table></figure></li>
+</ol>
+<h4 id="2-4-3-3-Detail"><a href="#2-4-3-3-Detail" class="headerlink" title="2.4.3.3  Detail"></a>2.4.3.3  Detail</h4><blockquote>
+<ul>
+<li>Detail是打印Field字段的区域，<strong>一个报表可以有多个Detail</strong>，在Detail上右键可以通过Add Detail Band来增加新的Detail区</li>
+<li><strong>Detail会把传递进来的list的数据，循环打印出来，有多条就会打印多行，一页打印不下就会从下一页继续打印</strong></li>
+<li>如果通过Detail来打印表格，Detail的高度最好和要打印的Field高度一样，这样每行就不会有缝隙，打印出来和表格一样的效果</li>
+<li><strong>如果存在多个detail，他们是交替打印</strong></li>
+</ul>
+</blockquote>
+<p><img src="/assets/JasperReport%E4%B8%8ESpringBoot%E6%95%B4%E5%90%88%E5%8F%8A%E6%A8%A1%E6%9D%BF%E5%88%B6%E4%BD%9C/6c99c3257384cba7d7fa7ff538b7ec18.png" alt="image-20230724104128439"></p>
+<p><img src="/assets/JasperReport%E4%B8%8ESpringBoot%E6%95%B4%E5%90%88%E5%8F%8A%E6%A8%A1%E6%9D%BF%E5%88%B6%E4%BD%9C/f0427dc5be7dbefc79ea2f96fd3aa866.png" alt="image-20230724102714741"></p>
+<h3 id="2-4-4-动态组件常用的属性的用法"><a href="#2-4-4-动态组件常用的属性的用法" class="headerlink" title="2.4.4 动态组件常用的属性的用法"></a>2.4.4 动态组件常用的属性的用法</h3><ol>
+<li>所有动态的组件都是通过Expression表达式来绑定要打印的数据，比如Paramter，Field，Image，Table组件等等。</li>
+</ol>
+<p><img src="/assets/JasperReport%E4%B8%8ESpringBoot%E6%95%B4%E5%90%88%E5%8F%8A%E6%A8%A1%E6%9D%BF%E5%88%B6%E4%BD%9C/895c6e605eac97f4a1889609bc67aad5.png" alt="image-20230724102810556"></p>
+<ol start="2">
+<li><p>所有组件都有一块<code>Print When属性</code>，**其中有一个Print When Expression表达式，可以在返回true的情况下打印，在false的情况下不打印。**这个表达式可以依赖其他Paramter，Field，可以通过它实现一些特殊的打印需求</p>
+<ul>
+<li>表达式例子：<code>new Boolean($F{showtitle1})</code>,<code>new Boolean(true)</code></li>
+<li><a target="_blank" rel="noopener" href="https://community.jaspersoft.com/documentation/tibco-jaspersoft-studio-user-guide/v750/using-java-language-expressions">表达式参考</a></li>
+</ul>
+</li>
+</ol>
+<p><img src="/assets/JasperReport%E4%B8%8ESpringBoot%E6%95%B4%E5%90%88%E5%8F%8A%E6%A8%A1%E6%9D%BF%E5%88%B6%E4%BD%9C/35ba001f3a392dd7e727579984c41a4d.png" alt="image-20230724102904515"></p>
+<h2 id="2-5-springBoot-整合JasperReport基础案例-固定报表"><a href="#2-5-springBoot-整合JasperReport基础案例-固定报表" class="headerlink" title="2.5 springBoot 整合JasperReport基础案例(固定报表)"></a>2.5 springBoot 整合JasperReport基础案例(固定报表)</h2><h3 id="2-5-1-引入依赖"><a href="#2-5-1-引入依赖" class="headerlink" title="2.5.1 引入依赖"></a>2.5.1 引入依赖</h3><blockquote>
+<p>创建一个springBoot项目</p>
+</blockquote>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version=<span class="string">&quot;1.0&quot;</span> encoding=<span class="string">&quot;UTF-8&quot;</span>?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">project</span> <span class="attr">xmlns</span>=<span class="string">&quot;http://maven.apache.org/POM/4.0.0&quot;</span> <span class="attr">xmlns:xsi</span>=<span class="string">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span></span></span><br><span class="line"><span class="tag">         <span class="attr">xsi:schemaLocation</span>=<span class="string">&quot;http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">modelVersion</span>&gt;</span>4.0.0<span class="tag">&lt;/<span class="name">modelVersion</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">parent</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-parent<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">version</span>&gt;</span>2.3.12.RELEASE<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">relativePath</span>/&gt;</span> <span class="comment">&lt;!-- lookup parent from repository --&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">parent</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>site.zhourui<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>jasper-report-demo<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>0.0.1-SNAPSHOT<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">name</span>&gt;</span>jasper-report-demo<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">description</span>&gt;</span>Demo project for Spring Boot<span class="tag">&lt;/<span class="name">description</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">properties</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">java.version</span>&gt;</span>8<span class="tag">&lt;/<span class="name">java.version</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">properties</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">dependencies</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-web<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"></span><br><span class="line">        <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.projectlombok<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>lombok<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">optional</span>&gt;</span>true<span class="tag">&lt;/<span class="name">optional</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-test<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">scope</span>&gt;</span>test<span class="tag">&lt;/<span class="name">scope</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">&lt;!-- Jasper所需jar --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>net.sf.jasperreports<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>jasperreports<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">version</span>&gt;</span>6.5.0<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.olap4j<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>olap4j<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">version</span>&gt;</span>1.2.0<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>com.lowagie<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>itext<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">version</span>&gt;</span>2.1.7<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!-- 根据情况添加数据库驱动 --&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">dependencies</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">build</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">plugins</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">plugin</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-maven-plugin<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">version</span>&gt;</span>2.4.1<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">plugin</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">plugins</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">build</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;/<span class="name">project</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+
+
+
+<h3 id="2-5-2-模板制作"><a href="#2-5-2-模板制作" class="headerlink" title="2.5.2 模板制作"></a>2.5.2 模板制作</h3><ol>
+<li><p>创建<code>jasper</code>文件：<code>File</code> -&gt; <code>New</code> -&gt; <code>Jasper Report</code></p>
+<blockquote>
+<p>我选择的空白A4</p>
+</blockquote>
+</li>
+</ol>
+<p><img src="/assets/JasperReport%E4%B8%8ESpringBoot%E6%95%B4%E5%90%88%E5%8F%8A%E6%A8%A1%E6%9D%BF%E5%88%B6%E4%BD%9C/3a994f7432c72d2cb6671ae59252de35.png" alt="image-20230721100535309"></p>
+<ol start="2">
+<li>制作模版</li>
+</ol>
+<p><img src="/assets/JasperReport%E4%B8%8ESpringBoot%E6%95%B4%E5%90%88%E5%8F%8A%E6%A8%A1%E6%9D%BF%E5%88%B6%E4%BD%9C/1d45daf2bacd43d873eca62b15b180e4.png" alt="image-20230721113929017"></p>
+<ol start="3">
+<li>点击<code>Compile Repot</code>生成<code>Jasper</code>文件</li>
+</ol>
+<p><img src="/assets/JasperReport%E4%B8%8ESpringBoot%E6%95%B4%E5%90%88%E5%8F%8A%E6%A8%A1%E6%9D%BF%E5%88%B6%E4%BD%9C/cac97c04ad25ead3de537ed26f22251f.png" alt="image-20230721114010151"></p>
+<ol start="4">
+<li><p>找到编译后的.jasper文件</p>
+<blockquote>
+<p>编译完成后在下方控制台会提示文件生成地址</p>
+</blockquote>
+</li>
+</ol>
+<p><img src="/assets/JasperReport%E4%B8%8ESpringBoot%E6%95%B4%E5%90%88%E5%8F%8A%E6%A8%A1%E6%9D%BF%E5%88%B6%E4%BD%9C/36183f7d3d00c0ad70e067816c868b27.png" alt="image-20230721114041711"></p>
+<ol start="5">
+<li>找到文件将文件复制到springboot的templates目录下改名为demo.jasper</li>
+</ol>
+<p><img src="/assets/JasperReport%E4%B8%8ESpringBoot%E6%95%B4%E5%90%88%E5%8F%8A%E6%A8%A1%E6%9D%BF%E5%88%B6%E4%BD%9C/8e1ccd16d7ae45c69780608479b5a281.png" alt="image-20230721102001212"></p>
+<h3 id="2-5-3-创建测试Controller"><a href="#2-5-3-创建测试Controller" class="headerlink" title="2.5.3 创建测试Controller"></a>2.5.3 创建测试Controller</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> site.zhourui.jasperreportdemo.controller;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> net.sf.jasperreports.engine.JREmptyDataSource;</span><br><span class="line"><span class="keyword">import</span> net.sf.jasperreports.engine.JasperExportManager;</span><br><span class="line"><span class="keyword">import</span> net.sf.jasperreports.engine.JasperFillManager;</span><br><span class="line"><span class="keyword">import</span> net.sf.jasperreports.engine.JasperPrint;</span><br><span class="line"><span class="keyword">import</span> org.springframework.core.io.ClassPathResource;</span><br><span class="line"><span class="keyword">import</span> org.springframework.core.io.Resource;</span><br><span class="line"><span class="keyword">import</span> org.springframework.web.bind.annotation.GetMapping;</span><br><span class="line"><span class="keyword">import</span> org.springframework.web.bind.annotation.RequestMapping;</span><br><span class="line"><span class="keyword">import</span> org.springframework.web.bind.annotation.RestController;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> javax.servlet.ServletOutputStream;</span><br><span class="line"><span class="keyword">import</span> javax.servlet.http.HttpServletRequest;</span><br><span class="line"><span class="keyword">import</span> javax.servlet.http.HttpServletResponse;</span><br><span class="line"><span class="keyword">import</span> java.io.FileInputStream;</span><br><span class="line"><span class="keyword">import</span> java.util.HashMap;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> zr</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@date</span> 2023/7/20 14:52</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@RestController</span></span><br><span class="line"><span class="meta">@RequestMapping(&quot;/jasper&quot;)</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">demoController</span> &#123;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * JasperReport的简单使用</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@GetMapping(&quot;/test1&quot;)</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">createHtml</span><span class="params">(HttpServletResponse response, HttpServletRequest request)</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line">        <span class="type">Resource</span> <span class="variable">resource</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ClassPathResource</span>(<span class="string">&quot;templates/demo.jasper&quot;</span>);</span><br><span class="line">        <span class="type">FileInputStream</span> <span class="variable">is</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">FileInputStream</span>(resource.getFile());</span><br><span class="line">        <span class="type">ServletOutputStream</span> <span class="variable">os</span> <span class="operator">=</span> response.getOutputStream();</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="comment">/**</span></span><br><span class="line"><span class="comment">             * 创建JasperPrint对象</span></span><br><span class="line"><span class="comment">             * 数据填充</span></span><br><span class="line"><span class="comment">             * is:inputstream params：参数填充 DataSource：数据源填充</span></span><br><span class="line"><span class="comment">             */</span></span><br><span class="line">            <span class="type">JasperPrint</span> <span class="variable">jasperPrint</span> <span class="operator">=</span> JasperFillManager.fillReport(is, <span class="keyword">new</span> <span class="title class_">HashMap</span>&lt;&gt;(), <span class="keyword">new</span> <span class="title class_">JREmptyDataSource</span>());</span><br><span class="line">            <span class="comment">// 写入pdf数据</span></span><br><span class="line">            JasperExportManager.exportReportToPdfStream(jasperPrint, os);</span><br><span class="line">        &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">            os.flush();</span><br><span class="line">            os.close();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+
+<blockquote>
+<p>访问<a target="_blank" rel="noopener" href="http://localhost:8080/jasper/test1">http://localhost:8080/jasper/test1</a></p>
+</blockquote>
+<p><img src="/assets/JasperReport%E4%B8%8ESpringBoot%E6%95%B4%E5%90%88%E5%8F%8A%E6%A8%A1%E6%9D%BF%E5%88%B6%E4%BD%9C/3c711b6d6d75ef4ed945b7d521197427.png" alt="image-20230721114255923"></p>
+<h3 id="2-5-4-JasperReports-不显示中文问题及解决方案"><a href="#2-5-4-JasperReports-不显示中文问题及解决方案" class="headerlink" title="2.5.4 &#x3D;&#x3D;JasperReports 不显示中文问题及解决方案&#x3D;&#x3D;"></a>2.5.4 &#x3D;&#x3D;JasperReports 不显示中文问题及解决方案&#x3D;&#x3D;</h3><h4 id="2-5-4-1-问题展示"><a href="#2-5-4-1-问题展示" class="headerlink" title="2.5.4.1 问题展示"></a>2.5.4.1 问题展示</h4><ol>
+<li>新增了一个带中文Static Text</li>
+</ol>
+<p><img src="/assets/JasperReport%E4%B8%8ESpringBoot%E6%95%B4%E5%90%88%E5%8F%8A%E6%A8%A1%E6%9D%BF%E5%88%B6%E4%BD%9C/619935426863284e0b37a12485fe5a01.png" alt="image-20230721144550322"></p>
+<ol start="2">
+<li>再次生成Jasper文件demo2.Jasper放入templates目录下</li>
+</ol>
+<p><img src="/assets/JasperReport%E4%B8%8ESpringBoot%E6%95%B4%E5%90%88%E5%8F%8A%E6%A8%A1%E6%9D%BF%E5%88%B6%E4%BD%9C/f01d28fb6384033a4ee8fe24c19368be.png" alt="image-20230721144641730"></p>
+<ol start="3">
+<li><p>测试访问<a target="_blank" rel="noopener" href="http://localhost:8080/jasper/test1">http://localhost:8080/jasper/test1</a></p>
+<blockquote>
+<p>新增的Text英文展示出来了,但是中文没有展示出来</p>
+</blockquote>
+</li>
+</ol>
+<p><img src="/assets/JasperReport%E4%B8%8ESpringBoot%E6%95%B4%E5%90%88%E5%8F%8A%E6%A8%A1%E6%9D%BF%E5%88%B6%E4%BD%9C/3097f5d83a0540da0ccbb523b8d27137.png" alt="image-20230721144722061"></p>
+<h4 id="2-5-4-2-问题原因"><a href="#2-5-4-2-问题原因" class="headerlink" title="2.5.4.2 问题原因"></a>2.5.4.2 问题原因</h4><blockquote>
+<p>jasperreports的jar包源码中不包含中文字体库。</p>
+</blockquote>
+<p><img src="/assets/JasperReport%E4%B8%8ESpringBoot%E6%95%B4%E5%90%88%E5%8F%8A%E6%A8%A1%E6%9D%BF%E5%88%B6%E4%BD%9C/5f4f859caf74dc6c069fa75abee89bf9.png" alt="image-20230721163550902"></p>
+<h4 id="2-5-4-3-解决方案-添加中文字体库"><a href="#2-5-4-3-解决方案-添加中文字体库" class="headerlink" title="2.5.4.3 解决方案(添加中文字体库)"></a>2.5.4.3 解决方案(添加中文字体库)</h4><ol>
+<li><p>在JasperReport Studio工具的Window-&gt; Preferences -&gt; font 中add一个微软雅黑的字体</p>
+<blockquote>
+<p><a target="_blank" rel="noopener" href="https://github.com/chengda/popular-fonts">我下载字体的位置</a></p>
+</blockquote>
+</li>
+</ol>
+<p><img src="/assets/JasperReport%E4%B8%8ESpringBoot%E6%95%B4%E5%90%88%E5%8F%8A%E6%A8%A1%E6%9D%BF%E5%88%B6%E4%BD%9C/229b1e3826f057b84221130f7e808be7.png" alt="image-20230721164004818"></p>
+<ol start="2">
+<li>此时就可以选择我们添加的字体了(&#x3D;&#x3D;注意这里有两个微软雅黑要选我们自定义的那个&#x3D;&#x3D;)</li>
+</ol>
+<p><img src="/assets/JasperReport%E4%B8%8ESpringBoot%E6%95%B4%E5%90%88%E5%8F%8A%E6%A8%A1%E6%9D%BF%E5%88%B6%E4%BD%9C/c3b108e90f804b7a292af2b57f47944f.png" alt="image-20230721164239002"></p>
+<ol start="3">
+<li><p>然后我们就可以保存文件重新编译一次然后放入templates目录下改名为demo.jasper</p>
+</li>
+<li><p>在Jaspersoft Studio 打包字体文件Font.jar包</p>
+<ul>
+<li>Jaspersoft Studio中打包Font.jar,步骤如下： Window -&gt; Preferences -&gt; Jaspersoft Studio -&gt; Fonts-&gt;Export</li>
+</ul>
+</li>
+</ol>
+<p><img src="/assets/JasperReport%E4%B8%8ESpringBoot%E6%95%B4%E5%90%88%E5%8F%8A%E6%A8%A1%E6%9D%BF%E5%88%B6%E4%BD%9C/38089158272a4feb9681f0ea060d0362.png" alt="image-20230721164914758"></p>
+<ol start="5">
+<li><p>将导出的font.jar导入项目依赖</p>
+<ol>
+<li><p><strong>通过maven引入</strong></p>
+<ol>
+<li><p>maven打包</p>
+<blockquote>
+<p>&#x3D;&#x3D;注意:你的文件路径可能和我的不一样&#x3D;&#x3D;</p>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mvn install:install-file -Dfile=C:\Users\Administrator\JaspersoftWorkspace\MyReports\font\font.jar -DgroupId=site.zhourui.report -DartifactId=font -Dversion=1.0.0 -Dpackaging=jar</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>maven 引入依赖</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>site.zhourui.report<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>font<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>1.0.0<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>也可以推送到maven远程仓库这个看你自己</p>
+</li>
+</ol>
+</li>
+<li><p><strong>通过Add as Library引入</strong></p>
+<ol>
+<li>只要保证 fonts.jar 在项目的 classpath 中即可！我放到在<code>resources</code>下面</li>
+</ol>
+</li>
+</ol>
+</li>
+</ol>
+<p><img src="/assets/JasperReport%E4%B8%8ESpringBoot%E6%95%B4%E5%90%88%E5%8F%8A%E6%A8%A1%E6%9D%BF%E5%88%B6%E4%BD%9C/b7a5dabd01d41de031c5cf059360c048.png" alt="image-20230721165519859"></p>
+<pre><code>  2. 然后点击鼠标右键
+
+     
+</code></pre>
+<p><img src="/assets/JasperReport%E4%B8%8ESpringBoot%E6%95%B4%E5%90%88%E5%8F%8A%E6%A8%A1%E6%9D%BF%E5%88%B6%E4%BD%9C/ee9e9f178db4cdf1641a7437f684600c.png" alt="image-20230721165541179"></p>
+<pre><code>  3. 选择Classes
+
+     
+</code></pre>
+<p><img src="/assets/JasperReport%E4%B8%8ESpringBoot%E6%95%B4%E5%90%88%E5%8F%8A%E6%A8%A1%E6%9D%BF%E5%88%B6%E4%BD%9C/e610d7301156c1440de30c657fcfad97.png" alt="image-20230721165617905"></p>
+<pre><code>  4. 设置名称和适用范围等
+
+     
+</code></pre>
+<p><img src="/assets/JasperReport%E4%B8%8ESpringBoot%E6%95%B4%E5%90%88%E5%8F%8A%E6%A8%A1%E6%9D%BF%E5%88%B6%E4%BD%9C/83d785b979529811b6b1b0089fdd9f8c.png" alt="image-20230721165715445"></p>
+<ol start="6">
+<li>访问测试<a target="_blank" rel="noopener" href="http://localhost:8080/jasper/test2">http://localhost:8080/jasper/test2</a></li>
+</ol>
+<p><img src="/assets/JasperReport%E4%B8%8ESpringBoot%E6%95%B4%E5%90%88%E5%8F%8A%E6%A8%A1%E6%9D%BF%E5%88%B6%E4%BD%9C/bcb7998d9395ddfc3516f1522606598f.png" alt="image-20230721160544999"></p>
+<h3 id="2-5-5-Java-map-parameter-的方式传入参数"><a href="#2-5-5-Java-map-parameter-的方式传入参数" class="headerlink" title="2.5.5 &#x3D;&#x3D;Java-map(parameter)的方式传入参数&#x3D;&#x3D;"></a>2.5.5 &#x3D;&#x3D;Java-map(parameter)的方式传入参数&#x3D;&#x3D;</h3><ol>
+<li>新增两个参数<code>year</code>,<code>name</code></li>
+</ol>
+<p><img src="/assets/JasperReport%E4%B8%8ESpringBoot%E6%95%B4%E5%90%88%E5%8F%8A%E6%A8%A1%E6%9D%BF%E5%88%B6%E4%BD%9C/38d6fd50b072cb5969d2423ae4f6c3fc.png" alt="image-20230724100619878"></p>
+<ol start="2">
+<li>创建模板使用我们创建的参数</li>
+</ol>
+<p><img src="/assets/JasperReport%E4%B8%8ESpringBoot%E6%95%B4%E5%90%88%E5%8F%8A%E6%A8%A1%E6%9D%BF%E5%88%B6%E4%BD%9C/6d204e66fc162d99d1018d1de7b3dcc9.png" alt="image-20230724100714747"></p>
+<ol start="3">
+<li><p>模板</p>
+<blockquote>
+<p>&#x3D;&#x3D;如果是内容中文记住更换字体&#x3D;&#x3D;</p>
+<p>生成Jasper文件demo3.Jasper放入templates目录下</p>
+</blockquote>
+</li>
+</ol>
+<p><img src="/assets/JasperReport%E4%B8%8ESpringBoot%E6%95%B4%E5%90%88%E5%8F%8A%E6%A8%A1%E6%9D%BF%E5%88%B6%E4%BD%9C/384af23991a7d8396bbbaaab93e41f95.png" alt="image-20230724100757667"></p>
+<ol start="4">
+<li><p>新建测试方法</p>
+<blockquote>
+<p>之前传的是一个空的HashMap</p>
+<p>现在传入对应的值</p>
+</blockquote>
+</li>
+</ol>
+<p><img src="/assets/JasperReport%E4%B8%8ESpringBoot%E6%95%B4%E5%90%88%E5%8F%8A%E6%A8%A1%E6%9D%BF%E5%88%B6%E4%BD%9C/1774dd26a5a084b2e83a722504b95eeb.png" alt="image-20230724101027511"></p>
+   <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * JasperReport携带参数</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> response</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@throws</span> Exception</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@RequestMapping(&quot;/test3&quot;)</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">test3</span><span class="params">(HttpServletResponse response)</span> <span class="keyword">throws</span> Exception&#123;</span><br><span class="line">    <span class="type">Resource</span> <span class="variable">resource</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ClassPathResource</span>(<span class="string">&quot;templates/demo3.jasper&quot;</span>);</span><br><span class="line">    <span class="type">FileInputStream</span> <span class="variable">is</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">FileInputStream</span>(resource.getFile());</span><br><span class="line">    <span class="type">ServletOutputStream</span> <span class="variable">os</span> <span class="operator">=</span> response.getOutputStream();</span><br><span class="line">    Map&lt;String, Object&gt; parameters = <span class="keyword">new</span> <span class="title class_">HashMap</span>&lt;String, Object&gt;();</span><br><span class="line">    parameters.put(<span class="string">&quot;year&quot;</span>, <span class="string">&quot;2023&quot;</span>);</span><br><span class="line">    parameters.put(<span class="string">&quot;name&quot;</span>, <span class="string">&quot;测试&quot;</span>);</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="comment">/**</span></span><br><span class="line"><span class="comment">         * 创建JasperPrint对象</span></span><br><span class="line"><span class="comment">         * 数据填充</span></span><br><span class="line"><span class="comment">         * is:inputstream params：参数填充 DataSource：数据源填充</span></span><br><span class="line"><span class="comment">         */</span></span><br><span class="line">        <span class="type">JasperPrint</span> <span class="variable">jasperPrint</span> <span class="operator">=</span> JasperFillManager.fillReport(is, parameters, <span class="keyword">new</span> <span class="title class_">JREmptyDataSource</span>());</span><br><span class="line">        <span class="comment">// 写入pdf数据</span></span><br><span class="line">        JasperExportManager.exportReportToPdfStream(jasperPrint, os);</span><br><span class="line">    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">        os.flush();</span><br><span class="line">        os.close();</span><br><span class="line">    &#125;</span><br><span class="line">   </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ol start="5">
+<li><p>访问测试</p>
+<blockquote>
+<p>测试链接<a target="_blank" rel="noopener" href="http://localhost:8080/jasper/test3">http://localhost:8080/jasper/test3</a></p>
+</blockquote>
+</li>
+</ol>
+<p><img src="/assets/JasperReport%E4%B8%8ESpringBoot%E6%95%B4%E5%90%88%E5%8F%8A%E6%A8%A1%E6%9D%BF%E5%88%B6%E4%BD%9C/08a48b82dc827b77c352b3f4936fc9f9.png" alt="image-20230724101520967"></p>
+<h3 id="2-5-6-Java-List-Failed-的方式传入参数-并打印多页表单"><a href="#2-5-6-Java-List-Failed-的方式传入参数-并打印多页表单" class="headerlink" title="2.5.6 Java-List(Failed)的方式传入参数,并打印多页表单"></a>2.5.6 Java-List(Failed)的方式传入参数,并打印多页表单</h3><ol>
+<li><p>制作模板</p>
+<blockquote>
+<p>4个属性</p>
+<p>&#x3D;&#x3D;如果有中文注意选择字体&#x3D;&#x3D;</p>
+</blockquote>
+</li>
+</ol>
+<p><img src="/assets/JasperReport%E4%B8%8ESpringBoot%E6%95%B4%E5%90%88%E5%8F%8A%E6%A8%A1%E6%9D%BF%E5%88%B6%E4%BD%9C/87c974271c474ec009590106576a6575.png" alt="image-20230724111911444"></p>
+<ol start="2">
+<li><p>生成Jasper文件demo3.Jasper放入templates目录下</p>
+</li>
+<li><p>新建测试方法</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">     * JasperReport携带参数 ,打印多页表单</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> response</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@throws</span> Exception</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@RequestMapping(&quot;/test4&quot;)</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">test4</span><span class="params">(HttpServletResponse response)</span> <span class="keyword">throws</span> Exception&#123;</span><br><span class="line">        <span class="type">Resource</span> <span class="variable">resource</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ClassPathResource</span>(<span class="string">&quot;templates/demo4.jasper&quot;</span>);</span><br><span class="line">        <span class="type">FileInputStream</span> <span class="variable">is</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">FileInputStream</span>(resource.getFile());</span><br><span class="line">        <span class="type">ServletOutputStream</span> <span class="variable">os</span> <span class="operator">=</span> response.getOutputStream();</span><br><span class="line">        <span class="type">Random</span> <span class="variable">random</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Random</span>();</span><br><span class="line"></span><br><span class="line">        List&lt;HashMap&gt; list = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;&gt;();</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>; i &lt; <span class="number">100</span>; i++) &#123;</span><br><span class="line">            HashMap&lt;String, String&gt; item = <span class="keyword">new</span> <span class="title class_">HashMap</span>&lt;String, String&gt;();</span><br><span class="line">            item.put(<span class="string">&quot;Field_1&quot;</span>,  <span class="string">&quot;员工-&quot;</span> + i);</span><br><span class="line">            item.put(<span class="string">&quot;Field_2&quot;</span>,  <span class="string">&quot;部门-&quot;</span> + i);</span><br><span class="line">            item.put(<span class="string">&quot;Field_3&quot;</span>,  i%<span class="number">2</span>==<span class="number">0</span>?<span class="string">&quot;男&quot;</span>:<span class="string">&quot;女&quot;</span>);</span><br><span class="line">            item.put(<span class="string">&quot;Field_4&quot;</span>, String.valueOf(random.nextInt(<span class="number">10000</span> - <span class="number">8000</span>) + <span class="number">8000</span> + <span class="number">1</span>));<span class="comment">//8000-10000</span></span><br><span class="line">            list.add(item);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="type">JRDataSource</span> <span class="variable">dataSource</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">JRBeanCollectionDataSource</span>(list);</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="comment">/**</span></span><br><span class="line"><span class="comment">             * 创建JasperPrint对象</span></span><br><span class="line"><span class="comment">             * 数据填充</span></span><br><span class="line"><span class="comment">             * is:inputstream params：参数填充 DataSource：数据源填充</span></span><br><span class="line"><span class="comment">             */</span></span><br><span class="line">            <span class="type">JasperPrint</span> <span class="variable">jasperPrint</span> <span class="operator">=</span> JasperFillManager.fillReport(is, <span class="keyword">new</span> <span class="title class_">HashMap</span>&lt;&gt;(), dataSource);</span><br><span class="line">            <span class="comment">// 写入pdf数据</span></span><br><span class="line">            JasperExportManager.exportReportToPdfStream(jasperPrint, os);</span><br><span class="line">        &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">            os.flush();</span><br><span class="line">            os.close();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>测试效果  访问<a target="_blank" rel="noopener" href="http://localhost:8080/jasper/test4">http://localhost:8080/jasper/test4</a></p>
+</li>
+</ol>
+<p><img src="/assets/JasperReport%E4%B8%8ESpringBoot%E6%95%B4%E5%90%88%E5%8F%8A%E6%A8%A1%E6%9D%BF%E5%88%B6%E4%BD%9C/bfcaef9d6ac4f8c9f14455fd7810a24a.png" alt="image-20230724111830672"></p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>Author: </span><span class="post-copyright-info"><a href="https://yuanzhang788.github.io">Yuanz</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>Link: </span><span class="post-copyright-info"><a href="https://yuanzhang788.github.io/2023/07/24/JasperReport%E4%B8%8ESpringBoot%E6%95%B4%E5%90%88%E5%8F%8A%E6%A8%A1%E6%9D%BF%E5%88%B6%E4%BD%9C/">https://yuanzhang788.github.io/2023/07/24/JasperReport%E4%B8%8ESpringBoot%E6%95%B4%E5%90%88%E5%8F%8A%E6%A8%A1%E6%9D%BF%E5%88%B6%E4%BD%9C/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>Copyright Notice: </span><span class="post-copyright-info">All articles on this blog are licensed under <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless otherwise stated.</span></div></div><div class="tag_share"><div class="post-share"><div class="social-share" data-image="/img/butterfly-icon.png" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2023/08/08/%E4%BD%BF%E7%94%A8%20Docker%20%E9%83%A8%E7%BD%B2%20Prometheus%20+%20Grafana%20%E7%9B%91%E6%8E%A7%E5%B9%B3%E5%8F%B0/" title="使用 Docker 部署 Prometheus + Grafana 监控平台"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info"><div class="info-1"><div class="info-item-1">Previous</div><div class="info-item-2">使用 Docker 部署 Prometheus + Grafana 监控平台</div></div><div class="info-2"><div class="info-item-1">使用 Docker 部署 Prometheus + Grafana 监控平台 默认docker 已经安装好,我使用的是CentOS7 &#x3D;&#x3D;注意一定要开启服务器对应的端口&#x3D;&#x3D;  1. 安装Prometheus1docker run -itd --name=prometheus --restart=always -p 9090:9090 prom/prometheus     访问:http://ip:9090   2.安装Grafana123456#这里的$PWD就是你的当前位置,我当前位置在/root,那么grafana-storage就会生成在/root下docker run -itd --name=grafana \&gt; --restart=always \&gt; -p 3000:3000 \&gt; -v $PWD/grafana-storage:/var/lib/grafana \&gt; grafana/grafana     访问:http://ip:3000 账号密码都是admin    登录进来后此处可以修改密码   ...</div></div></div></a><a class="pagination-related" href="/2023/07/15/Netty%E6%A0%B8%E5%BF%83%E6%8A%80%E6%9C%AF%E5%8D%81%E4%B8%80--%E7%94%A8Netty%20%E8%87%AA%E5%B7%B1%20%E5%AE%9E%E7%8E%B0%20dubbo%20RPC/" title="Netty核心技术十一--用Netty 自己 实现 dubbo RPC"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">Next</div><div class="info-item-2">Netty核心技术十一--用Netty 自己 实现 dubbo RPC</div></div><div class="info-2"><div class="info-item-1">1. RPC基本介绍 RPC（Remote Procedure Call）:远程 过程调用，是一个计算机 通信协议。该协议允许运 行于一台计算机的程序调 用另一台计算机的子程序， 而程序员无需额外地为这 个交互作用编程  两个或多个应用程序都分 布在不同的服务器上，它 们之间的调用都像是本地 方法调用一样(如图)     常见的 RPC 框架有: 比较知名的如阿里的Dubbo、google的gRPC、Go语言的rpcx、Apache的thrift， Spring 旗下的 Spring Cloud。  2. RPC调用流程图 术语说明：在RPC中，  Client叫服务消费者 Server叫服务提供者    3. PRC调用流程说明 **服务消费方(client)**以本地调用方式调用服务  client stub 接收到调用后负责将方法、参数等封装成能够进行网络传输的消息体 client stub 将消息进行编码并发送到服务端  server stub 收到消息后进行解码  server stub 根据解码结果调用本地的服务 地服务执行并将结果返回给 server stub  s...</div></div></div></a></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/butterfly-icon.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">Yuanz</div><div class="author-info-description">Yuanz的个人博客</div><div class="site-data"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">176</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">0</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">0</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>Announcement</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>Contents</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#0-%E7%A4%BA%E4%BE%8B%E4%BB%A3%E7%A0%81"><span class="toc-number">1.</span> <span class="toc-text">0. 示例代码</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#1-%E6%8A%A5%E8%A1%A8%E4%BB%8B%E7%BB%8D"><span class="toc-number">2.</span> <span class="toc-text">1. 报表介绍</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-1-%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E4%BD%BF%E7%94%A8%E6%8A%A5%E8%A1%A8"><span class="toc-number">2.1.</span> <span class="toc-text">1.1 为什么要使用报表?</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#2-JasperReport"><span class="toc-number">3.</span> <span class="toc-text">2. JasperReport</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#2-1-%E6%A1%86%E6%9E%B6%E4%BB%8B%E7%BB%8D"><span class="toc-number">3.1.</span> <span class="toc-text">2.1 框架介绍</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-2-%E7%9B%B8%E5%85%B3%E6%96%87%E4%BB%B6%E4%BB%8B%E7%BB%8D"><span class="toc-number">3.2.</span> <span class="toc-text">2.2 相关文件介绍</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-3-%E5%BC%80%E5%8F%91%E6%B5%81%E7%A8%8B%E6%A6%82%E8%BF%B0"><span class="toc-number">3.3.</span> <span class="toc-text">2.3 开发流程概述</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-4-%E6%A8%A1%E6%9D%BF%E5%B7%A5%E5%85%B7Jaspersoft-Studio"><span class="toc-number">3.4.</span> <span class="toc-text">2.4 模板工具Jaspersoft Studio</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-4-1-Jaspersoft-Studio-CE%E4%B8%8B%E8%BD%BD"><span class="toc-number">3.4.1.</span> <span class="toc-text">2.4.1 Jaspersoft Studio CE下载</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-4-2-%E9%9D%A2%E6%9D%BF%E4%BB%8B%E7%BB%8D"><span class="toc-number">3.4.2.</span> <span class="toc-text">2.4.2 面板介绍</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-4-3-Paramter%EF%BC%8CField%E5%92%8CDetail%E5%9F%BA%E6%9C%AC%E7%BB%84%E4%BB%B6%E4%BB%8B%E7%BB%8D"><span class="toc-number">3.4.3.</span> <span class="toc-text">2.4.3 Paramter，Field和Detail基本组件介绍</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#2-4-3-1-Paramters"><span class="toc-number">3.4.3.1.</span> <span class="toc-text">2.4.3.1 Paramters</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-4-3-2-Fields"><span class="toc-number">3.4.3.2.</span> <span class="toc-text">2.4.3.2 Fields</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-4-3-3-Detail"><span class="toc-number">3.4.3.3.</span> <span class="toc-text">2.4.3.3  Detail</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-4-4-%E5%8A%A8%E6%80%81%E7%BB%84%E4%BB%B6%E5%B8%B8%E7%94%A8%E7%9A%84%E5%B1%9E%E6%80%A7%E7%9A%84%E7%94%A8%E6%B3%95"><span class="toc-number">3.4.4.</span> <span class="toc-text">2.4.4 动态组件常用的属性的用法</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-5-springBoot-%E6%95%B4%E5%90%88JasperReport%E5%9F%BA%E7%A1%80%E6%A1%88%E4%BE%8B-%E5%9B%BA%E5%AE%9A%E6%8A%A5%E8%A1%A8"><span class="toc-number">3.5.</span> <span class="toc-text">2.5 springBoot 整合JasperReport基础案例(固定报表)</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-5-1-%E5%BC%95%E5%85%A5%E4%BE%9D%E8%B5%96"><span class="toc-number">3.5.1.</span> <span class="toc-text">2.5.1 引入依赖</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-5-2-%E6%A8%A1%E6%9D%BF%E5%88%B6%E4%BD%9C"><span class="toc-number">3.5.2.</span> <span class="toc-text">2.5.2 模板制作</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-5-3-%E5%88%9B%E5%BB%BA%E6%B5%8B%E8%AF%95Controller"><span class="toc-number">3.5.3.</span> <span class="toc-text">2.5.3 创建测试Controller</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-5-4-JasperReports-%E4%B8%8D%E6%98%BE%E7%A4%BA%E4%B8%AD%E6%96%87%E9%97%AE%E9%A2%98%E5%8F%8A%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88"><span class="toc-number">3.5.4.</span> <span class="toc-text">2.5.4 &#x3D;&#x3D;JasperReports 不显示中文问题及解决方案&#x3D;&#x3D;</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#2-5-4-1-%E9%97%AE%E9%A2%98%E5%B1%95%E7%A4%BA"><span class="toc-number">3.5.4.1.</span> <span class="toc-text">2.5.4.1 问题展示</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-5-4-2-%E9%97%AE%E9%A2%98%E5%8E%9F%E5%9B%A0"><span class="toc-number">3.5.4.2.</span> <span class="toc-text">2.5.4.2 问题原因</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-5-4-3-%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88-%E6%B7%BB%E5%8A%A0%E4%B8%AD%E6%96%87%E5%AD%97%E4%BD%93%E5%BA%93"><span class="toc-number">3.5.4.3.</span> <span class="toc-text">2.5.4.3 解决方案(添加中文字体库)</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-5-5-Java-map-parameter-%E7%9A%84%E6%96%B9%E5%BC%8F%E4%BC%A0%E5%85%A5%E5%8F%82%E6%95%B0"><span class="toc-number">3.5.5.</span> <span class="toc-text">2.5.5 &#x3D;&#x3D;Java-map(parameter)的方式传入参数&#x3D;&#x3D;</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-5-6-Java-List-Failed-%E7%9A%84%E6%96%B9%E5%BC%8F%E4%BC%A0%E5%85%A5%E5%8F%82%E6%95%B0-%E5%B9%B6%E6%89%93%E5%8D%B0%E5%A4%9A%E9%A1%B5%E8%A1%A8%E5%8D%95"><span class="toc-number">3.5.6.</span> <span class="toc-text">2.5.6 Java-List(Failed)的方式传入参数,并打印多页表单</span></a></li></ol></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Posts</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/06/05/hello-world/" title="Hello World">Hello World</a><time datetime="2026-06-05T09:30:56.120Z" title="Created 2026-06-05 17:30:56">2026-06-05</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/05/28/%E4%BB%8E%E9%9B%B6%E5%BC%80%E5%A7%8B%EF%BC%8C%E5%9F%BA%E4%BA%8E-Hexo-GitHub-Pages-%E6%90%AD%E5%BB%BA%E4%B8%80%E4%B8%AA%E5%B1%9E%E4%BA%8E%E8%87%AA%E5%B7%B1%E7%9A%84%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2%EF%BC%8C%E5%B9%B6%E5%AE%8C%E6%88%90%E4%B8%BB%E9%A2%98%E5%88%87%E6%8D%A2%E4%B8%8E%E9%83%A8%E7%BD%B2%E3%80%82%EF%BC%88%E8%B6%85%E8%AF%A6%E7%BB%86%E6%95%99%E7%A8%8B%EF%BC%89/" title="从零开始，基于 Hexo + GitHub Pages 搭建一个属于自己的个人博客，并完成主题切换与部署。（超详细教程）">从零开始，基于 Hexo + GitHub Pages 搭建一个属于自己的个人博客，并完成主题切换与部署。（超详细教程）</a><time datetime="2026-05-28T06:27:02.000Z" title="Created 2026-05-28 14:27:02">2026-05-28</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/05/22/%E7%AC%AC%E4%B8%80%E7%AF%87-Github-Pages%E5%8D%9A%E5%AE%A2/" title="第一篇 Github Pages博客">第一篇 Github Pages博客</a><time datetime="2026-05-22T09:25:44.000Z" title="Created 2026-05-22 17:25:44">2026-05-22</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/05/20/Java%20Excel%E5%AF%BC%E5%87%BA%EF%BC%9A%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E8%87%AA%E5%AE%9A%E4%B9%89%E8%A1%A8%E5%A4%B4%E4%B8%8E%E5%AD%97%E6%AE%B5%E9%A1%BA%E5%BA%8F%E7%9A%84%E5%AE%8C%E5%85%A8%E6%8E%A7%E5%88%B6/" title="Java Excel导出：如何实现自定义表头与字段顺序的完全控制">Java Excel导出：如何实现自定义表头与字段顺序的完全控制</a><time datetime="2026-05-20T10:02:18.000Z" title="Created 2026-05-20 18:02:18">2026-05-20</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/05/07/Docker%20%E5%AE%89%E8%A3%85%20%E6%95%B0%E6%8D%AE%E5%BA%93%E5%B7%A5%E5%8D%95%E7%B3%BB%E7%BB%9FYearning%E4%BB%A5%E5%8F%8A%E4%BD%BF%E7%94%A8/" title="Docker 安装 数据库工单系统Yearning以及使用">Docker 安装 数据库工单系统Yearning以及使用</a><time datetime="2026-05-07T06:10:08.000Z" title="Created 2026-05-07 14:10:08">2026-05-07</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2025 - 2026 By Yuanz</span><span class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 8.1.2</a><span class="footer-separator">|</span><span>Theme </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.5.5-b1</a></span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="Reading Mode"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="Toggle Between Light and Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle Between Single-column and Double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="Settings"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="Table of Contents"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="Back to Top"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.5.5-b1"></script><script src="/js/main.js?v=5.5.5-b1"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
