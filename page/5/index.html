@@ -1,14 +1,14 @@
-<!DOCTYPE html><html lang="cn" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>Yuanz - 个人博客</title><meta name="author" content="Yuanz"><meta name="copyright" content="Yuanz"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="Yuanz的个人博客">
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>Yuanz - 个人博客</title><meta name="author" content="Yuanz"><meta name="copyright" content="Yuanz"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="ffffff"><meta name="description" content="Yuanz的个人博客">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Yuanz">
 <meta property="og:url" content="https://yuanzhang788.github.io/page/5/index.html">
 <meta property="og:site_name" content="Yuanz">
 <meta property="og:description" content="Yuanz的个人博客">
-<meta property="og:locale">
-<meta property="og:image" content="https://yuanzhang788.github.io/img/butterfly-icon.png">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png">
 <meta property="article:author" content="Yuanz">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://yuanzhang788.github.io/img/butterfly-icon.png"><script type="application/ld+json"></script><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://yuanzhang788.github.io/page/5/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=5.5.5-b1"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><script>
+<meta name="twitter:image" content="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png"><script type="application/ld+json"></script><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://yuanzhang788.github.io/page/5/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>
     (() => {
       
     const saveToLocal = {
@@ -54,7 +54,7 @@
         document.head.appendChild(link)
       }),
       addGlobalFn: (key, fn, name = false, parent = window) => {
-        if (!false && key.startsWith('pjax')) return
+        if (!true && key.startsWith('pjax')) return
         const globalFn = parent.globalFn || {}
         globalFn[key] = globalFn[key] || {}
         globalFn[key][name || Object.keys(globalFn[key]).length] = fn
@@ -72,7 +72,7 @@
       const activateLightMode = () => {
         document.documentElement.setAttribute('data-theme', 'light')
         if (document.querySelector('meta[name="theme-color"]') !== null) {
-          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'ffffff')
         }
       }
 
@@ -81,7 +81,25 @@
 
       const theme = saveToLocal.get('theme')
     
-          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+          const mediaQueryDark = window.matchMedia('(prefers-color-scheme: dark)')
+          const mediaQueryLight = window.matchMedia('(prefers-color-scheme: light)')
+
+          if (theme === undefined) {
+            if (mediaQueryLight.matches) activateLightMode()
+            else if (mediaQueryDark.matches) activateDarkMode()
+            else {
+              const hour = new Date().getHours()
+              const isNight = hour <= 6 || hour >= 18
+              isNight ? activateDarkMode() : activateLightMode()
+            }
+            mediaQueryDark.addEventListener('change', () => {
+              if (saveToLocal.get('theme') === undefined) {
+                e.matches ? activateDarkMode() : activateLightMode()
+              }
+            })
+          } else {
+            theme === 'light' ? activateLightMode() : activateDarkMode()
+          }
         
       
       const asideStatus = saveToLocal.get('aside-status')
@@ -101,52 +119,82 @@
   </script><script>const GLOBAL_CONFIG = {
   root: '/',
   algolia: undefined,
-  localSearch: undefined,
+  localSearch: {"path":"/search.json","preload":false,"top_n_per_article":1,"unescape":false,"pagination":{"enable":false,"hitsPerPage":8},"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
   translate: undefined,
-  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":400,"highlightFullpage":true,"highlightMacStyle":true},
   copy: {
-    success: 'Copy Successful',
-    error: 'Copy Failed',
-    noSupport: 'Browser Not Supported'
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
   },
   relativeDate: {
-    homepage: false,
+    homepage: true,
     post: false
   },
-  runtime: '',
+  runtime: '天',
   dateSuffix: {
-    just: 'Just now',
-    min: 'minutes ago',
-    hour: 'hours ago',
-    day: 'days ago',
-    month: 'months ago'
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
   },
-  copyright: undefined,
-  lightbox: 'null',
-  Snackbar: undefined,
+  copyright: {"limitCount":50,"languages":{"author":"作者: Yuanz","link":"链接: ","source":"来源: Yuanz","info":"著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。"}},
+  lightbox: 'fancybox',
+  Snackbar: {"chs_to_cht":"已切换为繁体中文","cht_to_chs":"已切换为简体中文","day_to_night":"已切换为深色模式","night_to_day":"已切换为浅色模式","bgLight":"#49b1f5","bgDark":"#1f1f1f","position":"bottom-left"},
   infinitegrid: {
-    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.0/dist/infinitegrid.min.js',
-    buttonText: 'Load More'
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
   },
-  isPhotoFigcaption: false,
-  islazyloadPlugin: false,
+  isPhotoFigcaption: true,
+  islazyloadPlugin: true,
   isAnchor: false,
   percent: {
     toc: true,
     rightside: false,
   },
-  autoDarkmode: false
+  autoDarkmode: true
 }</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
   title: 'Yuanz',
   isHighlightShrink: false,
   isToc: false,
   pageType: 'home'
-}</script><meta name="generator" content="Hexo 8.1.2"></head><body><div class="page" id="body-wrap"><header class="full_page" id="page-header"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">Yuanz</span></a></span><div id="menus"></div></nav><div id="site-info"><h1 id="site-title">Yuanz</h1></div><div id="scroll-down"><i class="fas fa-angle-down scroll-down-effects"></i></div></header><main class="layout" id="content-inner"><div class="recent-posts nc" id="recent-posts"><div class="recent-post-items"><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2025/02/20/Docker%20Mysql%20%E6%95%B0%E6%8D%AE%E8%BF%81%E7%A7%BB/" title="Docker Mysql 数据迁移">Docker Mysql 数据迁移</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">Created</span><time datetime="2025-02-20T10:08:32.000Z" title="Created 2025-02-20 18:08:32">2025-02-20</time></span></div><div class="content">查看启动命令目录映射 查看容器名称  1docker ps     查看容器的启动命令  1docker inspect mysql8.0 |grep &#x27;CreateCommand&#x27; -A 20    如下图所示:我这边是把&#x2F;var&#x2F;lib&#x2F;mysql 目录映射到我宿主机的&#x2F;mnt&#x2F;mysql&#x2F;data目录下,而且我的数量比较大使用方法1的话时间比较久,所以我采用方法2  如果没有映射可以通过docker cp 的方式复制到宿主机后,也可以用方法二    方法 1：使用 mysqldump（推荐）方法1就是将所有库打包成sql,然后再通过sql导入库适用于数据量 不太大，保证数据完整性。 步骤 1：在源服务器上导出 MySQL 数据运行以下命令，将 MySQL 所有数据库 导出为 backup.sql： 1docker exec -it mysql8.0 mysqldump -uroot -p --all-databases &gt; backup.sql   如果你只想导出某个数据库： 1docke...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2025/02/20/%E6%9C%8D%E5%8A%A1%E5%99%A8%E6%95%B0%E6%8D%AE%E8%BF%81%E7%A7%BB%E6%9F%90%E4%B8%AA%E7%9B%AE%E5%BD%95%E4%B8%8B%E7%9A%84%E6%89%80%E6%9C%89%E6%96%87%E4%BB%B6%E5%88%B0%E5%8F%A6%E4%B8%80%E5%8F%B0%E6%9C%8D%E5%8A%A1%E5%99%A8/" title="服务器数据迁移某个目录下的所有文件到另一台服务器">服务器数据迁移某个目录下的所有文件到另一台服务器</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">Created</span><time datetime="2025-02-20T02:50:16.000Z" title="Created 2025-02-20 10:50:16">2025-02-20</time></span></div><div class="content">方法 1：使用 rsync（推荐）rsync 适用于大文件或大量文件的迁移，支持增量同步： 1rsync -avz --progress -e &quot;ssh -p 你的端口&quot; /ai/ 用户名@目标服务器IP:/ai/   参数解析 -a ：保持文件权限、时间等属性 -v ：显示详细信息 -z ：压缩数据，提高传输效率 --progress ：显示进度 -e &quot;ssh -p 你的端口&quot; ：指定 SSH 端口（如果不是默认的 22） 如果是22端口不用指定    示例（假设 SSH 端口为 22）： 1rsync -avz --progress /ai/ root@192.168.1.100:/ai/     IP地址换成迁移目的服务器的ip地址 然后输入yes后回车,同意链接 最后输入迁移目的服务器密码     文件开始传输    文件传输完成    以下命令慎用,会删除原来服务器的文件  如果你需要 删除源服务器上已经迁移的文件，可以加上 --remove-source-files： 1rsync -avz --progress --remo...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2025/02/14/Springboot%20RabbitMQ%20%E6%B6%88%E8%B4%B9%E5%A4%B1%E8%B4%A5%E6%B6%88%E6%81%AF%E6%B8%85%E6%B4%97%E4%B8%8E%E9%87%8D%E8%AF%95%E6%9C%BA%E5%88%B6/" title="Springboot RabbitMQ 消费失败消息清洗与重试机制">Springboot RabbitMQ 消费失败消息清洗与重试机制</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">Created</span><time datetime="2025-02-14T05:56:39.000Z" title="Created 2025-02-14 13:56:39">2025-02-14</time></span></div><div class="content">📌 引言在分布式系统中，RabbitMQ 是一个非常流行的消息队列中间件，广泛用于解耦系统、异步处理任务、提高系统性能。然而，在实际使用中，消费端可能因为 代码异常、数据库故障、网络问题 等原因导致消息消费失败。 如果不对这些失败消息进行处理，可能会导致数据丢失，影响业务流程。因此，我们需要一个 可靠的失败消息清洗和重试机制 来保证消息最终被成功消费或进行合理的存储处理。  📌 1. 失败消息的常见问题在 RabbitMQ 消费过程中，可能会遇到以下问题：  消息处理逻辑异常（如空指针异常、数据格式转换错误）。 数据库异常（如主键冲突、唯一索引冲突、数据库连接失败）。 外部依赖不可用（如调用第三方 API 超时）。 消息重复消费（由于网络抖动或 RabbitMQ 配置问题）。  这些异常可能导致：  消息丢失：如果 RabbitMQ 没有进行消息重试，消息可能永远丢失。 死循环消费：如果未配置死信队列（DLX），消息可能会不断重新入队，造成死循环。 系统压力过大：频繁失败的消息可能会影响正常消息的消费，拖垮整个消费端。  因此，我们需要一个 完整的失败消息清洗与重试机制 来保...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2025/02/07/MyBatis%20Plus%20like%20%E5%8F%82%E6%95%B0%E4%B8%BA%E7%99%BE%E5%88%86%E5%8F%B7%E6%9F%A5%E8%AF%A2%E7%BB%93%E6%9E%9C%E5%BC%82%E5%B8%B8%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88/" title="MyBatis Plus like 参数为百分号%查询结果异常解决方案">MyBatis Plus like 参数为百分号%查询结果异常解决方案</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">Created</span><time datetime="2025-02-07T09:13:23.000Z" title="Created 2025-02-07 17:13:23">2025-02-07</time></span></div><div class="content">在日常开发中，我们经常使用 MyBatis Plus 进行数据库查询。其中，LIKE 关键字用于模糊匹配，但如果用户输入的查询条件包含 %，可能会导致查询结果异常。如下图,数据库里面是没有%的plate_number数据的,但是查询出86条数据  问题分析我们来看一段 MyBatis Plus 的查询代码： 1234queryWrapper    .like(StringUtils.hasText(reqVo.getPlateNumber()), HlCar::getPlateNumber, reqVo.getPlateNumber())    .like(StringUtils.hasText(reqVo.getVin()), HlCar::getVin, reqVo.getVin())    .like(StringUtils.hasText(reqVo.getModelName()), HlCar::getCarSeries, reqVo.getModelName());   该代码的意图是：  如果 reqVo.getPlateNumber()、reqVo.getVin(...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2025/02/06/%E5%9F%BA%E4%BA%8E%20Ollama+Docker+OpenWebUI%20%E7%9A%84%E6%9C%AC%E5%9C%B0%E5%8C%96%E9%83%A8%E7%BD%B2deepseek%E6%B5%81%E7%A8%8B/" title="基于 Ollama+Docker+OpenWebUI 的本地化部署deepseek流程">基于 Ollama+Docker+OpenWebUI 的本地化部署deepseek流程</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">Created</span><time datetime="2025-02-06T08:21:23.000Z" title="Created 2025-02-06 16:21:23">2025-02-06</time></span></div><div class="content">搭建deepseek安装OllamaOllama官方下载地址  下载完成后双击打开Ollama进行安装,点击install  安装完成后系统会弹出下图提示代表安装成功并且已启动  验证安装 1ollama -v   安装完成后，cmd 打开命令行窗口，输入 “ollama -v” 测试，显示 ollama 的版本为 “0.5.7”，表明安装成功。  Ollama 没有用户界面，在后台运行。 打开浏览器，输入 “http://localhost:11434/”，显示 “Ollama is running”。  Ollma 安装 deepseek-r1 模型deepseek-r1 模型介绍从 ollama 官网 查找 deepseek-r1 模型。  DeepSeek-R1 提供多个参数版本，不同版本的计算资源需求不同：    模型版本 参数量 存储需求    1.5B 15 亿 1.1GB   7B 70 亿 4.7GB   14B 140 亿 9GB   32B 320 亿 20GB   70B 700 亿 40GB   671B 6710 亿 500GB   建议： 如果是初次...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2025/01/22/%E9%98%BF%E9%87%8C%E4%BA%91%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%AA%81%E7%84%B6%E6%9C%89%E5%A4%A7%E9%87%8Fnmap%E6%9C%8D%E5%8A%A1%E5%8D%A0%E7%94%A8%E5%A4%A7%E9%87%8FCPU%E6%8E%92%E6%9F%A5%E5%8F%8A%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88/" title="阿里云服务器突然有大量nmap服务占用大量CPU排查及解决方案">阿里云服务器突然有大量nmap服务占用大量CPU排查及解决方案</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">Created</span><time datetime="2025-01-22T08:47:52.000Z" title="Created 2025-01-22 16:47:52">2025-01-22</time></span></div><div class="content">问题描述突然有一天服务器访问很卡顿,在阿里云后台查看CPU,内存,系统平均负载等参数发现没问题  但是登陆服务器后,发现大量nmap服务占用大量CPU,但是这台管理员并没有主动安装过nmap  原因及对应预防方案暴力破解 SSH 密码：通过爆破弱密码或没有加固的 SSH 配置。 解决方案: 使用强密码和密钥认证   修改默认端口号   启用防暴力破解工具  fail2ban 或类似工具   通过防火墙（如 iptables 或 ufw）限制 SSH 的访问范围 配置Ip白名单    利用服务漏洞：利用未打补丁的服务漏洞（如 Log4j 漏洞、Apache Struts 漏洞）远程植入恶意脚本。 及时更新服务组件  12sudo apt update &amp;&amp; sudo apt upgrade    关闭不必要的服务  123sudo systemctl list-units --type=servicesudo systemctl stop &lt;service-name&gt;sudo systemctl disable &lt;service-name&gt; ...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2025/01/10/%E4%BD%BF%E7%94%A8Mybatis%20plus%20selectPage%20queryWrapper%20in%E6%97%B6,%E6%9F%A5%E8%AF%A2%E7%BB%93%E6%9E%9C%E7%9A%84id%E9%A1%BA%E5%BA%8F%E5%92%8C%E4%BC%A0%E5%85%A5%E7%9A%84id%E9%A1%BA%E5%BA%8F%E4%B8%8D%E4%B8%80%E8%87%B4/" title="使用Mybatis plus selectPage queryWrapper in时,查询结果的id顺序和传入的id顺序不一致">使用Mybatis plus selectPage queryWrapper in时,查询结果的id顺序和传入的id顺序不一致</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">Created</span><time datetime="2025-01-10T06:38:49.000Z" title="Created 2025-01-10 14:38:49">2025-01-10</time></span></div><div class="content">问题 使用mybatis plus selectPage queryWrapper in pagedIds 时,查询结果的id顺序和传入的id顺序不一致.如下图   原因 MyBatis 的 LambdaQueryWrapper 本身没有直接支持根据 List 中的顺序进行排序的功能。它会生成 IN 查询，但是不会保证结果的顺序与 List 中的元素顺序一致。为了确保查询结果按照 pagedIds 列表中的顺序返回，需要在查询中显式指定排序顺序。   解决方案  在 MySQL 中，可以使用 FIELD() 函数来根据指定顺序对结果进行排序。你可以在 LambdaQueryWrapper 中使用 .last() 方法来添加自定义的 SQL 语句，从而实现按 pagedIds 顺序排序。    实现 将pagedIds构造为FIELD 排序 SQL 片段,再在queryWrapper中添加自定义sql语句  12345678910// 		构造 FIELD 排序 SQL 片段        String orderByField = pagedIds.stream()       ...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2025/01/06/%E4%BD%BF%E7%94%A8%20Spring%20Boot%20%E5%AE%9E%E7%8E%B0%E9%92%89%E9%92%89%E6%B6%88%E6%81%AF%E5%8F%91%E9%80%81%E6%B6%88%E6%81%AF/" title="使用 Spring Boot 实现钉钉消息发送消息">使用 Spring Boot 实现钉钉消息发送消息</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">Created</span><time datetime="2025-01-06T09:43:13.000Z" title="Created 2025-01-06 17:43:13">2025-01-06</time></span></div><div class="content">钉钉官方文档(Webhook同步数据) 在这篇博客中，我们将详细介绍如何使用 Spring Boot 集成钉钉机器人，构建一个发送钉钉消息的服务，并通过 OkHttp 实现 HTTP 请求，同时使用 Hutool 提供便捷的 POST 请求工具。  功能概述本服务的主要功能是通过钉钉机器人接口发送 Markdown 格式的消息。  自动化生成签名（sign）以保障接口安全。 支持 @ 特定用户或全体成员。 使用 OkHttpClient 发送 POST 请求。 支持以 JSON 格式组织消息内容。   实现步骤1. 新建群聊(添加机器人)   设置关键词keyword,加签获取secret    完成后拿到Webhook   2. 配置依赖在项目的 pom.xml 文件中引入必要的依赖： 12345678910111213141516171819202122232425262728&lt;dependencies&gt;  &lt;!-- Spring Boot Starter --&gt;  &lt;dependency&gt;    &lt;groupId&gt;org.sp...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2025/01/02/Redis%20%E4%BD%BF%E7%94%A8redisTemplate%E8%8E%B7%E5%8F%96%E6%9F%90%E4%B8%AA%E8%A7%84%E5%88%99%E4%B8%8B%E7%9A%84key%E7%9A%84%E5%85%A8%E9%87%8F%E6%95%B0%E6%8D%AE(%E7%A4%BA%E4%BE%8BSet%E7%BB%93%E6%9E%84)/" title="Redis 使用redisTemplate获取某个规则下的key的全量数据(示例Set结构)">Redis 使用redisTemplate获取某个规则下的key的全量数据(示例Set结构)</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">Created</span><time datetime="2025-01-02T09:06:46.000Z" title="Created 2025-01-02 17:06:46">2025-01-02</time></span></div><div class="content"> 如下是redis中存储的数据结构 我想取key以favorites:结尾的所有数据     Redis 的 SCAN 命令用于迭代数据库中的键，支持通过模式过滤结果。模式规则基于 Redis 的通配符匹配语法，类似于文件名匹配规则： *：匹配零个或多个字符。 ?：匹配一个字符。 [abc]：匹配括号中的任意一个字符。 [a-z]：匹配括号中的字符范围。 如:ScanOptions.scanOptions().match(“*favorites:”)即为匹配以favorites:结尾的key   因为我这个存储的Set类型的数据结构,所以用HashMap&lt;String, Set&gt; stringLongHashMap接数据,不同的数据类型换一下即可   1234567891011121314151617181920212223242526272829303132333435363738394041424344/** * 获取所有以 &quot;favorites:&quot; 结尾的键 * @return Set&lt;String&gt; 返回所有以 &quot;fa...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2024/12/24/%E5%BE%AE%E4%BF%A1%E5%B0%8F%E7%A8%8B%E5%BA%8F%E7%94%A8%E6%88%B7%E4%BF%A1%E6%81%AF%E8%A7%A3%E5%AF%86%20AES_CBC_NoPadding%20%E8%A7%A3%E5%AF%86%E5%A4%B1%E8%B4%A5%E9%97%AE%E9%A2%98/" title="微信小程序用户信息解密 AES/CBC/NoPadding 解密失败问题">微信小程序用户信息解密 AES/CBC/NoPadding 解密失败问题</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">Created</span><time datetime="2024-12-24T03:21:43.000Z" title="Created 2024-12-24 11:21:43">2024-12-24</time></span></div><div class="content"> 解密文档如下 java springboot 微信小程序登录,获取获取手机号,获取unionId和解密用户信息  问题:   突然有一天解密失败,之前使用AES&#x2F;CBC&#x2F;NoPadding都可以,然后debug查看多出一些字符   原因:   **AES/CBC/NoPadding**** 模式下解密后的数据可能包含额外的填充字符**（例如多个 \u000F），这是由于原始加密内容被填充以达到块大小的倍数要求。 在 NoPadding 模式下，解密时不会自动去除这些填充字符。因此，解密后的字符串尾部会包含这些无意义的字符，导致解析 JSON 时出错。  解决方案:  改用AES&#x2F;CBC&#x2F;PKCS5Padding解密  </div></div></div></div><nav id="pagination"><div class="pagination"><a class="extend prev" rel="prev" href="/page/4/#content-inner"><i class="fas fa-chevron-left fa-fw"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/4/#content-inner">4</a><span class="page-number current">5</span><a class="page-number" href="/page/6/#content-inner">6</a><span class="space">&hellip;</span><a class="page-number" href="/page/18/#content-inner">18</a><a class="extend next" rel="next" href="/page/6/#content-inner"><i class="fas fa-chevron-right fa-fw"></i></a></div></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/butterfly-icon.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">Yuanz</div><div class="author-info-description">Yuanz的个人博客</div><div class="site-data"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">176</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">0</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">0</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>Announcement</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Posts</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/06/05/hello-world/" title="Hello World">Hello World</a><time datetime="2026-06-05T09:30:56.120Z" title="Created 2026-06-05 17:30:56">2026-06-05</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/05/28/%E4%BB%8E%E9%9B%B6%E5%BC%80%E5%A7%8B%EF%BC%8C%E5%9F%BA%E4%BA%8E-Hexo-GitHub-Pages-%E6%90%AD%E5%BB%BA%E4%B8%80%E4%B8%AA%E5%B1%9E%E4%BA%8E%E8%87%AA%E5%B7%B1%E7%9A%84%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2%EF%BC%8C%E5%B9%B6%E5%AE%8C%E6%88%90%E4%B8%BB%E9%A2%98%E5%88%87%E6%8D%A2%E4%B8%8E%E9%83%A8%E7%BD%B2%E3%80%82%EF%BC%88%E8%B6%85%E8%AF%A6%E7%BB%86%E6%95%99%E7%A8%8B%EF%BC%89/" title="从零开始，基于 Hexo + GitHub Pages 搭建一个属于自己的个人博客，并完成主题切换与部署。（超详细教程）">从零开始，基于 Hexo + GitHub Pages 搭建一个属于自己的个人博客，并完成主题切换与部署。（超详细教程）</a><time datetime="2026-05-28T06:27:02.000Z" title="Created 2026-05-28 14:27:02">2026-05-28</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/05/22/%E7%AC%AC%E4%B8%80%E7%AF%87-Github-Pages%E5%8D%9A%E5%AE%A2/" title="第一篇 Github Pages博客">第一篇 Github Pages博客</a><time datetime="2026-05-22T09:25:44.000Z" title="Created 2026-05-22 17:25:44">2026-05-22</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/05/20/Java%20Excel%E5%AF%BC%E5%87%BA%EF%BC%9A%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E8%87%AA%E5%AE%9A%E4%B9%89%E8%A1%A8%E5%A4%B4%E4%B8%8E%E5%AD%97%E6%AE%B5%E9%A1%BA%E5%BA%8F%E7%9A%84%E5%AE%8C%E5%85%A8%E6%8E%A7%E5%88%B6/" title="Java Excel导出：如何实现自定义表头与字段顺序的完全控制">Java Excel导出：如何实现自定义表头与字段顺序的完全控制</a><time datetime="2026-05-20T10:02:18.000Z" title="Created 2026-05-20 18:02:18">2026-05-20</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/05/07/Docker%20%E5%AE%89%E8%A3%85%20%E6%95%B0%E6%8D%AE%E5%BA%93%E5%B7%A5%E5%8D%95%E7%B3%BB%E7%BB%9FYearning%E4%BB%A5%E5%8F%8A%E4%BD%BF%E7%94%A8/" title="Docker 安装 数据库工单系统Yearning以及使用">Docker 安装 数据库工单系统Yearning以及使用</a><time datetime="2026-05-07T06:10:08.000Z" title="Created 2026-05-07 14:10:08">2026-05-07</time></div></div></div></div><div class="card-widget card-archives">
+}</script><link rel="stylesheet" href="/css/custom.css"><meta name="generator" content="Hexo 8.1.2"></head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div><script>(()=>{
+  const $loadingBox = document.getElementById('loading-box')
+  const $body = document.body
+  const preloader = {
+    endLoading: () => {
+      if ($loadingBox.classList.contains('loaded')) return
+      $body.style.overflow = ''
+      $loadingBox.classList.add('loaded')
+    },
+    initLoading: () => {
+      $body.style.overflow = 'hidden'
+      $loadingBox.classList.remove('loaded')
+    }
+  }
+
+  preloader.initLoading()
+
+  if (document.readyState === 'complete') {
+    preloader.endLoading()
+  } else {
+    window.addEventListener('load', preloader.endLoading)
+    document.addEventListener('DOMContentLoaded', preloader.endLoading)
+    // Add timeout protection: force end after 7 seconds
+    setTimeout(preloader.endLoading, 7000)
+  }
+
+  if (true) {
+    btf.addGlobalFn('pjaxSend', preloader.initLoading, 'preloader_init')
+    btf.addGlobalFn('pjaxComplete', preloader.endLoading, 'preloader_end')
+  }
+})()</script><div class="bg-animation" id="web_bg" style="background-image: url(/assets/Abanner/index.jpg);"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">176</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">0</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">0</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div></div></div></div><div class="page" id="body-wrap"><header class="full_page fixed" id="page-header" style="background: transparent;"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">Yuanz</span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="site-info"><h1 id="site-title">Yuanz</h1><div id="site-subtitle"><span id="subtitle"></span></div><div id="site_social_icons"><a class="social-icon" href="https://github.com/yuanzhang788" target="_blank" title="Github"><i class="fab fa-github" style="color: #4a7dbe;"></i></a><a class="social-icon" href="mailto:2437264464@qq.com" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #49b1f5;"></i></a></div></div><div id="scroll-down"><i class="fas fa-angle-down scroll-down-effects"></i></div></header><main class="layout" id="content-inner"><div class="recent-posts nc" id="recent-posts"><div class="recent-post-items"><div class="recent-post-item"><div class="post_cover left"><a href="/2025/02/20/Docker%20Mysql%20%E6%95%B0%E6%8D%AE%E8%BF%81%E7%A7%BB/" title="Docker Mysql 数据迁移"><img class="post-bg" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://api.r10086.com/img-api.php?type=%E9%A3%8E%E6%99%AF&amp;cd=2024" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Docker Mysql 数据迁移"></a></div><div class="recent-post-info"><a class="article-title" href="/2025/02/20/Docker%20Mysql%20%E6%95%B0%E6%8D%AE%E8%BF%81%E7%A7%BB/" title="Docker Mysql 数据迁移">Docker Mysql 数据迁移</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2025-02-20T10:08:32.000Z" title="发表于 2025-02-20 18:08:32">2025-02-20</time></span></div><div class="content">查看启动命令目录映射 查看容器名称  1docker ps     查看容器的启动命令  1docker inspect mysql8.0 |grep &#x27;CreateCommand&#x27; -A 20    如下图所示:我这边是把&#x2F;var&#x2F;lib&#x2F;mysql 目录映射到我宿主机的&#x2F;mnt&#x2F;mysql&#x2F;data目录下,而且我的数量比较大使用方法1的话时间比较久,所以我采用方法2  如果没有映射可以通过docker cp 的方式复制到宿主机后,也可以用方法二    方法 1：使用 mysqldump（推荐）方法1就是将...</div></div></div><div class="recent-post-item"><div class="post_cover right"><a href="/2025/02/20/%E6%9C%8D%E5%8A%A1%E5%99%A8%E6%95%B0%E6%8D%AE%E8%BF%81%E7%A7%BB%E6%9F%90%E4%B8%AA%E7%9B%AE%E5%BD%95%E4%B8%8B%E7%9A%84%E6%89%80%E6%9C%89%E6%96%87%E4%BB%B6%E5%88%B0%E5%8F%A6%E4%B8%80%E5%8F%B0%E6%9C%8D%E5%8A%A1%E5%99%A8/" title="服务器数据迁移某个目录下的所有文件到另一台服务器"><img class="post-bg" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://api.r10086.com/img-api.php?type=%E9%A3%8E%E6%99%AF&amp;cd=2024" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="服务器数据迁移某个目录下的所有文件到另一台服务器"></a></div><div class="recent-post-info"><a class="article-title" href="/2025/02/20/%E6%9C%8D%E5%8A%A1%E5%99%A8%E6%95%B0%E6%8D%AE%E8%BF%81%E7%A7%BB%E6%9F%90%E4%B8%AA%E7%9B%AE%E5%BD%95%E4%B8%8B%E7%9A%84%E6%89%80%E6%9C%89%E6%96%87%E4%BB%B6%E5%88%B0%E5%8F%A6%E4%B8%80%E5%8F%B0%E6%9C%8D%E5%8A%A1%E5%99%A8/" title="服务器数据迁移某个目录下的所有文件到另一台服务器">服务器数据迁移某个目录下的所有文件到另一台服务器</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2025-02-20T02:50:16.000Z" title="发表于 2025-02-20 10:50:16">2025-02-20</time></span></div><div class="content">方法 1：使用 rsync（推荐）rsync 适用于大文件或大量文件的迁移，支持增量同步： 1rsync -avz --progress -e &quot;ssh -p 你的端口&quot; /ai/ 用户名@目标服务器IP:/ai/   参数解析 -a ：保持文件权限、时间等属性 -v ：显示详细信息 -z ：压缩数据，提高传输效率 --progress ：显示进度 -e &quot;ssh -p 你的端口&quot; ：指定 SSH 端口（如果不是默认的 22） 如果是22端口不用指定    示例（假设 SSH 端口为 22）： 1rsync -avz --progress /ai/...</div></div></div><div class="recent-post-item"><div class="post_cover left"><a href="/2025/02/14/Springboot%20RabbitMQ%20%E6%B6%88%E8%B4%B9%E5%A4%B1%E8%B4%A5%E6%B6%88%E6%81%AF%E6%B8%85%E6%B4%97%E4%B8%8E%E9%87%8D%E8%AF%95%E6%9C%BA%E5%88%B6/" title="Springboot RabbitMQ 消费失败消息清洗与重试机制"><img class="post-bg" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://api.r10086.com/img-api.php?type=%E9%A3%8E%E6%99%AF&amp;cd=2024" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Springboot RabbitMQ 消费失败消息清洗与重试机制"></a></div><div class="recent-post-info"><a class="article-title" href="/2025/02/14/Springboot%20RabbitMQ%20%E6%B6%88%E8%B4%B9%E5%A4%B1%E8%B4%A5%E6%B6%88%E6%81%AF%E6%B8%85%E6%B4%97%E4%B8%8E%E9%87%8D%E8%AF%95%E6%9C%BA%E5%88%B6/" title="Springboot RabbitMQ 消费失败消息清洗与重试机制">Springboot RabbitMQ 消费失败消息清洗与重试机制</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2025-02-14T05:56:39.000Z" title="发表于 2025-02-14 13:56:39">2025-02-14</time></span></div><div class="content">📌 引言在分布式系统中，RabbitMQ 是一个非常流行的消息队列中间件，广泛用于解耦系统、异步处理任务、提高系统性能。然而，在实际使用中，消费端可能因为 代码异常、数据库故障、网络问题 等原因导致消息消费失败。 如果不对这些失败消息进行处理，可能会导致数据丢失，影响业务流程。因此，我们需要一个 可靠的失败消息清洗和重试机制 来保证消息最终被成功消费或进行合理的存储处理。  📌 1. 失败消息的常见问题在 RabbitMQ 消费过程中，可能会遇到以下问题：  消息处理逻辑异常（如空指针异常、数据格式转换错误）。 数据库异常（如主键冲突、唯一索引冲突、数据库连接失败）。 外部依赖不可用...</div></div></div><div class="recent-post-item"><div class="post_cover right"><a href="/2025/02/07/MyBatis%20Plus%20like%20%E5%8F%82%E6%95%B0%E4%B8%BA%E7%99%BE%E5%88%86%E5%8F%B7%E6%9F%A5%E8%AF%A2%E7%BB%93%E6%9E%9C%E5%BC%82%E5%B8%B8%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88/" title="MyBatis Plus like 参数为百分号%查询结果异常解决方案"><img class="post-bg" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://api.r10086.com/img-api.php?type=%E9%A3%8E%E6%99%AF&amp;cd=2024" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="MyBatis Plus like 参数为百分号%查询结果异常解决方案"></a></div><div class="recent-post-info"><a class="article-title" href="/2025/02/07/MyBatis%20Plus%20like%20%E5%8F%82%E6%95%B0%E4%B8%BA%E7%99%BE%E5%88%86%E5%8F%B7%E6%9F%A5%E8%AF%A2%E7%BB%93%E6%9E%9C%E5%BC%82%E5%B8%B8%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88/" title="MyBatis Plus like 参数为百分号%查询结果异常解决方案">MyBatis Plus like 参数为百分号%查询结果异常解决方案</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2025-02-07T09:13:23.000Z" title="发表于 2025-02-07 17:13:23">2025-02-07</time></span></div><div class="content">在日常开发中，我们经常使用 MyBatis Plus 进行数据库查询。其中，LIKE 关键字用于模糊匹配，但如果用户输入的查询条件包含 %，可能会导致查询结果异常。如下图,数据库里面是没有%的plate_number数据的,但是查询出86条数据  问题分析我们来看一段 MyBatis Plus 的查询代码： 1234queryWrapper    .like(StringUtils.hasText(reqVo.getPlateNumber()), HlCar::getPlateNumber, reqVo.getPlateNumber())    .like(StringUtils.has...</div></div></div><div class="recent-post-item"><div class="post_cover left"><a href="/2025/02/06/%E5%9F%BA%E4%BA%8E%20Ollama+Docker+OpenWebUI%20%E7%9A%84%E6%9C%AC%E5%9C%B0%E5%8C%96%E9%83%A8%E7%BD%B2deepseek%E6%B5%81%E7%A8%8B/" title="基于 Ollama+Docker+OpenWebUI 的本地化部署deepseek流程"><img class="post-bg" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://api.r10086.com/img-api.php?type=%E9%A3%8E%E6%99%AF&amp;cd=2024" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="基于 Ollama+Docker+OpenWebUI 的本地化部署deepseek流程"></a></div><div class="recent-post-info"><a class="article-title" href="/2025/02/06/%E5%9F%BA%E4%BA%8E%20Ollama+Docker+OpenWebUI%20%E7%9A%84%E6%9C%AC%E5%9C%B0%E5%8C%96%E9%83%A8%E7%BD%B2deepseek%E6%B5%81%E7%A8%8B/" title="基于 Ollama+Docker+OpenWebUI 的本地化部署deepseek流程">基于 Ollama+Docker+OpenWebUI 的本地化部署deepseek流程</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2025-02-06T08:21:23.000Z" title="发表于 2025-02-06 16:21:23">2025-02-06</time></span></div><div class="content">搭建deepseek安装OllamaOllama官方下载地址  下载完成后双击打开Ollama进行安装,点击install  安装完成后系统会弹出下图提示代表安装成功并且已启动  验证安装 1ollama -v   安装完成后，cmd 打开命令行窗口，输入 “ollama -v” 测试，显示 ollama 的版本为 “0.5.7”，表明安装成功。  Ollama 没有用户界面，在后台运行。 打开浏览器，输入 “http://localhost:11434/”，显示 “Ollama is running”。  Ollma 安装 deepseek-r1 模型deepseek-r1 模型介绍从...</div></div></div><div class="recent-post-item"><div class="post_cover right"><a href="/2025/01/22/%E9%98%BF%E9%87%8C%E4%BA%91%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%AA%81%E7%84%B6%E6%9C%89%E5%A4%A7%E9%87%8Fnmap%E6%9C%8D%E5%8A%A1%E5%8D%A0%E7%94%A8%E5%A4%A7%E9%87%8FCPU%E6%8E%92%E6%9F%A5%E5%8F%8A%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88/" title="阿里云服务器突然有大量nmap服务占用大量CPU排查及解决方案"><img class="post-bg" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://api.r10086.com/img-api.php?type=%E9%A3%8E%E6%99%AF&amp;cd=2024" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="阿里云服务器突然有大量nmap服务占用大量CPU排查及解决方案"></a></div><div class="recent-post-info"><a class="article-title" href="/2025/01/22/%E9%98%BF%E9%87%8C%E4%BA%91%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%AA%81%E7%84%B6%E6%9C%89%E5%A4%A7%E9%87%8Fnmap%E6%9C%8D%E5%8A%A1%E5%8D%A0%E7%94%A8%E5%A4%A7%E9%87%8FCPU%E6%8E%92%E6%9F%A5%E5%8F%8A%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88/" title="阿里云服务器突然有大量nmap服务占用大量CPU排查及解决方案">阿里云服务器突然有大量nmap服务占用大量CPU排查及解决方案</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2025-01-22T08:47:52.000Z" title="发表于 2025-01-22 16:47:52">2025-01-22</time></span></div><div class="content">问题描述突然有一天服务器访问很卡顿,在阿里云后台查看CPU,内存,系统平均负载等参数发现没问题  但是登陆服务器后,发现大量nmap服务占用大量CPU,但是这台管理员并没有主动安装过nmap  原因及对应预防方案暴力破解 SSH 密码：通过爆破弱密码或没有加固的 SSH 配置。 解决方案: 使用强密码和密钥认证   修改默认端口号   启用防暴力破解工具  fail2ban 或类似工具   通过防火墙（如 iptables 或 ufw）限制 SSH 的访问范围 配置Ip白名单    利用服务漏洞：利用未打补丁的服务漏洞（如 Log4j 漏洞、Apache Struts 漏洞）远程植入恶意...</div></div></div><div class="recent-post-item"><div class="post_cover left"><a href="/2025/01/10/%E4%BD%BF%E7%94%A8Mybatis%20plus%20selectPage%20queryWrapper%20in%E6%97%B6,%E6%9F%A5%E8%AF%A2%E7%BB%93%E6%9E%9C%E7%9A%84id%E9%A1%BA%E5%BA%8F%E5%92%8C%E4%BC%A0%E5%85%A5%E7%9A%84id%E9%A1%BA%E5%BA%8F%E4%B8%8D%E4%B8%80%E8%87%B4/" title="使用Mybatis plus selectPage queryWrapper in时,查询结果的id顺序和传入的id顺序不一致"><img class="post-bg" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://api.r10086.com/img-api.php?type=%E9%A3%8E%E6%99%AF&amp;cd=2024" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="使用Mybatis plus selectPage queryWrapper in时,查询结果的id顺序和传入的id顺序不一致"></a></div><div class="recent-post-info"><a class="article-title" href="/2025/01/10/%E4%BD%BF%E7%94%A8Mybatis%20plus%20selectPage%20queryWrapper%20in%E6%97%B6,%E6%9F%A5%E8%AF%A2%E7%BB%93%E6%9E%9C%E7%9A%84id%E9%A1%BA%E5%BA%8F%E5%92%8C%E4%BC%A0%E5%85%A5%E7%9A%84id%E9%A1%BA%E5%BA%8F%E4%B8%8D%E4%B8%80%E8%87%B4/" title="使用Mybatis plus selectPage queryWrapper in时,查询结果的id顺序和传入的id顺序不一致">使用Mybatis plus selectPage queryWrapper in时,查询结果的id顺序和传入的id顺序不一致</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2025-01-10T06:38:49.000Z" title="发表于 2025-01-10 14:38:49">2025-01-10</time></span></div><div class="content">问题 使用mybatis plus selectPage queryWrapper in pagedIds 时,查询结果的id顺序和传入的id顺序不一致.如下图   原因 MyBatis 的 LambdaQueryWrapper 本身没有直接支持根据 List 中的顺序进行排序的功能。它会生成 IN 查询，但是不会保证结果的顺序与 List 中的元素顺序一致。为了确保查询结果按照 pagedIds 列表中的顺序返回，需要在查询中显式指定排序顺序。   解决方案  在 MySQL 中，可以使用 FIELD() 函数来根据指定顺序对结果进行排序。你可以在 LambdaQueryWrapper...</div></div></div><div class="recent-post-item"><div class="post_cover right"><a href="/2025/01/06/%E4%BD%BF%E7%94%A8%20Spring%20Boot%20%E5%AE%9E%E7%8E%B0%E9%92%89%E9%92%89%E6%B6%88%E6%81%AF%E5%8F%91%E9%80%81%E6%B6%88%E6%81%AF/" title="使用 Spring Boot 实现钉钉消息发送消息"><img class="post-bg" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://api.r10086.com/img-api.php?type=%E9%A3%8E%E6%99%AF&amp;cd=2024" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="使用 Spring Boot 实现钉钉消息发送消息"></a></div><div class="recent-post-info"><a class="article-title" href="/2025/01/06/%E4%BD%BF%E7%94%A8%20Spring%20Boot%20%E5%AE%9E%E7%8E%B0%E9%92%89%E9%92%89%E6%B6%88%E6%81%AF%E5%8F%91%E9%80%81%E6%B6%88%E6%81%AF/" title="使用 Spring Boot 实现钉钉消息发送消息">使用 Spring Boot 实现钉钉消息发送消息</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2025-01-06T09:43:13.000Z" title="发表于 2025-01-06 17:43:13">2025-01-06</time></span></div><div class="content">钉钉官方文档(Webhook同步数据) 在这篇博客中，我们将详细介绍如何使用 Spring Boot 集成钉钉机器人，构建一个发送钉钉消息的服务，并通过 OkHttp 实现 HTTP 请求，同时使用 Hutool 提供便捷的 POST 请求工具。  功能概述本服务的主要功能是通过钉钉机器人接口发送 Markdown 格式的消息。  自动化生成签名（sign）以保障接口安全。 支持 @ 特定用户或全体成员。 使用 OkHttpClient 发送 POST 请求。 支持以 JSON 格式组织消息内容。   实现步骤1. 新建群聊(添加机器人)   设置关键词keyword,加签获取secre...</div></div></div><div class="recent-post-item"><div class="post_cover left"><a href="/2025/01/02/Redis%20%E4%BD%BF%E7%94%A8redisTemplate%E8%8E%B7%E5%8F%96%E6%9F%90%E4%B8%AA%E8%A7%84%E5%88%99%E4%B8%8B%E7%9A%84key%E7%9A%84%E5%85%A8%E9%87%8F%E6%95%B0%E6%8D%AE(%E7%A4%BA%E4%BE%8BSet%E7%BB%93%E6%9E%84)/" title="Redis 使用redisTemplate获取某个规则下的key的全量数据(示例Set结构)"><img class="post-bg" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://api.r10086.com/img-api.php?type=%E9%A3%8E%E6%99%AF&amp;cd=2024" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Redis 使用redisTemplate获取某个规则下的key的全量数据(示例Set结构)"></a></div><div class="recent-post-info"><a class="article-title" href="/2025/01/02/Redis%20%E4%BD%BF%E7%94%A8redisTemplate%E8%8E%B7%E5%8F%96%E6%9F%90%E4%B8%AA%E8%A7%84%E5%88%99%E4%B8%8B%E7%9A%84key%E7%9A%84%E5%85%A8%E9%87%8F%E6%95%B0%E6%8D%AE(%E7%A4%BA%E4%BE%8BSet%E7%BB%93%E6%9E%84)/" title="Redis 使用redisTemplate获取某个规则下的key的全量数据(示例Set结构)">Redis 使用redisTemplate获取某个规则下的key的全量数据(示例Set结构)</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2025-01-02T09:06:46.000Z" title="发表于 2025-01-02 17:06:46">2025-01-02</time></span></div><div class="content"> 如下是redis中存储的数据结构 我想取key以favorites:结尾的所有数据     Redis 的 SCAN 命令用于迭代数据库中的键，支持通过模式过滤结果。模式规则基于 Redis 的通配符匹配语法，类似于文件名匹配规则： *：匹配零个或多个字符。 ?：匹配一个字符。 [abc]：匹配括号中的任意一个字符。 [a-z]：匹配括号中的字符范围。 如:ScanOptions.scanOptions().match(“*favorites:”)即为匹配以favorites:结尾的key   因为我这个存储的Set类型的数据结构,所以用HashMap&lt;String, Set&g...</div></div></div><div class="recent-post-item"><div class="post_cover right"><a href="/2024/12/24/%E5%BE%AE%E4%BF%A1%E5%B0%8F%E7%A8%8B%E5%BA%8F%E7%94%A8%E6%88%B7%E4%BF%A1%E6%81%AF%E8%A7%A3%E5%AF%86%20AES_CBC_NoPadding%20%E8%A7%A3%E5%AF%86%E5%A4%B1%E8%B4%A5%E9%97%AE%E9%A2%98/" title="微信小程序用户信息解密 AES/CBC/NoPadding 解密失败问题"><img class="post-bg" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://api.r10086.com/img-api.php?type=%E9%A3%8E%E6%99%AF&amp;cd=2024" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="微信小程序用户信息解密 AES/CBC/NoPadding 解密失败问题"></a></div><div class="recent-post-info"><a class="article-title" href="/2024/12/24/%E5%BE%AE%E4%BF%A1%E5%B0%8F%E7%A8%8B%E5%BA%8F%E7%94%A8%E6%88%B7%E4%BF%A1%E6%81%AF%E8%A7%A3%E5%AF%86%20AES_CBC_NoPadding%20%E8%A7%A3%E5%AF%86%E5%A4%B1%E8%B4%A5%E9%97%AE%E9%A2%98/" title="微信小程序用户信息解密 AES/CBC/NoPadding 解密失败问题">微信小程序用户信息解密 AES/CBC/NoPadding 解密失败问题</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2024-12-24T03:21:43.000Z" title="发表于 2024-12-24 11:21:43">2024-12-24</time></span></div><div class="content"> 解密文档如下 java springboot 微信小程序登录,获取获取手机号,获取unionId和解密用户信息  问题:   突然有一天解密失败,之前使用AES&#x2F;CBC&#x2F;NoPadding都可以,然后debug查看多出一些字符   原因:   **AES/CBC/NoPadding**** 模式下解密后的数据可能包含额外的填充字符**（例如多个 \u000F），这是由于原始加密内容被填充以达到块大小的倍数要求。 在 NoPadding 模式下，解密时不会自动去除这些填充字符。因此，解密后的字符串尾部会包含这些无意义的字符，导致解析 JSON 时出错。  解决方案: ...</div></div></div></div><nav id="pagination"><div class="pagination"><a class="extend prev" rel="prev" href="/page/4/#content-inner"><i class="fas fa-chevron-left fa-fw"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/4/#content-inner">4</a><span class="page-number current">5</span><a class="page-number" href="/page/6/#content-inner">6</a><span class="space">&hellip;</span><a class="page-number" href="/page/18/#content-inner">18</a><a class="extend next" rel="next" href="/page/6/#content-inner"><i class="fas fa-chevron-right fa-fw"></i></a></div></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">Yuanz</div><div class="author-info-description">Yuanz的个人博客</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">176</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">0</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">0</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/yuanzhang788"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/yuanzhang788" target="_blank" title="Github"><i class="fab fa-github" style="color: #4a7dbe;"></i></a><a class="social-icon" href="mailto:2437264464@qq.com" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #49b1f5;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎访问 Yuanz 的个人博客！</div></div><div class="sticky_layout"><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2026/06/05/hello-world/" title="Hello World"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://api.r10086.com/img-api.php?type=%E9%A3%8E%E6%99%AF&amp;cd=2024" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Hello World"/></a><div class="content"><a class="title" href="/2026/06/05/hello-world/" title="Hello World">Hello World</a><time datetime="2026-06-05T09:30:56.120Z" title="发表于 2026-06-05 17:30:56">2026-06-05</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2026/05/28/%E4%BB%8E%E9%9B%B6%E5%BC%80%E5%A7%8B%EF%BC%8C%E5%9F%BA%E4%BA%8E-Hexo-GitHub-Pages-%E6%90%AD%E5%BB%BA%E4%B8%80%E4%B8%AA%E5%B1%9E%E4%BA%8E%E8%87%AA%E5%B7%B1%E7%9A%84%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2%EF%BC%8C%E5%B9%B6%E5%AE%8C%E6%88%90%E4%B8%BB%E9%A2%98%E5%88%87%E6%8D%A2%E4%B8%8E%E9%83%A8%E7%BD%B2%E3%80%82%EF%BC%88%E8%B6%85%E8%AF%A6%E7%BB%86%E6%95%99%E7%A8%8B%EF%BC%89/" title="从零开始，基于 Hexo + GitHub Pages 搭建一个属于自己的个人博客，并完成主题切换与部署。（超详细教程）"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://api.r10086.com/img-api.php?type=%E9%A3%8E%E6%99%AF&amp;cd=2024" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="从零开始，基于 Hexo + GitHub Pages 搭建一个属于自己的个人博客，并完成主题切换与部署。（超详细教程）"/></a><div class="content"><a class="title" href="/2026/05/28/%E4%BB%8E%E9%9B%B6%E5%BC%80%E5%A7%8B%EF%BC%8C%E5%9F%BA%E4%BA%8E-Hexo-GitHub-Pages-%E6%90%AD%E5%BB%BA%E4%B8%80%E4%B8%AA%E5%B1%9E%E4%BA%8E%E8%87%AA%E5%B7%B1%E7%9A%84%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2%EF%BC%8C%E5%B9%B6%E5%AE%8C%E6%88%90%E4%B8%BB%E9%A2%98%E5%88%87%E6%8D%A2%E4%B8%8E%E9%83%A8%E7%BD%B2%E3%80%82%EF%BC%88%E8%B6%85%E8%AF%A6%E7%BB%86%E6%95%99%E7%A8%8B%EF%BC%89/" title="从零开始，基于 Hexo + GitHub Pages 搭建一个属于自己的个人博客，并完成主题切换与部署。（超详细教程）">从零开始，基于 Hexo + GitHub Pages 搭建一个属于自己的个人博客，并完成主题切换与部署。（超详细教程）</a><time datetime="2026-05-28T06:27:02.000Z" title="发表于 2026-05-28 14:27:02">2026-05-28</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2026/05/22/%E7%AC%AC%E4%B8%80%E7%AF%87-Github-Pages%E5%8D%9A%E5%AE%A2/" title="第一篇 Github Pages博客"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://api.r10086.com/img-api.php?type=%E9%A3%8E%E6%99%AF&amp;cd=2024" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="第一篇 Github Pages博客"/></a><div class="content"><a class="title" href="/2026/05/22/%E7%AC%AC%E4%B8%80%E7%AF%87-Github-Pages%E5%8D%9A%E5%AE%A2/" title="第一篇 Github Pages博客">第一篇 Github Pages博客</a><time datetime="2026-05-22T09:25:44.000Z" title="发表于 2026-05-22 17:25:44">2026-05-22</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2026/05/20/Java%20Excel%E5%AF%BC%E5%87%BA%EF%BC%9A%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E8%87%AA%E5%AE%9A%E4%B9%89%E8%A1%A8%E5%A4%B4%E4%B8%8E%E5%AD%97%E6%AE%B5%E9%A1%BA%E5%BA%8F%E7%9A%84%E5%AE%8C%E5%85%A8%E6%8E%A7%E5%88%B6/" title="Java Excel导出：如何实现自定义表头与字段顺序的完全控制"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://api.r10086.com/img-api.php?type=%E9%A3%8E%E6%99%AF&amp;cd=2024" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Java Excel导出：如何实现自定义表头与字段顺序的完全控制"/></a><div class="content"><a class="title" href="/2026/05/20/Java%20Excel%E5%AF%BC%E5%87%BA%EF%BC%9A%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E8%87%AA%E5%AE%9A%E4%B9%89%E8%A1%A8%E5%A4%B4%E4%B8%8E%E5%AD%97%E6%AE%B5%E9%A1%BA%E5%BA%8F%E7%9A%84%E5%AE%8C%E5%85%A8%E6%8E%A7%E5%88%B6/" title="Java Excel导出：如何实现自定义表头与字段顺序的完全控制">Java Excel导出：如何实现自定义表头与字段顺序的完全控制</a><time datetime="2026-05-20T10:02:18.000Z" title="发表于 2026-05-20 18:02:18">2026-05-20</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2026/05/07/Docker%20%E5%AE%89%E8%A3%85%20%E6%95%B0%E6%8D%AE%E5%BA%93%E5%B7%A5%E5%8D%95%E7%B3%BB%E7%BB%9FYearning%E4%BB%A5%E5%8F%8A%E4%BD%BF%E7%94%A8/" title="Docker 安装 数据库工单系统Yearning以及使用"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://api.r10086.com/img-api.php?type=%E9%A3%8E%E6%99%AF&amp;cd=2024" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Docker 安装 数据库工单系统Yearning以及使用"/></a><div class="content"><a class="title" href="/2026/05/07/Docker%20%E5%AE%89%E8%A3%85%20%E6%95%B0%E6%8D%AE%E5%BA%93%E5%B7%A5%E5%8D%95%E7%B3%BB%E7%BB%9FYearning%E4%BB%A5%E5%8F%8A%E4%BD%BF%E7%94%A8/" title="Docker 安装 数据库工单系统Yearning以及使用">Docker 安装 数据库工单系统Yearning以及使用</a><time datetime="2026-05-07T06:10:08.000Z" title="发表于 2026-05-07 14:10:08">2026-05-07</time></div></div></div></div><div class="card-widget card-archives">
     <div class="item-headline">
       <i class="fas fa-archive"></i>
-      <span>Archives</span>
+      <span>归档</span>
       <a class="card-more-btn" href="/archives/"
-            title="View More">
+            title="查看更多">
             <i class="fas fa-angle-right"></i>
           </a>
     </div>
@@ -156,7 +204,7 @@
         <li class="card-archive-list-item">
           <a class="card-archive-list-link" href="/archives/2026/06/">
             <span class="card-archive-list-date">
-              June 2026
+              2026年06月
             </span>
             <span class="card-archive-list-count">1</span>
           </a>
@@ -165,7 +213,7 @@
         <li class="card-archive-list-item">
           <a class="card-archive-list-link" href="/archives/2026/05/">
             <span class="card-archive-list-date">
-              May 2026
+              2026年05月
             </span>
             <span class="card-archive-list-count">4</span>
           </a>
@@ -174,7 +222,7 @@
         <li class="card-archive-list-item">
           <a class="card-archive-list-link" href="/archives/2026/04/">
             <span class="card-archive-list-date">
-              April 2026
+              2026年04月
             </span>
             <span class="card-archive-list-count">2</span>
           </a>
@@ -183,7 +231,7 @@
         <li class="card-archive-list-item">
           <a class="card-archive-list-link" href="/archives/2026/03/">
             <span class="card-archive-list-date">
-              March 2026
+              2026年03月
             </span>
             <span class="card-archive-list-count">3</span>
           </a>
@@ -192,7 +240,7 @@
         <li class="card-archive-list-item">
           <a class="card-archive-list-link" href="/archives/2026/02/">
             <span class="card-archive-list-date">
-              February 2026
+              2026年02月
             </span>
             <span class="card-archive-list-count">1</span>
           </a>
@@ -201,7 +249,7 @@
         <li class="card-archive-list-item">
           <a class="card-archive-list-link" href="/archives/2026/01/">
             <span class="card-archive-list-date">
-              January 2026
+              2026年01月
             </span>
             <span class="card-archive-list-count">3</span>
           </a>
@@ -210,7 +258,7 @@
         <li class="card-archive-list-item">
           <a class="card-archive-list-link" href="/archives/2025/12/">
             <span class="card-archive-list-date">
-              December 2025
+              2025年12月
             </span>
             <span class="card-archive-list-count">4</span>
           </a>
@@ -219,11 +267,432 @@
         <li class="card-archive-list-item">
           <a class="card-archive-list-link" href="/archives/2025/11/">
             <span class="card-archive-list-date">
-              November 2025
+              2025年11月
             </span>
             <span class="card-archive-list-count">4</span>
           </a>
         </li>
       
     </ul>
-  </div><div class="card-widget card-webinfo"><div class="item-headline"><i class="fas fa-chart-line"></i><span>Website Info</span></div><div class="webinfo"><div class="webinfo-item"><div class="item-name">Article Count :</div><div class="item-count">176</div></div><div class="webinfo-item"><div class="item-name">Unique Visitors :</div><div class="item-count" id="busuanzi_value_site_uv"><i class="fa-solid fa-spinner fa-spin"></i></div></div><div class="webinfo-item"><div class="item-name">Page Views :</div><div class="item-count" id="busuanzi_value_site_pv"><i class="fa-solid fa-spinner fa-spin"></i></div></div><div class="webinfo-item"><div class="item-name">Last Update :</div><div class="item-count" id="last-push-date" data-lastPushDate="2026-06-08T03:38:45.707Z"><i class="fa-solid fa-spinner fa-spin"></i></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2025 - 2026 By Yuanz</span><span class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 8.1.2</a><span class="footer-separator">|</span><span>Theme </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.5.5-b1</a></span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="darkmode" type="button" title="Toggle Between Light and Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle Between Single-column and Double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="Settings"><i class="fas fa-cog fa-spin"></i></button><button id="go-up" type="button" title="Back to Top"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.5.5-b1"></script><script src="/js/main.js?v=5.5.5-b1"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
+  </div><div class="card-widget card-webinfo"><div class="item-headline"><i class="fas fa-chart-line"></i><span>网站信息</span></div><div class="webinfo"><div class="webinfo-item"><div class="item-name">文章数目 :</div><div class="item-count">176</div></div><div class="webinfo-item"><div class="item-name">运行时间 :</div><div class="item-count" id="runtimeshow" data-publishDate="2024-05-31T16:00:00.000Z"><i class="fa-solid fa-spinner fa-spin"></i></div></div><div class="webinfo-item"><div class="item-name">本站访客数 :</div><div class="item-count" id="busuanzi_value_site_uv"><i class="fa-solid fa-spinner fa-spin"></i></div></div><div class="webinfo-item"><div class="item-name">本站总浏览量 :</div><div class="item-count" id="busuanzi_value_site_pv"><i class="fa-solid fa-spinner fa-spin"></i></div></div><div class="webinfo-item"><div class="item-name">最后更新时间 :</div><div class="item-count" id="last-push-date" data-lastPushDate="2026-06-08T06:23:17.501Z"><i class="fa-solid fa-spinner fa-spin"></i></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2024 - 2026 By Yuanz</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 8.1.2</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.5.5-b1</a></span></div><div class="footer_custom_text"><a href="https://github.com/yuanzhang788" target="_blank" rel="noopener noreferrer">Yuanz</a> &copy; <span id="year"></span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page/instantpage.min.js" type="module"></script><script src="https://cdn.jsdelivr.net/npm/vanilla-lazyload/dist/lazyload.iife.min.js"></script><script src="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.js"></script><div class="js-pjax"><script>window.typedJSFn = {
+  init: str => {
+    window.typed = new Typed('#subtitle', Object.assign({
+      strings: str,
+      startDelay: 300,
+      typeSpeed: 150,
+      loop: true,
+      backSpeed: 50,
+    }, null))
+  },
+  run: subtitleType => {
+    if (true) {
+      if (typeof Typed === 'function') {
+        subtitleType()
+      } else {
+        btf.getScript('https://cdn.jsdelivr.net/npm/typed.js/dist/typed.umd.min.js').then(subtitleType)
+      }
+    } else {
+      subtitleType()
+    }
+  },
+  processSubtitle: (content, extraContents = []) => {
+    if (true) {
+      const sub = ["热爱编程，热爱生活","记录技术成长之路"].slice()
+
+      if (extraContents.length > 0) {
+        sub.unshift(...extraContents)
+      }
+
+      if (typeof content === 'string') {
+        sub.unshift(content)
+      } else if (Array.isArray(content)) {
+        sub.unshift(...content)
+      }
+
+      sub.length > 0 && typedJSFn.init(sub)
+    } else {
+      document.getElementById('subtitle').textContent = typeof content === 'string' ? content :
+        (Array.isArray(content) && content.length > 0 ? content[0] : '')
+    }
+  }
+}
+btf.addGlobalFn('pjaxSendOnce', () => { typed.destroy() }, 'typedDestroy')
+</script><script>function subtitleType () {
+  typedJSFn.processSubtitle(["热爱编程，热爱生活","记录技术成长之路"])
+}
+typedJSFn.run(subtitleType)</script><script>(() => {
+  const parseViewBox = viewBox => {
+    if (!viewBox) return null
+    const parts = viewBox.trim().split(/[\s,]+/).map(n => Number(n))
+    if (parts.length !== 4 || parts.some(n => Number.isNaN(n))) return null
+    return parts
+  }
+
+  const getSvgViewBox = svg => {
+    const attr = parseViewBox(svg.getAttribute('viewBox'))
+    if (attr) return attr
+
+    // Fallback: use bbox to build a viewBox
+    try {
+      const bbox = svg.getBBox()
+      if (bbox && bbox.width && bbox.height) return [bbox.x, bbox.y, bbox.width, bbox.height]
+    } catch (e) {
+      // getBBox may fail on some edge cases; ignore
+    }
+
+    const w = Number(svg.getAttribute('width')) || 0
+    const h = Number(svg.getAttribute('height')) || 0
+    if (w > 0 && h > 0) return [0, 0, w, h]
+    return [0, 0, 100, 100]
+  }
+
+  const setSvgViewBox = (svg, vb) => {
+    svg.setAttribute('viewBox', `${vb[0]} ${vb[1]} ${vb[2]} ${vb[3]}`)
+  }
+
+  const clamp = (v, min, max) => Math.max(min, Math.min(max, v))
+
+  const openSvgInNewTab = ({ source, initViewBox }) => {
+    const getClonedSvg = () => {
+      if (typeof source === 'string') {
+        const template = document.createElement('template')
+        template.innerHTML = source.trim()
+        const svg = template.content.querySelector('svg')
+        return svg ? svg.cloneNode(true) : null
+      }
+      if (source && typeof source.cloneNode === 'function') {
+        return source.cloneNode(true)
+      }
+      return null
+    }
+
+    const clone = getClonedSvg()
+    if (!clone) return
+    if (initViewBox && initViewBox.length === 4) {
+      clone.setAttribute('viewBox', initViewBox.join(' '))
+    }
+    if (!clone.getAttribute('xmlns')) clone.setAttribute('xmlns', 'http://www.w3.org/2000/svg')
+    if (!clone.getAttribute('xmlns:xlink') && clone.outerHTML.includes('xlink:')) {
+      clone.setAttribute('xmlns:xlink', 'http://www.w3.org/1999/xlink')
+    }
+    // inject background to match current theme
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark'
+    const bg = getComputedStyle(document.body).backgroundColor || (isDark ? '#1e1e1e' : '#ffffff')
+    if (!clone.style.background) clone.style.background = bg
+
+    const serializer = new XMLSerializer()
+    const svgSource = serializer.serializeToString(clone)
+    const htmlSource = `<!doctype html><html><head><meta charset="utf-8" />
+      <style>
+        html, body { width: 100%; height: 100%; margin: 0; display: flex; align-items: center; justify-content: center; background: ${bg}; }
+        svg { max-width: 100%; max-height: 100%; height: auto; width: auto; }
+      </style>
+      </head><body>${svgSource}</body></html>`
+    const blob = new Blob([htmlSource], { type: 'text/html;charset=utf-8' })
+    const url = URL.createObjectURL(blob)
+    window.open(url, '_blank', 'noopener')
+    setTimeout(() => URL.revokeObjectURL(url), 30000)
+  }
+
+  const attachMermaidViewerButton = wrap => {
+    let btn = wrap.querySelector('.mermaid-open-btn')
+    if (!btn) {
+      btn = document.createElement('button')
+      btn.type = 'button'
+      btn.className = 'mermaid-open-btn'
+      wrap.appendChild(btn)
+    }
+
+    btn.innerHTML = '<i class="fa fa-search fa-fw" aria-hidden="true"></i>'
+
+    if (!btn.__mermaidViewerBound) {
+      btn.addEventListener('click', e => {
+        e.preventDefault()
+        e.stopPropagation()
+        const svg = wrap.__mermaidOriginalSvg || wrap.querySelector('svg')
+        if (!svg) return
+        const initViewBox = wrap.__mermaidInitViewBox
+        if (typeof svg === 'string') {
+          openSvgInNewTab({ source: svg, initViewBox })
+          return
+        }
+        openSvgInNewTab({ source: svg, initViewBox })
+      })
+      btn.__mermaidViewerBound = true
+    }
+  }
+
+  // Zoom around a point (px, py) in the SVG viewport (in viewBox coordinates)
+  const zoomAtPoint = (vb, factor, px, py) => {
+    const w = vb[2] * factor
+    const h = vb[3] * factor
+    const nx = px - (px - vb[0]) * factor
+    const ny = py - (py - vb[1]) * factor
+    return [nx, ny, w, h]
+  }
+
+  const initMermaidGestures = wrap => {
+    const svg = wrap.querySelector('svg')
+    if (!svg) return
+
+    // Ensure viewBox exists so gestures always work
+    const initVb = getSvgViewBox(svg)
+    wrap.__mermaidInitViewBox = initVb
+    wrap.__mermaidCurViewBox = initVb.slice()
+    setSvgViewBox(svg, initVb)
+
+    // Avoid binding multiple times on themeChange/pjax
+    if (wrap.__mermaidGestureBound) return
+    wrap.__mermaidGestureBound = true
+
+    // Helper: map client (viewport) coordinate -> viewBox coordinate
+    const clientToViewBox = (clientX, clientY) => {
+      const rect = svg.getBoundingClientRect()
+      const vb = wrap.__mermaidCurViewBox || getSvgViewBox(svg)
+      const x = vb[0] + (clientX - rect.left) * (vb[2] / rect.width)
+      const y = vb[1] + (clientY - rect.top) * (vb[3] / rect.height)
+      return { x, y, rect, vb }
+    }
+
+    const state = {
+      pointers: new Map(),
+      startVb: null,
+      startDist: 0,
+      startCenter: null
+    }
+
+    const clampVb = vb => {
+      const init = wrap.__mermaidInitViewBox || vb
+      const minW = init[2] * 0.1
+      const maxW = init[2] * 10
+      const minH = init[3] * 0.1
+      const maxH = init[3] * 10
+      vb[2] = clamp(vb[2], minW, maxW)
+      vb[3] = clamp(vb[3], minH, maxH)
+      return vb
+    }
+
+    const setCurVb = vb => {
+      vb = clampVb(vb)
+      wrap.__mermaidCurViewBox = vb
+      setSvgViewBox(svg, vb)
+    }
+
+    const onPointerDown = e => {
+      // Allow only primary button for mouse
+      if (e.pointerType === 'mouse' && e.button !== 0) return
+      svg.setPointerCapture(e.pointerId)
+      state.pointers.set(e.pointerId, { x: e.clientX, y: e.clientY })
+
+      if (state.pointers.size === 1) {
+        state.startVb = (wrap.__mermaidCurViewBox || getSvgViewBox(svg)).slice()
+      } else if (state.pointers.size === 2) {
+        const pts = [...state.pointers.values()]
+        const dx = pts[0].x - pts[1].x
+        const dy = pts[0].y - pts[1].y
+        state.startDist = Math.hypot(dx, dy)
+        state.startVb = (wrap.__mermaidCurViewBox || getSvgViewBox(svg)).slice()
+        state.startCenter = { x: (pts[0].x + pts[1].x) / 2, y: (pts[0].y + pts[1].y) / 2 }
+      }
+    }
+
+    const onPointerMove = e => {
+      if (!state.pointers.has(e.pointerId)) return
+      state.pointers.set(e.pointerId, { x: e.clientX, y: e.clientY })
+
+      // Pan with 1 pointer
+      if (state.pointers.size === 1 && state.startVb) {
+        const p = [...state.pointers.values()][0]
+        const prev = { x: e.clientX - e.movementX, y: e.clientY - e.movementY }
+        // movementX/Y unreliable on touch, compute from stored last position
+        const last = wrap.__mermaidLastSinglePointer || p
+        const dxClient = p.x - last.x
+        const dyClient = p.y - last.y
+        wrap.__mermaidLastSinglePointer = p
+
+        const { rect } = clientToViewBox(p.x, p.y)
+        const vb = (wrap.__mermaidCurViewBox || getSvgViewBox(svg)).slice()
+        const dx = dxClient * (vb[2] / rect.width)
+        const dy = dyClient * (vb[3] / rect.height)
+        setCurVb([vb[0] - dx, vb[1] - dy, vb[2], vb[3]])
+        return
+      }
+
+      // Pinch zoom with 2 pointers
+      if (state.pointers.size === 2 && state.startVb && state.startDist > 0) {
+        const pts = [...state.pointers.values()]
+        const dx = pts[0].x - pts[1].x
+        const dy = pts[0].y - pts[1].y
+        const dist = Math.hypot(dx, dy)
+        if (!dist) return
+        const factor = state.startDist / dist // dist bigger => zoom in (viewBox smaller)
+
+        const cx = (pts[0].x + pts[1].x) / 2
+        const cy = (pts[0].y + pts[1].y) / 2
+        const centerClient = { x: cx, y: cy }
+
+        const pxy = clientToViewBox(centerClient.x, centerClient.y)
+        const cpx = pxy.x
+        const cpy = pxy.y
+
+        const vb = zoomAtPoint(state.startVb, factor, cpx, cpy)
+        setCurVb(vb)
+      }
+    }
+
+    const onPointerUpOrCancel = e => {
+      state.pointers.delete(e.pointerId)
+      if (state.pointers.size === 0) {
+        state.startVb = null
+        state.startDist = 0
+        state.startCenter = null
+        wrap.__mermaidLastSinglePointer = null
+      } else if (state.pointers.size === 1) {
+        // reset single pointer baseline to avoid jump
+        wrap.__mermaidLastSinglePointer = [...state.pointers.values()][0]
+      }
+    }
+
+    // Wheel zoom (mouse/trackpad)
+    const onWheel = e => {
+      // ctrlKey on mac trackpad pinch; we treat both as zoom
+      e.preventDefault()
+      const delta = e.deltaY
+      const zoomFactor = delta > 0 ? 1.1 : 0.9
+      const { x, y } = clientToViewBox(e.clientX, e.clientY)
+      const vb = (wrap.__mermaidCurViewBox || getSvgViewBox(svg)).slice()
+      setCurVb(zoomAtPoint(vb, zoomFactor, x, y))
+    }
+
+    const onDblClick = () => {
+      const init = wrap.__mermaidInitViewBox
+      if (!init) return
+      wrap.__mermaidCurViewBox = init.slice()
+      setSvgViewBox(svg, init)
+    }
+
+    svg.addEventListener('pointerdown', onPointerDown)
+    svg.addEventListener('pointermove', onPointerMove)
+    svg.addEventListener('pointerup', onPointerUpOrCancel)
+    svg.addEventListener('pointercancel', onPointerUpOrCancel)
+    svg.addEventListener('wheel', onWheel, { passive: false })
+    svg.addEventListener('dblclick', onDblClick)
+  }
+
+  const runMermaid = ele => {
+    window.loadMermaid = true
+    const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'default'
+
+    ele.forEach((item, index) => {
+      const mermaidSrc = item.firstElementChild
+
+      // Clear old render (themeChange/pjax will rerun)
+      const oldSvg = item.querySelector('svg')
+      if (oldSvg) oldSvg.remove()
+      item.__mermaidGestureBound = false
+
+      const config = mermaidSrc.dataset.config ? JSON.parse(mermaidSrc.dataset.config) : {}
+      if (!config.theme) {
+        config.theme = theme
+      }
+      const mermaidThemeConfig = `%%{init: ${JSON.stringify(config)}}%%\n`
+      const mermaidID = `mermaid-${index}`
+      const mermaidDefinition = mermaidThemeConfig + mermaidSrc.textContent
+
+      const renderFn = mermaid.render(mermaidID, mermaidDefinition)
+      const renderMermaid = svg => {
+        mermaidSrc.insertAdjacentHTML('afterend', svg)
+        if (true) initMermaidGestures(item)
+        item.__mermaidOriginalSvg = svg
+        if (true) attachMermaidViewerButton(item)
+      }
+
+
+      // mermaid v9 and v10 compatibility
+      typeof renderFn === 'string' ? renderMermaid(renderFn) : renderFn.then(({ svg }) => renderMermaid(svg))
+    })
+  }
+
+  const codeToMermaid = () => {
+    const codeMermaidEle = document.querySelectorAll('pre > code.mermaid')
+    if (codeMermaidEle.length === 0) return
+
+    codeMermaidEle.forEach(ele => {
+      const preEle = document.createElement('pre')
+      preEle.className = 'mermaid-src'
+      preEle.hidden = true
+      preEle.textContent = ele.textContent
+      const newEle = document.createElement('div')
+      newEle.className = 'mermaid-wrap'
+      newEle.appendChild(preEle)
+      ele.parentNode.replaceWith(newEle)
+    })
+  }
+
+  const loadMermaid = () => {
+    if (false) codeToMermaid()
+    const $mermaid = document.querySelectorAll('#article-container .mermaid-wrap')
+    if ($mermaid.length === 0) return
+
+    const runMermaidFn = () => runMermaid($mermaid)
+    btf.addGlobalFn('themeChange', runMermaidFn, 'mermaid')
+    window.loadMermaid ? runMermaidFn() : btf.getScript('https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js').then(runMermaidFn)
+  }
+
+  btf.addGlobalFn('encrypt', loadMermaid, 'mermaid')
+  window.pjax ? loadMermaid() : document.addEventListener('DOMContentLoaded', loadMermaid)
+})()</script></div><script id="canvas_nest" defer="defer" color="0,155,255" opacity="0.5" zIndex="-1" count="60" mobile="false" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/canvas-nest.min.js"></script><script id="click-show-text" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/click-show-text.min.js" data-mobile="false" data-text="富强,民主,文明,和谐,自由,平等,公正,法治" data-fontsize="14px" data-random="true" async="async"></script><script src="https://cdn.jsdelivr.net/npm/pjax/pjax.min.js" defer="defer"></script><script>document.addEventListener('DOMContentLoaded', () => {
+  const pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+  window.pjax = new Pjax({
+    elements: 'a:not([target="_blank"])',
+    selectors: pjaxSelectors,
+    cacheBust: false,
+    analytics: false,
+    scrollRestoration: false
+  })
+
+  const triggerPjaxFn = (val) => {
+    if (!val) return
+    Object.values(val).forEach(fn => {
+      try {
+        fn()
+      } catch (err) {
+        console.debug('Pjax callback failed:', err)
+      }
+    })
+  }
+
+  document.addEventListener('pjax:send', () => {
+    // removeEventListener
+    btf.removeGlobalFnEvent('pjaxSendOnce')
+    btf.removeGlobalFnEvent('themeChange')
+
+    // reset readmode
+    const $bodyClassList = document.body.classList
+    if ($bodyClassList.contains('read-mode')) $bodyClassList.remove('read-mode')
+
+    triggerPjaxFn(window.globalFn.pjaxSend)
+  })
+
+  document.addEventListener('pjax:complete', () => {
+    btf.removeGlobalFnEvent('pjaxCompleteOnce')
+    document.querySelectorAll('script[data-pjax]').forEach(item => {
+      const newScript = document.createElement('script')
+      const content = item.text || item.textContent || item.innerHTML || ""
+      Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+      newScript.appendChild(document.createTextNode(content))
+      item.parentNode.replaceChild(newScript, item)
+    })
+
+    triggerPjaxFn(window.globalFn.pjaxComplete)
+  })
+
+  document.addEventListener('pjax:error', e => {
+    if (e.request.status === 404) {
+      false
+        ? pjax.loadUrl('/404.html')
+        : window.location.href = e.request.responseURL
+    }
+  })
+})</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><i class="fas fa-spinner fa-pulse" id="loading-status" hidden="hidden"></i><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="local-search-input"><input placeholder="搜索文章..." type="text"/></div><hr/><div id="local-search-results"></div><div class="ais-Pagination" id="local-search-pagination" style="display:none;"><ul class="ais-Pagination-list"></ul></div><div id="local-search-stats"></div></div><div id="search-mask"></div><script src="/js/search/local-search.js"></script></div></div></body></html>

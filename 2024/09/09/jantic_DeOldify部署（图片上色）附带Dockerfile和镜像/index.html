@@ -1,21 +1,21 @@
-<!DOCTYPE html><html lang="cn" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>jantic/DeOldify部署（图片上色）附带Dockerfile和镜像 | Yuanz</title><meta name="author" content="Yuanz"><meta name="copyright" content="Yuanz"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="1. 克隆代码到DeOldify1git clone https:&#x2F;&#x2F;github.com&#x2F;jantic&#x2F;DeOldify.git DeOldify     DeOldify源码   2. 安装依赖 这里会安装python以及创建deoldify环境  12cd DeOldifyconda env create -f environment.yml   1234567891011121314151">
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>jantic/DeOldify部署（图片上色）附带Dockerfile和镜像 | Yuanz</title><meta name="author" content="Yuanz"><meta name="copyright" content="Yuanz"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="ffffff"><meta name="description" content="1. 克隆代码到DeOldify1git clone https:&#x2F;&#x2F;github.com&#x2F;jantic&#x2F;DeOldify.git DeOldify     DeOldify源码   2. 安装依赖 这里会安装python以及创建deoldify环境  12cd DeOldifyconda env create -f environment.yml   1234567891011121314151">
 <meta property="og:type" content="article">
 <meta property="og:title" content="jantic&#x2F;DeOldify部署（图片上色）附带Dockerfile和镜像">
 <meta property="og:url" content="https://yuanzhang788.github.io/2024/09/09/jantic_DeOldify%E9%83%A8%E7%BD%B2%EF%BC%88%E5%9B%BE%E7%89%87%E4%B8%8A%E8%89%B2%EF%BC%89%E9%99%84%E5%B8%A6Dockerfile%E5%92%8C%E9%95%9C%E5%83%8F/index.html">
 <meta property="og:site_name" content="Yuanz">
 <meta property="og:description" content="1. 克隆代码到DeOldify1git clone https:&#x2F;&#x2F;github.com&#x2F;jantic&#x2F;DeOldify.git DeOldify     DeOldify源码   2. 安装依赖 这里会安装python以及创建deoldify环境  12cd DeOldifyconda env create -f environment.yml   1234567891011121314151">
-<meta property="og:locale">
-<meta property="og:image" content="https://yuanzhang788.github.io/img/butterfly-icon.png">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://api.r10086.com/img-api.php?type=%E9%A3%8E%E6%99%AF&cd=2024">
 <meta property="article:published_time" content="2024-09-09T05:13:50.000Z">
 <meta property="article:modified_time" content="2026-06-08T03:35:05.897Z">
 <meta property="article:author" content="Yuanz">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://yuanzhang788.github.io/img/butterfly-icon.png"><script type="application/ld+json">{
+<meta name="twitter:image" content="https://api.r10086.com/img-api.php?type=%E9%A3%8E%E6%99%AF&cd=2024"><script type="application/ld+json">{
   "@context": "https://schema.org",
   "@type": "BlogPosting",
   "headline": "jantic/DeOldify部署（图片上色）附带Dockerfile和镜像",
   "url": "https://yuanzhang788.github.io/2024/09/09/jantic_DeOldify%E9%83%A8%E7%BD%B2%EF%BC%88%E5%9B%BE%E7%89%87%E4%B8%8A%E8%89%B2%EF%BC%89%E9%99%84%E5%B8%A6Dockerfile%E5%92%8C%E9%95%9C%E5%83%8F/",
-  "image": "https://yuanzhang788.github.io/img/butterfly-icon.png",
+  "image": "https://api.r10086.com/img-api.php?type=%E9%A3%8E%E6%99%AF&cd=2024",
   "datePublished": "2024-09-09T05:13:50.000Z",
   "dateModified": "2026-06-08T03:35:05.897Z",
   "author": [
@@ -25,7 +25,7 @@
       "url": "https://yuanzhang788.github.io"
     }
   ]
-}</script><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://yuanzhang788.github.io/2024/09/09/jantic_DeOldify%E9%83%A8%E7%BD%B2%EF%BC%88%E5%9B%BE%E7%89%87%E4%B8%8A%E8%89%B2%EF%BC%89%E9%99%84%E5%B8%A6Dockerfile%E5%92%8C%E9%95%9C%E5%83%8F/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=5.5.5-b1"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><script>
+}</script><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://yuanzhang788.github.io/2024/09/09/jantic_DeOldify%E9%83%A8%E7%BD%B2%EF%BC%88%E5%9B%BE%E7%89%87%E4%B8%8A%E8%89%B2%EF%BC%89%E9%99%84%E5%B8%A6Dockerfile%E5%92%8C%E9%95%9C%E5%83%8F/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>
     (() => {
       
     const saveToLocal = {
@@ -71,7 +71,7 @@
         document.head.appendChild(link)
       }),
       addGlobalFn: (key, fn, name = false, parent = window) => {
-        if (!false && key.startsWith('pjax')) return
+        if (!true && key.startsWith('pjax')) return
         const globalFn = parent.globalFn || {}
         globalFn[key] = globalFn[key] || {}
         globalFn[key][name || Object.keys(globalFn[key]).length] = fn
@@ -89,7 +89,7 @@
       const activateLightMode = () => {
         document.documentElement.setAttribute('data-theme', 'light')
         if (document.querySelector('meta[name="theme-color"]') !== null) {
-          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'ffffff')
         }
       }
 
@@ -98,7 +98,25 @@
 
       const theme = saveToLocal.get('theme')
     
-          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+          const mediaQueryDark = window.matchMedia('(prefers-color-scheme: dark)')
+          const mediaQueryLight = window.matchMedia('(prefers-color-scheme: light)')
+
+          if (theme === undefined) {
+            if (mediaQueryLight.matches) activateLightMode()
+            else if (mediaQueryDark.matches) activateDarkMode()
+            else {
+              const hour = new Date().getHours()
+              const isNight = hour <= 6 || hour >= 18
+              isNight ? activateDarkMode() : activateLightMode()
+            }
+            mediaQueryDark.addEventListener('change', () => {
+              if (saveToLocal.get('theme') === undefined) {
+                e.matches ? activateDarkMode() : activateLightMode()
+              }
+            })
+          } else {
+            theme === 'light' ? activateLightMode() : activateDarkMode()
+          }
         
       
       const asideStatus = saveToLocal.get('aside-status')
@@ -118,93 +136,123 @@
   </script><script>const GLOBAL_CONFIG = {
   root: '/',
   algolia: undefined,
-  localSearch: undefined,
+  localSearch: {"path":"/search.json","preload":false,"top_n_per_article":1,"unescape":false,"pagination":{"enable":false,"hitsPerPage":8},"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
   translate: undefined,
-  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":400,"highlightFullpage":true,"highlightMacStyle":true},
   copy: {
-    success: 'Copy Successful',
-    error: 'Copy Failed',
-    noSupport: 'Browser Not Supported'
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
   },
   relativeDate: {
-    homepage: false,
+    homepage: true,
     post: false
   },
-  runtime: '',
+  runtime: '天',
   dateSuffix: {
-    just: 'Just now',
-    min: 'minutes ago',
-    hour: 'hours ago',
-    day: 'days ago',
-    month: 'months ago'
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
   },
-  copyright: undefined,
-  lightbox: 'null',
-  Snackbar: undefined,
+  copyright: {"limitCount":50,"languages":{"author":"作者: Yuanz","link":"链接: ","source":"来源: Yuanz","info":"著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。"}},
+  lightbox: 'fancybox',
+  Snackbar: {"chs_to_cht":"已切换为繁体中文","cht_to_chs":"已切换为简体中文","day_to_night":"已切换为深色模式","night_to_day":"已切换为浅色模式","bgLight":"#49b1f5","bgDark":"#1f1f1f","position":"bottom-left"},
   infinitegrid: {
-    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.0/dist/infinitegrid.min.js',
-    buttonText: 'Load More'
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
   },
-  isPhotoFigcaption: false,
-  islazyloadPlugin: false,
+  isPhotoFigcaption: true,
+  islazyloadPlugin: true,
   isAnchor: false,
   percent: {
     toc: true,
     rightside: false,
   },
-  autoDarkmode: false
+  autoDarkmode: true
 }</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
   title: 'jantic/DeOldify部署（图片上色）附带Dockerfile和镜像',
   isHighlightShrink: false,
   isToc: true,
   pageType: 'post'
-}</script><meta name="generator" content="Hexo 8.1.2"></head><body><div class="post" id="body-wrap"><header class="post-bg" id="page-header"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">Yuanz</span></a><a class="nav-page-title" href="/"><span class="site-name">jantic/DeOldify部署（图片上色）附带Dockerfile和镜像</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  Back to Home</span></span></a></span><div id="menus"></div></nav><div id="post-info"><h1 class="post-title">jantic/DeOldify部署（图片上色）附带Dockerfile和镜像</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2024-09-09T05:13:50.000Z" title="Created 2024-09-09 13:13:50">2024-09-09</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2026-06-08T03:35:05.897Z" title="Updated 2026-06-08 11:35:05">2026-06-08</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">Post Views:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><h1 id="1-克隆代码到DeOldify"><a href="#1-克隆代码到DeOldify" class="headerlink" title="1. 克隆代码到DeOldify"></a>1. 克隆代码到DeOldify</h1><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git clone https://github.com/jantic/DeOldify.git DeOldify</span><br></pre></td></tr></table></figure>
+}</script><link rel="stylesheet" href="/css/custom.css"><meta name="generator" content="Hexo 8.1.2"></head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div><script>(()=>{
+  const $loadingBox = document.getElementById('loading-box')
+  const $body = document.body
+  const preloader = {
+    endLoading: () => {
+      if ($loadingBox.classList.contains('loaded')) return
+      $body.style.overflow = ''
+      $loadingBox.classList.add('loaded')
+    },
+    initLoading: () => {
+      $body.style.overflow = 'hidden'
+      $loadingBox.classList.remove('loaded')
+    }
+  }
+
+  preloader.initLoading()
+
+  if (document.readyState === 'complete') {
+    preloader.endLoading()
+  } else {
+    window.addEventListener('load', preloader.endLoading)
+    document.addEventListener('DOMContentLoaded', preloader.endLoading)
+    // Add timeout protection: force end after 7 seconds
+    setTimeout(preloader.endLoading, 7000)
+  }
+
+  if (true) {
+    btf.addGlobalFn('pjaxSend', preloader.initLoading, 'preloader_init')
+    btf.addGlobalFn('pjaxComplete', preloader.endLoading, 'preloader_end')
+  }
+})()</script><div class="bg-animation" id="web_bg" style="background-image: url(/assets/Abanner/index.jpg);"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">176</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">0</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">0</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg fixed" id="page-header" style="background-image: url(https://api.r10086.com/img-api.php?type=%E9%A3%8E%E6%99%AF&amp;cd=2024);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">Yuanz</span></a><a class="nav-page-title" href="/"><span class="site-name">jantic/DeOldify部署（图片上色）附带Dockerfile和镜像</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">jantic/DeOldify部署（图片上色）附带Dockerfile和镜像</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2024-09-09T05:13:50.000Z" title="发表于 2024-09-09 13:13:50">2024-09-09</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-06-08T03:35:05.897Z" title="更新于 2026-06-08 11:35:05">2026-06-08</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><div id="post-outdate-notice" data="{&quot;limitDay&quot;:365,&quot;messagePrev&quot;:&quot;已经过了&quot;,&quot;messageNext&quot;:&quot;天自上次更新，文章内容可能已过时。&quot;,&quot;postUpdate&quot;:&quot;2026-06-08 11:35:05&quot;}" hidden></div><h1 id="1-克隆代码到DeOldify"><a href="#1-克隆代码到DeOldify" class="headerlink" title="1. 克隆代码到DeOldify"></a>1. 克隆代码到DeOldify</h1><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">git clone https://github.com/jantic/DeOldify.git DeOldify<br></code></pre></td></tr></table></figure>
 
 
-<p><img src="/assets/jantic_DeOldify%E9%83%A8%E7%BD%B2%E5%9B%BE%E7%89%87%E4%B8%8A%E8%89%B2%E9%99%84%E5%B8%A6Dockerfile%E5%92%8C%E9%95%9C%E5%83%8F/48dbc4d7deec2779834de5238606554c.png"></p>
+<p><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/assets/jantic_DeOldify%E9%83%A8%E7%BD%B2%E5%9B%BE%E7%89%87%E4%B8%8A%E8%89%B2%E9%99%84%E5%B8%A6Dockerfile%E5%92%8C%E9%95%9C%E5%83%8F/48dbc4d7deec2779834de5238606554c.png"></p>
 <blockquote>
 <p>DeOldify源码</p>
 </blockquote>
-<p><img src="/assets/jantic_DeOldify%E9%83%A8%E7%BD%B2%E5%9B%BE%E7%89%87%E4%B8%8A%E8%89%B2%E9%99%84%E5%B8%A6Dockerfile%E5%92%8C%E9%95%9C%E5%83%8F/c0eb14c8deb98c186c7bdc8350e6e5e2.png"></p>
+<p><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/assets/jantic_DeOldify%E9%83%A8%E7%BD%B2%E5%9B%BE%E7%89%87%E4%B8%8A%E8%89%B2%E9%99%84%E5%B8%A6Dockerfile%E5%92%8C%E9%95%9C%E5%83%8F/c0eb14c8deb98c186c7bdc8350e6e5e2.png"></p>
 <h1 id="2-安装依赖"><a href="#2-安装依赖" class="headerlink" title="2. 安装依赖"></a>2. 安装依赖</h1><blockquote>
 <p>这里会安装python以及创建deoldify环境</p>
 </blockquote>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cd DeOldify</span><br><span class="line">conda env create -f environment.yml</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs shell">cd DeOldify<br>conda env create -f environment.yml<br></code></pre></td></tr></table></figure>
 
 
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">(base) root@DESKTOP-1FOD6A8:~/DeOldify# conda env create -f environment.yml</span><br><span class="line">Retrieving notices: ...working... Retrying (Retry(total=2, connect=None, read=None, redirect=None, status=None)) after connection broken by &#x27;SSLEOFError(8, &#x27;[SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1000)&#x27;)&#x27;: /pkgs/r/notices.json</span><br><span class="line"></span><br><span class="line">Retrying (Retry(total=1, connect=None, read=None, redirect=None, status=None)) after connection broken by &#x27;SSLEOFError(8, &#x27;[SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1000)&#x27;)&#x27;: /pkgs/r/notices.json</span><br><span class="line"></span><br><span class="line">done</span><br><span class="line">Channels:</span><br><span class="line"> - fastai</span><br><span class="line"> - conda-forge</span><br><span class="line"> - defaults</span><br><span class="line"> - pytorch</span><br><span class="line">Platform: linux-64</span><br><span class="line">Collecting package metadata (repodata.json): - Retrying (Retry(total=2, connect=None, read=None, redirect=None, status=None)) after connection broken by &#x27;SSLEOFError(8, &#x27;[SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1000)&#x27;)&#x27;: /pkgs/main/linux-64/repodata.json.zst</span><br><span class="line"></span><br><span class="line">| Retrying (Retry(total=2, connect=None, read=None, redirect=None, status=None)) after connection broken by &#x27;SSLEOFError(8, &#x27;[SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1000)&#x27;)&#x27;: /fastai/linux-64/repodata.json.zst</span><br><span class="line"></span><br><span class="line">\ Retrying (Retry(total=1, connect=None, read=None, redirect=None, status=None)) after connection broken by &#x27;SSLEOFError(8, &#x27;[SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1000)&#x27;)&#x27;: /fastai/linux-64/repodata.json.zst</span><br><span class="line"></span><br><span class="line">done</span><br><span class="line">Solving environment: done</span><br><span class="line"></span><br><span class="line">Downloading and Extracting Packages:</span><br><span class="line">pytorch-1.11.0       |Retrying (Retry(total=2, connect=None, read=None, redirect=None, status=None)) after connection broken by &#x27;SSLEOFError(8, &#x27;[SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1000)&#x27;)&#x27;: /conda-forge/linux-64/mkl-2024.0.0-ha957f24_49657.conda2024.0.0         | 120.2 MB  |                                                                                                       |   0%</span><br><span class="line">mysql-5.7.20         | 79.2 MB   |                                                                                                       |   0%</span><br><span class="line">pytorch-1.11.0       | 1.20 GB   | 1                                                                                                     |   0%Retrying (Retry(total=1, connect=None, read=None, redirect=None, status=None)) after connection broken by &#x27;SSLEOFError(8, &#x27;[SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1000)&#x27;)&#x27;: /conda-forge/linux-64/mkl-2024.0.0-ha957f24_49657.conda            |   0%</span><br><span class="line">mysql-5.7.20         | 79.2 MB   | 4                                                                                                     |   0% pytorch-1.11.0       | 1.20 GB   | ####################################################################################################9 | 100% cudatoolkit-11.5.2   | 566.5 MB  | ##################################################################################################### | 100% mkl-2024.0.0         | 120.2 MB  | ##################################################################################################### | 100% mysql-5.7.20         | 79.2 MB   | ##################################################################################################### | 100% llvm-openmp-18.1.7   | 55.9 MB   | ##################################################################################################### | 100% libllvm14-14.0.6     | 30.0 MB   | ##################################################################################################### | 100% torchvision-0.12.0   | 27.6 MB   | ##################################################################################################### | 100% python-3.10.14       | 24.3 MB   | ##################################################################################################### | 100% scipy-1.14.1         | 16.1 MB   | ##################################################################################################### | 100% pandas-2.2.2         | 12.4 MB   | ##################################################################################################### | 100% icu-73.2             | 11.5 MB   | ##################################################################################################### | 100% libopenvino-intel-cp | 10.4 MB   | ##################################################################################################### | 100% ffmpeg-7.0.1         | 9.6 MB    | ##################################################################################################### | 100% libclang13-14.0.6    | 8.8 MB    | ##################################################################################################### | 100% libopenvino-intel-gp | 8.1 MB    | ##################################################################################################### | 100% cython-blis-0.7.10   | 7.4 MB    | ##################################################################################################### | 100% babel-2.14.0         | 7.3 MB    | ##################################################################################################### | 100% jupyterlab-4.2.5     | 7.0 MB    | ##################################################################################################### | 100% matplotlib-base-3.9. | 6.7 MB    | ##################################################################################################### | 100% numpy-1.26.4         | 6.7 MB    | ##################################################################################################### | 100% pyqt-5.15.4          | 6.1 MB    | ##################################################################################################### | 100% torchaudio-0.11.0    | 5.3 MB    | ##################################################################################################### | 100% spacy-3.7.5          | 5.2 MB    | ##################################################################################################### | 100% libopenvino-2024.1.0 | 4.9 MB    | ##################################################################################################### | 100% p11-kit-0.24.1       | 4.5 MB    | ##################################################################################################### | 100% libcups-2.3.3        | 4.3 MB    | ##################################################################################################### | 100% language-data-1.2.0  | 4.0 MB    | ##################################################################################################### | 100% libglib-2.80.2       | 3.7 MB    | ##################################################################################################### | 100% libstdcxx-14.1.0     | 3.7 MB    | ##################################################################################################### | 100% x265-3.5             | 3.2 MB    | ##################################################################################################### | 100% tk-8.6.13            | 3.2 MB    | ##################################################################################################### | 100%</span><br><span class="line">openssl-3.3.2        | 2.8 MB    | ##################################################################################################### | 100% libprotobuf-4.25.3   | 2.7 MB    | ##################################################################################################### | 100% gettext-tools-0.22.5 | 2.6 MB    | ##################################################################################################### | 100% aom-3.9.1            | 2.6 MB    | ##################################################################################################### | 100%  ... (more hidden) ...</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><code class="hljs shell">(base) root@DESKTOP-1FOD6A8:~/DeOldify# conda env create -f environment.yml<br>Retrieving notices: ...working... Retrying (Retry(total=2, connect=None, read=None, redirect=None, status=None)) after connection broken by &#x27;SSLEOFError(8, &#x27;[SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1000)&#x27;)&#x27;: /pkgs/r/notices.json<br><br>Retrying (Retry(total=1, connect=None, read=None, redirect=None, status=None)) after connection broken by &#x27;SSLEOFError(8, &#x27;[SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1000)&#x27;)&#x27;: /pkgs/r/notices.json<br><br>done<br>Channels:<br> - fastai<br> - conda-forge<br> - defaults<br> - pytorch<br>Platform: linux-64<br>Collecting package metadata (repodata.json): - Retrying (Retry(total=2, connect=None, read=None, redirect=None, status=None)) after connection broken by &#x27;SSLEOFError(8, &#x27;[SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1000)&#x27;)&#x27;: /pkgs/main/linux-64/repodata.json.zst<br><br>| Retrying (Retry(total=2, connect=None, read=None, redirect=None, status=None)) after connection broken by &#x27;SSLEOFError(8, &#x27;[SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1000)&#x27;)&#x27;: /fastai/linux-64/repodata.json.zst<br><br>\ Retrying (Retry(total=1, connect=None, read=None, redirect=None, status=None)) after connection broken by &#x27;SSLEOFError(8, &#x27;[SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1000)&#x27;)&#x27;: /fastai/linux-64/repodata.json.zst<br><br>done<br>Solving environment: done<br><br>Downloading and Extracting Packages:<br>pytorch-1.11.0       |Retrying (Retry(total=2, connect=None, read=None, redirect=None, status=None)) after connection broken by &#x27;SSLEOFError(8, &#x27;[SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1000)&#x27;)&#x27;: /conda-forge/linux-64/mkl-2024.0.0-ha957f24_49657.conda2024.0.0         | 120.2 MB  |                                                                                                       |   0%<br>mysql-5.7.20         | 79.2 MB   |                                                                                                       |   0%<br>pytorch-1.11.0       | 1.20 GB   | 1                                                                                                     |   0%Retrying (Retry(total=1, connect=None, read=None, redirect=None, status=None)) after connection broken by &#x27;SSLEOFError(8, &#x27;[SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1000)&#x27;)&#x27;: /conda-forge/linux-64/mkl-2024.0.0-ha957f24_49657.conda            |   0%<br>mysql-5.7.20         | 79.2 MB   | 4                                                                                                     |   0% pytorch-1.11.0       | 1.20 GB   | ####################################################################################################9 | 100% cudatoolkit-11.5.2   | 566.5 MB  | ##################################################################################################### | 100% mkl-2024.0.0         | 120.2 MB  | ##################################################################################################### | 100% mysql-5.7.20         | 79.2 MB   | ##################################################################################################### | 100% llvm-openmp-18.1.7   | 55.9 MB   | ##################################################################################################### | 100% libllvm14-14.0.6     | 30.0 MB   | ##################################################################################################### | 100% torchvision-0.12.0   | 27.6 MB   | ##################################################################################################### | 100% python-3.10.14       | 24.3 MB   | ##################################################################################################### | 100% scipy-1.14.1         | 16.1 MB   | ##################################################################################################### | 100% pandas-2.2.2         | 12.4 MB   | ##################################################################################################### | 100% icu-73.2             | 11.5 MB   | ##################################################################################################### | 100% libopenvino-intel-cp | 10.4 MB   | ##################################################################################################### | 100% ffmpeg-7.0.1         | 9.6 MB    | ##################################################################################################### | 100% libclang13-14.0.6    | 8.8 MB    | ##################################################################################################### | 100% libopenvino-intel-gp | 8.1 MB    | ##################################################################################################### | 100% cython-blis-0.7.10   | 7.4 MB    | ##################################################################################################### | 100% babel-2.14.0         | 7.3 MB    | ##################################################################################################### | 100% jupyterlab-4.2.5     | 7.0 MB    | ##################################################################################################### | 100% matplotlib-base-3.9. | 6.7 MB    | ##################################################################################################### | 100% numpy-1.26.4         | 6.7 MB    | ##################################################################################################### | 100% pyqt-5.15.4          | 6.1 MB    | ##################################################################################################### | 100% torchaudio-0.11.0    | 5.3 MB    | ##################################################################################################### | 100% spacy-3.7.5          | 5.2 MB    | ##################################################################################################### | 100% libopenvino-2024.1.0 | 4.9 MB    | ##################################################################################################### | 100% p11-kit-0.24.1       | 4.5 MB    | ##################################################################################################### | 100% libcups-2.3.3        | 4.3 MB    | ##################################################################################################### | 100% language-data-1.2.0  | 4.0 MB    | ##################################################################################################### | 100% libglib-2.80.2       | 3.7 MB    | ##################################################################################################### | 100% libstdcxx-14.1.0     | 3.7 MB    | ##################################################################################################### | 100% x265-3.5             | 3.2 MB    | ##################################################################################################### | 100% tk-8.6.13            | 3.2 MB    | ##################################################################################################### | 100%<br>openssl-3.3.2        | 2.8 MB    | ##################################################################################################### | 100% libprotobuf-4.25.3   | 2.7 MB    | ##################################################################################################### | 100% gettext-tools-0.22.5 | 2.6 MB    | ##################################################################################################### | 100% aom-3.9.1            | 2.6 MB    | ##################################################################################################### | 100%  ... (more hidden) ...<br></code></pre></td></tr></table></figure>
 
 
 <blockquote>
 <p>这里可能会有几个依赖会失败</p>
 </blockquote>
-<p><img src="/assets/jantic_DeOldify%E9%83%A8%E7%BD%B2%E5%9B%BE%E7%89%87%E4%B8%8A%E8%89%B2%E9%99%84%E5%B8%A6Dockerfile%E5%92%8C%E9%95%9C%E5%83%8F/5d5ef8724613f266f1284e1bb2153375.png"></p>
+<p><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/assets/jantic_DeOldify%E9%83%A8%E7%BD%B2%E5%9B%BE%E7%89%87%E4%B8%8A%E8%89%B2%E9%99%84%E5%B8%A6Dockerfile%E5%92%8C%E9%95%9C%E5%83%8F/5d5ef8724613f266f1284e1bb2153375.png"></p>
 <blockquote>
 <p>失败了再次执行</p>
 </blockquote>
-<p><img src="/assets/jantic_DeOldify%E9%83%A8%E7%BD%B2%E5%9B%BE%E7%89%87%E4%B8%8A%E8%89%B2%E9%99%84%E5%B8%A6Dockerfile%E5%92%8C%E9%95%9C%E5%83%8F/3d138e454d7ddb39d766b6367b300836.png"></p>
+<p><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/assets/jantic_DeOldify%E9%83%A8%E7%BD%B2%E5%9B%BE%E7%89%87%E4%B8%8A%E8%89%B2%E9%99%84%E5%B8%A6Dockerfile%E5%92%8C%E9%95%9C%E5%83%8F/3d138e454d7ddb39d766b6367b300836.png"></p>
 <blockquote>
 <p>直到全部依赖下载完成</p>
 </blockquote>
-<p><img src="/assets/jantic_DeOldify%E9%83%A8%E7%BD%B2%E5%9B%BE%E7%89%87%E4%B8%8A%E8%89%B2%E9%99%84%E5%B8%A6Dockerfile%E5%92%8C%E9%95%9C%E5%83%8F/08260d949c85ebf23a815b57b173d9e8.png"></p>
-<p><img src="/assets/jantic_DeOldify%E9%83%A8%E7%BD%B2%E5%9B%BE%E7%89%87%E4%B8%8A%E8%89%B2%E9%99%84%E5%B8%A6Dockerfile%E5%92%8C%E9%95%9C%E5%83%8F/a358c520e78c847d1f6835c4f065b442.png"></p>
-<h1 id="3-conda-激活deoldify"><a href="#3-conda-激活deoldify" class="headerlink" title="3. conda 激活deoldify"></a>3. conda 激活deoldify</h1><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">conda activate deoldify</span><br></pre></td></tr></table></figure>
+<p><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/assets/jantic_DeOldify%E9%83%A8%E7%BD%B2%E5%9B%BE%E7%89%87%E4%B8%8A%E8%89%B2%E9%99%84%E5%B8%A6Dockerfile%E5%92%8C%E9%95%9C%E5%83%8F/08260d949c85ebf23a815b57b173d9e8.png"></p>
+<p><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/assets/jantic_DeOldify%E9%83%A8%E7%BD%B2%E5%9B%BE%E7%89%87%E4%B8%8A%E8%89%B2%E9%99%84%E5%B8%A6Dockerfile%E5%92%8C%E9%95%9C%E5%83%8F/a358c520e78c847d1f6835c4f065b442.png"></p>
+<h1 id="3-conda-激活deoldify"><a href="#3-conda-激活deoldify" class="headerlink" title="3. conda 激活deoldify"></a>3. conda 激活deoldify</h1><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">conda activate deoldify<br></code></pre></td></tr></table></figure>
 
 
-<p><img src="/assets/jantic_DeOldify%E9%83%A8%E7%BD%B2%E5%9B%BE%E7%89%87%E4%B8%8A%E8%89%B2%E9%99%84%E5%B8%A6Dockerfile%E5%92%8C%E9%95%9C%E5%83%8F/f21c95692c40735230b7b5e32091534f.png"></p>
+<p><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/assets/jantic_DeOldify%E9%83%A8%E7%BD%B2%E5%9B%BE%E7%89%87%E4%B8%8A%E8%89%B2%E9%99%84%E5%B8%A6Dockerfile%E5%92%8C%E9%95%9C%E5%83%8F/f21c95692c40735230b7b5e32091534f.png"></p>
 <h1 id="4-下载模型"><a href="#4-下载模型" class="headerlink" title="4. 下载模型"></a>4. 下载模型</h1><p><a target="_blank" rel="noopener" href="https://github.com/jantic/DeOldify">https://github.com/jantic/DeOldify</a></p>
-<p><img src="/assets/jantic_DeOldify%E9%83%A8%E7%BD%B2%E5%9B%BE%E7%89%87%E4%B8%8A%E8%89%B2%E9%99%84%E5%B8%A6Dockerfile%E5%92%8C%E9%95%9C%E5%83%8F/e887c179ac434c44f5763b23d6171166.png"></p>
+<p><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/assets/jantic_DeOldify%E9%83%A8%E7%BD%B2%E5%9B%BE%E7%89%87%E4%B8%8A%E8%89%B2%E9%99%84%E5%B8%A6Dockerfile%E5%92%8C%E9%95%9C%E5%83%8F/e887c179ac434c44f5763b23d6171166.png"></p>
 <blockquote>
 <p>放在DeOldify&#x2F;models目录下</p>
 </blockquote>
-<p><img src="/assets/jantic_DeOldify%E9%83%A8%E7%BD%B2%E5%9B%BE%E7%89%87%E4%B8%8A%E8%89%B2%E9%99%84%E5%B8%A6Dockerfile%E5%92%8C%E9%95%9C%E5%83%8F/fa50e741fbf1735a095687d5d106523e.png"></p>
+<p><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/assets/jantic_DeOldify%E9%83%A8%E7%BD%B2%E5%9B%BE%E7%89%87%E4%B8%8A%E8%89%B2%E9%99%84%E5%B8%A6Dockerfile%E5%92%8C%E9%95%9C%E5%83%8F/fa50e741fbf1735a095687d5d106523e.png"></p>
 <h1 id="5-启动脚本"><a href="#5-启动脚本" class="headerlink" title="5. 启动脚本"></a>5. 启动脚本</h1><blockquote>
 <p>想要cpu执行可以修改下图位置为CPU,就算是GPU,没有GPU的情况下也会使用CPU执行,所以我没有修改</p>
 </blockquote>
-<p><img src="/assets/jantic_DeOldify%E9%83%A8%E7%BD%B2%E5%9B%BE%E7%89%87%E4%B8%8A%E8%89%B2%E9%99%84%E5%B8%A6Dockerfile%E5%92%8C%E9%95%9C%E5%83%8F/369772f170bce18429b45c41169b9c0f.png"></p>
+<p><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/assets/jantic_DeOldify%E9%83%A8%E7%BD%B2%E5%9B%BE%E7%89%87%E4%B8%8A%E8%89%B2%E9%99%84%E5%B8%A6Dockerfile%E5%92%8C%E9%95%9C%E5%83%8F/369772f170bce18429b45c41169b9c0f.png"></p>
 <blockquote>
 </blockquote>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> argparse</span><br><span class="line"><span class="keyword">from</span> deoldify <span class="keyword">import</span> device</span><br><span class="line"><span class="keyword">from</span> deoldify.device_id <span class="keyword">import</span> DeviceId</span><br><span class="line"><span class="keyword">from</span> deoldify.visualize <span class="keyword">import</span> *</span><br><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line"><span class="keyword">import</span> torch</span><br><span class="line"><span class="keyword">import</span> warnings</span><br><span class="line"><span class="keyword">import</span> os</span><br><span class="line"></span><br><span class="line"><span class="comment"># 设置命令行参数</span></span><br><span class="line">parser = argparse.ArgumentParser(description=<span class="string">&quot;DeOldify Image Colorization&quot;</span>)</span><br><span class="line">parser.add_argument(<span class="string">&#x27;--source_path&#x27;</span>, <span class="built_in">type</span>=<span class="built_in">str</span>, required=<span class="literal">True</span>, <span class="built_in">help</span>=<span class="string">&quot;Path to the input image&quot;</span>)</span><br><span class="line">parser.add_argument(<span class="string">&#x27;--render_factor&#x27;</span>, <span class="built_in">type</span>=<span class="built_in">int</span>, default=<span class="number">35</span>, <span class="built_in">help</span>=<span class="string">&quot;Render factor for the image colorizer (default: 35)&quot;</span>)</span><br><span class="line"></span><br><span class="line">args = parser.parse_args()</span><br><span class="line"></span><br><span class="line"><span class="comment"># 设置设备 (CPU 或 GPU0)</span></span><br><span class="line">device.<span class="built_in">set</span>(device=DeviceId.GPU0)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 设置样式和性能优化</span></span><br><span class="line">plt.style.use(<span class="string">&#x27;dark_background&#x27;</span>)</span><br><span class="line">torch.backends.cudnn.benchmark = <span class="literal">True</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 忽略某些警告</span></span><br><span class="line">warnings.filterwarnings(<span class="string">&quot;ignore&quot;</span>, category=UserWarning, message=<span class="string">&quot;.*?Your .*? set is empty.*?&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 初始化颜色化工具</span></span><br><span class="line">colorizer = get_image_colorizer(artistic=<span class="literal">True</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 获取运行时参数</span></span><br><span class="line">render_factor = args.render_factor</span><br><span class="line">source_path = args.source_path</span><br><span class="line"></span><br><span class="line"><span class="comment"># 动态设置 result_path，例如保存到 &#x27;output_images&#x27; 目录中</span></span><br><span class="line">result_dir = <span class="string">&#x27;output_images&#x27;</span></span><br><span class="line"><span class="keyword">if</span> <span class="keyword">not</span> os.path.exists(result_dir):</span><br><span class="line">    os.makedirs(result_dir)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 自动根据 source_path 生成输出文件路径</span></span><br><span class="line">file_name = os.path.basename(source_path)</span><br><span class="line">result_path = os.path.join(result_dir, file_name)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 显示颜色化处理后的图像并进行对比</span></span><br><span class="line">colorizer.plot_transformed_image(path=source_path, render_factor=render_factor, compare=<span class="literal">True</span>)</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> argparse<br><span class="hljs-keyword">from</span> deoldify <span class="hljs-keyword">import</span> device<br><span class="hljs-keyword">from</span> deoldify.device_id <span class="hljs-keyword">import</span> DeviceId<br><span class="hljs-keyword">from</span> deoldify.visualize <span class="hljs-keyword">import</span> *<br><span class="hljs-keyword">import</span> matplotlib.pyplot <span class="hljs-keyword">as</span> plt<br><span class="hljs-keyword">import</span> torch<br><span class="hljs-keyword">import</span> warnings<br><span class="hljs-keyword">import</span> os<br><br><span class="hljs-comment"># 设置命令行参数</span><br>parser = argparse.ArgumentParser(description=<span class="hljs-string">&quot;DeOldify Image Colorization&quot;</span>)<br>parser.add_argument(<span class="hljs-string">&#x27;--source_path&#x27;</span>, <span class="hljs-built_in">type</span>=<span class="hljs-built_in">str</span>, required=<span class="hljs-literal">True</span>, <span class="hljs-built_in">help</span>=<span class="hljs-string">&quot;Path to the input image&quot;</span>)<br>parser.add_argument(<span class="hljs-string">&#x27;--render_factor&#x27;</span>, <span class="hljs-built_in">type</span>=<span class="hljs-built_in">int</span>, default=<span class="hljs-number">35</span>, <span class="hljs-built_in">help</span>=<span class="hljs-string">&quot;Render factor for the image colorizer (default: 35)&quot;</span>)<br><br>args = parser.parse_args()<br><br><span class="hljs-comment"># 设置设备 (CPU 或 GPU0)</span><br>device.<span class="hljs-built_in">set</span>(device=DeviceId.GPU0)<br><br><span class="hljs-comment"># 设置样式和性能优化</span><br>plt.style.use(<span class="hljs-string">&#x27;dark_background&#x27;</span>)<br>torch.backends.cudnn.benchmark = <span class="hljs-literal">True</span><br><br><span class="hljs-comment"># 忽略某些警告</span><br>warnings.filterwarnings(<span class="hljs-string">&quot;ignore&quot;</span>, category=UserWarning, message=<span class="hljs-string">&quot;.*?Your .*? set is empty.*?&quot;</span>)<br><br><span class="hljs-comment"># 初始化颜色化工具</span><br>colorizer = get_image_colorizer(artistic=<span class="hljs-literal">True</span>)<br><br><span class="hljs-comment"># 获取运行时参数</span><br>render_factor = args.render_factor<br>source_path = args.source_path<br><br><span class="hljs-comment"># 动态设置 result_path，例如保存到 &#x27;output_images&#x27; 目录中</span><br>result_dir = <span class="hljs-string">&#x27;output_images&#x27;</span><br><span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> os.path.exists(result_dir):<br>    os.makedirs(result_dir)<br><br><span class="hljs-comment"># 自动根据 source_path 生成输出文件路径</span><br>file_name = os.path.basename(source_path)<br>result_path = os.path.join(result_dir, file_name)<br><br><span class="hljs-comment"># 显示颜色化处理后的图像并进行对比</span><br>colorizer.plot_transformed_image(path=source_path, render_factor=render_factor, compare=<span class="hljs-literal">True</span>)<br><br></code></pre></td></tr></table></figure>
 
 
 
@@ -223,53 +271,53 @@
 </li>
 </ul>
 </blockquote>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python start.py --source_path /mnt/c/Users/admin/Pictures/202003091903023858a.jpg  --render_factor 35</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">python start.py --source_path /mnt/c/Users/admin/Pictures/202003091903023858a.jpg  --render_factor 35<br></code></pre></td></tr></table></figure>
 
 
 
 
-<h1 id="6-启动问题"><a href="#6-启动问题" class="headerlink" title="6. 启动问题"></a>6. 启动问题</h1><p><img src="/assets/jantic_DeOldify%E9%83%A8%E7%BD%B2%E5%9B%BE%E7%89%87%E4%B8%8A%E8%89%B2%E9%99%84%E5%B8%A6Dockerfile%E5%92%8C%E9%95%9C%E5%83%8F/02a071cb8445659131edca8798142f30.png"></p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python start.py --source_path /mnt/c/Users/admin/Pictures/202003091903023858a.jpg  --render_factor 35</span><br></pre></td></tr></table></figure>
+<h1 id="6-启动问题"><a href="#6-启动问题" class="headerlink" title="6. 启动问题"></a>6. 启动问题</h1><p><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/assets/jantic_DeOldify%E9%83%A8%E7%BD%B2%E5%9B%BE%E7%89%87%E4%B8%8A%E8%89%B2%E9%99%84%E5%B8%A6Dockerfile%E5%92%8C%E9%95%9C%E5%83%8F/02a071cb8445659131edca8798142f30.png"></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">python start.py --source_path /mnt/c/Users/admin/Pictures/202003091903023858a.jpg  --render_factor 35<br></code></pre></td></tr></table></figure>
 
 
 <p>需要安装libtiff5</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get update</span><br><span class="line">sudo apt-get install libtiff5</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs shell">sudo apt-get update<br>sudo apt-get install libtiff5<br></code></pre></td></tr></table></figure>
 
 
 <p>如果apt-get update如下</p>
-<p><img src="/assets/jantic_DeOldify%E9%83%A8%E7%BD%B2%E5%9B%BE%E7%89%87%E4%B8%8A%E8%89%B2%E9%99%84%E5%B8%A6Dockerfile%E5%92%8C%E9%95%9C%E5%83%8F/adf4d950288f1f05baed00867c3cd027.png"></p>
+<p><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/assets/jantic_DeOldify%E9%83%A8%E7%BD%B2%E5%9B%BE%E7%89%87%E4%B8%8A%E8%89%B2%E9%99%84%E5%B8%A6Dockerfile%E5%92%8C%E9%95%9C%E5%83%8F/adf4d950288f1f05baed00867c3cd027.png"></p>
 <p>换源</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cp /etc/apt/sources.list /etc/apt/sources.list.bak</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">cp /etc/apt/sources.list /etc/apt/sources.list.bak<br></code></pre></td></tr></table></figure>
 
 
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">sudo bash -c &#x27;cat &gt; /etc/apt/sources.list &lt;&lt; EOF</span><br><span class="line">deb http://mirrors.aliyun.com/ubuntu/ jammy main universe restricted multiverse</span><br><span class="line">deb http://mirrors.aliyun.com/ubuntu/ jammy-updates main universe restricted multiverse</span><br><span class="line">deb http://mirrors.aliyun.com/ubuntu/ jammy-backports main universe restricted multiverse</span><br><span class="line">deb http://mirrors.aliyun.com/ubuntu/ jammy-security main universe restricted multiverse</span><br><span class="line">EOF&#x27;</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs shell">sudo bash -c &#x27;cat &gt; /etc/apt/sources.list &lt;&lt; EOF<br>deb http://mirrors.aliyun.com/ubuntu/ jammy main universe restricted multiverse<br>deb http://mirrors.aliyun.com/ubuntu/ jammy-updates main universe restricted multiverse<br>deb http://mirrors.aliyun.com/ubuntu/ jammy-backports main universe restricted multiverse<br>deb http://mirrors.aliyun.com/ubuntu/ jammy-security main universe restricted multiverse<br>EOF&#x27;<br></code></pre></td></tr></table></figure>
 
 
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get update</span><br><span class="line">sudo apt-get upgrade</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs shell">sudo apt-get update<br>sudo apt-get upgrade<br></code></pre></td></tr></table></figure>
 
 
 
 
-<p><img src="/assets/jantic_DeOldify%E9%83%A8%E7%BD%B2%E5%9B%BE%E7%89%87%E4%B8%8A%E8%89%B2%E9%99%84%E5%B8%A6Dockerfile%E5%92%8C%E9%95%9C%E5%83%8F/255ae0e8ef1e27b7582331c5079e2b09.png"></p>
+<p><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/assets/jantic_DeOldify%E9%83%A8%E7%BD%B2%E5%9B%BE%E7%89%87%E4%B8%8A%E8%89%B2%E9%99%84%E5%B8%A6Dockerfile%E5%92%8C%E9%95%9C%E5%83%8F/255ae0e8ef1e27b7582331c5079e2b09.png"></p>
 <h1 id="7-启动"><a href="#7-启动" class="headerlink" title="7. 启动"></a>7. 启动</h1><blockquote>
 <p>第一次启动会下载这个预处理模型,启动的时候下载失败,可以手动下载,然后放在对应文件目录下</p>
 </blockquote>
-<p><img src="/assets/jantic_DeOldify%E9%83%A8%E7%BD%B2%E5%9B%BE%E7%89%87%E4%B8%8A%E8%89%B2%E9%99%84%E5%B8%A6Dockerfile%E5%92%8C%E9%95%9C%E5%83%8F/954170aa34dad64b7292c1cf717d934b.png"></p>
+<p><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/assets/jantic_DeOldify%E9%83%A8%E7%BD%B2%E5%9B%BE%E7%89%87%E4%B8%8A%E8%89%B2%E9%99%84%E5%B8%A6Dockerfile%E5%92%8C%E9%95%9C%E5%83%8F/954170aa34dad64b7292c1cf717d934b.png"></p>
 <p>Downloading: “<a target="_blank" rel="noopener" href="https://download.pytorch.org/models/resnet34-b627a593.pth%22">https://download.pytorch.org/models/resnet34-b627a593.pth&quot;</a> to &#x2F;root&#x2F;.cache&#x2F;torch&#x2F;hub&#x2F;checkpoints&#x2F;resnet34-b627a593.pth</p>
 <blockquote>
 <p>之后启动就不会再下载了</p>
 </blockquote>
-<p><img src="/assets/jantic_DeOldify%E9%83%A8%E7%BD%B2%E5%9B%BE%E7%89%87%E4%B8%8A%E8%89%B2%E9%99%84%E5%B8%A6Dockerfile%E5%92%8C%E9%95%9C%E5%83%8F/11877f330c4a7153ecd7429ecc3620c2.png"></p>
+<p><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/assets/jantic_DeOldify%E9%83%A8%E7%BD%B2%E5%9B%BE%E7%89%87%E4%B8%8A%E8%89%B2%E9%99%84%E5%B8%A6Dockerfile%E5%92%8C%E9%95%9C%E5%83%8F/11877f330c4a7153ecd7429ecc3620c2.png"></p>
 <p>效果</p>
-<p><img src="/assets/jantic_DeOldify%E9%83%A8%E7%BD%B2%E5%9B%BE%E7%89%87%E4%B8%8A%E8%89%B2%E9%99%84%E5%B8%A6Dockerfile%E5%92%8C%E9%95%9C%E5%83%8F/400c1a4c9d0f345b09a33a9185ac41e8.png"></p>
+<p><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/assets/jantic_DeOldify%E9%83%A8%E7%BD%B2%E5%9B%BE%E7%89%87%E4%B8%8A%E8%89%B2%E9%99%84%E5%B8%A6Dockerfile%E5%92%8C%E9%95%9C%E5%83%8F/400c1a4c9d0f345b09a33a9185ac41e8.png"></p>
 <h1 id="8-docker-部署"><a href="#8-docker-部署" class="headerlink" title="8. docker 部署"></a>8. docker 部署</h1><h2 id="8-1-已经部署好的镜像"><a href="#8-1-已经部署好的镜像" class="headerlink" title="8.1 已经部署好的镜像"></a>8.1 已经部署好的镜像</h2><blockquote>
 <p>bash版本: 启动后会直接进入容器,然后执行目录下的python start.py即可</p>
 <p>此版本为deoldify:v1.0</p>
 </blockquote>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run -it registry.cn-hangzhou.aliyuncs.com/zr-dev/deoldify:v1.0</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">docker run -it registry.cn-hangzhou.aliyuncs.com/zr-dev/deoldify:v1.0<br></code></pre></td></tr></table></figure>
 
 
-<p><img src="/assets/jantic_DeOldify%E9%83%A8%E7%BD%B2%E5%9B%BE%E7%89%87%E4%B8%8A%E8%89%B2%E9%99%84%E5%B8%A6Dockerfile%E5%92%8C%E9%95%9C%E5%83%8F/d60bb1419e82cb70d1bdb4f5f40c49ce.png"></p>
+<p><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/assets/jantic_DeOldify%E9%83%A8%E7%BD%B2%E5%9B%BE%E7%89%87%E4%B8%8A%E8%89%B2%E9%99%84%E5%B8%A6Dockerfile%E5%92%8C%E9%95%9C%E5%83%8F/d60bb1419e82cb70d1bdb4f5f40c49ce.png"></p>
 <blockquote>
 <p>容器启动时就会自动启动脚本,但是需要传入参数</p>
 <ul>
@@ -296,16 +344,16 @@
 <li>–rm :执行完成后容器会自动删除,不需要可以去除</li>
 </ul>
 </blockquote>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run --rm -v /mnt/c/Users/zr/Pictures/testout/:/workspace/DeOldify/result_images -v /mnt/c/Users/zr/Pictures/input/:/workspace/DeOldify/resource_images registry.cn-hangzhou.aliyuncs.com/zr-dev/deoldify:v2.0 --source_path /workspace/DeOldify/resource_images/1.jpg --render_factor 35</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">docker run --rm -v /mnt/c/Users/zr/Pictures/testout/:/workspace/DeOldify/result_images -v /mnt/c/Users/zr/Pictures/input/:/workspace/DeOldify/resource_images registry.cn-hangzhou.aliyuncs.com/zr-dev/deoldify:v2.0 --source_path /workspace/DeOldify/resource_images/1.jpg --render_factor 35<br></code></pre></td></tr></table></figure>
 
 
 <p>![![](&#x2F;assets&#x2F;jantic_DeOldify部署图片上色附带Dockerfile和镜像&#x2F;acbd7a79c41a46d29d043cd314a583a9.png)</p>
 <h1 id="9-自己构建镜像"><a href="#9-自己构建镜像" class="headerlink" title="9. 自己构建镜像"></a>9. 自己构建镜像</h1><blockquote>
 <p>如果我构建的镜像不符合读者的需求,可以改动Dockerfile自行构建</p>
 </blockquote>
-<h2 id="9-1-部署模型以及脚本"><a href="#9-1-部署模型以及脚本" class="headerlink" title="9.1 部署模型以及脚本"></a>9.1 部署模型以及脚本</h2><p><img src="/assets/jantic_DeOldify%E9%83%A8%E7%BD%B2%E5%9B%BE%E7%89%87%E4%B8%8A%E8%89%B2%E9%99%84%E5%B8%A6Dockerfile%E5%92%8C%E9%95%9C%E5%83%8F/34bee17e8b1e1da9f47c9a95fc8f68f9.png"></p>
+<h2 id="9-1-部署模型以及脚本"><a href="#9-1-部署模型以及脚本" class="headerlink" title="9.1 部署模型以及脚本"></a>9.1 部署模型以及脚本</h2><p><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/assets/jantic_DeOldify%E9%83%A8%E7%BD%B2%E5%9B%BE%E7%89%87%E4%B8%8A%E8%89%B2%E9%99%84%E5%B8%A6Dockerfile%E5%92%8C%E9%95%9C%E5%83%8F/34bee17e8b1e1da9f47c9a95fc8f68f9.png"></p>
 <p>下载地址:链接：<a target="_blank" rel="noopener" href="https://share.weiyun.com/lpsjQ5Pc">https://share.weiyun.com/lpsjQ5Pc</a> 密码：7rfys7</p>
-<h2 id="9-2-Dockerfile"><a href="#9-2-Dockerfile" class="headerlink" title="9.2 Dockerfile"></a>9.2 Dockerfile</h2><figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 使用 Miniconda 基础镜像</span></span><br><span class="line"><span class="keyword">FROM</span> registry.cn-hangzhou.aliyuncs.com/zr-dev/miniconda3:v1.<span class="number">0</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 设置工作目录</span></span><br><span class="line"><span class="keyword">WORKDIR</span><span class="language-bash"> /home/ai</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># 将本地的 GFPGAN 文件夹复制到容器中</span></span><br><span class="line"><span class="keyword">COPY</span><span class="language-bash"> ./DeOldify /workspace/DeOldify</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 设置工作目录为 GFPGAN 文件夹</span></span><br><span class="line"><span class="keyword">WORKDIR</span><span class="language-bash"> /workspace/DeOldify</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># 安装和相关依赖（CPU 版本）</span></span><br><span class="line"><span class="keyword">RUN</span><span class="language-bash"> conda <span class="built_in">env</span> update -n base -f environment.yml</span></span><br><span class="line"><span class="comment"># 将启动脚本复制到容器内</span></span><br><span class="line"><span class="keyword">COPY</span><span class="language-bash"> ./start.py /workspace/DeOldify/start.py</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 将预训练模型从本地复制到容器中</span></span><br><span class="line"><span class="keyword">COPY</span><span class="language-bash"> ./ColorizeArtistic_gen.pth /workspace/DeOldify/models/ColorizeArtistic_gen.pth</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 安装 libGL 和其他 OpenCV 所需的依赖</span></span><br><span class="line"><span class="keyword">RUN</span><span class="language-bash"> apt-get update &amp;&amp; apt-get install -y \</span></span><br><span class="line"><span class="language-bash">    libgl1-mesa-glx \</span></span><br><span class="line"><span class="language-bash">    libglib2.0-0 \</span></span><br><span class="line"><span class="language-bash">    libsm6 \</span></span><br><span class="line"><span class="language-bash">    libxrender1 \</span></span><br><span class="line"><span class="language-bash">    libxext6</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 将本地下载的 resnet34 预训练模型复制到容器中</span></span><br><span class="line"><span class="keyword">COPY</span><span class="language-bash"> ./resnet34-b627a593.pth /root/.cache/torch/hub/checkpoints/resnet34-b627a593.pth</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 执行 Python 脚本</span></span><br><span class="line"><span class="comment"># ENTRYPOINT [&quot;python&quot;, &quot;start.py&quot;]</span></span><br><span class="line"><span class="comment"># 使用 bash 作为容器的入口</span></span><br><span class="line"><span class="keyword">ENTRYPOINT</span><span class="language-bash"> [<span class="string">&quot;/bin/bash&quot;</span>]</span></span><br></pre></td></tr></table></figure>
+<h2 id="9-2-Dockerfile"><a href="#9-2-Dockerfile" class="headerlink" title="9.2 Dockerfile"></a>9.2 Dockerfile</h2><figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><code class="hljs dockerfile"><span class="hljs-comment"># 使用 Miniconda 基础镜像</span><br><span class="hljs-keyword">FROM</span> registry.cn-hangzhou.aliyuncs.com/zr-dev/miniconda3:v1.<span class="hljs-number">0</span><br><br><span class="hljs-comment"># 设置工作目录</span><br><span class="hljs-keyword">WORKDIR</span><span class="language-bash"> /home/ai</span><br><br><br><span class="hljs-comment"># 将本地的 GFPGAN 文件夹复制到容器中</span><br><span class="hljs-keyword">COPY</span><span class="language-bash"> ./DeOldify /workspace/DeOldify</span><br><br><span class="hljs-comment"># 设置工作目录为 GFPGAN 文件夹</span><br><span class="hljs-keyword">WORKDIR</span><span class="language-bash"> /workspace/DeOldify</span><br><br><br><span class="hljs-comment"># 安装和相关依赖（CPU 版本）</span><br><span class="hljs-keyword">RUN</span><span class="language-bash"> conda <span class="hljs-built_in">env</span> update -n base -f environment.yml</span><br><span class="hljs-comment"># 将启动脚本复制到容器内</span><br><span class="hljs-keyword">COPY</span><span class="language-bash"> ./start.py /workspace/DeOldify/start.py</span><br><br><span class="hljs-comment"># 将预训练模型从本地复制到容器中</span><br><span class="hljs-keyword">COPY</span><span class="language-bash"> ./ColorizeArtistic_gen.pth /workspace/DeOldify/models/ColorizeArtistic_gen.pth</span><br><br><span class="hljs-comment"># 安装 libGL 和其他 OpenCV 所需的依赖</span><br><span class="hljs-keyword">RUN</span><span class="language-bash"> apt-get update &amp;&amp; apt-get install -y \</span><br><span class="language-bash">    libgl1-mesa-glx \</span><br><span class="language-bash">    libglib2.0-0 \</span><br><span class="language-bash">    libsm6 \</span><br><span class="language-bash">    libxrender1 \</span><br><span class="language-bash">    libxext6</span><br><br><span class="hljs-comment"># 将本地下载的 resnet34 预训练模型复制到容器中</span><br><span class="hljs-keyword">COPY</span><span class="language-bash"> ./resnet34-b627a593.pth /root/.cache/torch/hub/checkpoints/resnet34-b627a593.pth</span><br><br><span class="hljs-comment"># 执行 Python 脚本</span><br><span class="hljs-comment"># ENTRYPOINT [&quot;python&quot;, &quot;start.py&quot;]</span><br><span class="hljs-comment"># 使用 bash 作为容器的入口</span><br><span class="hljs-keyword">ENTRYPOINT</span><span class="language-bash"> [<span class="hljs-string">&quot;/bin/bash&quot;</span>]</span><br></code></pre></td></tr></table></figure>
 
 
 
@@ -313,5 +361,380 @@
 <blockquote>
 <p>注意处理完成的图片是result_images不在output_images</p>
 </blockquote>
-<p><img src="/assets/jantic_DeOldify%E9%83%A8%E7%BD%B2%E5%9B%BE%E7%89%87%E4%B8%8A%E8%89%B2%E9%99%84%E5%B8%A6Dockerfile%E5%92%8C%E9%95%9C%E5%83%8F/dc821703af8b28534963eb88d77dda28.png"></p>
-</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>Author: </span><span class="post-copyright-info"><a href="https://yuanzhang788.github.io">Yuanz</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>Link: </span><span class="post-copyright-info"><a href="https://yuanzhang788.github.io/2024/09/09/jantic_DeOldify%E9%83%A8%E7%BD%B2%EF%BC%88%E5%9B%BE%E7%89%87%E4%B8%8A%E8%89%B2%EF%BC%89%E9%99%84%E5%B8%A6Dockerfile%E5%92%8C%E9%95%9C%E5%83%8F/">https://yuanzhang788.github.io/2024/09/09/jantic_DeOldify%E9%83%A8%E7%BD%B2%EF%BC%88%E5%9B%BE%E7%89%87%E4%B8%8A%E8%89%B2%EF%BC%89%E9%99%84%E5%B8%A6Dockerfile%E5%92%8C%E9%95%9C%E5%83%8F/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>Copyright Notice: </span><span class="post-copyright-info">All articles on this blog are licensed under <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless otherwise stated.</span></div></div><div class="tag_share"><div class="post-share"><div class="social-share" data-image="/img/butterfly-icon.png" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2024/09/18/SpringBoot%20%E6%95%B4%E5%90%88docker,%E6%89%A7%E8%A1%8C%E5%AE%B9%E5%99%A8%E6%9C%8D%E5%8A%A1/" title="SpringBoot 整合docker,执行容器服务"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info"><div class="info-1"><div class="info-item-1">Previous</div><div class="info-item-2">SpringBoot 整合docker,执行容器服务</div></div><div class="info-2"><div class="info-item-1">我使用以下文章的镜像作为演示镜像,读者有自己的镜像可以使用自己的TencentARC&#x2F;GFPGAN人脸恢复Ubuntu-22.04搭建(附带Docker镜像)_tencentarc gfpgan-CSDN博客 1. 封装springboot 启动docker容器的方法1234567891011121314151617181920212223242526272829public String runDockerCommand(String[] command) &#123;     StringBuilder result = new StringBuilder();     try &#123;         // 使用 ProcessBuilder 执行命令         ProcessBuilder processBuilder = new ProcessBuilder(command);         processBuilder.redirectErrorStream(true);  // 将标准错误重定向到标准输出         Process pro...</div></div></div></a><a class="pagination-related" href="/2024/08/13/%E5%9F%BA%E4%BA%8ESpringboot+netty%20%E7%9A%84IM%E8%81%8A%E5%A4%A9%E5%AE%A4&amp;%E5%BC%B9%E5%B9%95/" title="基于Springboot+netty 的IM聊天室&amp;弹幕"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">Next</div><div class="info-item-2">基于Springboot+netty 的IM聊天室&弹幕</div></div><div class="info-2"><div class="info-item-1">代码地址仓库地址  聊天室 创建springboot项目     因为我的NettyServer 是8080 所以我把服务端口改为了8081    引入netty 依赖  12345&lt;dependency&gt;    &lt;groupId&gt;io.netty&lt;/groupId&gt;    &lt;artifactId&gt;netty-all&lt;/artifactId&gt;    &lt;version&gt;4.1.92.Final&lt;/version&gt;&lt;/dependency&gt;    IMServerHandler 处理用户连接以及发送消息等功能的逻辑  1234567891011121314151617181920212223242526272829303132333435363738394041424344454647484950515253545556575859606162636465666768697071727374757677787980818283package site.zhourui.netty.handl...</div></div></div></a></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/butterfly-icon.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">Yuanz</div><div class="author-info-description">Yuanz的个人博客</div><div class="site-data"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">176</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">0</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">0</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>Announcement</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>Contents</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#1-%E5%85%8B%E9%9A%86%E4%BB%A3%E7%A0%81%E5%88%B0DeOldify"><span class="toc-number">1.</span> <span class="toc-text">1. 克隆代码到DeOldify</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#2-%E5%AE%89%E8%A3%85%E4%BE%9D%E8%B5%96"><span class="toc-number">2.</span> <span class="toc-text">2. 安装依赖</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#3-conda-%E6%BF%80%E6%B4%BBdeoldify"><span class="toc-number">3.</span> <span class="toc-text">3. conda 激活deoldify</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#4-%E4%B8%8B%E8%BD%BD%E6%A8%A1%E5%9E%8B"><span class="toc-number">4.</span> <span class="toc-text">4. 下载模型</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#5-%E5%90%AF%E5%8A%A8%E8%84%9A%E6%9C%AC"><span class="toc-number">5.</span> <span class="toc-text">5. 启动脚本</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#6-%E5%90%AF%E5%8A%A8%E9%97%AE%E9%A2%98"><span class="toc-number">6.</span> <span class="toc-text">6. 启动问题</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#7-%E5%90%AF%E5%8A%A8"><span class="toc-number">7.</span> <span class="toc-text">7. 启动</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#8-docker-%E9%83%A8%E7%BD%B2"><span class="toc-number">8.</span> <span class="toc-text">8. docker 部署</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#8-1-%E5%B7%B2%E7%BB%8F%E9%83%A8%E7%BD%B2%E5%A5%BD%E7%9A%84%E9%95%9C%E5%83%8F"><span class="toc-number">8.1.</span> <span class="toc-text">8.1 已经部署好的镜像</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#9-%E8%87%AA%E5%B7%B1%E6%9E%84%E5%BB%BA%E9%95%9C%E5%83%8F"><span class="toc-number">9.</span> <span class="toc-text">9. 自己构建镜像</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#9-1-%E9%83%A8%E7%BD%B2%E6%A8%A1%E5%9E%8B%E4%BB%A5%E5%8F%8A%E8%84%9A%E6%9C%AC"><span class="toc-number">9.1.</span> <span class="toc-text">9.1 部署模型以及脚本</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#9-2-Dockerfile"><span class="toc-number">9.2.</span> <span class="toc-text">9.2 Dockerfile</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Posts</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/06/05/hello-world/" title="Hello World">Hello World</a><time datetime="2026-06-05T09:30:56.120Z" title="Created 2026-06-05 17:30:56">2026-06-05</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/05/28/%E4%BB%8E%E9%9B%B6%E5%BC%80%E5%A7%8B%EF%BC%8C%E5%9F%BA%E4%BA%8E-Hexo-GitHub-Pages-%E6%90%AD%E5%BB%BA%E4%B8%80%E4%B8%AA%E5%B1%9E%E4%BA%8E%E8%87%AA%E5%B7%B1%E7%9A%84%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2%EF%BC%8C%E5%B9%B6%E5%AE%8C%E6%88%90%E4%B8%BB%E9%A2%98%E5%88%87%E6%8D%A2%E4%B8%8E%E9%83%A8%E7%BD%B2%E3%80%82%EF%BC%88%E8%B6%85%E8%AF%A6%E7%BB%86%E6%95%99%E7%A8%8B%EF%BC%89/" title="从零开始，基于 Hexo + GitHub Pages 搭建一个属于自己的个人博客，并完成主题切换与部署。（超详细教程）">从零开始，基于 Hexo + GitHub Pages 搭建一个属于自己的个人博客，并完成主题切换与部署。（超详细教程）</a><time datetime="2026-05-28T06:27:02.000Z" title="Created 2026-05-28 14:27:02">2026-05-28</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/05/22/%E7%AC%AC%E4%B8%80%E7%AF%87-Github-Pages%E5%8D%9A%E5%AE%A2/" title="第一篇 Github Pages博客">第一篇 Github Pages博客</a><time datetime="2026-05-22T09:25:44.000Z" title="Created 2026-05-22 17:25:44">2026-05-22</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/05/20/Java%20Excel%E5%AF%BC%E5%87%BA%EF%BC%9A%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E8%87%AA%E5%AE%9A%E4%B9%89%E8%A1%A8%E5%A4%B4%E4%B8%8E%E5%AD%97%E6%AE%B5%E9%A1%BA%E5%BA%8F%E7%9A%84%E5%AE%8C%E5%85%A8%E6%8E%A7%E5%88%B6/" title="Java Excel导出：如何实现自定义表头与字段顺序的完全控制">Java Excel导出：如何实现自定义表头与字段顺序的完全控制</a><time datetime="2026-05-20T10:02:18.000Z" title="Created 2026-05-20 18:02:18">2026-05-20</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/05/07/Docker%20%E5%AE%89%E8%A3%85%20%E6%95%B0%E6%8D%AE%E5%BA%93%E5%B7%A5%E5%8D%95%E7%B3%BB%E7%BB%9FYearning%E4%BB%A5%E5%8F%8A%E4%BD%BF%E7%94%A8/" title="Docker 安装 数据库工单系统Yearning以及使用">Docker 安装 数据库工单系统Yearning以及使用</a><time datetime="2026-05-07T06:10:08.000Z" title="Created 2026-05-07 14:10:08">2026-05-07</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2025 - 2026 By Yuanz</span><span class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 8.1.2</a><span class="footer-separator">|</span><span>Theme </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.5.5-b1</a></span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="Reading Mode"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="Toggle Between Light and Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle Between Single-column and Double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="Settings"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="Table of Contents"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="Back to Top"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.5.5-b1"></script><script src="/js/main.js?v=5.5.5-b1"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
+<p><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/assets/jantic_DeOldify%E9%83%A8%E7%BD%B2%E5%9B%BE%E7%89%87%E4%B8%8A%E8%89%B2%E9%99%84%E5%B8%A6Dockerfile%E5%92%8C%E9%95%9C%E5%83%8F/dc821703af8b28534963eb88d77dda28.png"></p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://yuanzhang788.github.io">Yuanz</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://yuanzhang788.github.io/2024/09/09/jantic_DeOldify%E9%83%A8%E7%BD%B2%EF%BC%88%E5%9B%BE%E7%89%87%E4%B8%8A%E8%89%B2%EF%BC%89%E9%99%84%E5%B8%A6Dockerfile%E5%92%8C%E9%95%9C%E5%83%8F/">https://yuanzhang788.github.io/2024/09/09/jantic_DeOldify部署（图片上色）附带Dockerfile和镜像/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://yuanzhang788.github.io" target="_blank">Yuanz</a>！</span></div></div><div class="tag_share"><div class="post-share"><div class="social-share" data-image="https://api.r10086.com/img-api.php?type=%E9%A3%8E%E6%99%AF&amp;cd=2024" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2024/09/18/SpringBoot%20%E6%95%B4%E5%90%88docker,%E6%89%A7%E8%A1%8C%E5%AE%B9%E5%99%A8%E6%9C%8D%E5%8A%A1/" title="SpringBoot 整合docker,执行容器服务"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://api.r10086.com/img-api.php?type=%E9%A3%8E%E6%99%AF&amp;cd=2024" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">SpringBoot 整合docker,执行容器服务</div></div><div class="info-2"><div class="info-item-1">我使用以下文章的镜像作为演示镜像,读者有自己的镜像可以使用自己的TencentARC&#x2F;GFPGAN人脸恢复Ubuntu-22.04搭建(附带Docker镜像)_tencentarc gfpgan-CSDN博客 1. 封装springboot 启动docker容器的方法1234567891011121314151617181920212223242526272829public String runDockerCommand(String[] command) &#123;     StringBuilder result = new StringBuilder();     t...</div></div></div></a><a class="pagination-related" href="/2024/08/13/%E5%9F%BA%E4%BA%8ESpringboot+netty%20%E7%9A%84IM%E8%81%8A%E5%A4%A9%E5%AE%A4&amp;%E5%BC%B9%E5%B9%95/" title="基于Springboot+netty 的IM聊天室&amp;弹幕"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://api.r10086.com/img-api.php?type=%E9%A3%8E%E6%99%AF&amp;cd=2024" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">基于Springboot+netty 的IM聊天室&弹幕</div></div><div class="info-2"><div class="info-item-1">代码地址仓库地址  聊天室 创建springboot项目     因为我的NettyServer 是8080 所以我把服务端口改为了8081    引入netty 依赖  12345&lt;dependency&gt;    &lt;groupId&gt;io.netty&lt;/groupId&gt;    &lt;artifactId&gt;netty-all&lt;/artifactId&gt;    &lt;version&gt;4.1.92.Final&lt;/version&gt;&lt;/dependency&gt;    IMServerHandler 处理用户连接以及发...</div></div></div></a></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">Yuanz</div><div class="author-info-description">Yuanz的个人博客</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">176</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">0</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">0</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/yuanzhang788"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/yuanzhang788" target="_blank" title="Github"><i class="fab fa-github" style="color: #4a7dbe;"></i></a><a class="social-icon" href="mailto:2437264464@qq.com" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #49b1f5;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎访问 Yuanz 的个人博客！</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#1-%E5%85%8B%E9%9A%86%E4%BB%A3%E7%A0%81%E5%88%B0DeOldify"><span class="toc-number">1.</span> <span class="toc-text">1. 克隆代码到DeOldify</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#2-%E5%AE%89%E8%A3%85%E4%BE%9D%E8%B5%96"><span class="toc-number">2.</span> <span class="toc-text">2. 安装依赖</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#3-conda-%E6%BF%80%E6%B4%BBdeoldify"><span class="toc-number">3.</span> <span class="toc-text">3. conda 激活deoldify</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#4-%E4%B8%8B%E8%BD%BD%E6%A8%A1%E5%9E%8B"><span class="toc-number">4.</span> <span class="toc-text">4. 下载模型</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#5-%E5%90%AF%E5%8A%A8%E8%84%9A%E6%9C%AC"><span class="toc-number">5.</span> <span class="toc-text">5. 启动脚本</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#6-%E5%90%AF%E5%8A%A8%E9%97%AE%E9%A2%98"><span class="toc-number">6.</span> <span class="toc-text">6. 启动问题</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#7-%E5%90%AF%E5%8A%A8"><span class="toc-number">7.</span> <span class="toc-text">7. 启动</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#8-docker-%E9%83%A8%E7%BD%B2"><span class="toc-number">8.</span> <span class="toc-text">8. docker 部署</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#8-1-%E5%B7%B2%E7%BB%8F%E9%83%A8%E7%BD%B2%E5%A5%BD%E7%9A%84%E9%95%9C%E5%83%8F"><span class="toc-number">8.1.</span> <span class="toc-text">8.1 已经部署好的镜像</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#9-%E8%87%AA%E5%B7%B1%E6%9E%84%E5%BB%BA%E9%95%9C%E5%83%8F"><span class="toc-number">9.</span> <span class="toc-text">9. 自己构建镜像</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#9-1-%E9%83%A8%E7%BD%B2%E6%A8%A1%E5%9E%8B%E4%BB%A5%E5%8F%8A%E8%84%9A%E6%9C%AC"><span class="toc-number">9.1.</span> <span class="toc-text">9.1 部署模型以及脚本</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#9-2-Dockerfile"><span class="toc-number">9.2.</span> <span class="toc-text">9.2 Dockerfile</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2026/06/05/hello-world/" title="Hello World"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://api.r10086.com/img-api.php?type=%E9%A3%8E%E6%99%AF&amp;cd=2024" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Hello World"/></a><div class="content"><a class="title" href="/2026/06/05/hello-world/" title="Hello World">Hello World</a><time datetime="2026-06-05T09:30:56.120Z" title="发表于 2026-06-05 17:30:56">2026-06-05</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2026/05/28/%E4%BB%8E%E9%9B%B6%E5%BC%80%E5%A7%8B%EF%BC%8C%E5%9F%BA%E4%BA%8E-Hexo-GitHub-Pages-%E6%90%AD%E5%BB%BA%E4%B8%80%E4%B8%AA%E5%B1%9E%E4%BA%8E%E8%87%AA%E5%B7%B1%E7%9A%84%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2%EF%BC%8C%E5%B9%B6%E5%AE%8C%E6%88%90%E4%B8%BB%E9%A2%98%E5%88%87%E6%8D%A2%E4%B8%8E%E9%83%A8%E7%BD%B2%E3%80%82%EF%BC%88%E8%B6%85%E8%AF%A6%E7%BB%86%E6%95%99%E7%A8%8B%EF%BC%89/" title="从零开始，基于 Hexo + GitHub Pages 搭建一个属于自己的个人博客，并完成主题切换与部署。（超详细教程）"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://api.r10086.com/img-api.php?type=%E9%A3%8E%E6%99%AF&amp;cd=2024" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="从零开始，基于 Hexo + GitHub Pages 搭建一个属于自己的个人博客，并完成主题切换与部署。（超详细教程）"/></a><div class="content"><a class="title" href="/2026/05/28/%E4%BB%8E%E9%9B%B6%E5%BC%80%E5%A7%8B%EF%BC%8C%E5%9F%BA%E4%BA%8E-Hexo-GitHub-Pages-%E6%90%AD%E5%BB%BA%E4%B8%80%E4%B8%AA%E5%B1%9E%E4%BA%8E%E8%87%AA%E5%B7%B1%E7%9A%84%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2%EF%BC%8C%E5%B9%B6%E5%AE%8C%E6%88%90%E4%B8%BB%E9%A2%98%E5%88%87%E6%8D%A2%E4%B8%8E%E9%83%A8%E7%BD%B2%E3%80%82%EF%BC%88%E8%B6%85%E8%AF%A6%E7%BB%86%E6%95%99%E7%A8%8B%EF%BC%89/" title="从零开始，基于 Hexo + GitHub Pages 搭建一个属于自己的个人博客，并完成主题切换与部署。（超详细教程）">从零开始，基于 Hexo + GitHub Pages 搭建一个属于自己的个人博客，并完成主题切换与部署。（超详细教程）</a><time datetime="2026-05-28T06:27:02.000Z" title="发表于 2026-05-28 14:27:02">2026-05-28</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2026/05/22/%E7%AC%AC%E4%B8%80%E7%AF%87-Github-Pages%E5%8D%9A%E5%AE%A2/" title="第一篇 Github Pages博客"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://api.r10086.com/img-api.php?type=%E9%A3%8E%E6%99%AF&amp;cd=2024" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="第一篇 Github Pages博客"/></a><div class="content"><a class="title" href="/2026/05/22/%E7%AC%AC%E4%B8%80%E7%AF%87-Github-Pages%E5%8D%9A%E5%AE%A2/" title="第一篇 Github Pages博客">第一篇 Github Pages博客</a><time datetime="2026-05-22T09:25:44.000Z" title="发表于 2026-05-22 17:25:44">2026-05-22</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2026/05/20/Java%20Excel%E5%AF%BC%E5%87%BA%EF%BC%9A%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E8%87%AA%E5%AE%9A%E4%B9%89%E8%A1%A8%E5%A4%B4%E4%B8%8E%E5%AD%97%E6%AE%B5%E9%A1%BA%E5%BA%8F%E7%9A%84%E5%AE%8C%E5%85%A8%E6%8E%A7%E5%88%B6/" title="Java Excel导出：如何实现自定义表头与字段顺序的完全控制"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://api.r10086.com/img-api.php?type=%E9%A3%8E%E6%99%AF&amp;cd=2024" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Java Excel导出：如何实现自定义表头与字段顺序的完全控制"/></a><div class="content"><a class="title" href="/2026/05/20/Java%20Excel%E5%AF%BC%E5%87%BA%EF%BC%9A%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E8%87%AA%E5%AE%9A%E4%B9%89%E8%A1%A8%E5%A4%B4%E4%B8%8E%E5%AD%97%E6%AE%B5%E9%A1%BA%E5%BA%8F%E7%9A%84%E5%AE%8C%E5%85%A8%E6%8E%A7%E5%88%B6/" title="Java Excel导出：如何实现自定义表头与字段顺序的完全控制">Java Excel导出：如何实现自定义表头与字段顺序的完全控制</a><time datetime="2026-05-20T10:02:18.000Z" title="发表于 2026-05-20 18:02:18">2026-05-20</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2026/05/07/Docker%20%E5%AE%89%E8%A3%85%20%E6%95%B0%E6%8D%AE%E5%BA%93%E5%B7%A5%E5%8D%95%E7%B3%BB%E7%BB%9FYearning%E4%BB%A5%E5%8F%8A%E4%BD%BF%E7%94%A8/" title="Docker 安装 数据库工单系统Yearning以及使用"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://api.r10086.com/img-api.php?type=%E9%A3%8E%E6%99%AF&amp;cd=2024" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Docker 安装 数据库工单系统Yearning以及使用"/></a><div class="content"><a class="title" href="/2026/05/07/Docker%20%E5%AE%89%E8%A3%85%20%E6%95%B0%E6%8D%AE%E5%BA%93%E5%B7%A5%E5%8D%95%E7%B3%BB%E7%BB%9FYearning%E4%BB%A5%E5%8F%8A%E4%BD%BF%E7%94%A8/" title="Docker 安装 数据库工单系统Yearning以及使用">Docker 安装 数据库工单系统Yearning以及使用</a><time datetime="2026-05-07T06:10:08.000Z" title="发表于 2026-05-07 14:10:08">2026-05-07</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2024 - 2026 By Yuanz</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 8.1.2</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.5.5-b1</a></span></div><div class="footer_custom_text"><a href="https://github.com/yuanzhang788" target="_blank" rel="noopener noreferrer">Yuanz</a> &copy; <span id="year"></span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page/instantpage.min.js" type="module"></script><script src="https://cdn.jsdelivr.net/npm/vanilla-lazyload/dist/lazyload.iife.min.js"></script><script src="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.js"></script><div class="js-pjax"><script>(() => {
+  const parseViewBox = viewBox => {
+    if (!viewBox) return null
+    const parts = viewBox.trim().split(/[\s,]+/).map(n => Number(n))
+    if (parts.length !== 4 || parts.some(n => Number.isNaN(n))) return null
+    return parts
+  }
+
+  const getSvgViewBox = svg => {
+    const attr = parseViewBox(svg.getAttribute('viewBox'))
+    if (attr) return attr
+
+    // Fallback: use bbox to build a viewBox
+    try {
+      const bbox = svg.getBBox()
+      if (bbox && bbox.width && bbox.height) return [bbox.x, bbox.y, bbox.width, bbox.height]
+    } catch (e) {
+      // getBBox may fail on some edge cases; ignore
+    }
+
+    const w = Number(svg.getAttribute('width')) || 0
+    const h = Number(svg.getAttribute('height')) || 0
+    if (w > 0 && h > 0) return [0, 0, w, h]
+    return [0, 0, 100, 100]
+  }
+
+  const setSvgViewBox = (svg, vb) => {
+    svg.setAttribute('viewBox', `${vb[0]} ${vb[1]} ${vb[2]} ${vb[3]}`)
+  }
+
+  const clamp = (v, min, max) => Math.max(min, Math.min(max, v))
+
+  const openSvgInNewTab = ({ source, initViewBox }) => {
+    const getClonedSvg = () => {
+      if (typeof source === 'string') {
+        const template = document.createElement('template')
+        template.innerHTML = source.trim()
+        const svg = template.content.querySelector('svg')
+        return svg ? svg.cloneNode(true) : null
+      }
+      if (source && typeof source.cloneNode === 'function') {
+        return source.cloneNode(true)
+      }
+      return null
+    }
+
+    const clone = getClonedSvg()
+    if (!clone) return
+    if (initViewBox && initViewBox.length === 4) {
+      clone.setAttribute('viewBox', initViewBox.join(' '))
+    }
+    if (!clone.getAttribute('xmlns')) clone.setAttribute('xmlns', 'http://www.w3.org/2000/svg')
+    if (!clone.getAttribute('xmlns:xlink') && clone.outerHTML.includes('xlink:')) {
+      clone.setAttribute('xmlns:xlink', 'http://www.w3.org/1999/xlink')
+    }
+    // inject background to match current theme
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark'
+    const bg = getComputedStyle(document.body).backgroundColor || (isDark ? '#1e1e1e' : '#ffffff')
+    if (!clone.style.background) clone.style.background = bg
+
+    const serializer = new XMLSerializer()
+    const svgSource = serializer.serializeToString(clone)
+    const htmlSource = `<!doctype html><html><head><meta charset="utf-8" />
+      <style>
+        html, body { width: 100%; height: 100%; margin: 0; display: flex; align-items: center; justify-content: center; background: ${bg}; }
+        svg { max-width: 100%; max-height: 100%; height: auto; width: auto; }
+      </style>
+      </head><body>${svgSource}</body></html>`
+    const blob = new Blob([htmlSource], { type: 'text/html;charset=utf-8' })
+    const url = URL.createObjectURL(blob)
+    window.open(url, '_blank', 'noopener')
+    setTimeout(() => URL.revokeObjectURL(url), 30000)
+  }
+
+  const attachMermaidViewerButton = wrap => {
+    let btn = wrap.querySelector('.mermaid-open-btn')
+    if (!btn) {
+      btn = document.createElement('button')
+      btn.type = 'button'
+      btn.className = 'mermaid-open-btn'
+      wrap.appendChild(btn)
+    }
+
+    btn.innerHTML = '<i class="fa fa-search fa-fw" aria-hidden="true"></i>'
+
+    if (!btn.__mermaidViewerBound) {
+      btn.addEventListener('click', e => {
+        e.preventDefault()
+        e.stopPropagation()
+        const svg = wrap.__mermaidOriginalSvg || wrap.querySelector('svg')
+        if (!svg) return
+        const initViewBox = wrap.__mermaidInitViewBox
+        if (typeof svg === 'string') {
+          openSvgInNewTab({ source: svg, initViewBox })
+          return
+        }
+        openSvgInNewTab({ source: svg, initViewBox })
+      })
+      btn.__mermaidViewerBound = true
+    }
+  }
+
+  // Zoom around a point (px, py) in the SVG viewport (in viewBox coordinates)
+  const zoomAtPoint = (vb, factor, px, py) => {
+    const w = vb[2] * factor
+    const h = vb[3] * factor
+    const nx = px - (px - vb[0]) * factor
+    const ny = py - (py - vb[1]) * factor
+    return [nx, ny, w, h]
+  }
+
+  const initMermaidGestures = wrap => {
+    const svg = wrap.querySelector('svg')
+    if (!svg) return
+
+    // Ensure viewBox exists so gestures always work
+    const initVb = getSvgViewBox(svg)
+    wrap.__mermaidInitViewBox = initVb
+    wrap.__mermaidCurViewBox = initVb.slice()
+    setSvgViewBox(svg, initVb)
+
+    // Avoid binding multiple times on themeChange/pjax
+    if (wrap.__mermaidGestureBound) return
+    wrap.__mermaidGestureBound = true
+
+    // Helper: map client (viewport) coordinate -> viewBox coordinate
+    const clientToViewBox = (clientX, clientY) => {
+      const rect = svg.getBoundingClientRect()
+      const vb = wrap.__mermaidCurViewBox || getSvgViewBox(svg)
+      const x = vb[0] + (clientX - rect.left) * (vb[2] / rect.width)
+      const y = vb[1] + (clientY - rect.top) * (vb[3] / rect.height)
+      return { x, y, rect, vb }
+    }
+
+    const state = {
+      pointers: new Map(),
+      startVb: null,
+      startDist: 0,
+      startCenter: null
+    }
+
+    const clampVb = vb => {
+      const init = wrap.__mermaidInitViewBox || vb
+      const minW = init[2] * 0.1
+      const maxW = init[2] * 10
+      const minH = init[3] * 0.1
+      const maxH = init[3] * 10
+      vb[2] = clamp(vb[2], minW, maxW)
+      vb[3] = clamp(vb[3], minH, maxH)
+      return vb
+    }
+
+    const setCurVb = vb => {
+      vb = clampVb(vb)
+      wrap.__mermaidCurViewBox = vb
+      setSvgViewBox(svg, vb)
+    }
+
+    const onPointerDown = e => {
+      // Allow only primary button for mouse
+      if (e.pointerType === 'mouse' && e.button !== 0) return
+      svg.setPointerCapture(e.pointerId)
+      state.pointers.set(e.pointerId, { x: e.clientX, y: e.clientY })
+
+      if (state.pointers.size === 1) {
+        state.startVb = (wrap.__mermaidCurViewBox || getSvgViewBox(svg)).slice()
+      } else if (state.pointers.size === 2) {
+        const pts = [...state.pointers.values()]
+        const dx = pts[0].x - pts[1].x
+        const dy = pts[0].y - pts[1].y
+        state.startDist = Math.hypot(dx, dy)
+        state.startVb = (wrap.__mermaidCurViewBox || getSvgViewBox(svg)).slice()
+        state.startCenter = { x: (pts[0].x + pts[1].x) / 2, y: (pts[0].y + pts[1].y) / 2 }
+      }
+    }
+
+    const onPointerMove = e => {
+      if (!state.pointers.has(e.pointerId)) return
+      state.pointers.set(e.pointerId, { x: e.clientX, y: e.clientY })
+
+      // Pan with 1 pointer
+      if (state.pointers.size === 1 && state.startVb) {
+        const p = [...state.pointers.values()][0]
+        const prev = { x: e.clientX - e.movementX, y: e.clientY - e.movementY }
+        // movementX/Y unreliable on touch, compute from stored last position
+        const last = wrap.__mermaidLastSinglePointer || p
+        const dxClient = p.x - last.x
+        const dyClient = p.y - last.y
+        wrap.__mermaidLastSinglePointer = p
+
+        const { rect } = clientToViewBox(p.x, p.y)
+        const vb = (wrap.__mermaidCurViewBox || getSvgViewBox(svg)).slice()
+        const dx = dxClient * (vb[2] / rect.width)
+        const dy = dyClient * (vb[3] / rect.height)
+        setCurVb([vb[0] - dx, vb[1] - dy, vb[2], vb[3]])
+        return
+      }
+
+      // Pinch zoom with 2 pointers
+      if (state.pointers.size === 2 && state.startVb && state.startDist > 0) {
+        const pts = [...state.pointers.values()]
+        const dx = pts[0].x - pts[1].x
+        const dy = pts[0].y - pts[1].y
+        const dist = Math.hypot(dx, dy)
+        if (!dist) return
+        const factor = state.startDist / dist // dist bigger => zoom in (viewBox smaller)
+
+        const cx = (pts[0].x + pts[1].x) / 2
+        const cy = (pts[0].y + pts[1].y) / 2
+        const centerClient = { x: cx, y: cy }
+
+        const pxy = clientToViewBox(centerClient.x, centerClient.y)
+        const cpx = pxy.x
+        const cpy = pxy.y
+
+        const vb = zoomAtPoint(state.startVb, factor, cpx, cpy)
+        setCurVb(vb)
+      }
+    }
+
+    const onPointerUpOrCancel = e => {
+      state.pointers.delete(e.pointerId)
+      if (state.pointers.size === 0) {
+        state.startVb = null
+        state.startDist = 0
+        state.startCenter = null
+        wrap.__mermaidLastSinglePointer = null
+      } else if (state.pointers.size === 1) {
+        // reset single pointer baseline to avoid jump
+        wrap.__mermaidLastSinglePointer = [...state.pointers.values()][0]
+      }
+    }
+
+    // Wheel zoom (mouse/trackpad)
+    const onWheel = e => {
+      // ctrlKey on mac trackpad pinch; we treat both as zoom
+      e.preventDefault()
+      const delta = e.deltaY
+      const zoomFactor = delta > 0 ? 1.1 : 0.9
+      const { x, y } = clientToViewBox(e.clientX, e.clientY)
+      const vb = (wrap.__mermaidCurViewBox || getSvgViewBox(svg)).slice()
+      setCurVb(zoomAtPoint(vb, zoomFactor, x, y))
+    }
+
+    const onDblClick = () => {
+      const init = wrap.__mermaidInitViewBox
+      if (!init) return
+      wrap.__mermaidCurViewBox = init.slice()
+      setSvgViewBox(svg, init)
+    }
+
+    svg.addEventListener('pointerdown', onPointerDown)
+    svg.addEventListener('pointermove', onPointerMove)
+    svg.addEventListener('pointerup', onPointerUpOrCancel)
+    svg.addEventListener('pointercancel', onPointerUpOrCancel)
+    svg.addEventListener('wheel', onWheel, { passive: false })
+    svg.addEventListener('dblclick', onDblClick)
+  }
+
+  const runMermaid = ele => {
+    window.loadMermaid = true
+    const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'default'
+
+    ele.forEach((item, index) => {
+      const mermaidSrc = item.firstElementChild
+
+      // Clear old render (themeChange/pjax will rerun)
+      const oldSvg = item.querySelector('svg')
+      if (oldSvg) oldSvg.remove()
+      item.__mermaidGestureBound = false
+
+      const config = mermaidSrc.dataset.config ? JSON.parse(mermaidSrc.dataset.config) : {}
+      if (!config.theme) {
+        config.theme = theme
+      }
+      const mermaidThemeConfig = `%%{init: ${JSON.stringify(config)}}%%\n`
+      const mermaidID = `mermaid-${index}`
+      const mermaidDefinition = mermaidThemeConfig + mermaidSrc.textContent
+
+      const renderFn = mermaid.render(mermaidID, mermaidDefinition)
+      const renderMermaid = svg => {
+        mermaidSrc.insertAdjacentHTML('afterend', svg)
+        if (true) initMermaidGestures(item)
+        item.__mermaidOriginalSvg = svg
+        if (true) attachMermaidViewerButton(item)
+      }
+
+
+      // mermaid v9 and v10 compatibility
+      typeof renderFn === 'string' ? renderMermaid(renderFn) : renderFn.then(({ svg }) => renderMermaid(svg))
+    })
+  }
+
+  const codeToMermaid = () => {
+    const codeMermaidEle = document.querySelectorAll('pre > code.mermaid')
+    if (codeMermaidEle.length === 0) return
+
+    codeMermaidEle.forEach(ele => {
+      const preEle = document.createElement('pre')
+      preEle.className = 'mermaid-src'
+      preEle.hidden = true
+      preEle.textContent = ele.textContent
+      const newEle = document.createElement('div')
+      newEle.className = 'mermaid-wrap'
+      newEle.appendChild(preEle)
+      ele.parentNode.replaceWith(newEle)
+    })
+  }
+
+  const loadMermaid = () => {
+    if (false) codeToMermaid()
+    const $mermaid = document.querySelectorAll('#article-container .mermaid-wrap')
+    if ($mermaid.length === 0) return
+
+    const runMermaidFn = () => runMermaid($mermaid)
+    btf.addGlobalFn('themeChange', runMermaidFn, 'mermaid')
+    window.loadMermaid ? runMermaidFn() : btf.getScript('https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js').then(runMermaidFn)
+  }
+
+  btf.addGlobalFn('encrypt', loadMermaid, 'mermaid')
+  window.pjax ? loadMermaid() : document.addEventListener('DOMContentLoaded', loadMermaid)
+})()</script></div><script id="canvas_nest" defer="defer" color="0,155,255" opacity="0.5" zIndex="-1" count="60" mobile="false" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/canvas-nest.min.js"></script><script id="click-show-text" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/click-show-text.min.js" data-mobile="false" data-text="富强,民主,文明,和谐,自由,平等,公正,法治" data-fontsize="14px" data-random="true" async="async"></script><script src="https://cdn.jsdelivr.net/npm/pjax/pjax.min.js" defer="defer"></script><script>document.addEventListener('DOMContentLoaded', () => {
+  const pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+  window.pjax = new Pjax({
+    elements: 'a:not([target="_blank"])',
+    selectors: pjaxSelectors,
+    cacheBust: false,
+    analytics: false,
+    scrollRestoration: false
+  })
+
+  const triggerPjaxFn = (val) => {
+    if (!val) return
+    Object.values(val).forEach(fn => {
+      try {
+        fn()
+      } catch (err) {
+        console.debug('Pjax callback failed:', err)
+      }
+    })
+  }
+
+  document.addEventListener('pjax:send', () => {
+    // removeEventListener
+    btf.removeGlobalFnEvent('pjaxSendOnce')
+    btf.removeGlobalFnEvent('themeChange')
+
+    // reset readmode
+    const $bodyClassList = document.body.classList
+    if ($bodyClassList.contains('read-mode')) $bodyClassList.remove('read-mode')
+
+    triggerPjaxFn(window.globalFn.pjaxSend)
+  })
+
+  document.addEventListener('pjax:complete', () => {
+    btf.removeGlobalFnEvent('pjaxCompleteOnce')
+    document.querySelectorAll('script[data-pjax]').forEach(item => {
+      const newScript = document.createElement('script')
+      const content = item.text || item.textContent || item.innerHTML || ""
+      Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+      newScript.appendChild(document.createTextNode(content))
+      item.parentNode.replaceChild(newScript, item)
+    })
+
+    triggerPjaxFn(window.globalFn.pjaxComplete)
+  })
+
+  document.addEventListener('pjax:error', e => {
+    if (e.request.status === 404) {
+      false
+        ? pjax.loadUrl('/404.html')
+        : window.location.href = e.request.responseURL
+    }
+  })
+})</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><i class="fas fa-spinner fa-pulse" id="loading-status" hidden="hidden"></i><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="local-search-input"><input placeholder="搜索文章..." type="text"/></div><hr/><div id="local-search-results"></div><div class="ais-Pagination" id="local-search-pagination" style="display:none;"><ul class="ais-Pagination-list"></ul></div><div id="local-search-stats"></div></div><div id="search-mask"></div><script src="/js/search/local-search.js"></script></div></div></body></html>

@@ -1,21 +1,21 @@
-<!DOCTYPE html><html lang="cn" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>基于 Ollama+Docker+OpenWebUI 的本地化部署deepseek流程 | Yuanz</title><meta name="author" content="Yuanz"><meta name="copyright" content="Yuanz"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="搭建deepseek安装OllamaOllama官方下载地址  下载完成后双击打开Ollama进行安装,点击install  安装完成后系统会弹出下图提示代表安装成功并且已启动  验证安装 1ollama -v   安装完成后，cmd 打开命令行窗口，输入 “ollama -v” 测试，显示 ollama 的版本为 “0.5.7”，表明安装成功。  Ollama 没有用户界面，在后台运行。 打开浏">
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>基于 Ollama+Docker+OpenWebUI 的本地化部署deepseek流程 | Yuanz</title><meta name="author" content="Yuanz"><meta name="copyright" content="Yuanz"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="ffffff"><meta name="description" content="搭建deepseek安装OllamaOllama官方下载地址  下载完成后双击打开Ollama进行安装,点击install  安装完成后系统会弹出下图提示代表安装成功并且已启动  验证安装 1ollama -v   安装完成后，cmd 打开命令行窗口，输入 “ollama -v” 测试，显示 ollama 的版本为 “0.5.7”，表明安装成功。  Ollama 没有用户界面，在后台运行。 打开浏">
 <meta property="og:type" content="article">
 <meta property="og:title" content="基于 Ollama+Docker+OpenWebUI 的本地化部署deepseek流程">
 <meta property="og:url" content="https://yuanzhang788.github.io/2025/02/06/%E5%9F%BA%E4%BA%8E%20Ollama+Docker+OpenWebUI%20%E7%9A%84%E6%9C%AC%E5%9C%B0%E5%8C%96%E9%83%A8%E7%BD%B2deepseek%E6%B5%81%E7%A8%8B/index.html">
 <meta property="og:site_name" content="Yuanz">
 <meta property="og:description" content="搭建deepseek安装OllamaOllama官方下载地址  下载完成后双击打开Ollama进行安装,点击install  安装完成后系统会弹出下图提示代表安装成功并且已启动  验证安装 1ollama -v   安装完成后，cmd 打开命令行窗口，输入 “ollama -v” 测试，显示 ollama 的版本为 “0.5.7”，表明安装成功。  Ollama 没有用户界面，在后台运行。 打开浏">
-<meta property="og:locale">
-<meta property="og:image" content="https://yuanzhang788.github.io/img/butterfly-icon.png">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://api.r10086.com/img-api.php?type=%E9%A3%8E%E6%99%AF&cd=2024">
 <meta property="article:published_time" content="2025-02-06T08:21:23.000Z">
 <meta property="article:modified_time" content="2026-06-08T03:35:09.947Z">
 <meta property="article:author" content="Yuanz">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://yuanzhang788.github.io/img/butterfly-icon.png"><script type="application/ld+json">{
+<meta name="twitter:image" content="https://api.r10086.com/img-api.php?type=%E9%A3%8E%E6%99%AF&cd=2024"><script type="application/ld+json">{
   "@context": "https://schema.org",
   "@type": "BlogPosting",
   "headline": "基于 Ollama+Docker+OpenWebUI 的本地化部署deepseek流程",
   "url": "https://yuanzhang788.github.io/2025/02/06/%E5%9F%BA%E4%BA%8E%20Ollama+Docker+OpenWebUI%20%E7%9A%84%E6%9C%AC%E5%9C%B0%E5%8C%96%E9%83%A8%E7%BD%B2deepseek%E6%B5%81%E7%A8%8B/",
-  "image": "https://yuanzhang788.github.io/img/butterfly-icon.png",
+  "image": "https://api.r10086.com/img-api.php?type=%E9%A3%8E%E6%99%AF&cd=2024",
   "datePublished": "2025-02-06T08:21:23.000Z",
   "dateModified": "2026-06-08T03:35:09.947Z",
   "author": [
@@ -25,7 +25,7 @@
       "url": "https://yuanzhang788.github.io"
     }
   ]
-}</script><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://yuanzhang788.github.io/2025/02/06/%E5%9F%BA%E4%BA%8E%20Ollama+Docker+OpenWebUI%20%E7%9A%84%E6%9C%AC%E5%9C%B0%E5%8C%96%E9%83%A8%E7%BD%B2deepseek%E6%B5%81%E7%A8%8B/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=5.5.5-b1"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><script>
+}</script><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://yuanzhang788.github.io/2025/02/06/%E5%9F%BA%E4%BA%8E%20Ollama+Docker+OpenWebUI%20%E7%9A%84%E6%9C%AC%E5%9C%B0%E5%8C%96%E9%83%A8%E7%BD%B2deepseek%E6%B5%81%E7%A8%8B/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>
     (() => {
       
     const saveToLocal = {
@@ -71,7 +71,7 @@
         document.head.appendChild(link)
       }),
       addGlobalFn: (key, fn, name = false, parent = window) => {
-        if (!false && key.startsWith('pjax')) return
+        if (!true && key.startsWith('pjax')) return
         const globalFn = parent.globalFn || {}
         globalFn[key] = globalFn[key] || {}
         globalFn[key][name || Object.keys(globalFn[key]).length] = fn
@@ -89,7 +89,7 @@
       const activateLightMode = () => {
         document.documentElement.setAttribute('data-theme', 'light')
         if (document.querySelector('meta[name="theme-color"]') !== null) {
-          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'ffffff')
         }
       }
 
@@ -98,7 +98,25 @@
 
       const theme = saveToLocal.get('theme')
     
-          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+          const mediaQueryDark = window.matchMedia('(prefers-color-scheme: dark)')
+          const mediaQueryLight = window.matchMedia('(prefers-color-scheme: light)')
+
+          if (theme === undefined) {
+            if (mediaQueryLight.matches) activateLightMode()
+            else if (mediaQueryDark.matches) activateDarkMode()
+            else {
+              const hour = new Date().getHours()
+              const isNight = hour <= 6 || hour >= 18
+              isNight ? activateDarkMode() : activateLightMode()
+            }
+            mediaQueryDark.addEventListener('change', () => {
+              if (saveToLocal.get('theme') === undefined) {
+                e.matches ? activateDarkMode() : activateLightMode()
+              }
+            })
+          } else {
+            theme === 'light' ? activateLightMode() : activateDarkMode()
+          }
         
       
       const asideStatus = saveToLocal.get('aside-status')
@@ -118,63 +136,93 @@
   </script><script>const GLOBAL_CONFIG = {
   root: '/',
   algolia: undefined,
-  localSearch: undefined,
+  localSearch: {"path":"/search.json","preload":false,"top_n_per_article":1,"unescape":false,"pagination":{"enable":false,"hitsPerPage":8},"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
   translate: undefined,
-  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":400,"highlightFullpage":true,"highlightMacStyle":true},
   copy: {
-    success: 'Copy Successful',
-    error: 'Copy Failed',
-    noSupport: 'Browser Not Supported'
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
   },
   relativeDate: {
-    homepage: false,
+    homepage: true,
     post: false
   },
-  runtime: '',
+  runtime: '天',
   dateSuffix: {
-    just: 'Just now',
-    min: 'minutes ago',
-    hour: 'hours ago',
-    day: 'days ago',
-    month: 'months ago'
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
   },
-  copyright: undefined,
-  lightbox: 'null',
-  Snackbar: undefined,
+  copyright: {"limitCount":50,"languages":{"author":"作者: Yuanz","link":"链接: ","source":"来源: Yuanz","info":"著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。"}},
+  lightbox: 'fancybox',
+  Snackbar: {"chs_to_cht":"已切换为繁体中文","cht_to_chs":"已切换为简体中文","day_to_night":"已切换为深色模式","night_to_day":"已切换为浅色模式","bgLight":"#49b1f5","bgDark":"#1f1f1f","position":"bottom-left"},
   infinitegrid: {
-    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.0/dist/infinitegrid.min.js',
-    buttonText: 'Load More'
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
   },
-  isPhotoFigcaption: false,
-  islazyloadPlugin: false,
+  isPhotoFigcaption: true,
+  islazyloadPlugin: true,
   isAnchor: false,
   percent: {
     toc: true,
     rightside: false,
   },
-  autoDarkmode: false
+  autoDarkmode: true
 }</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
   title: '基于 Ollama+Docker+OpenWebUI 的本地化部署deepseek流程',
   isHighlightShrink: false,
   isToc: true,
   pageType: 'post'
-}</script><meta name="generator" content="Hexo 8.1.2"></head><body><div class="post" id="body-wrap"><header class="post-bg" id="page-header"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">Yuanz</span></a><a class="nav-page-title" href="/"><span class="site-name">基于 Ollama+Docker+OpenWebUI 的本地化部署deepseek流程</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  Back to Home</span></span></a></span><div id="menus"></div></nav><div id="post-info"><h1 class="post-title">基于 Ollama+Docker+OpenWebUI 的本地化部署deepseek流程</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2025-02-06T08:21:23.000Z" title="Created 2025-02-06 16:21:23">2025-02-06</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2026-06-08T03:35:09.947Z" title="Updated 2026-06-08 11:35:09">2026-06-08</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">Post Views:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><h2 id="搭建deepseek"><a href="#搭建deepseek" class="headerlink" title="搭建deepseek"></a><strong>搭建deepseek</strong></h2><h3 id="安装Ollama"><a href="#安装Ollama" class="headerlink" title="安装Ollama"></a>安装<strong>Ollama</strong></h3><p><a target="_blank" rel="noopener" href="https://ollama.com/download">Ollama官方下载地址</a></p>
-<p><img src="/assets/%E5%9F%BA%E4%BA%8EOllamaDockerOpenWebUI%E7%9A%84%E6%9C%AC%E5%9C%B0%E5%8C%96%E9%83%A8%E7%BD%B2deepseek%E6%B5%81%E7%A8%8B/61c82b501f2e23f0d80472ae3600e57c.png"></p>
+}</script><link rel="stylesheet" href="/css/custom.css"><meta name="generator" content="Hexo 8.1.2"></head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div><script>(()=>{
+  const $loadingBox = document.getElementById('loading-box')
+  const $body = document.body
+  const preloader = {
+    endLoading: () => {
+      if ($loadingBox.classList.contains('loaded')) return
+      $body.style.overflow = ''
+      $loadingBox.classList.add('loaded')
+    },
+    initLoading: () => {
+      $body.style.overflow = 'hidden'
+      $loadingBox.classList.remove('loaded')
+    }
+  }
+
+  preloader.initLoading()
+
+  if (document.readyState === 'complete') {
+    preloader.endLoading()
+  } else {
+    window.addEventListener('load', preloader.endLoading)
+    document.addEventListener('DOMContentLoaded', preloader.endLoading)
+    // Add timeout protection: force end after 7 seconds
+    setTimeout(preloader.endLoading, 7000)
+  }
+
+  if (true) {
+    btf.addGlobalFn('pjaxSend', preloader.initLoading, 'preloader_init')
+    btf.addGlobalFn('pjaxComplete', preloader.endLoading, 'preloader_end')
+  }
+})()</script><div class="bg-animation" id="web_bg" style="background-image: url(/assets/Abanner/index.jpg);"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">176</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">0</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">0</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg fixed" id="page-header" style="background-image: url(https://api.r10086.com/img-api.php?type=%E9%A3%8E%E6%99%AF&amp;cd=2024);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">Yuanz</span></a><a class="nav-page-title" href="/"><span class="site-name">基于 Ollama+Docker+OpenWebUI 的本地化部署deepseek流程</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">基于 Ollama+Docker+OpenWebUI 的本地化部署deepseek流程</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2025-02-06T08:21:23.000Z" title="发表于 2025-02-06 16:21:23">2025-02-06</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-06-08T03:35:09.947Z" title="更新于 2026-06-08 11:35:09">2026-06-08</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><div id="post-outdate-notice" data="{&quot;limitDay&quot;:365,&quot;messagePrev&quot;:&quot;已经过了&quot;,&quot;messageNext&quot;:&quot;天自上次更新，文章内容可能已过时。&quot;,&quot;postUpdate&quot;:&quot;2026-06-08 11:35:09&quot;}" hidden></div><h2 id="搭建deepseek"><a href="#搭建deepseek" class="headerlink" title="搭建deepseek"></a><strong>搭建deepseek</strong></h2><h3 id="安装Ollama"><a href="#安装Ollama" class="headerlink" title="安装Ollama"></a>安装<strong>Ollama</strong></h3><p><a target="_blank" rel="noopener" href="https://ollama.com/download">Ollama官方下载地址</a></p>
+<p><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/assets/%E5%9F%BA%E4%BA%8EOllamaDockerOpenWebUI%E7%9A%84%E6%9C%AC%E5%9C%B0%E5%8C%96%E9%83%A8%E7%BD%B2deepseek%E6%B5%81%E7%A8%8B/61c82b501f2e23f0d80472ae3600e57c.png"></p>
 <p>下载完成后双击打开Ollama进行安装,点击install</p>
-<p><img src="/assets/%E5%9F%BA%E4%BA%8EOllamaDockerOpenWebUI%E7%9A%84%E6%9C%AC%E5%9C%B0%E5%8C%96%E9%83%A8%E7%BD%B2deepseek%E6%B5%81%E7%A8%8B/c2e87603ed7e750719b749d5d5d7bb9d.png"></p>
+<p><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/assets/%E5%9F%BA%E4%BA%8EOllamaDockerOpenWebUI%E7%9A%84%E6%9C%AC%E5%9C%B0%E5%8C%96%E9%83%A8%E7%BD%B2deepseek%E6%B5%81%E7%A8%8B/c2e87603ed7e750719b749d5d5d7bb9d.png"></p>
 <p>安装完成后系统会弹出下图提示代表安装成功并且已启动</p>
-<p><img src="/assets/%E5%9F%BA%E4%BA%8EOllamaDockerOpenWebUI%E7%9A%84%E6%9C%AC%E5%9C%B0%E5%8C%96%E9%83%A8%E7%BD%B2deepseek%E6%B5%81%E7%A8%8B/45fc63e5885d5465c90dcbd206b425c1.png"></p>
+<p><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/assets/%E5%9F%BA%E4%BA%8EOllamaDockerOpenWebUI%E7%9A%84%E6%9C%AC%E5%9C%B0%E5%8C%96%E9%83%A8%E7%BD%B2deepseek%E6%B5%81%E7%A8%8B/45fc63e5885d5465c90dcbd206b425c1.png"></p>
 <p>验证安装</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ollama -v</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">ollama -v<br></code></pre></td></tr></table></figure>
 
 
 <p><font style="color:rgb(77, 77, 77);">安装完成后，cmd 打开命令行窗口，输入 “ollama -v” 测试，显示 ollama 的版本为 “0.5.7”，表明安装成功。</font></p>
-<p><img src="/assets/%E5%9F%BA%E4%BA%8EOllamaDockerOpenWebUI%E7%9A%84%E6%9C%AC%E5%9C%B0%E5%8C%96%E9%83%A8%E7%BD%B2deepseek%E6%B5%81%E7%A8%8B/10d724ed99efca737cb7f0ce2f2dcbcf.png"></p>
+<p><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/assets/%E5%9F%BA%E4%BA%8EOllamaDockerOpenWebUI%E7%9A%84%E6%9C%AC%E5%9C%B0%E5%8C%96%E9%83%A8%E7%BD%B2deepseek%E6%B5%81%E7%A8%8B/10d724ed99efca737cb7f0ce2f2dcbcf.png"></p>
 <p><font style="color:rgb(77, 77, 77);">Ollama 没有用户界面，在后台运行。</font></p>
 <p><font style="color:rgb(77, 77, 77);">打开浏览器，输入 “<a target="_blank" rel="noopener" href="http://localhost:11434/%E2%80%9D%EF%BC%8C%E6%98%BE%E7%A4%BA">http://localhost:11434/”，显示</a> “Ollama is running”。</font></p>
-<p><img src="/assets/%E5%9F%BA%E4%BA%8EOllamaDockerOpenWebUI%E7%9A%84%E6%9C%AC%E5%9C%B0%E5%8C%96%E9%83%A8%E7%BD%B2deepseek%E6%B5%81%E7%A8%8B/272e4fdbcb97aba5b240204cbdb3e5e9.png"></p>
+<p><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/assets/%E5%9F%BA%E4%BA%8EOllamaDockerOpenWebUI%E7%9A%84%E6%9C%AC%E5%9C%B0%E5%8C%96%E9%83%A8%E7%BD%B2deepseek%E6%B5%81%E7%A8%8B/272e4fdbcb97aba5b240204cbdb3e5e9.png"></p>
 <h4 id="Ollma-安装-deepseek-r1-模型"><a href="#Ollma-安装-deepseek-r1-模型" class="headerlink" title="Ollma 安装 deepseek-r1 模型"></a><font style="color:rgb(79, 79, 79);">Ollma 安装 deepseek-r1 模型</font></h4><h5 id="deepseek-r1-模型介绍"><a href="#deepseek-r1-模型介绍" class="headerlink" title="deepseek-r1 模型介绍"></a><font style="color:rgb(79, 79, 79);">deepseek-r1 模型介绍</font></h5><p><font style="color:rgb(77, 77, 77);">从 </font><a target="_blank" rel="noopener" href="https://ollama.com/search"><font style="color:rgb(77, 77, 77);">ollama 官网</font></a><font style="color:rgb(77, 77, 77);"> 查找 deepseek-r1 模型。</font></p>
-<p><img src="/assets/%E5%9F%BA%E4%BA%8EOllamaDockerOpenWebUI%E7%9A%84%E6%9C%AC%E5%9C%B0%E5%8C%96%E9%83%A8%E7%BD%B2deepseek%E6%B5%81%E7%A8%8B/672318221df143210f2d45dacef15fe0.png"></p>
+<p><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/assets/%E5%9F%BA%E4%BA%8EOllamaDockerOpenWebUI%E7%9A%84%E6%9C%AC%E5%9C%B0%E5%8C%96%E9%83%A8%E7%BD%B2deepseek%E6%B5%81%E7%A8%8B/672318221df143210f2d45dacef15fe0.png"></p>
 <p>DeepSeek-R1 提供多个参数版本，不同版本的计算资源需求不同：</p>
 <table>
 <thead>
@@ -220,19 +268,19 @@
 <blockquote>
 <p><font style="color:rgb(77, 77, 77);">Ollama 会自动下载模型文件并运行。</font></p>
 </blockquote>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ollama run deepseek-r1:7b</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plain">ollama run deepseek-r1:7b<br></code></pre></td></tr></table></figure>
 
 
 <blockquote>
 <p>安装模型的同时可以同时搭建OpenWebUI节约时间</p>
 </blockquote>
-<p><img src="/assets/%E5%9F%BA%E4%BA%8EOllamaDockerOpenWebUI%E7%9A%84%E6%9C%AC%E5%9C%B0%E5%8C%96%E9%83%A8%E7%BD%B2deepseek%E6%B5%81%E7%A8%8B/d35de5d582038791608693695342fbf7.png"></p>
+<p><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/assets/%E5%9F%BA%E4%BA%8EOllamaDockerOpenWebUI%E7%9A%84%E6%9C%AC%E5%9C%B0%E5%8C%96%E9%83%A8%E7%BD%B2deepseek%E6%B5%81%E7%A8%8B/d35de5d582038791608693695342fbf7.png"></p>
 <blockquote>
 <p>控制台测试</p>
 </blockquote>
-<p><img src="/assets/%E5%9F%BA%E4%BA%8EOllamaDockerOpenWebUI%E7%9A%84%E6%9C%AC%E5%9C%B0%E5%8C%96%E9%83%A8%E7%BD%B2deepseek%E6%B5%81%E7%A8%8B/70ba448c034325947406b3370a4032eb.png"></p>
+<p><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/assets/%E5%9F%BA%E4%BA%8EOllamaDockerOpenWebUI%E7%9A%84%E6%9C%AC%E5%9C%B0%E5%8C%96%E9%83%A8%E7%BD%B2deepseek%E6%B5%81%E7%A8%8B/70ba448c034325947406b3370a4032eb.png"></p>
 <p><strong>其他版本命令示例：</strong></p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">ollama run deepseek-r1:1.5b  <span class="comment"># 1.5B 版本</span></span><br><span class="line">ollama run deepseek-r1:14b   <span class="comment"># 14B 版本</span></span><br><span class="line">ollama run deepseek-r1:32b   <span class="comment"># 32B 版本</span></span><br><span class="line">ollama run deepseek-r1:70b   <span class="comment"># 70B 版本</span></span><br><span class="line">ollama run deepseek-r1:671b  <span class="comment"># 671B 版本</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs bash">ollama run deepseek-r1:1.5b  <span class="hljs-comment"># 1.5B 版本</span><br>ollama run deepseek-r1:14b   <span class="hljs-comment"># 14B 版本</span><br>ollama run deepseek-r1:32b   <span class="hljs-comment"># 32B 版本</span><br>ollama run deepseek-r1:70b   <span class="hljs-comment"># 70B 版本</span><br>ollama run deepseek-r1:671b  <span class="hljs-comment"># 671B 版本</span><br></code></pre></td></tr></table></figure>
 
 
 <h5 id="更改默认模型存储路径（可选）"><a href="#更改默认模型存储路径（可选）" class="headerlink" title="更改默认模型存储路径（可选）"></a>更改默认模型存储路径（可选）</h5><p>默认情况下，模型会存储在<code>C:\Users\%username%\.ollama\models</code>。 如果想修改路径，例如存储在 </font><code>C:\Model</code><font style="color:rgb(77, 77, 77);">，可以：</font></p>
@@ -248,7 +296,7 @@
 <blockquote>
 <p>我使用的为默认的,没有修改,如下图</p>
 </blockquote>
-<p><img src="/assets/%E5%9F%BA%E4%BA%8EOllamaDockerOpenWebUI%E7%9A%84%E6%9C%AC%E5%9C%B0%E5%8C%96%E9%83%A8%E7%BD%B2deepseek%E6%B5%81%E7%A8%8B/c851b48848d720128b1df164b7d3eac6.png"></p>
+<p><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/assets/%E5%9F%BA%E4%BA%8EOllamaDockerOpenWebUI%E7%9A%84%E6%9C%AC%E5%9C%B0%E5%8C%96%E9%83%A8%E7%BD%B2deepseek%E6%B5%81%E7%A8%8B/c851b48848d720128b1df164b7d3eac6.png"></p>
 <h3 id="搭建OpenWebUI"><a href="#搭建OpenWebUI" class="headerlink" title="搭建OpenWebUI"></a>搭建OpenWebUI</h3><h4 id="安装Docker-Desktop"><a href="#安装Docker-Desktop" class="headerlink" title="安装Docker Desktop"></a>安装Docker Desktop</h4><blockquote>
 <ul>
 <li>Windows 版本要求<ul>
@@ -286,7 +334,7 @@
 </li>
 <li><strong>运行 <strong><code>docker version</code></strong> 验证安装是否成功</strong>。</li>
 </ol>
-<p><img src="/assets/%E5%9F%BA%E4%BA%8EOllamaDockerOpenWebUI%E7%9A%84%E6%9C%AC%E5%9C%B0%E5%8C%96%E9%83%A8%E7%BD%B2deepseek%E6%B5%81%E7%A8%8B/5e4b65ade7b577964de0139ce6834eed.png"></p>
+<p><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/assets/%E5%9F%BA%E4%BA%8EOllamaDockerOpenWebUI%E7%9A%84%E6%9C%AC%E5%9C%B0%E5%8C%96%E9%83%A8%E7%BD%B2deepseek%E6%B5%81%E7%A8%8B/5e4b65ade7b577964de0139ce6834eed.png"></p>
 <h4 id="配置国内镜像源"><a href="#配置国内镜像源" class="headerlink" title="配置国内镜像源"></a><font style="color:rgb(79, 79, 79);">配置国内镜像源</font></h4><blockquote>
 <p>在命令行执行命令 “docker run hello-world”，可能出现报错：</p>
 <p>“docker: Error response from daemon. (Client. Timeout exceeded while awaiting headers).”</p>
@@ -294,64 +342,64 @@
 <p>对于这个问题，可以使用国内的镜像源或者相关加速。</p>
 <p>进入 docker，选择 Settings – Docker Engine，将镜像源替换如下</p>
 </blockquote>
-<p><img src="/assets/%E5%9F%BA%E4%BA%8EOllamaDockerOpenWebUI%E7%9A%84%E6%9C%AC%E5%9C%B0%E5%8C%96%E9%83%A8%E7%BD%B2deepseek%E6%B5%81%E7%A8%8B/79cabe68aad1a8c72559979ea5631995.png"></p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  <span class="string">&quot;builder&quot;</span>: &#123;</span><br><span class="line">    <span class="string">&quot;gc&quot;</span>: &#123;</span><br><span class="line">      <span class="string">&quot;defaultKeepStorage&quot;</span>: <span class="string">&quot;20GB&quot;</span>,</span><br><span class="line">      <span class="string">&quot;enabled&quot;</span>: <span class="literal">true</span></span><br><span class="line">    &#125;</span><br><span class="line">  &#125;,</span><br><span class="line">  <span class="string">&quot;experimental&quot;</span>: <span class="literal">false</span>,</span><br><span class="line">  <span class="string">&quot;features&quot;</span>: &#123;</span><br><span class="line">    <span class="string">&quot;buildkit&quot;</span>: <span class="literal">true</span></span><br><span class="line">  &#125;,</span><br><span class="line">  <span class="string">&quot;registry-mirrors&quot;</span>: [</span><br><span class="line">    <span class="string">&quot;https://docker.m.daocloud.io&quot;</span>,</span><br><span class="line">    <span class="string">&quot;https://docker.1panel.live&quot;</span>,</span><br><span class="line">    <span class="string">&quot;https://registry.docker-cn.com&quot;</span>,</span><br><span class="line">    <span class="string">&quot;https://cr.console.aliyun.com&quot;</span>,</span><br><span class="line">    <span class="string">&quot;https://mirror.ccs.tencentyun.com&quot;</span></span><br><span class="line">  ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/assets/%E5%9F%BA%E4%BA%8EOllamaDockerOpenWebUI%E7%9A%84%E6%9C%AC%E5%9C%B0%E5%8C%96%E9%83%A8%E7%BD%B2deepseek%E6%B5%81%E7%A8%8B/79cabe68aad1a8c72559979ea5631995.png"></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><code class="hljs bash">&#123;<br>  <span class="hljs-string">&quot;builder&quot;</span>: &#123;<br>    <span class="hljs-string">&quot;gc&quot;</span>: &#123;<br>      <span class="hljs-string">&quot;defaultKeepStorage&quot;</span>: <span class="hljs-string">&quot;20GB&quot;</span>,<br>      <span class="hljs-string">&quot;enabled&quot;</span>: <span class="hljs-literal">true</span><br>    &#125;<br>  &#125;,<br>  <span class="hljs-string">&quot;experimental&quot;</span>: <span class="hljs-literal">false</span>,<br>  <span class="hljs-string">&quot;features&quot;</span>: &#123;<br>    <span class="hljs-string">&quot;buildkit&quot;</span>: <span class="hljs-literal">true</span><br>  &#125;,<br>  <span class="hljs-string">&quot;registry-mirrors&quot;</span>: [<br>    <span class="hljs-string">&quot;https://docker.m.daocloud.io&quot;</span>,<br>    <span class="hljs-string">&quot;https://docker.1panel.live&quot;</span>,<br>    <span class="hljs-string">&quot;https://registry.docker-cn.com&quot;</span>,<br>    <span class="hljs-string">&quot;https://cr.console.aliyun.com&quot;</span>,<br>    <span class="hljs-string">&quot;https://mirror.ccs.tencentyun.com&quot;</span><br>  ]<br>&#125;<br></code></pre></td></tr></table></figure>
 
 
-<h4 id="运行-OpenWebUI（Docker-方式）"><a href="#运行-OpenWebUI（Docker-方式）" class="headerlink" title="运行 OpenWebUI（Docker 方式）"></a>运行 OpenWebUI（Docker 方式）</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run -d -p 3000:8080 --add-host=host.docker.internal:host-gateway -v open-webui:/app/backend/data --name open-webui --restart always ghcr.io/open-webui/open-webui:main</span><br></pre></td></tr></table></figure>
+<h4 id="运行-OpenWebUI（Docker-方式）"><a href="#运行-OpenWebUI（Docker-方式）" class="headerlink" title="运行 OpenWebUI（Docker 方式）"></a>运行 OpenWebUI（Docker 方式）</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plain">docker run -d -p 3000:8080 --add-host=host.docker.internal:host-gateway -v open-webui:/app/backend/data --name open-webui --restart always ghcr.io/open-webui/open-webui:main<br></code></pre></td></tr></table></figure>
 
 
-<p><img src="/assets/%E5%9F%BA%E4%BA%8EOllamaDockerOpenWebUI%E7%9A%84%E6%9C%AC%E5%9C%B0%E5%8C%96%E9%83%A8%E7%BD%B2deepseek%E6%B5%81%E7%A8%8B/9581eea4b3634702fb58e6658ad4f469.png"></p>
+<p><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/assets/%E5%9F%BA%E4%BA%8EOllamaDockerOpenWebUI%E7%9A%84%E6%9C%AC%E5%9C%B0%E5%8C%96%E9%83%A8%E7%BD%B2deepseek%E6%B5%81%E7%A8%8B/9581eea4b3634702fb58e6658ad4f469.png"></p>
 <p><strong><font style="color:#DF2A3F;">如果不想换源或者换了也不行可以使用我备份在阿里云的镜像,会下载得快一些</font></strong></p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run -d -p 3000:8080 --add-host=host.docker.internal:host-gateway -v open-webui:/app/backend/data --name open-webui --restart always registry.cn-hangzhou.aliyuncs.com/zr-dev/open-webui:main</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">docker run -d -p 3000:8080 --add-host=host.docker.internal:host-gateway -v open-webui:/app/backend/data --name open-webui --restart always registry.cn-hangzhou.aliyuncs.com/zr-dev/open-webui:main<br></code></pre></td></tr></table></figure>
 
 
 
 
 <p>通过docker desktop 查看查看是否持续启动</p>
-<p><img src="/assets/%E5%9F%BA%E4%BA%8EOllamaDockerOpenWebUI%E7%9A%84%E6%9C%AC%E5%9C%B0%E5%8C%96%E9%83%A8%E7%BD%B2deepseek%E6%B5%81%E7%A8%8B/65a266d674cb540bca094f1702536e61.png"></p>
+<p><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/assets/%E5%9F%BA%E4%BA%8EOllamaDockerOpenWebUI%E7%9A%84%E6%9C%AC%E5%9C%B0%E5%8C%96%E9%83%A8%E7%BD%B2deepseek%E6%B5%81%E7%A8%8B/65a266d674cb540bca094f1702536e61.png"></p>
 <h4 id="访问-Open-WebUI-进入-deepseek-r1"><a href="#访问-Open-WebUI-进入-deepseek-r1" class="headerlink" title="访问  Open-WebUI 进入 deepseek-r1"></a>访问 <font style="color:rgb(79, 79, 79);"> Open-WebUI 进入 deepseek-r1</font></h4><p>在浏览器输入 <code>http://localhost:3000/auth</code> 进行访问。</p>
-<p><img src="/assets/%E5%9F%BA%E4%BA%8EOllamaDockerOpenWebUI%E7%9A%84%E6%9C%AC%E5%9C%B0%E5%8C%96%E9%83%A8%E7%BD%B2deepseek%E6%B5%81%E7%A8%8B/3ed4b46e07b9230fcd35f2e6d862d5ac.png"></p>
+<p><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/assets/%E5%9F%BA%E4%BA%8EOllamaDockerOpenWebUI%E7%9A%84%E6%9C%AC%E5%9C%B0%E5%8C%96%E9%83%A8%E7%BD%B2deepseek%E6%B5%81%E7%A8%8B/3ed4b46e07b9230fcd35f2e6d862d5ac.png"></p>
 <p>创建管理员账号并登录</p>
-<p><img src="/assets/%E5%9F%BA%E4%BA%8EOllamaDockerOpenWebUI%E7%9A%84%E6%9C%AC%E5%9C%B0%E5%8C%96%E9%83%A8%E7%BD%B2deepseek%E6%B5%81%E7%A8%8B/47187f9d17d932841caa2853cc030faf.png"></p>
+<p><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/assets/%E5%9F%BA%E4%BA%8EOllamaDockerOpenWebUI%E7%9A%84%E6%9C%AC%E5%9C%B0%E5%8C%96%E9%83%A8%E7%BD%B2deepseek%E6%B5%81%E7%A8%8B/47187f9d17d932841caa2853cc030faf.png"></p>
 <p><font style="color:rgb(77, 77, 77);">进入 OpenWebUI 主界面</font></p>
-<p><img src="/assets/%E5%9F%BA%E4%BA%8EOllamaDockerOpenWebUI%E7%9A%84%E6%9C%AC%E5%9C%B0%E5%8C%96%E9%83%A8%E7%BD%B2deepseek%E6%B5%81%E7%A8%8B/f993c1ec8ed910b75041733b81bb35d1.png"></p>
+<p><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/assets/%E5%9F%BA%E4%BA%8EOllamaDockerOpenWebUI%E7%9A%84%E6%9C%AC%E5%9C%B0%E5%8C%96%E9%83%A8%E7%BD%B2deepseek%E6%B5%81%E7%A8%8B/f993c1ec8ed910b75041733b81bb35d1.png"></p>
 <p><font style="color:rgb(77, 77, 77);">注册完成并登录，就进入 deepseek-r1 模型的首页：</font></p>
-<p><img src="/assets/%E5%9F%BA%E4%BA%8EOllamaDockerOpenWebUI%E7%9A%84%E6%9C%AC%E5%9C%B0%E5%8C%96%E9%83%A8%E7%BD%B2deepseek%E6%B5%81%E7%A8%8B/17412c57ff471f1a673ee30e5c269a08.png"></p>
+<p><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/assets/%E5%9F%BA%E4%BA%8EOllamaDockerOpenWebUI%E7%9A%84%E6%9C%AC%E5%9C%B0%E5%8C%96%E9%83%A8%E7%BD%B2deepseek%E6%B5%81%E7%A8%8B/17412c57ff471f1a673ee30e5c269a08.png"></p>
 <h4 id="开始使用-DeepSeek-R1"><a href="#开始使用-DeepSeek-R1" class="headerlink" title="开始使用 DeepSeek-R1"></a>开始使用 DeepSeek-R1</h4><p><font style="color:rgb(77, 77, 77);">现在，你可以在 OpenWebUI 的聊天界面中，使用本地部署的 DeepSeek-R1 模型进行对话。</font></p>
-<p><img src="/assets/%E5%9F%BA%E4%BA%8EOllamaDockerOpenWebUI%E7%9A%84%E6%9C%AC%E5%9C%B0%E5%8C%96%E9%83%A8%E7%BD%B2deepseek%E6%B5%81%E7%A8%8B/3831ec608630b194bd200efe37d48b29.png"></p>
+<p><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/assets/%E5%9F%BA%E4%BA%8EOllamaDockerOpenWebUI%E7%9A%84%E6%9C%AC%E5%9C%B0%E5%8C%96%E9%83%A8%E7%BD%B2deepseek%E6%B5%81%E7%A8%8B/3831ec608630b194bd200efe37d48b29.png"></p>
 <p><font style="color:rgb(77, 77, 77);"></font></p>
 <hr>
 <p><strong><font style="color:rgb(77, 77, 77);">以下内容为相关技术栈概述,有兴趣的可以了解一下</font></strong></p>
 <h2 id="Ollama概述"><a href="#Ollama概述" class="headerlink" title="Ollama概述"></a><strong>Ollama概述</strong></h2><h3 id="🔹-Ollama-的作用-🚀"><a href="#🔹-Ollama-的作用-🚀" class="headerlink" title="🔹 Ollama 的作用 🚀"></a>🔹 Ollama 的作用<font style="color:rgb(77, 77, 77);"> </font>🚀</h3><p><font style="color:rgb(77, 77, 77);">Ollama 是一个本地运行大语言模型（LLM）的工具，</font><strong>主要用于简化模型部署和推理</strong><font style="color:rgb(77, 77, 77);">。它可以让你在本地 </font><strong>快速下载、运行、管理和调用</strong><font style="color:rgb(77, 77, 77);"> LLM，而不需要手动配置复杂的环境。</font></p>
 <h3 id="🔹-Ollama-的核心功能"><a href="#🔹-Ollama-的核心功能" class="headerlink" title="🔹 Ollama 的核心功能"></a>🔹 Ollama 的核心功能</h3><h4 id="1️⃣-运行本地大语言模型"><a href="#1️⃣-运行本地大语言模型" class="headerlink" title="1️⃣ 运行本地大语言模型"></a>1️⃣ 运行本地大语言模型</h4><p>Ollama 允许你直接在本地运行 Llama、Mistral、DeepSeek、Gemma 等模型，无需手动下载 Hugging Face 权重或设置 Python 环境。<br><strong>示例：</strong></p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ollama run mistral</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">ollama run mistral<br></code></pre></td></tr></table></figure>
 
 
 <p>这将自动下载并运行 <strong>Mistral-7B</strong> 模型。</p>
 <hr>
 <h4 id="2️⃣-量化优化（节省显存）"><a href="#2️⃣-量化优化（节省显存）" class="headerlink" title="2️⃣ 量化优化（节省显存）"></a>2️⃣ 量化优化（节省显存）</h4><p>Ollama 使用 <strong>GGUF 量化格式</strong>（支持 4-bit、8-bit），可以在 <strong>低显存显卡（如 8GB 显存）</strong> 上流畅运行大模型。<br>例如，默认使用 <code>mistral</code>：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ollama pull mistral</span><br><span class="line">ollama run mistral</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash">ollama pull mistral<br>ollama run mistral<br></code></pre></td></tr></table></figure>
 
 
 <p>这会下载 <strong>4-bit 量化模型</strong>，使其可以在 <strong>8GB VRAM</strong> 设备上运行。</p>
 <hr>
 <h4 id="3️⃣-本地-API-服务"><a href="#3️⃣-本地-API-服务" class="headerlink" title="3️⃣ 本地 API 服务"></a>3️⃣ 本地 API 服务</h4><p>Ollama 提供 <strong>HTTP API</strong>，可以让你像调用 OpenAI API 一样，在本地使用 LLM：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ollama serve</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">ollama serve<br></code></pre></td></tr></table></figure>
 
 
 <p>然后你可以用 Python 访问：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"></span><br><span class="line">response = requests.post(</span><br><span class="line">    <span class="string">&quot;http://localhost:11434/api/generate&quot;</span>,</span><br><span class="line">    json=&#123;<span class="string">&quot;model&quot;</span>: <span class="string">&quot;mistral&quot;</span>, <span class="string">&quot;prompt&quot;</span>: <span class="string">&quot;你好！&quot;</span>, <span class="string">&quot;stream&quot;</span>: <span class="literal">False</span>&#125;</span><br><span class="line">)</span><br><span class="line"><span class="built_in">print</span>(response.json()[<span class="string">&quot;response&quot;</span>])</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> requests<br><br>response = requests.post(<br>    <span class="hljs-string">&quot;http://localhost:11434/api/generate&quot;</span>,<br>    json=&#123;<span class="hljs-string">&quot;model&quot;</span>: <span class="hljs-string">&quot;mistral&quot;</span>, <span class="hljs-string">&quot;prompt&quot;</span>: <span class="hljs-string">&quot;你好！&quot;</span>, <span class="hljs-string">&quot;stream&quot;</span>: <span class="hljs-literal">False</span>&#125;<br>)<br><span class="hljs-built_in">print</span>(response.json()[<span class="hljs-string">&quot;response&quot;</span>])<br></code></pre></td></tr></table></figure>
 
 
 <p>这意味着你可以 <strong>本地搭建 ChatGPT 风格的 API</strong>，而无需 OpenAI 服务器。</p>
 <hr>
 <h4 id="4️⃣-自定义模型（Modelfile）"><a href="#4️⃣-自定义模型（Modelfile）" class="headerlink" title="4️⃣ 自定义模型（Modelfile）"></a>4️⃣ 自定义模型（Modelfile）</h4><p>你可以通过 <code>Modelfile</code> 自定义模型：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">FROM mistral</span><br><span class="line">SYSTEM <span class="string">&quot;你是一个帮助用户写代码的助手&quot;</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs python">FROM mistral<br>SYSTEM <span class="hljs-string">&quot;你是一个帮助用户写代码的助手&quot;</span><br></code></pre></td></tr></table></figure>
 
 
 <p>然后构建：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ollama create my-model -f Modelfile</span><br><span class="line">ollama run my-model</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash">ollama create my-model -f Modelfile<br>ollama run my-model<br></code></pre></td></tr></table></figure>
 
 
 <p>这相当于本地微调 Prompt，适用于 <strong>RAG、智能助手、自定义 AI 应用</strong>。</p>
@@ -407,11 +455,11 @@
 </ul>
 <hr>
 <h4 id="✅-2-连接-Ollama-本地大模型"><a href="#✅-2-连接-Ollama-本地大模型" class="headerlink" title="✅ 2. 连接 Ollama 本地大模型"></a>✅ 2. 连接 Ollama 本地大模型</h4><p>如果你已经在本地安装了 <strong>Ollama</strong>（支持 Llama、DeepSeek、Mistral 等），OpenWebUI 可以作为它的 <strong>聊天界面</strong>。<br><strong>运行 Ollama：</strong></p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ollama serve</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">ollama serve<br></code></pre></td></tr></table></figure>
 
 
 <p><strong>然后在 OpenWebUI 里添加 Ollama API：</strong></p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http://localhost:11434</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plain">http://localhost:11434<br></code></pre></td></tr></table></figure>
 
 
 <p>这样你就可以像用 ChatGPT 一样，和本地 AI 互动了。</p>
@@ -425,17 +473,17 @@
 <p>你可以自由切换不同的 AI 进行聊天。</p>
 <hr>
 <h4 id="✅-4-提供-Web-端访问"><a href="#✅-4-提供-Web-端访问" class="headerlink" title="✅ 4. 提供 Web 端访问"></a>✅ 4. 提供 Web 端访问</h4><p>安装 OpenWebUI 后，你可以在 <strong>浏览器访问</strong>：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http://localhost:3000</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plain">http://localhost:3000<br></code></pre></td></tr></table></figure>
 
 
 <p>或者搭建 <strong>远程 AI 聊天服务</strong>，让其他人访问你的 AI 助手。</p>
 <hr>
 <h3 id="🔹-OpenWebUI-安装指南"><a href="#🔹-OpenWebUI-安装指南" class="headerlink" title="🔹 OpenWebUI 安装指南"></a>🔹 OpenWebUI 安装指南</h3><h4 id="方法-1：Docker（推荐）"><a href="#方法-1：Docker（推荐）" class="headerlink" title="方法 1：Docker（推荐）"></a>方法 1：Docker（推荐）</h4><p>最简单的方式：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run -d --name openwebui -p 3000:3000 -v openwebui_data:/app/data openwebui/openwebui:latest</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">docker run -d --name openwebui -p 3000:3000 -v openwebui_data:/app/data openwebui/openwebui:latest<br></code></pre></td></tr></table></figure>
 
 
 <p>然后访问：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http://localhost:3000</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plain">http://localhost:3000<br></code></pre></td></tr></table></figure>
 
 
 <hr>
@@ -485,4 +533,379 @@
 <hr>
 <h3 id="🔹-适用人群"><a href="#🔹-适用人群" class="headerlink" title="🔹 适用人群"></a>🔹 适用人群</h3><p>✅ <strong>想在本地运行 AI 聊天（替代 ChatGPT）</strong><br>✅ <strong>使用 Ollama 但不想用命令行</strong><br>✅ <strong>想要简洁的 Web 端聊天界面</strong><br>✅ <strong>需要远程 AI 访问（搭建自己的 ChatGPT）</strong></p>
 <p><strong>💡</strong> <strong>总结：OpenWebUI &#x3D; ChatGPT + Ollama + 本地 AI 聊天工具</strong>，简单易用，适合个人和团队搭建 <strong>私有 AI 助手</strong>！ 🚀</p>
-<h2 id=""><a href="#" class="headerlink" title=""></a></h2></article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>Author: </span><span class="post-copyright-info"><a href="https://yuanzhang788.github.io">Yuanz</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>Link: </span><span class="post-copyright-info"><a href="https://yuanzhang788.github.io/2025/02/06/%E5%9F%BA%E4%BA%8E%20Ollama+Docker+OpenWebUI%20%E7%9A%84%E6%9C%AC%E5%9C%B0%E5%8C%96%E9%83%A8%E7%BD%B2deepseek%E6%B5%81%E7%A8%8B/">https://yuanzhang788.github.io/2025/02/06/%E5%9F%BA%E4%BA%8E%20Ollama+Docker+OpenWebUI%20%E7%9A%84%E6%9C%AC%E5%9C%B0%E5%8C%96%E9%83%A8%E7%BD%B2deepseek%E6%B5%81%E7%A8%8B/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>Copyright Notice: </span><span class="post-copyright-info">All articles on this blog are licensed under <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless otherwise stated.</span></div></div><div class="tag_share"><div class="post-share"><div class="social-share" data-image="/img/butterfly-icon.png" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2025/02/07/MyBatis%20Plus%20like%20%E5%8F%82%E6%95%B0%E4%B8%BA%E7%99%BE%E5%88%86%E5%8F%B7%E6%9F%A5%E8%AF%A2%E7%BB%93%E6%9E%9C%E5%BC%82%E5%B8%B8%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88/" title="MyBatis Plus like 参数为百分号%查询结果异常解决方案"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info"><div class="info-1"><div class="info-item-1">Previous</div><div class="info-item-2">MyBatis Plus like 参数为百分号%查询结果异常解决方案</div></div><div class="info-2"><div class="info-item-1">在日常开发中，我们经常使用 MyBatis Plus 进行数据库查询。其中，LIKE 关键字用于模糊匹配，但如果用户输入的查询条件包含 %，可能会导致查询结果异常。如下图,数据库里面是没有%的plate_number数据的,但是查询出86条数据  问题分析我们来看一段 MyBatis Plus 的查询代码： 1234queryWrapper    .like(StringUtils.hasText(reqVo.getPlateNumber()), HlCar::getPlateNumber, reqVo.getPlateNumber())    .like(StringUtils.hasText(reqVo.getVin()), HlCar::getVin, reqVo.getVin())    .like(StringUtils.hasText(reqVo.getModelName()), HlCar::getCarSeries, reqVo.getModelName());   该代码的意图是：  如果 reqVo.getPlateNumber()、reqVo.getVin(...</div></div></div></a><a class="pagination-related" href="/2025/01/22/%E9%98%BF%E9%87%8C%E4%BA%91%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%AA%81%E7%84%B6%E6%9C%89%E5%A4%A7%E9%87%8Fnmap%E6%9C%8D%E5%8A%A1%E5%8D%A0%E7%94%A8%E5%A4%A7%E9%87%8FCPU%E6%8E%92%E6%9F%A5%E5%8F%8A%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88/" title="阿里云服务器突然有大量nmap服务占用大量CPU排查及解决方案"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">Next</div><div class="info-item-2">阿里云服务器突然有大量nmap服务占用大量CPU排查及解决方案</div></div><div class="info-2"><div class="info-item-1">问题描述突然有一天服务器访问很卡顿,在阿里云后台查看CPU,内存,系统平均负载等参数发现没问题  但是登陆服务器后,发现大量nmap服务占用大量CPU,但是这台管理员并没有主动安装过nmap  原因及对应预防方案暴力破解 SSH 密码：通过爆破弱密码或没有加固的 SSH 配置。 解决方案: 使用强密码和密钥认证   修改默认端口号   启用防暴力破解工具  fail2ban 或类似工具   通过防火墙（如 iptables 或 ufw）限制 SSH 的访问范围 配置Ip白名单    利用服务漏洞：利用未打补丁的服务漏洞（如 Log4j 漏洞、Apache Struts 漏洞）远程植入恶意脚本。 及时更新服务组件  12sudo apt update &amp;&amp; sudo apt upgrade    关闭不必要的服务  123sudo systemctl list-units --type=servicesudo systemctl stop &lt;service-name&gt;sudo systemctl disable &lt;service-name&gt; ...</div></div></div></a></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/butterfly-icon.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">Yuanz</div><div class="author-info-description">Yuanz的个人博客</div><div class="site-data"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">176</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">0</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">0</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>Announcement</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>Contents</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%90%AD%E5%BB%BAdeepseek"><span class="toc-number">1.</span> <span class="toc-text">搭建deepseek</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%89%E8%A3%85Ollama"><span class="toc-number">1.1.</span> <span class="toc-text">安装Ollama</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Ollma-%E5%AE%89%E8%A3%85-deepseek-r1-%E6%A8%A1%E5%9E%8B"><span class="toc-number">1.1.1.</span> <span class="toc-text">Ollma 安装 deepseek-r1 模型</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#deepseek-r1-%E6%A8%A1%E5%9E%8B%E4%BB%8B%E7%BB%8D"><span class="toc-number">1.1.1.1.</span> <span class="toc-text">deepseek-r1 模型介绍</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E4%B8%8B%E8%BD%BD%E5%B9%B6%E8%BF%90%E8%A1%8C-DeepSeek-R1"><span class="toc-number">1.1.1.2.</span> <span class="toc-text">下载并运行 DeepSeek-R1</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E6%9B%B4%E6%94%B9%E9%BB%98%E8%AE%A4%E6%A8%A1%E5%9E%8B%E5%AD%98%E5%82%A8%E8%B7%AF%E5%BE%84%EF%BC%88%E5%8F%AF%E9%80%89%EF%BC%89"><span class="toc-number">1.1.1.3.</span> <span class="toc-text">更改默认模型存储路径（可选）</span></a></li></ol></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%90%AD%E5%BB%BAOpenWebUI"><span class="toc-number">1.2.</span> <span class="toc-text">搭建OpenWebUI</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%AE%89%E8%A3%85Docker-Desktop"><span class="toc-number">1.2.1.</span> <span class="toc-text">安装Docker Desktop</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%85%8D%E7%BD%AE%E5%9B%BD%E5%86%85%E9%95%9C%E5%83%8F%E6%BA%90"><span class="toc-number">1.2.2.</span> <span class="toc-text">配置国内镜像源</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%BF%90%E8%A1%8C-OpenWebUI%EF%BC%88Docker-%E6%96%B9%E5%BC%8F%EF%BC%89"><span class="toc-number">1.2.3.</span> <span class="toc-text">运行 OpenWebUI（Docker 方式）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%AE%BF%E9%97%AE-Open-WebUI-%E8%BF%9B%E5%85%A5-deepseek-r1"><span class="toc-number">1.2.4.</span> <span class="toc-text">访问  Open-WebUI 进入 deepseek-r1</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%BC%80%E5%A7%8B%E4%BD%BF%E7%94%A8-DeepSeek-R1"><span class="toc-number">1.2.5.</span> <span class="toc-text">开始使用 DeepSeek-R1</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Ollama%E6%A6%82%E8%BF%B0"><span class="toc-number">2.</span> <span class="toc-text">Ollama概述</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%F0%9F%94%B9-Ollama-%E7%9A%84%E4%BD%9C%E7%94%A8-%F0%9F%9A%80"><span class="toc-number">2.1.</span> <span class="toc-text">🔹 Ollama 的作用 🚀</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%F0%9F%94%B9-Ollama-%E7%9A%84%E6%A0%B8%E5%BF%83%E5%8A%9F%E8%83%BD"><span class="toc-number">2.2.</span> <span class="toc-text">🔹 Ollama 的核心功能</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1%EF%B8%8F%E2%83%A3-%E8%BF%90%E8%A1%8C%E6%9C%AC%E5%9C%B0%E5%A4%A7%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B"><span class="toc-number">2.2.1.</span> <span class="toc-text">1️⃣ 运行本地大语言模型</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2%EF%B8%8F%E2%83%A3-%E9%87%8F%E5%8C%96%E4%BC%98%E5%8C%96%EF%BC%88%E8%8A%82%E7%9C%81%E6%98%BE%E5%AD%98%EF%BC%89"><span class="toc-number">2.2.2.</span> <span class="toc-text">2️⃣ 量化优化（节省显存）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3%EF%B8%8F%E2%83%A3-%E6%9C%AC%E5%9C%B0-API-%E6%9C%8D%E5%8A%A1"><span class="toc-number">2.2.3.</span> <span class="toc-text">3️⃣ 本地 API 服务</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4%EF%B8%8F%E2%83%A3-%E8%87%AA%E5%AE%9A%E4%B9%89%E6%A8%A1%E5%9E%8B%EF%BC%88Modelfile%EF%BC%89"><span class="toc-number">2.2.4.</span> <span class="toc-text">4️⃣ 自定义模型（Modelfile）</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%F0%9F%94%B9-Ollama-%E7%9A%84%E9%80%82%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="toc-number">2.3.</span> <span class="toc-text">🔹 Ollama 的适用场景</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%F0%9F%94%B9-Ollama-vs-%E5%85%B6%E4%BB%96%E6%9C%AC%E5%9C%B0-LLM-%E6%96%B9%E6%A1%88"><span class="toc-number">2.4.</span> <span class="toc-text">🔹 Ollama vs. 其他本地 LLM 方案</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#OpenWebUI%E6%A6%82%E8%BF%B0"><span class="toc-number">3.</span> <span class="toc-text">OpenWebUI概述</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%F0%9F%94%B9-OpenWebUI-%E6%98%AF%E4%BB%80%E4%B9%88"><span class="toc-number">3.1.</span> <span class="toc-text">**🔹**OpenWebUI 是什么</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%F0%9F%94%B9-OpenWebUI-%E7%9A%84%E6%A0%B8%E5%BF%83%E4%BD%9C%E7%94%A8"><span class="toc-number">3.2.</span> <span class="toc-text">🔹 OpenWebUI 的核心作用</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E2%9C%85-1-%E4%BD%9C%E4%B8%BA-ChatGPT-%E7%9A%84%E6%9B%BF%E4%BB%A3%E5%93%81%EF%BC%88%E6%9C%AC%E5%9C%B0%E8%BF%90%E8%A1%8C%EF%BC%89"><span class="toc-number">3.2.1.</span> <span class="toc-text">✅ 1. 作为 ChatGPT 的替代品（本地运行）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E2%9C%85-2-%E8%BF%9E%E6%8E%A5-Ollama-%E6%9C%AC%E5%9C%B0%E5%A4%A7%E6%A8%A1%E5%9E%8B"><span class="toc-number">3.2.2.</span> <span class="toc-text">✅ 2. 连接 Ollama 本地大模型</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E2%9C%85-3-%E8%BF%9E%E6%8E%A5-OpenAI-%E5%85%B6%E4%BB%96-API"><span class="toc-number">3.2.3.</span> <span class="toc-text">✅ 3. 连接 OpenAI &#x2F; 其他 API</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E2%9C%85-4-%E6%8F%90%E4%BE%9B-Web-%E7%AB%AF%E8%AE%BF%E9%97%AE"><span class="toc-number">3.2.4.</span> <span class="toc-text">✅ 4. 提供 Web 端访问</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%F0%9F%94%B9-OpenWebUI-%E5%AE%89%E8%A3%85%E6%8C%87%E5%8D%97"><span class="toc-number">3.3.</span> <span class="toc-text">🔹 OpenWebUI 安装指南</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%96%B9%E6%B3%95-1%EF%BC%9ADocker%EF%BC%88%E6%8E%A8%E8%8D%90%EF%BC%89"><span class="toc-number">3.3.1.</span> <span class="toc-text">方法 1：Docker（推荐）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%96%B9%E6%B3%95-2%EF%BC%9A%E6%9C%AC%E5%9C%B0%E6%89%8B%E5%8A%A8%E5%AE%89%E8%A3%85-%E6%9C%AC%E6%96%87%E4%B8%8D%E6%BC%94%E7%A4%BA"><span class="toc-number">3.3.2.</span> <span class="toc-text">方法 2：本地手动安装(本文不演示)</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%F0%9F%94%B9-OpenWebUI-vs-%E5%85%B6%E4%BB%96-WebUI"><span class="toc-number">3.4.</span> <span class="toc-text">🔹 OpenWebUI vs. 其他 WebUI</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%F0%9F%94%B9-%E9%80%82%E7%94%A8%E4%BA%BA%E7%BE%A4"><span class="toc-number">3.5.</span> <span class="toc-text">🔹 适用人群</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link"><span class="toc-number">4.</span> <span class="toc-text"></span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Posts</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/06/05/hello-world/" title="Hello World">Hello World</a><time datetime="2026-06-05T09:30:56.120Z" title="Created 2026-06-05 17:30:56">2026-06-05</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/05/28/%E4%BB%8E%E9%9B%B6%E5%BC%80%E5%A7%8B%EF%BC%8C%E5%9F%BA%E4%BA%8E-Hexo-GitHub-Pages-%E6%90%AD%E5%BB%BA%E4%B8%80%E4%B8%AA%E5%B1%9E%E4%BA%8E%E8%87%AA%E5%B7%B1%E7%9A%84%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2%EF%BC%8C%E5%B9%B6%E5%AE%8C%E6%88%90%E4%B8%BB%E9%A2%98%E5%88%87%E6%8D%A2%E4%B8%8E%E9%83%A8%E7%BD%B2%E3%80%82%EF%BC%88%E8%B6%85%E8%AF%A6%E7%BB%86%E6%95%99%E7%A8%8B%EF%BC%89/" title="从零开始，基于 Hexo + GitHub Pages 搭建一个属于自己的个人博客，并完成主题切换与部署。（超详细教程）">从零开始，基于 Hexo + GitHub Pages 搭建一个属于自己的个人博客，并完成主题切换与部署。（超详细教程）</a><time datetime="2026-05-28T06:27:02.000Z" title="Created 2026-05-28 14:27:02">2026-05-28</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/05/22/%E7%AC%AC%E4%B8%80%E7%AF%87-Github-Pages%E5%8D%9A%E5%AE%A2/" title="第一篇 Github Pages博客">第一篇 Github Pages博客</a><time datetime="2026-05-22T09:25:44.000Z" title="Created 2026-05-22 17:25:44">2026-05-22</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/05/20/Java%20Excel%E5%AF%BC%E5%87%BA%EF%BC%9A%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E8%87%AA%E5%AE%9A%E4%B9%89%E8%A1%A8%E5%A4%B4%E4%B8%8E%E5%AD%97%E6%AE%B5%E9%A1%BA%E5%BA%8F%E7%9A%84%E5%AE%8C%E5%85%A8%E6%8E%A7%E5%88%B6/" title="Java Excel导出：如何实现自定义表头与字段顺序的完全控制">Java Excel导出：如何实现自定义表头与字段顺序的完全控制</a><time datetime="2026-05-20T10:02:18.000Z" title="Created 2026-05-20 18:02:18">2026-05-20</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/05/07/Docker%20%E5%AE%89%E8%A3%85%20%E6%95%B0%E6%8D%AE%E5%BA%93%E5%B7%A5%E5%8D%95%E7%B3%BB%E7%BB%9FYearning%E4%BB%A5%E5%8F%8A%E4%BD%BF%E7%94%A8/" title="Docker 安装 数据库工单系统Yearning以及使用">Docker 安装 数据库工单系统Yearning以及使用</a><time datetime="2026-05-07T06:10:08.000Z" title="Created 2026-05-07 14:10:08">2026-05-07</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2025 - 2026 By Yuanz</span><span class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 8.1.2</a><span class="footer-separator">|</span><span>Theme </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.5.5-b1</a></span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="Reading Mode"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="Toggle Between Light and Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle Between Single-column and Double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="Settings"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="Table of Contents"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="Back to Top"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.5.5-b1"></script><script src="/js/main.js?v=5.5.5-b1"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
+<h2 id=""><a href="#" class="headerlink" title=""></a></h2></article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://yuanzhang788.github.io">Yuanz</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://yuanzhang788.github.io/2025/02/06/%E5%9F%BA%E4%BA%8E%20Ollama+Docker+OpenWebUI%20%E7%9A%84%E6%9C%AC%E5%9C%B0%E5%8C%96%E9%83%A8%E7%BD%B2deepseek%E6%B5%81%E7%A8%8B/">https://yuanzhang788.github.io/2025/02/06/基于 Ollama+Docker+OpenWebUI 的本地化部署deepseek流程/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://yuanzhang788.github.io" target="_blank">Yuanz</a>！</span></div></div><div class="tag_share"><div class="post-share"><div class="social-share" data-image="https://api.r10086.com/img-api.php?type=%E9%A3%8E%E6%99%AF&amp;cd=2024" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2025/02/07/MyBatis%20Plus%20like%20%E5%8F%82%E6%95%B0%E4%B8%BA%E7%99%BE%E5%88%86%E5%8F%B7%E6%9F%A5%E8%AF%A2%E7%BB%93%E6%9E%9C%E5%BC%82%E5%B8%B8%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88/" title="MyBatis Plus like 参数为百分号%查询结果异常解决方案"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://api.r10086.com/img-api.php?type=%E9%A3%8E%E6%99%AF&amp;cd=2024" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">MyBatis Plus like 参数为百分号%查询结果异常解决方案</div></div><div class="info-2"><div class="info-item-1">在日常开发中，我们经常使用 MyBatis Plus 进行数据库查询。其中，LIKE 关键字用于模糊匹配，但如果用户输入的查询条件包含 %，可能会导致查询结果异常。如下图,数据库里面是没有%的plate_number数据的,但是查询出86条数据  问题分析我们来看一段 MyBatis Plus 的查询代码： 1234queryWrapper    .like(StringUtils.hasText(reqVo.getPlateNumber()), HlCar::getPlateNumber, reqVo.getPlateNumber())    .like(StringUtils.has...</div></div></div></a><a class="pagination-related" href="/2025/01/22/%E9%98%BF%E9%87%8C%E4%BA%91%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%AA%81%E7%84%B6%E6%9C%89%E5%A4%A7%E9%87%8Fnmap%E6%9C%8D%E5%8A%A1%E5%8D%A0%E7%94%A8%E5%A4%A7%E9%87%8FCPU%E6%8E%92%E6%9F%A5%E5%8F%8A%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88/" title="阿里云服务器突然有大量nmap服务占用大量CPU排查及解决方案"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://api.r10086.com/img-api.php?type=%E9%A3%8E%E6%99%AF&amp;cd=2024" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">阿里云服务器突然有大量nmap服务占用大量CPU排查及解决方案</div></div><div class="info-2"><div class="info-item-1">问题描述突然有一天服务器访问很卡顿,在阿里云后台查看CPU,内存,系统平均负载等参数发现没问题  但是登陆服务器后,发现大量nmap服务占用大量CPU,但是这台管理员并没有主动安装过nmap  原因及对应预防方案暴力破解 SSH 密码：通过爆破弱密码或没有加固的 SSH 配置。 解决方案: 使用强密码和密钥认证   修改默认端口号   启用防暴力破解工具  fail2ban 或类似工具   通过防火墙（如 iptables 或 ufw）限制 SSH 的访问范围 配置Ip白名单    利用服务漏洞：利用未打补丁的服务漏洞（如 Log4j 漏洞、Apache Struts 漏洞）远程植入恶意...</div></div></div></a></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">Yuanz</div><div class="author-info-description">Yuanz的个人博客</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">176</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">0</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">0</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/yuanzhang788"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/yuanzhang788" target="_blank" title="Github"><i class="fab fa-github" style="color: #4a7dbe;"></i></a><a class="social-icon" href="mailto:2437264464@qq.com" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #49b1f5;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎访问 Yuanz 的个人博客！</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%90%AD%E5%BB%BAdeepseek"><span class="toc-number">1.</span> <span class="toc-text">搭建deepseek</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%89%E8%A3%85Ollama"><span class="toc-number">1.1.</span> <span class="toc-text">安装Ollama</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Ollma-%E5%AE%89%E8%A3%85-deepseek-r1-%E6%A8%A1%E5%9E%8B"><span class="toc-number">1.1.1.</span> <span class="toc-text">Ollma 安装 deepseek-r1 模型</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#deepseek-r1-%E6%A8%A1%E5%9E%8B%E4%BB%8B%E7%BB%8D"><span class="toc-number">1.1.1.1.</span> <span class="toc-text">deepseek-r1 模型介绍</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E4%B8%8B%E8%BD%BD%E5%B9%B6%E8%BF%90%E8%A1%8C-DeepSeek-R1"><span class="toc-number">1.1.1.2.</span> <span class="toc-text">下载并运行 DeepSeek-R1</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E6%9B%B4%E6%94%B9%E9%BB%98%E8%AE%A4%E6%A8%A1%E5%9E%8B%E5%AD%98%E5%82%A8%E8%B7%AF%E5%BE%84%EF%BC%88%E5%8F%AF%E9%80%89%EF%BC%89"><span class="toc-number">1.1.1.3.</span> <span class="toc-text">更改默认模型存储路径（可选）</span></a></li></ol></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%90%AD%E5%BB%BAOpenWebUI"><span class="toc-number">1.2.</span> <span class="toc-text">搭建OpenWebUI</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%AE%89%E8%A3%85Docker-Desktop"><span class="toc-number">1.2.1.</span> <span class="toc-text">安装Docker Desktop</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%85%8D%E7%BD%AE%E5%9B%BD%E5%86%85%E9%95%9C%E5%83%8F%E6%BA%90"><span class="toc-number">1.2.2.</span> <span class="toc-text">配置国内镜像源</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%BF%90%E8%A1%8C-OpenWebUI%EF%BC%88Docker-%E6%96%B9%E5%BC%8F%EF%BC%89"><span class="toc-number">1.2.3.</span> <span class="toc-text">运行 OpenWebUI（Docker 方式）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%AE%BF%E9%97%AE-Open-WebUI-%E8%BF%9B%E5%85%A5-deepseek-r1"><span class="toc-number">1.2.4.</span> <span class="toc-text">访问  Open-WebUI 进入 deepseek-r1</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%BC%80%E5%A7%8B%E4%BD%BF%E7%94%A8-DeepSeek-R1"><span class="toc-number">1.2.5.</span> <span class="toc-text">开始使用 DeepSeek-R1</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Ollama%E6%A6%82%E8%BF%B0"><span class="toc-number">2.</span> <span class="toc-text">Ollama概述</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%F0%9F%94%B9-Ollama-%E7%9A%84%E4%BD%9C%E7%94%A8-%F0%9F%9A%80"><span class="toc-number">2.1.</span> <span class="toc-text">🔹 Ollama 的作用 🚀</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%F0%9F%94%B9-Ollama-%E7%9A%84%E6%A0%B8%E5%BF%83%E5%8A%9F%E8%83%BD"><span class="toc-number">2.2.</span> <span class="toc-text">🔹 Ollama 的核心功能</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1%EF%B8%8F%E2%83%A3-%E8%BF%90%E8%A1%8C%E6%9C%AC%E5%9C%B0%E5%A4%A7%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B"><span class="toc-number">2.2.1.</span> <span class="toc-text">1️⃣ 运行本地大语言模型</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2%EF%B8%8F%E2%83%A3-%E9%87%8F%E5%8C%96%E4%BC%98%E5%8C%96%EF%BC%88%E8%8A%82%E7%9C%81%E6%98%BE%E5%AD%98%EF%BC%89"><span class="toc-number">2.2.2.</span> <span class="toc-text">2️⃣ 量化优化（节省显存）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3%EF%B8%8F%E2%83%A3-%E6%9C%AC%E5%9C%B0-API-%E6%9C%8D%E5%8A%A1"><span class="toc-number">2.2.3.</span> <span class="toc-text">3️⃣ 本地 API 服务</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4%EF%B8%8F%E2%83%A3-%E8%87%AA%E5%AE%9A%E4%B9%89%E6%A8%A1%E5%9E%8B%EF%BC%88Modelfile%EF%BC%89"><span class="toc-number">2.2.4.</span> <span class="toc-text">4️⃣ 自定义模型（Modelfile）</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%F0%9F%94%B9-Ollama-%E7%9A%84%E9%80%82%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="toc-number">2.3.</span> <span class="toc-text">🔹 Ollama 的适用场景</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%F0%9F%94%B9-Ollama-vs-%E5%85%B6%E4%BB%96%E6%9C%AC%E5%9C%B0-LLM-%E6%96%B9%E6%A1%88"><span class="toc-number">2.4.</span> <span class="toc-text">🔹 Ollama vs. 其他本地 LLM 方案</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#OpenWebUI%E6%A6%82%E8%BF%B0"><span class="toc-number">3.</span> <span class="toc-text">OpenWebUI概述</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%F0%9F%94%B9-OpenWebUI-%E6%98%AF%E4%BB%80%E4%B9%88"><span class="toc-number">3.1.</span> <span class="toc-text">**🔹**OpenWebUI 是什么</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%F0%9F%94%B9-OpenWebUI-%E7%9A%84%E6%A0%B8%E5%BF%83%E4%BD%9C%E7%94%A8"><span class="toc-number">3.2.</span> <span class="toc-text">🔹 OpenWebUI 的核心作用</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E2%9C%85-1-%E4%BD%9C%E4%B8%BA-ChatGPT-%E7%9A%84%E6%9B%BF%E4%BB%A3%E5%93%81%EF%BC%88%E6%9C%AC%E5%9C%B0%E8%BF%90%E8%A1%8C%EF%BC%89"><span class="toc-number">3.2.1.</span> <span class="toc-text">✅ 1. 作为 ChatGPT 的替代品（本地运行）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E2%9C%85-2-%E8%BF%9E%E6%8E%A5-Ollama-%E6%9C%AC%E5%9C%B0%E5%A4%A7%E6%A8%A1%E5%9E%8B"><span class="toc-number">3.2.2.</span> <span class="toc-text">✅ 2. 连接 Ollama 本地大模型</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E2%9C%85-3-%E8%BF%9E%E6%8E%A5-OpenAI-%E5%85%B6%E4%BB%96-API"><span class="toc-number">3.2.3.</span> <span class="toc-text">✅ 3. 连接 OpenAI &#x2F; 其他 API</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E2%9C%85-4-%E6%8F%90%E4%BE%9B-Web-%E7%AB%AF%E8%AE%BF%E9%97%AE"><span class="toc-number">3.2.4.</span> <span class="toc-text">✅ 4. 提供 Web 端访问</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%F0%9F%94%B9-OpenWebUI-%E5%AE%89%E8%A3%85%E6%8C%87%E5%8D%97"><span class="toc-number">3.3.</span> <span class="toc-text">🔹 OpenWebUI 安装指南</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%96%B9%E6%B3%95-1%EF%BC%9ADocker%EF%BC%88%E6%8E%A8%E8%8D%90%EF%BC%89"><span class="toc-number">3.3.1.</span> <span class="toc-text">方法 1：Docker（推荐）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%96%B9%E6%B3%95-2%EF%BC%9A%E6%9C%AC%E5%9C%B0%E6%89%8B%E5%8A%A8%E5%AE%89%E8%A3%85-%E6%9C%AC%E6%96%87%E4%B8%8D%E6%BC%94%E7%A4%BA"><span class="toc-number">3.3.2.</span> <span class="toc-text">方法 2：本地手动安装(本文不演示)</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%F0%9F%94%B9-OpenWebUI-vs-%E5%85%B6%E4%BB%96-WebUI"><span class="toc-number">3.4.</span> <span class="toc-text">🔹 OpenWebUI vs. 其他 WebUI</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%F0%9F%94%B9-%E9%80%82%E7%94%A8%E4%BA%BA%E7%BE%A4"><span class="toc-number">3.5.</span> <span class="toc-text">🔹 适用人群</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link"><span class="toc-number">4.</span> <span class="toc-text"></span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2026/06/05/hello-world/" title="Hello World"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://api.r10086.com/img-api.php?type=%E9%A3%8E%E6%99%AF&amp;cd=2024" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Hello World"/></a><div class="content"><a class="title" href="/2026/06/05/hello-world/" title="Hello World">Hello World</a><time datetime="2026-06-05T09:30:56.120Z" title="发表于 2026-06-05 17:30:56">2026-06-05</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2026/05/28/%E4%BB%8E%E9%9B%B6%E5%BC%80%E5%A7%8B%EF%BC%8C%E5%9F%BA%E4%BA%8E-Hexo-GitHub-Pages-%E6%90%AD%E5%BB%BA%E4%B8%80%E4%B8%AA%E5%B1%9E%E4%BA%8E%E8%87%AA%E5%B7%B1%E7%9A%84%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2%EF%BC%8C%E5%B9%B6%E5%AE%8C%E6%88%90%E4%B8%BB%E9%A2%98%E5%88%87%E6%8D%A2%E4%B8%8E%E9%83%A8%E7%BD%B2%E3%80%82%EF%BC%88%E8%B6%85%E8%AF%A6%E7%BB%86%E6%95%99%E7%A8%8B%EF%BC%89/" title="从零开始，基于 Hexo + GitHub Pages 搭建一个属于自己的个人博客，并完成主题切换与部署。（超详细教程）"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://api.r10086.com/img-api.php?type=%E9%A3%8E%E6%99%AF&amp;cd=2024" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="从零开始，基于 Hexo + GitHub Pages 搭建一个属于自己的个人博客，并完成主题切换与部署。（超详细教程）"/></a><div class="content"><a class="title" href="/2026/05/28/%E4%BB%8E%E9%9B%B6%E5%BC%80%E5%A7%8B%EF%BC%8C%E5%9F%BA%E4%BA%8E-Hexo-GitHub-Pages-%E6%90%AD%E5%BB%BA%E4%B8%80%E4%B8%AA%E5%B1%9E%E4%BA%8E%E8%87%AA%E5%B7%B1%E7%9A%84%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2%EF%BC%8C%E5%B9%B6%E5%AE%8C%E6%88%90%E4%B8%BB%E9%A2%98%E5%88%87%E6%8D%A2%E4%B8%8E%E9%83%A8%E7%BD%B2%E3%80%82%EF%BC%88%E8%B6%85%E8%AF%A6%E7%BB%86%E6%95%99%E7%A8%8B%EF%BC%89/" title="从零开始，基于 Hexo + GitHub Pages 搭建一个属于自己的个人博客，并完成主题切换与部署。（超详细教程）">从零开始，基于 Hexo + GitHub Pages 搭建一个属于自己的个人博客，并完成主题切换与部署。（超详细教程）</a><time datetime="2026-05-28T06:27:02.000Z" title="发表于 2026-05-28 14:27:02">2026-05-28</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2026/05/22/%E7%AC%AC%E4%B8%80%E7%AF%87-Github-Pages%E5%8D%9A%E5%AE%A2/" title="第一篇 Github Pages博客"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://api.r10086.com/img-api.php?type=%E9%A3%8E%E6%99%AF&amp;cd=2024" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="第一篇 Github Pages博客"/></a><div class="content"><a class="title" href="/2026/05/22/%E7%AC%AC%E4%B8%80%E7%AF%87-Github-Pages%E5%8D%9A%E5%AE%A2/" title="第一篇 Github Pages博客">第一篇 Github Pages博客</a><time datetime="2026-05-22T09:25:44.000Z" title="发表于 2026-05-22 17:25:44">2026-05-22</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2026/05/20/Java%20Excel%E5%AF%BC%E5%87%BA%EF%BC%9A%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E8%87%AA%E5%AE%9A%E4%B9%89%E8%A1%A8%E5%A4%B4%E4%B8%8E%E5%AD%97%E6%AE%B5%E9%A1%BA%E5%BA%8F%E7%9A%84%E5%AE%8C%E5%85%A8%E6%8E%A7%E5%88%B6/" title="Java Excel导出：如何实现自定义表头与字段顺序的完全控制"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://api.r10086.com/img-api.php?type=%E9%A3%8E%E6%99%AF&amp;cd=2024" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Java Excel导出：如何实现自定义表头与字段顺序的完全控制"/></a><div class="content"><a class="title" href="/2026/05/20/Java%20Excel%E5%AF%BC%E5%87%BA%EF%BC%9A%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E8%87%AA%E5%AE%9A%E4%B9%89%E8%A1%A8%E5%A4%B4%E4%B8%8E%E5%AD%97%E6%AE%B5%E9%A1%BA%E5%BA%8F%E7%9A%84%E5%AE%8C%E5%85%A8%E6%8E%A7%E5%88%B6/" title="Java Excel导出：如何实现自定义表头与字段顺序的完全控制">Java Excel导出：如何实现自定义表头与字段顺序的完全控制</a><time datetime="2026-05-20T10:02:18.000Z" title="发表于 2026-05-20 18:02:18">2026-05-20</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2026/05/07/Docker%20%E5%AE%89%E8%A3%85%20%E6%95%B0%E6%8D%AE%E5%BA%93%E5%B7%A5%E5%8D%95%E7%B3%BB%E7%BB%9FYearning%E4%BB%A5%E5%8F%8A%E4%BD%BF%E7%94%A8/" title="Docker 安装 数据库工单系统Yearning以及使用"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://api.r10086.com/img-api.php?type=%E9%A3%8E%E6%99%AF&amp;cd=2024" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Docker 安装 数据库工单系统Yearning以及使用"/></a><div class="content"><a class="title" href="/2026/05/07/Docker%20%E5%AE%89%E8%A3%85%20%E6%95%B0%E6%8D%AE%E5%BA%93%E5%B7%A5%E5%8D%95%E7%B3%BB%E7%BB%9FYearning%E4%BB%A5%E5%8F%8A%E4%BD%BF%E7%94%A8/" title="Docker 安装 数据库工单系统Yearning以及使用">Docker 安装 数据库工单系统Yearning以及使用</a><time datetime="2026-05-07T06:10:08.000Z" title="发表于 2026-05-07 14:10:08">2026-05-07</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2024 - 2026 By Yuanz</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 8.1.2</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.5.5-b1</a></span></div><div class="footer_custom_text"><a href="https://github.com/yuanzhang788" target="_blank" rel="noopener noreferrer">Yuanz</a> &copy; <span id="year"></span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page/instantpage.min.js" type="module"></script><script src="https://cdn.jsdelivr.net/npm/vanilla-lazyload/dist/lazyload.iife.min.js"></script><script src="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.js"></script><div class="js-pjax"><script>(() => {
+  const parseViewBox = viewBox => {
+    if (!viewBox) return null
+    const parts = viewBox.trim().split(/[\s,]+/).map(n => Number(n))
+    if (parts.length !== 4 || parts.some(n => Number.isNaN(n))) return null
+    return parts
+  }
+
+  const getSvgViewBox = svg => {
+    const attr = parseViewBox(svg.getAttribute('viewBox'))
+    if (attr) return attr
+
+    // Fallback: use bbox to build a viewBox
+    try {
+      const bbox = svg.getBBox()
+      if (bbox && bbox.width && bbox.height) return [bbox.x, bbox.y, bbox.width, bbox.height]
+    } catch (e) {
+      // getBBox may fail on some edge cases; ignore
+    }
+
+    const w = Number(svg.getAttribute('width')) || 0
+    const h = Number(svg.getAttribute('height')) || 0
+    if (w > 0 && h > 0) return [0, 0, w, h]
+    return [0, 0, 100, 100]
+  }
+
+  const setSvgViewBox = (svg, vb) => {
+    svg.setAttribute('viewBox', `${vb[0]} ${vb[1]} ${vb[2]} ${vb[3]}`)
+  }
+
+  const clamp = (v, min, max) => Math.max(min, Math.min(max, v))
+
+  const openSvgInNewTab = ({ source, initViewBox }) => {
+    const getClonedSvg = () => {
+      if (typeof source === 'string') {
+        const template = document.createElement('template')
+        template.innerHTML = source.trim()
+        const svg = template.content.querySelector('svg')
+        return svg ? svg.cloneNode(true) : null
+      }
+      if (source && typeof source.cloneNode === 'function') {
+        return source.cloneNode(true)
+      }
+      return null
+    }
+
+    const clone = getClonedSvg()
+    if (!clone) return
+    if (initViewBox && initViewBox.length === 4) {
+      clone.setAttribute('viewBox', initViewBox.join(' '))
+    }
+    if (!clone.getAttribute('xmlns')) clone.setAttribute('xmlns', 'http://www.w3.org/2000/svg')
+    if (!clone.getAttribute('xmlns:xlink') && clone.outerHTML.includes('xlink:')) {
+      clone.setAttribute('xmlns:xlink', 'http://www.w3.org/1999/xlink')
+    }
+    // inject background to match current theme
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark'
+    const bg = getComputedStyle(document.body).backgroundColor || (isDark ? '#1e1e1e' : '#ffffff')
+    if (!clone.style.background) clone.style.background = bg
+
+    const serializer = new XMLSerializer()
+    const svgSource = serializer.serializeToString(clone)
+    const htmlSource = `<!doctype html><html><head><meta charset="utf-8" />
+      <style>
+        html, body { width: 100%; height: 100%; margin: 0; display: flex; align-items: center; justify-content: center; background: ${bg}; }
+        svg { max-width: 100%; max-height: 100%; height: auto; width: auto; }
+      </style>
+      </head><body>${svgSource}</body></html>`
+    const blob = new Blob([htmlSource], { type: 'text/html;charset=utf-8' })
+    const url = URL.createObjectURL(blob)
+    window.open(url, '_blank', 'noopener')
+    setTimeout(() => URL.revokeObjectURL(url), 30000)
+  }
+
+  const attachMermaidViewerButton = wrap => {
+    let btn = wrap.querySelector('.mermaid-open-btn')
+    if (!btn) {
+      btn = document.createElement('button')
+      btn.type = 'button'
+      btn.className = 'mermaid-open-btn'
+      wrap.appendChild(btn)
+    }
+
+    btn.innerHTML = '<i class="fa fa-search fa-fw" aria-hidden="true"></i>'
+
+    if (!btn.__mermaidViewerBound) {
+      btn.addEventListener('click', e => {
+        e.preventDefault()
+        e.stopPropagation()
+        const svg = wrap.__mermaidOriginalSvg || wrap.querySelector('svg')
+        if (!svg) return
+        const initViewBox = wrap.__mermaidInitViewBox
+        if (typeof svg === 'string') {
+          openSvgInNewTab({ source: svg, initViewBox })
+          return
+        }
+        openSvgInNewTab({ source: svg, initViewBox })
+      })
+      btn.__mermaidViewerBound = true
+    }
+  }
+
+  // Zoom around a point (px, py) in the SVG viewport (in viewBox coordinates)
+  const zoomAtPoint = (vb, factor, px, py) => {
+    const w = vb[2] * factor
+    const h = vb[3] * factor
+    const nx = px - (px - vb[0]) * factor
+    const ny = py - (py - vb[1]) * factor
+    return [nx, ny, w, h]
+  }
+
+  const initMermaidGestures = wrap => {
+    const svg = wrap.querySelector('svg')
+    if (!svg) return
+
+    // Ensure viewBox exists so gestures always work
+    const initVb = getSvgViewBox(svg)
+    wrap.__mermaidInitViewBox = initVb
+    wrap.__mermaidCurViewBox = initVb.slice()
+    setSvgViewBox(svg, initVb)
+
+    // Avoid binding multiple times on themeChange/pjax
+    if (wrap.__mermaidGestureBound) return
+    wrap.__mermaidGestureBound = true
+
+    // Helper: map client (viewport) coordinate -> viewBox coordinate
+    const clientToViewBox = (clientX, clientY) => {
+      const rect = svg.getBoundingClientRect()
+      const vb = wrap.__mermaidCurViewBox || getSvgViewBox(svg)
+      const x = vb[0] + (clientX - rect.left) * (vb[2] / rect.width)
+      const y = vb[1] + (clientY - rect.top) * (vb[3] / rect.height)
+      return { x, y, rect, vb }
+    }
+
+    const state = {
+      pointers: new Map(),
+      startVb: null,
+      startDist: 0,
+      startCenter: null
+    }
+
+    const clampVb = vb => {
+      const init = wrap.__mermaidInitViewBox || vb
+      const minW = init[2] * 0.1
+      const maxW = init[2] * 10
+      const minH = init[3] * 0.1
+      const maxH = init[3] * 10
+      vb[2] = clamp(vb[2], minW, maxW)
+      vb[3] = clamp(vb[3], minH, maxH)
+      return vb
+    }
+
+    const setCurVb = vb => {
+      vb = clampVb(vb)
+      wrap.__mermaidCurViewBox = vb
+      setSvgViewBox(svg, vb)
+    }
+
+    const onPointerDown = e => {
+      // Allow only primary button for mouse
+      if (e.pointerType === 'mouse' && e.button !== 0) return
+      svg.setPointerCapture(e.pointerId)
+      state.pointers.set(e.pointerId, { x: e.clientX, y: e.clientY })
+
+      if (state.pointers.size === 1) {
+        state.startVb = (wrap.__mermaidCurViewBox || getSvgViewBox(svg)).slice()
+      } else if (state.pointers.size === 2) {
+        const pts = [...state.pointers.values()]
+        const dx = pts[0].x - pts[1].x
+        const dy = pts[0].y - pts[1].y
+        state.startDist = Math.hypot(dx, dy)
+        state.startVb = (wrap.__mermaidCurViewBox || getSvgViewBox(svg)).slice()
+        state.startCenter = { x: (pts[0].x + pts[1].x) / 2, y: (pts[0].y + pts[1].y) / 2 }
+      }
+    }
+
+    const onPointerMove = e => {
+      if (!state.pointers.has(e.pointerId)) return
+      state.pointers.set(e.pointerId, { x: e.clientX, y: e.clientY })
+
+      // Pan with 1 pointer
+      if (state.pointers.size === 1 && state.startVb) {
+        const p = [...state.pointers.values()][0]
+        const prev = { x: e.clientX - e.movementX, y: e.clientY - e.movementY }
+        // movementX/Y unreliable on touch, compute from stored last position
+        const last = wrap.__mermaidLastSinglePointer || p
+        const dxClient = p.x - last.x
+        const dyClient = p.y - last.y
+        wrap.__mermaidLastSinglePointer = p
+
+        const { rect } = clientToViewBox(p.x, p.y)
+        const vb = (wrap.__mermaidCurViewBox || getSvgViewBox(svg)).slice()
+        const dx = dxClient * (vb[2] / rect.width)
+        const dy = dyClient * (vb[3] / rect.height)
+        setCurVb([vb[0] - dx, vb[1] - dy, vb[2], vb[3]])
+        return
+      }
+
+      // Pinch zoom with 2 pointers
+      if (state.pointers.size === 2 && state.startVb && state.startDist > 0) {
+        const pts = [...state.pointers.values()]
+        const dx = pts[0].x - pts[1].x
+        const dy = pts[0].y - pts[1].y
+        const dist = Math.hypot(dx, dy)
+        if (!dist) return
+        const factor = state.startDist / dist // dist bigger => zoom in (viewBox smaller)
+
+        const cx = (pts[0].x + pts[1].x) / 2
+        const cy = (pts[0].y + pts[1].y) / 2
+        const centerClient = { x: cx, y: cy }
+
+        const pxy = clientToViewBox(centerClient.x, centerClient.y)
+        const cpx = pxy.x
+        const cpy = pxy.y
+
+        const vb = zoomAtPoint(state.startVb, factor, cpx, cpy)
+        setCurVb(vb)
+      }
+    }
+
+    const onPointerUpOrCancel = e => {
+      state.pointers.delete(e.pointerId)
+      if (state.pointers.size === 0) {
+        state.startVb = null
+        state.startDist = 0
+        state.startCenter = null
+        wrap.__mermaidLastSinglePointer = null
+      } else if (state.pointers.size === 1) {
+        // reset single pointer baseline to avoid jump
+        wrap.__mermaidLastSinglePointer = [...state.pointers.values()][0]
+      }
+    }
+
+    // Wheel zoom (mouse/trackpad)
+    const onWheel = e => {
+      // ctrlKey on mac trackpad pinch; we treat both as zoom
+      e.preventDefault()
+      const delta = e.deltaY
+      const zoomFactor = delta > 0 ? 1.1 : 0.9
+      const { x, y } = clientToViewBox(e.clientX, e.clientY)
+      const vb = (wrap.__mermaidCurViewBox || getSvgViewBox(svg)).slice()
+      setCurVb(zoomAtPoint(vb, zoomFactor, x, y))
+    }
+
+    const onDblClick = () => {
+      const init = wrap.__mermaidInitViewBox
+      if (!init) return
+      wrap.__mermaidCurViewBox = init.slice()
+      setSvgViewBox(svg, init)
+    }
+
+    svg.addEventListener('pointerdown', onPointerDown)
+    svg.addEventListener('pointermove', onPointerMove)
+    svg.addEventListener('pointerup', onPointerUpOrCancel)
+    svg.addEventListener('pointercancel', onPointerUpOrCancel)
+    svg.addEventListener('wheel', onWheel, { passive: false })
+    svg.addEventListener('dblclick', onDblClick)
+  }
+
+  const runMermaid = ele => {
+    window.loadMermaid = true
+    const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'default'
+
+    ele.forEach((item, index) => {
+      const mermaidSrc = item.firstElementChild
+
+      // Clear old render (themeChange/pjax will rerun)
+      const oldSvg = item.querySelector('svg')
+      if (oldSvg) oldSvg.remove()
+      item.__mermaidGestureBound = false
+
+      const config = mermaidSrc.dataset.config ? JSON.parse(mermaidSrc.dataset.config) : {}
+      if (!config.theme) {
+        config.theme = theme
+      }
+      const mermaidThemeConfig = `%%{init: ${JSON.stringify(config)}}%%\n`
+      const mermaidID = `mermaid-${index}`
+      const mermaidDefinition = mermaidThemeConfig + mermaidSrc.textContent
+
+      const renderFn = mermaid.render(mermaidID, mermaidDefinition)
+      const renderMermaid = svg => {
+        mermaidSrc.insertAdjacentHTML('afterend', svg)
+        if (true) initMermaidGestures(item)
+        item.__mermaidOriginalSvg = svg
+        if (true) attachMermaidViewerButton(item)
+      }
+
+
+      // mermaid v9 and v10 compatibility
+      typeof renderFn === 'string' ? renderMermaid(renderFn) : renderFn.then(({ svg }) => renderMermaid(svg))
+    })
+  }
+
+  const codeToMermaid = () => {
+    const codeMermaidEle = document.querySelectorAll('pre > code.mermaid')
+    if (codeMermaidEle.length === 0) return
+
+    codeMermaidEle.forEach(ele => {
+      const preEle = document.createElement('pre')
+      preEle.className = 'mermaid-src'
+      preEle.hidden = true
+      preEle.textContent = ele.textContent
+      const newEle = document.createElement('div')
+      newEle.className = 'mermaid-wrap'
+      newEle.appendChild(preEle)
+      ele.parentNode.replaceWith(newEle)
+    })
+  }
+
+  const loadMermaid = () => {
+    if (false) codeToMermaid()
+    const $mermaid = document.querySelectorAll('#article-container .mermaid-wrap')
+    if ($mermaid.length === 0) return
+
+    const runMermaidFn = () => runMermaid($mermaid)
+    btf.addGlobalFn('themeChange', runMermaidFn, 'mermaid')
+    window.loadMermaid ? runMermaidFn() : btf.getScript('https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js').then(runMermaidFn)
+  }
+
+  btf.addGlobalFn('encrypt', loadMermaid, 'mermaid')
+  window.pjax ? loadMermaid() : document.addEventListener('DOMContentLoaded', loadMermaid)
+})()</script></div><script id="canvas_nest" defer="defer" color="0,155,255" opacity="0.5" zIndex="-1" count="60" mobile="false" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/canvas-nest.min.js"></script><script id="click-show-text" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/click-show-text.min.js" data-mobile="false" data-text="富强,民主,文明,和谐,自由,平等,公正,法治" data-fontsize="14px" data-random="true" async="async"></script><script src="https://cdn.jsdelivr.net/npm/pjax/pjax.min.js" defer="defer"></script><script>document.addEventListener('DOMContentLoaded', () => {
+  const pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+  window.pjax = new Pjax({
+    elements: 'a:not([target="_blank"])',
+    selectors: pjaxSelectors,
+    cacheBust: false,
+    analytics: false,
+    scrollRestoration: false
+  })
+
+  const triggerPjaxFn = (val) => {
+    if (!val) return
+    Object.values(val).forEach(fn => {
+      try {
+        fn()
+      } catch (err) {
+        console.debug('Pjax callback failed:', err)
+      }
+    })
+  }
+
+  document.addEventListener('pjax:send', () => {
+    // removeEventListener
+    btf.removeGlobalFnEvent('pjaxSendOnce')
+    btf.removeGlobalFnEvent('themeChange')
+
+    // reset readmode
+    const $bodyClassList = document.body.classList
+    if ($bodyClassList.contains('read-mode')) $bodyClassList.remove('read-mode')
+
+    triggerPjaxFn(window.globalFn.pjaxSend)
+  })
+
+  document.addEventListener('pjax:complete', () => {
+    btf.removeGlobalFnEvent('pjaxCompleteOnce')
+    document.querySelectorAll('script[data-pjax]').forEach(item => {
+      const newScript = document.createElement('script')
+      const content = item.text || item.textContent || item.innerHTML || ""
+      Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+      newScript.appendChild(document.createTextNode(content))
+      item.parentNode.replaceChild(newScript, item)
+    })
+
+    triggerPjaxFn(window.globalFn.pjaxComplete)
+  })
+
+  document.addEventListener('pjax:error', e => {
+    if (e.request.status === 404) {
+      false
+        ? pjax.loadUrl('/404.html')
+        : window.location.href = e.request.responseURL
+    }
+  })
+})</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><i class="fas fa-spinner fa-pulse" id="loading-status" hidden="hidden"></i><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="local-search-input"><input placeholder="搜索文章..." type="text"/></div><hr/><div id="local-search-results"></div><div class="ais-Pagination" id="local-search-pagination" style="display:none;"><ul class="ais-Pagination-list"></ul></div><div id="local-search-stats"></div></div><div id="search-mask"></div><script src="/js/search/local-search.js"></script></div></div></body></html>

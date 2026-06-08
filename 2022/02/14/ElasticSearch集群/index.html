@@ -1,21 +1,21 @@
-<!DOCTYPE html><html lang="cn" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>ElasticSearch集群 | Yuanz</title><meta name="author" content="Yuanz"><meta name="copyright" content="Yuanz"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="5. ElasticSearch集群5.1 ElasticSearch集群原理集群内的原理 | Elasticsearch: 权威指南 | Elastic elasticsearch 是天生支持集群的， 他不需要依赖其他的服务发现和注册的组件， 如 zookeeper这些， 因为他内置了一个名字叫 ZenDiscovery 的模块， 是 elasticsearch 自己实现的一套用于节点发现和选主">
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>ElasticSearch集群 | Yuanz</title><meta name="author" content="Yuanz"><meta name="copyright" content="Yuanz"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="ffffff"><meta name="description" content="5. ElasticSearch集群5.1 ElasticSearch集群原理集群内的原理 | Elasticsearch: 权威指南 | Elastic elasticsearch 是天生支持集群的， 他不需要依赖其他的服务发现和注册的组件， 如 zookeeper这些， 因为他内置了一个名字叫 ZenDiscovery 的模块， 是 elasticsearch 自己实现的一套用于节点发现和选主">
 <meta property="og:type" content="article">
 <meta property="og:title" content="ElasticSearch集群">
 <meta property="og:url" content="https://yuanzhang788.github.io/2022/02/14/ElasticSearch%E9%9B%86%E7%BE%A4/index.html">
 <meta property="og:site_name" content="Yuanz">
 <meta property="og:description" content="5. ElasticSearch集群5.1 ElasticSearch集群原理集群内的原理 | Elasticsearch: 权威指南 | Elastic elasticsearch 是天生支持集群的， 他不需要依赖其他的服务发现和注册的组件， 如 zookeeper这些， 因为他内置了一个名字叫 ZenDiscovery 的模块， 是 elasticsearch 自己实现的一套用于节点发现和选主">
-<meta property="og:locale">
-<meta property="og:image" content="https://yuanzhang788.github.io/img/butterfly-icon.png">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://api.r10086.com/img-api.php?type=%E9%A3%8E%E6%99%AF&cd=2024">
 <meta property="article:published_time" content="2022-02-14T10:00:12.000Z">
 <meta property="article:modified_time" content="2026-06-08T03:35:05.623Z">
 <meta property="article:author" content="Yuanz">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://yuanzhang788.github.io/img/butterfly-icon.png"><script type="application/ld+json">{
+<meta name="twitter:image" content="https://api.r10086.com/img-api.php?type=%E9%A3%8E%E6%99%AF&cd=2024"><script type="application/ld+json">{
   "@context": "https://schema.org",
   "@type": "BlogPosting",
   "headline": "ElasticSearch集群",
   "url": "https://yuanzhang788.github.io/2022/02/14/ElasticSearch%E9%9B%86%E7%BE%A4/",
-  "image": "https://yuanzhang788.github.io/img/butterfly-icon.png",
+  "image": "https://api.r10086.com/img-api.php?type=%E9%A3%8E%E6%99%AF&cd=2024",
   "datePublished": "2022-02-14T10:00:12.000Z",
   "dateModified": "2026-06-08T03:35:05.623Z",
   "author": [
@@ -25,7 +25,7 @@
       "url": "https://yuanzhang788.github.io"
     }
   ]
-}</script><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://yuanzhang788.github.io/2022/02/14/ElasticSearch%E9%9B%86%E7%BE%A4/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=5.5.5-b1"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><script>
+}</script><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://yuanzhang788.github.io/2022/02/14/ElasticSearch%E9%9B%86%E7%BE%A4/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>
     (() => {
       
     const saveToLocal = {
@@ -71,7 +71,7 @@
         document.head.appendChild(link)
       }),
       addGlobalFn: (key, fn, name = false, parent = window) => {
-        if (!false && key.startsWith('pjax')) return
+        if (!true && key.startsWith('pjax')) return
         const globalFn = parent.globalFn || {}
         globalFn[key] = globalFn[key] || {}
         globalFn[key][name || Object.keys(globalFn[key]).length] = fn
@@ -89,7 +89,7 @@
       const activateLightMode = () => {
         document.documentElement.setAttribute('data-theme', 'light')
         if (document.querySelector('meta[name="theme-color"]') !== null) {
-          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'ffffff')
         }
       }
 
@@ -98,7 +98,25 @@
 
       const theme = saveToLocal.get('theme')
     
-          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+          const mediaQueryDark = window.matchMedia('(prefers-color-scheme: dark)')
+          const mediaQueryLight = window.matchMedia('(prefers-color-scheme: light)')
+
+          if (theme === undefined) {
+            if (mediaQueryLight.matches) activateLightMode()
+            else if (mediaQueryDark.matches) activateDarkMode()
+            else {
+              const hour = new Date().getHours()
+              const isNight = hour <= 6 || hour >= 18
+              isNight ? activateDarkMode() : activateLightMode()
+            }
+            mediaQueryDark.addEventListener('change', () => {
+              if (saveToLocal.get('theme') === undefined) {
+                e.matches ? activateDarkMode() : activateLightMode()
+              }
+            })
+          } else {
+            theme === 'light' ? activateLightMode() : activateDarkMode()
+          }
         
       
       const asideStatus = saveToLocal.get('aside-status')
@@ -118,47 +136,77 @@
   </script><script>const GLOBAL_CONFIG = {
   root: '/',
   algolia: undefined,
-  localSearch: undefined,
+  localSearch: {"path":"/search.json","preload":false,"top_n_per_article":1,"unescape":false,"pagination":{"enable":false,"hitsPerPage":8},"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
   translate: undefined,
-  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":400,"highlightFullpage":true,"highlightMacStyle":true},
   copy: {
-    success: 'Copy Successful',
-    error: 'Copy Failed',
-    noSupport: 'Browser Not Supported'
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
   },
   relativeDate: {
-    homepage: false,
+    homepage: true,
     post: false
   },
-  runtime: '',
+  runtime: '天',
   dateSuffix: {
-    just: 'Just now',
-    min: 'minutes ago',
-    hour: 'hours ago',
-    day: 'days ago',
-    month: 'months ago'
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
   },
-  copyright: undefined,
-  lightbox: 'null',
-  Snackbar: undefined,
+  copyright: {"limitCount":50,"languages":{"author":"作者: Yuanz","link":"链接: ","source":"来源: Yuanz","info":"著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。"}},
+  lightbox: 'fancybox',
+  Snackbar: {"chs_to_cht":"已切换为繁体中文","cht_to_chs":"已切换为简体中文","day_to_night":"已切换为深色模式","night_to_day":"已切换为浅色模式","bgLight":"#49b1f5","bgDark":"#1f1f1f","position":"bottom-left"},
   infinitegrid: {
-    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.0/dist/infinitegrid.min.js',
-    buttonText: 'Load More'
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
   },
-  isPhotoFigcaption: false,
-  islazyloadPlugin: false,
+  isPhotoFigcaption: true,
+  islazyloadPlugin: true,
   isAnchor: false,
   percent: {
     toc: true,
     rightside: false,
   },
-  autoDarkmode: false
+  autoDarkmode: true
 }</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
   title: 'ElasticSearch集群',
   isHighlightShrink: false,
   isToc: true,
   pageType: 'post'
-}</script><meta name="generator" content="Hexo 8.1.2"></head><body><div class="post" id="body-wrap"><header class="post-bg" id="page-header"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">Yuanz</span></a><a class="nav-page-title" href="/"><span class="site-name">ElasticSearch集群</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  Back to Home</span></span></a></span><div id="menus"></div></nav><div id="post-info"><h1 class="post-title">ElasticSearch集群</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2022-02-14T10:00:12.000Z" title="Created 2022-02-14 18:00:12">2022-02-14</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2026-06-08T03:35:05.623Z" title="Updated 2026-06-08 11:35:05">2026-06-08</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">Post Views:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><h2 id="5-ElasticSearch集群"><a href="#5-ElasticSearch集群" class="headerlink" title="5. ElasticSearch集群"></a>5. ElasticSearch集群</h2><h3 id="5-1-ElasticSearch集群原理"><a href="#5-1-ElasticSearch集群原理" class="headerlink" title="5.1 ElasticSearch集群原理"></a>5.1 ElasticSearch集群原理</h3><p><a target="_blank" rel="noopener" href="https://www.elastic.co/guide/cn/elasticsearch/guide/current/distributed-cluster.html">集群内的原理 | Elasticsearch: 权威指南 | Elastic</a></p>
+}</script><link rel="stylesheet" href="/css/custom.css"><meta name="generator" content="Hexo 8.1.2"></head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div><script>(()=>{
+  const $loadingBox = document.getElementById('loading-box')
+  const $body = document.body
+  const preloader = {
+    endLoading: () => {
+      if ($loadingBox.classList.contains('loaded')) return
+      $body.style.overflow = ''
+      $loadingBox.classList.add('loaded')
+    },
+    initLoading: () => {
+      $body.style.overflow = 'hidden'
+      $loadingBox.classList.remove('loaded')
+    }
+  }
+
+  preloader.initLoading()
+
+  if (document.readyState === 'complete') {
+    preloader.endLoading()
+  } else {
+    window.addEventListener('load', preloader.endLoading)
+    document.addEventListener('DOMContentLoaded', preloader.endLoading)
+    // Add timeout protection: force end after 7 seconds
+    setTimeout(preloader.endLoading, 7000)
+  }
+
+  if (true) {
+    btf.addGlobalFn('pjaxSend', preloader.initLoading, 'preloader_init')
+    btf.addGlobalFn('pjaxComplete', preloader.endLoading, 'preloader_end')
+  }
+})()</script><div class="bg-animation" id="web_bg" style="background-image: url(/assets/Abanner/index.jpg);"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">176</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">0</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">0</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg fixed" id="page-header" style="background-image: url(https://api.r10086.com/img-api.php?type=%E9%A3%8E%E6%99%AF&amp;cd=2024);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">Yuanz</span></a><a class="nav-page-title" href="/"><span class="site-name">ElasticSearch集群</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">ElasticSearch集群</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2022-02-14T10:00:12.000Z" title="发表于 2022-02-14 18:00:12">2022-02-14</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-06-08T03:35:05.623Z" title="更新于 2026-06-08 11:35:05">2026-06-08</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><div id="post-outdate-notice" data="{&quot;limitDay&quot;:365,&quot;messagePrev&quot;:&quot;已经过了&quot;,&quot;messageNext&quot;:&quot;天自上次更新，文章内容可能已过时。&quot;,&quot;postUpdate&quot;:&quot;2026-06-08 11:35:05&quot;}" hidden></div><h2 id="5-ElasticSearch集群"><a href="#5-ElasticSearch集群" class="headerlink" title="5. ElasticSearch集群"></a>5. ElasticSearch集群</h2><h3 id="5-1-ElasticSearch集群原理"><a href="#5-1-ElasticSearch集群原理" class="headerlink" title="5.1 ElasticSearch集群原理"></a>5.1 ElasticSearch集群原理</h3><p><a target="_blank" rel="noopener" href="https://www.elastic.co/guide/cn/elasticsearch/guide/current/distributed-cluster.html">集群内的原理 | Elasticsearch: 权威指南 | Elastic</a></p>
 <p>elasticsearch 是天生支持集群的， 他不需要依赖其他的服务发现和注册的组件， 如 zookeeper这些， 因为他内置了一个名字叫 <code>ZenDiscovery</code> 的模块， 是 elasticsearch 自己实现的一套用于节点发现和选主等功能的组件， 所以 elasticsearch 做起集群来非常简单， 不需要太多额外的配置和安装额外的第三方组件。  </p>
 <h4 id="5-1-1-单节点"><a href="#5-1-1-单节点" class="headerlink" title="5.1.1 单节点"></a>5.1.1 单节点</h4><ul>
 <li>一个运行中的 Elasticsearch 实例称为一个节点， 而<strong>集群是由一个或者多个拥有相同cluster.name 配置的节点组成， 它们共同承担数据和负载的压力。</strong> <strong>当有节点加入集群中或者从集群中移除节点时， 集群将会重新平均分布所有的数据。</strong></li>
@@ -166,7 +214,7 @@
 <li>作为用户， 我们可以将请求发送到 集群中的任何节点 ， 包括主节点。 **每个节点都知道任意文档所处的位置， 并且能够将我们的请求直接转发到存储我们所需文档的节点。**无论我们将请求发送到哪个节点， 它都能负责从各个包含我们所需文档的节点收集回数据， 并将最终结果返回給客户端。 Elasticsearch 对这一切的管理都是透明的。</li>
 </ul>
 <h4 id="5-1-2-集群健康"><a href="#5-1-2-集群健康" class="headerlink" title="5.1.2 集群健康"></a>5.1.2 集群健康</h4><p>Elasticsearch 的集群监控信息中包含了许多的统计数据， 其中最为重要的一项就是 集群健康 ， 它在 status 字段中展示为 <code>green</code> 、 <code>yellow</code> 或者 <code>red</code> 。  </p>
-<figure class="highlight elm"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">GET</span> /_cluster/health</span><br></pre></td></tr></table></figure>
+<figure class="highlight elm"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs elm"><span class="hljs-type">GET</span> /_cluster/health<br></code></pre></td></tr></table></figure>
 
 
 <p>status 字段指示着当前集群在总体上是否工作正常。 它的三种颜色含义如下：<br><code>green</code>： 所有的主分片和副本分片都正常运行。<br><code>yellow</code>： 所有的主分片都正常运行， 但不是所有的副本分片都正常运行。<br><code>red</code>： 有主分片没能正常运行。  </p>
@@ -176,18 +224,18 @@
 <li><strong>在索引建立的时候就已经确定了主分片数， 但是副本分片数可以随时修改</strong>。</li>
 <li>让我们在包含一个空节点的集群内创建名为 blogs 的索引。 索引在默认情况下会被分配 5 个主分片， 但是为了演示目的， 我们将分配 3 个主分片和一份副本（每个主分片拥有一个副本分片） ：</li>
 </ul>
-<figure class="highlight elm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">PUT</span> /blogs&#123;</span><br><span class="line">	<span class="string">&quot;settings&quot;</span> : &#123;</span><br><span class="line">	<span class="string">&quot;number_of_shards&quot;</span> : <span class="number">3</span>,  #分片数量</span><br><span class="line">	<span class="string">&quot;number_of_replicas&quot;</span> : <span class="number">1</span>  #副本数量</span><br><span class="line">&#125;&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight elm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs elm"><span class="hljs-type">PUT</span> /blogs&#123;<br>	<span class="hljs-string">&quot;settings&quot;</span> : &#123;<br>	<span class="hljs-string">&quot;number_of_shards&quot;</span> : <span class="hljs-number">3</span>,  #分片数量<br>	<span class="hljs-string">&quot;number_of_replicas&quot;</span> : <span class="hljs-number">1</span>  #副本数量<br>&#125;&#125;<br></code></pre></td></tr></table></figure>
 
 
-<p><img src="/assets/ElasticSearch%E9%9B%86%E7%BE%A4/9e6a6b4907aa568fcbcebc317c0f5fa0.png" alt="image-20220214135901575"></p>
+<p><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/assets/ElasticSearch%E9%9B%86%E7%BE%A4/9e6a6b4907aa568fcbcebc317c0f5fa0.png" alt="image-20220214135901575"></p>
 <p>此时集群的健康状况为 yellow 则表示全部 主分片都正常运行（集群可以正常服务所有请求） ， 但是 副本 分片没有全部处在正常状态。 实际上， 所有 3 个副本分片都是 unassigned—— 它们都没有被分配到任何节点。 在同一个节点上既保存原始数据又保存副本是没有意义的， 因为一旦失去了那个节点， 我们也将丢失该节点上的所有副本数据。当前我们的集群是正常运行的， 但是在硬件故障时有丢失数据的风险。  </p>
 <h4 id="5-1-4-新增节点-绿色框代表主分片"><a href="#5-1-4-新增节点-绿色框代表主分片" class="headerlink" title="5.1.4 新增节点(绿色框代表主分片)"></a>5.1.4 新增节点(绿色框代表主分片)</h4><p>当你在同一台机器上启动了第二个节点时， <strong>只要它和第一个节点有同样的 cluster.name 配置， 它就会自动发现集群并加入到其中。</strong> <strong>但是在不同机器上启动节点的时候， 为了加入到同一集群， 你需要配置一个可连接到的单播主机列表。</strong> 详细信息请查看最好使用单播代替组播  </p>
-<p><img src="/assets/ElasticSearch%E9%9B%86%E7%BE%A4/3042d3c73f9867d97a8713fc8bb37b69.png" alt="image-20220214140214816"></p>
+<p><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/assets/ElasticSearch%E9%9B%86%E7%BE%A4/3042d3c73f9867d97a8713fc8bb37b69.png" alt="image-20220214140214816"></p>
 <p>此时， cluster-health 现在展示的状态为 green ， 这表示所有 6 个分片（包括 3 个主分片和3 个副本分片） 都在正常运行。 我们的集群现在不仅仅是正常运行的， 并且还处于 始终可用 的状态。  </p>
-<h4 id="5-1-5-水平扩容-启动第三个节点-绿色框代表主分片"><a href="#5-1-5-水平扩容-启动第三个节点-绿色框代表主分片" class="headerlink" title="5.1.5 水平扩容-启动第三个节点  (绿色框代表主分片)"></a>5.1.5 水平扩容-启动第三个节点  (绿色框代表主分片)</h4><p><img src="/assets/ElasticSearch%E9%9B%86%E7%BE%A4/d74ccc370ebc8a6dad57a7d3f7afc94d.png" alt="image-20220214140313589"></p>
+<h4 id="5-1-5-水平扩容-启动第三个节点-绿色框代表主分片"><a href="#5-1-5-水平扩容-启动第三个节点-绿色框代表主分片" class="headerlink" title="5.1.5 水平扩容-启动第三个节点  (绿色框代表主分片)"></a>5.1.5 水平扩容-启动第三个节点  (绿色框代表主分片)</h4><p><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/assets/ElasticSearch%E9%9B%86%E7%BE%A4/d74ccc370ebc8a6dad57a7d3f7afc94d.png" alt="image-20220214140313589"></p>
 <p>Node 1 和 Node 2 上各有一个分片被迁移到了新的 Node 3 节点， 现在每个节点上都拥有 2 个分片， 而不是之前的 3 个。 这表示每个节点的硬件资源（CPU, RAM, I&#x2F;O） 将被更少的分片所共享， 每个分片的性能将会得到提升。  </p>
 <p>在运行中的集群上是可以动态调整副本分片数目的， 我们可以按需伸缩集群。 让我们把副本数从默认的 1 增加到 2  </p>
-<figure class="highlight elm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">PUT</span> /blogs/_settings</span><br><span class="line">&#123;</span><br><span class="line">	<span class="string">&quot;number_of_replicas&quot;</span> : <span class="number">2</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight elm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs elm"><span class="hljs-type">PUT</span> /blogs/_settings<br>&#123;<br>	<span class="hljs-string">&quot;number_of_replicas&quot;</span> : <span class="hljs-number">2</span><br>&#125;<br></code></pre></td></tr></table></figure>
 
 
 
@@ -195,8 +243,8 @@
 
 
 <p>blogs 索引现在拥有 9 个分片： 3 个主分片和 6 个副本分片。 这意味着我们可以将集群扩容到 9 个节点， 每个节点上一个分片。 相比原来 3 个节点时， 集群搜索性能可以提升 3 倍。  </p>
-<p><img src="/assets/ElasticSearch%E9%9B%86%E7%BE%A4/35babe9470a872f5ddb918ff851ac0a3.png" alt="image-20220214140525111"></p>
-<h4 id="5-1-6-应对故障"><a href="#5-1-6-应对故障" class="headerlink" title="5.1.6 应对故障"></a>5.1.6 应对故障</h4><p><img src="/assets/ElasticSearch%E9%9B%86%E7%BE%A4/8e80994986ab80270ed795010f67373d.png" alt="image-20220214140639062"></p>
+<p><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/assets/ElasticSearch%E9%9B%86%E7%BE%A4/35babe9470a872f5ddb918ff851ac0a3.png" alt="image-20220214140525111"></p>
+<h4 id="5-1-6-应对故障"><a href="#5-1-6-应对故障" class="headerlink" title="5.1.6 应对故障"></a>5.1.6 应对故障</h4><p><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/assets/ElasticSearch%E9%9B%86%E7%BE%A4/8e80994986ab80270ed795010f67373d.png" alt="image-20220214140639062"></p>
 <ul>
 <li>我们关闭的节点是一个主节点。 而集群必须拥有一个主节点来保证正常工作， <strong>所以发生的第一件事情就是选举一个新的主节点： Node 2 。</strong></li>
 <li>在我们关闭 Node 1 的同时也失去了主分片 1 和 2 ， 并且在缺失主分片的时候索引也不能正常工作。 如果此时来检查集群的状况， <strong>我们看到的状态将会为 red</strong> ： 不是所有主分片都在正常工作。</li>
@@ -239,18 +287,18 @@
 </ul>
 </li>
 </ul>
-<h3 id="5-2-ElasticSearch集群搭建"><a href="#5-2-ElasticSearch集群搭建" class="headerlink" title="5.2 ElasticSearch集群搭建"></a>5.2 ElasticSearch集群搭建</h3><p><img src="/assets/ElasticSearch%E9%9B%86%E7%BE%A4/e48981717189281bf8e6c13f57c7fad1.png" alt="image-20220214175858666"></p>
+<h3 id="5-2-ElasticSearch集群搭建"><a href="#5-2-ElasticSearch集群搭建" class="headerlink" title="5.2 ElasticSearch集群搭建"></a>5.2 ElasticSearch集群搭建</h3><p><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/assets/ElasticSearch%E9%9B%86%E7%BE%A4/e48981717189281bf8e6c13f57c7fad1.png" alt="image-20220214175858666"></p>
 <p><strong>注意:需要将虚拟机的内存和核心数调大一点不然elasticsearch集群启动后有些节点会自动退出,我使用的4核8g内存</strong></p>
 <h4 id="5-2-1-修改最大map数-准备工作"><a href="#5-2-1-修改最大map数-准备工作" class="headerlink" title="5.2.1 修改最大map数(准备工作)"></a>5.2.1 修改最大map数(准备工作)</h4><blockquote>
 <p>防止 JVM 报错,设置最大map数，该参数确保内核允许创建至少<code>262144</code>个内存映射区</p>
 </blockquote>
 <p>所有之前先运行： </p>
-<p><img src="/assets/ElasticSearch%E9%9B%86%E7%BE%A4/100e10fd4340a9474ef6632cd2f91f59.png" alt="image-20220214152946463"></p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sysctl -w vm.max_map_count=262144</span><br></pre></td></tr></table></figure>
+<p><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/assets/ElasticSearch%E9%9B%86%E7%BE%A4/100e10fd4340a9474ef6632cd2f91f59.png" alt="image-20220214152946463"></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">sysctl -w vm.max_map_count=262144<br></code></pre></td></tr></table></figure>
 
 
 <p>我们只是测试， 所以临时修改。 永久修改使用下面</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">echo vm.max_map_count=262144 &gt;&gt; /etc/sysctl.conf</span><br><span class="line">sysctl -p  </span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs shell">echo vm.max_map_count=262144 &gt;&gt; /etc/sysctl.conf<br>sysctl -p  <br></code></pre></td></tr></table></figure>
 
 
 
@@ -261,34 +309,34 @@
 <blockquote>
 <p>查看网络模式 </p>
 </blockquote>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker network ls</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">docker network ls<br></code></pre></td></tr></table></figure>
 
 
-<p><img src="/assets/ElasticSearch%E9%9B%86%E7%BE%A4/a79fca55296ef0318181a3a4e1a09262.png" alt="image-20220214153020563"></p>
+<p><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/assets/ElasticSearch%E9%9B%86%E7%BE%A4/a79fca55296ef0318181a3a4e1a09262.png" alt="image-20220214153020563"></p>
 <blockquote>
 <p>创建一个新的 bridge 网络</p>
 </blockquote>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker network create --driver bridge --subnet=172.18.12.0/16 --gateway=172.18.1.1 mynet</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">docker network create --driver bridge --subnet=172.18.12.0/16 --gateway=172.18.1.1 mynet<br></code></pre></td></tr></table></figure>
 
 
-<p><img src="/assets/ElasticSearch%E9%9B%86%E7%BE%A4/b3928415b5e35d2b91b808f3785c37a3.png" alt="image-20220214153057189"></p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">#</span><span class="language-bash">再次查看网络模式</span></span><br><span class="line">docker network ls</span><br></pre></td></tr></table></figure>
+<p><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/assets/ElasticSearch%E9%9B%86%E7%BE%A4/b3928415b5e35d2b91b808f3785c37a3.png" alt="image-20220214153057189"></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta prompt_">#</span><span class="language-bash">再次查看网络模式</span><br>docker network ls<br></code></pre></td></tr></table></figure>
 
 
 
 
-<p><img src="/assets/ElasticSearch%E9%9B%86%E7%BE%A4/fd0b2e7f886fc5c143fbee847cc60770.png" alt="image-20220214153141993"></p>
+<p><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/assets/ElasticSearch%E9%9B%86%E7%BE%A4/fd0b2e7f886fc5c143fbee847cc60770.png" alt="image-20220214153141993"></p>
 <blockquote>
 <p>查看网络信息</p>
 </blockquote>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker network inspect mynet</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">docker network inspect mynet<br></code></pre></td></tr></table></figure>
 
 
-<p><img src="/assets/ElasticSearch%E9%9B%86%E7%BE%A4/2f723bea106d959be3074fc9e3a08ccc.png" alt="image-20220214153323212"></p>
+<p><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/assets/ElasticSearch%E9%9B%86%E7%BE%A4/2f723bea106d959be3074fc9e3a08ccc.png" alt="image-20220214153323212"></p>
 <blockquote>
 <p>以后使用–network&#x3D;mynet –ip 172.18.12.x 指定 ip  (就可以在docker中使用这个网段的ip了)</p>
 </blockquote>
-<h4 id="5-2-3-Master节点创建"><a href="#5-2-3-Master节点创建" class="headerlink" title="5.2.3 Master节点创建"></a>5.2.3 Master节点创建</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">for port in $(seq 1 3); \</span><br><span class="line">do \</span><br><span class="line">mkdir -p /mydata/elasticsearch/master-$&#123;port&#125;/config</span><br><span class="line">mkdir -p /mydata/elasticsearch/master-$&#123;port&#125;/data</span><br><span class="line">chmod -R 777 /mydata/elasticsearch/master-$&#123;port&#125;</span><br><span class="line">cat &lt;&lt; EOF &gt;/mydata/elasticsearch/master-$&#123;port&#125;/config/elasticsearch.yml</span><br><span class="line">cluster.name: my-es #集群的名称， 同一个集群该值必须设置成相同的</span><br><span class="line">node.name: es-master-$&#123;port&#125; #该节点的名字</span><br><span class="line">node.master: true #该节点有机会成为 master 节点</span><br><span class="line">node.data: false #该节点可以存储数据</span><br><span class="line">network.host: 0.0.0.0</span><br><span class="line">http.host: 0.0.0.0 #所有 http 均可访问</span><br><span class="line">http.port: 920$&#123;port&#125;</span><br><span class="line">transport.tcp.port: 930$&#123;port&#125;</span><br><span class="line">discovery.zen.minimum_master_nodes: 2 #设置这个参数来保证集群中的节点可以知道其它 N 个有 master 资格的节点。</span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">官方推荐（N/2） +1</span></span><br><span class="line">discovery.zen.ping_timeout: 10s #设置集群中自动发现其他节点时 ping 连接的超时时间</span><br><span class="line">discovery.seed_hosts: [&quot;172.18.12.21:9301&quot;, &quot;172.18.12.22:9302&quot;, &quot;172.18.12.23:9303&quot;] #设置集群中的 Master 节点#的初始列表， 可以通过这些节点来自动发现其他新加入集群的节点， es7的新增配置</span><br><span class="line">cluster.initial_master_nodes: [&quot;172.18.12.21&quot;] #新集群初始时的候选主节点， es7 的新增配置</span><br><span class="line">EOF</span><br><span class="line">docker run --name elasticsearch-node-$&#123;port&#125; \</span><br><span class="line">-p 920$&#123;port&#125;:920$&#123;port&#125; -p 930$&#123;port&#125;:930$&#123;port&#125; \</span><br><span class="line">--network=mynet --ip 172.18.12.2$&#123;port&#125; \-e ES_JAVA_OPTS=&quot;-Xms300m -Xmx300m&quot; \</span><br><span class="line">-v /mydata/elasticsearch/master-$&#123;port&#125;/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml \</span><br><span class="line">-v /mydata/elasticsearch/master-$&#123;port&#125;/data:/usr/share/elasticsearch/data \</span><br><span class="line">-v /mydata/elasticsearch/master-$&#123;port&#125;/plugins:/usr/share/elasticsearch/plugins \</span><br><span class="line">-d elasticsearch:7.4.2</span><br><span class="line">done</span><br></pre></td></tr></table></figure>
+<h4 id="5-2-3-Master节点创建"><a href="#5-2-3-Master节点创建" class="headerlink" title="5.2.3 Master节点创建"></a>5.2.3 Master节点创建</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><code class="hljs shell">for port in $(seq 1 3); \<br>do \<br>mkdir -p /mydata/elasticsearch/master-$&#123;port&#125;/config<br>mkdir -p /mydata/elasticsearch/master-$&#123;port&#125;/data<br>chmod -R 777 /mydata/elasticsearch/master-$&#123;port&#125;<br>cat &lt;&lt; EOF &gt;/mydata/elasticsearch/master-$&#123;port&#125;/config/elasticsearch.yml<br>cluster.name: my-es #集群的名称， 同一个集群该值必须设置成相同的<br>node.name: es-master-$&#123;port&#125; #该节点的名字<br>node.master: true #该节点有机会成为 master 节点<br>node.data: false #该节点可以存储数据<br>network.host: 0.0.0.0<br>http.host: 0.0.0.0 #所有 http 均可访问<br>http.port: 920$&#123;port&#125;<br>transport.tcp.port: 930$&#123;port&#125;<br>discovery.zen.minimum_master_nodes: 2 #设置这个参数来保证集群中的节点可以知道其它 N 个有 master 资格的节点。<br><span class="hljs-meta prompt_">#</span><span class="language-bash">官方推荐（N/2） +1</span><br>discovery.zen.ping_timeout: 10s #设置集群中自动发现其他节点时 ping 连接的超时时间<br>discovery.seed_hosts: [&quot;172.18.12.21:9301&quot;, &quot;172.18.12.22:9302&quot;, &quot;172.18.12.23:9303&quot;] #设置集群中的 Master 节点#的初始列表， 可以通过这些节点来自动发现其他新加入集群的节点， es7的新增配置<br>cluster.initial_master_nodes: [&quot;172.18.12.21&quot;] #新集群初始时的候选主节点， es7 的新增配置<br>EOF<br>docker run --name elasticsearch-node-$&#123;port&#125; \<br>-p 920$&#123;port&#125;:920$&#123;port&#125; -p 930$&#123;port&#125;:930$&#123;port&#125; \<br>--network=mynet --ip 172.18.12.2$&#123;port&#125; \-e ES_JAVA_OPTS=&quot;-Xms300m -Xmx300m&quot; \<br>-v /mydata/elasticsearch/master-$&#123;port&#125;/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml \<br>-v /mydata/elasticsearch/master-$&#123;port&#125;/data:/usr/share/elasticsearch/data \<br>-v /mydata/elasticsearch/master-$&#123;port&#125;/plugins:/usr/share/elasticsearch/plugins \<br>-d elasticsearch:7.4.2<br>done<br></code></pre></td></tr></table></figure>
 
 
 
@@ -296,11 +344,11 @@
 <h5 id="5-2-3-1-WARNING-IPv4-forwarding-is-disabled-Networking-will-not-work-问题"><a href="#5-2-3-1-WARNING-IPv4-forwarding-is-disabled-Networking-will-not-work-问题" class="headerlink" title="5.2.3.1 WARNING: IPv4 forwarding is disabled. Networking will not work.问题"></a>5.2.3.1 WARNING: IPv4 forwarding is disabled. Networking will not work.问题</h5><blockquote>
 <p>在启动elasticsearch集群容器时出现IPv4 forwarding is disabled. Networking will not work.问题</p>
 </blockquote>
-<p><img src="/assets/ElasticSearch%E9%9B%86%E7%BE%A4/1f2184d984112f5ddc57c62327ea1289.png" alt="image-20220214160600791"></p>
+<p><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/assets/ElasticSearch%E9%9B%86%E7%BE%A4/1f2184d984112f5ddc57c62327ea1289.png" alt="image-20220214160600791"></p>
 <blockquote>
 <p>解决方案</p>
 </blockquote>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">#</span><span class="language-bash">修改配置文件</span></span><br><span class="line">vim /usr/lib/sysctl.d/00-system.conf</span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">追加</span></span><br><span class="line">net.ipv4.ip_forward=1</span><br><span class="line"><span class="meta prompt_"> </span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">重启网络</span></span><br><span class="line">systemctl restart network</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta prompt_">#</span><span class="language-bash">修改配置文件</span><br>vim /usr/lib/sysctl.d/00-system.conf<br><span class="hljs-meta prompt_">#</span><span class="language-bash">追加</span><br>net.ipv4.ip_forward=1<br><span class="hljs-meta prompt_"> </span><br><span class="hljs-meta prompt_">#</span><span class="language-bash">重启网络</span><br>systemctl restart network<br></code></pre></td></tr></table></figure>
 
 
 
@@ -310,21 +358,21 @@
 <h5 id="5-2-3-2-再次启动elasticsearch集群"><a href="#5-2-3-2-再次启动elasticsearch集群" class="headerlink" title="5.2.3.2 再次启动elasticsearch集群"></a>5.2.3.2 再次启动elasticsearch集群</h5><blockquote>
 <p>清除之前操作遗留</p>
 </blockquote>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">#</span><span class="language-bash">删除之前创建的文件夹</span></span><br><span class="line">rm -rf /mydata/elasticsearch master-1 master-2 master-3</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">停止elasticsearch集群容器</span></span><br><span class="line">docker stop $(docker ps -a |grep elasticsearch-node-* | awk &#x27;&#123; print $1&#125;&#x27;)</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">删除elasticsearch集群容器</span></span><br><span class="line">docker rm $(docker ps -a |grep elasticsearch-node-* | awk &#x27;&#123; print $1&#125;&#x27;)</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">再次使用5.2.3章节shell</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta prompt_">#</span><span class="language-bash">删除之前创建的文件夹</span><br>rm -rf /mydata/elasticsearch master-1 master-2 master-3<br><span class="hljs-meta prompt_"></span><br><span class="hljs-meta prompt_">#</span><span class="language-bash">停止elasticsearch集群容器</span><br>docker stop $(docker ps -a |grep elasticsearch-node-* | awk &#x27;&#123; print $1&#125;&#x27;)<br><span class="hljs-meta prompt_"></span><br><span class="hljs-meta prompt_">#</span><span class="language-bash">删除elasticsearch集群容器</span><br>docker rm $(docker ps -a |grep elasticsearch-node-* | awk &#x27;&#123; print $1&#125;&#x27;)<br><span class="hljs-meta prompt_"></span><br><span class="hljs-meta prompt_">#</span><span class="language-bash">再次使用5.2.3章节shell</span><br></code></pre></td></tr></table></figure>
 
 
 
 
 
 
-<h4 id="5-2-4-Data-Node-创建"><a href="#5-2-4-Data-Node-创建" class="headerlink" title="5.2.4 Data-Node 创建"></a>5.2.4 Data-Node 创建</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">for port in $(seq 4 6); \</span><br><span class="line">do \</span><br><span class="line">mkdir -p /mydata/elasticsearch/node-$&#123;port&#125;/config</span><br><span class="line">mkdir -p /mydata/elasticsearch/node-$&#123;port&#125;/data</span><br><span class="line">chmod -R 777 /mydata/elasticsearch/node-$&#123;port&#125;</span><br><span class="line">cat &lt;&lt; EOF &gt;/mydata/elasticsearch/node-$&#123;port&#125;/config/elasticsearch.yml</span><br><span class="line">cluster.name: my-es #集群的名称， 同一个集群该值必须设置成相同的</span><br><span class="line">node.name: es-node-$&#123;port&#125; #该节点的名字</span><br><span class="line">node.master: false #该节点有机会成为 master 节点</span><br><span class="line">node.data: true #该节点可以存储数据</span><br><span class="line">network.host: 0.0.0.0</span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">network.publish_host: 192.168.157.128 <span class="comment">#互相通信 ip， 要设置为本机可被外界访问的 ip， 否则无法通信</span></span></span><br><span class="line">http.host: 0.0.0.0 #所有 http 均可访问</span><br><span class="line">http.port: 920$&#123;port&#125;</span><br><span class="line">transport.tcp.port: 930$&#123;port&#125;</span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">discovery.zen.minimum_master_nodes: 2 <span class="comment">#设置这个参数来保证集群中的节点可以知道其它 N 个有 master 资格的节点。</span></span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">官方推荐（N/2） +1</span></span><br><span class="line">discovery.zen.ping_timeout: 10s #设置集群中自动发现其他节点时 ping 连接的超时时间</span><br><span class="line">discovery.seed_hosts: [&quot;172.18.12.21:9301&quot;, &quot;172.18.12.22:9302&quot;, &quot;172.18.12.23:9303&quot;] #设置集群中的 Master 节点#的初始列表， 可以通过这些节点来自动发现其他新加入集群的节点， es7的新增配置</span><br><span class="line">cluster.initial_master_nodes: [&quot;172.18.12.21&quot;] #新集群初始时的候选主节点， es7 的新增配置</span><br><span class="line">EOF</span><br><span class="line">docker run --name elasticsearch-node-$&#123;port&#125; \</span><br><span class="line">-p 920$&#123;port&#125;:920$&#123;port&#125; -p 930$&#123;port&#125;:930$&#123;port&#125; \</span><br><span class="line">--network=mynet --ip 172.18.12.2$&#123;port&#125; \</span><br><span class="line">-e ES_JAVA_OPTS=&quot;-Xms300m -Xmx300m&quot; \</span><br><span class="line">-v /mydata/elasticsearch/node-$&#123;port&#125;/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml \</span><br><span class="line">-v /mydata/elasticsearch/node-$&#123;port&#125;/data:/usr/share/elasticsearch/data \</span><br><span class="line">-v /mydata/elasticsearch/node-$&#123;port&#125;/plugins:/usr/share/elasticsearch/plugins \</span><br><span class="line">-d elasticsearch:7.4.2</span><br><span class="line">done</span><br></pre></td></tr></table></figure>
+<h4 id="5-2-4-Data-Node-创建"><a href="#5-2-4-Data-Node-创建" class="headerlink" title="5.2.4 Data-Node 创建"></a>5.2.4 Data-Node 创建</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><code class="hljs shell">for port in $(seq 4 6); \<br>do \<br>mkdir -p /mydata/elasticsearch/node-$&#123;port&#125;/config<br>mkdir -p /mydata/elasticsearch/node-$&#123;port&#125;/data<br>chmod -R 777 /mydata/elasticsearch/node-$&#123;port&#125;<br>cat &lt;&lt; EOF &gt;/mydata/elasticsearch/node-$&#123;port&#125;/config/elasticsearch.yml<br>cluster.name: my-es #集群的名称， 同一个集群该值必须设置成相同的<br>node.name: es-node-$&#123;port&#125; #该节点的名字<br>node.master: false #该节点有机会成为 master 节点<br>node.data: true #该节点可以存储数据<br>network.host: 0.0.0.0<br><span class="hljs-meta prompt_">#</span><span class="language-bash">network.publish_host: 192.168.157.128 <span class="hljs-comment">#互相通信 ip， 要设置为本机可被外界访问的 ip， 否则无法通信</span></span><br>http.host: 0.0.0.0 #所有 http 均可访问<br>http.port: 920$&#123;port&#125;<br>transport.tcp.port: 930$&#123;port&#125;<br><span class="hljs-meta prompt_">#</span><span class="language-bash">discovery.zen.minimum_master_nodes: 2 <span class="hljs-comment">#设置这个参数来保证集群中的节点可以知道其它 N 个有 master 资格的节点。</span></span><br><span class="hljs-meta prompt_">#</span><span class="language-bash">官方推荐（N/2） +1</span><br>discovery.zen.ping_timeout: 10s #设置集群中自动发现其他节点时 ping 连接的超时时间<br>discovery.seed_hosts: [&quot;172.18.12.21:9301&quot;, &quot;172.18.12.22:9302&quot;, &quot;172.18.12.23:9303&quot;] #设置集群中的 Master 节点#的初始列表， 可以通过这些节点来自动发现其他新加入集群的节点， es7的新增配置<br>cluster.initial_master_nodes: [&quot;172.18.12.21&quot;] #新集群初始时的候选主节点， es7 的新增配置<br>EOF<br>docker run --name elasticsearch-node-$&#123;port&#125; \<br>-p 920$&#123;port&#125;:920$&#123;port&#125; -p 930$&#123;port&#125;:930$&#123;port&#125; \<br>--network=mynet --ip 172.18.12.2$&#123;port&#125; \<br>-e ES_JAVA_OPTS=&quot;-Xms300m -Xmx300m&quot; \<br>-v /mydata/elasticsearch/node-$&#123;port&#125;/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml \<br>-v /mydata/elasticsearch/node-$&#123;port&#125;/data:/usr/share/elasticsearch/data \<br>-v /mydata/elasticsearch/node-$&#123;port&#125;/plugins:/usr/share/elasticsearch/plugins \<br>-d elasticsearch:7.4.2<br>done<br></code></pre></td></tr></table></figure>
 
 
 
 
 
 
-<h4 id="5-2-5-测试集群"><a href="#5-2-5-测试集群" class="headerlink" title="5.2.5 测试集群"></a>5.2.5 测试集群</h4><figure class="highlight elm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">$ curl localhost:<span class="number">9200</span>/_cat</span><br><span class="line">/_cat/allocation</span><br><span class="line">/_cat/shards</span><br><span class="line">/_cat/shards/&#123;index&#125;</span><br><span class="line">/_cat/master</span><br><span class="line">/_cat/nodes</span><br><span class="line">/_cat/indices</span><br><span class="line">/_cat/indices/&#123;index&#125;</span><br><span class="line">/_cat/segments</span><br><span class="line">/_cat/segments/&#123;index&#125;</span><br><span class="line">/_cat/count</span><br><span class="line">/_cat/count/&#123;index&#125;</span><br><span class="line">/_cat/recovery</span><br><span class="line">/_cat/recovery/&#123;index&#125;</span><br><span class="line">/_cat/health</span><br><span class="line">/_cat/pending_tasks</span><br><span class="line">/_cat/aliases</span><br><span class="line">/_cat/aliases/&#123;<span class="keyword">alias</span>&#125;</span><br><span class="line">/_cat/thread_pool</span><br><span class="line">/_cat/plugins</span><br><span class="line">/_cat/fielddata</span><br><span class="line">/_cat/fielddata/&#123;fields&#125;</span><br><span class="line">/_cat/nodeattrs</span><br><span class="line">/_cat/repositories</span><br><span class="line">/_cat/snapshots/&#123;repository&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="5-2-5-测试集群"><a href="#5-2-5-测试集群" class="headerlink" title="5.2.5 测试集群"></a>5.2.5 测试集群</h4><figure class="highlight elm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><code class="hljs elm">$ curl localhost:<span class="hljs-number">9200</span>/_cat<br>/_cat/allocation<br>/_cat/shards<br>/_cat/shards/&#123;index&#125;<br>/_cat/master<br>/_cat/nodes<br>/_cat/indices<br>/_cat/indices/&#123;index&#125;<br>/_cat/segments<br>/_cat/segments/&#123;index&#125;<br>/_cat/count<br>/_cat/count/&#123;index&#125;<br>/_cat/recovery<br>/_cat/recovery/&#123;index&#125;<br>/_cat/health<br>/_cat/pending_tasks<br>/_cat/aliases<br>/_cat/aliases/&#123;<span class="hljs-keyword">alias</span>&#125;<br>/_cat/thread_pool<br>/_cat/plugins<br>/_cat/fielddata<br>/_cat/fielddata/&#123;fields&#125;<br>/_cat/nodeattrs<br>/_cat/repositories<br>/_cat/snapshots/&#123;repository&#125;<br></code></pre></td></tr></table></figure>
 
 
 
@@ -332,22 +380,397 @@
 <blockquote>
 <p>分别查看<a href="http://192.168.157.128:920(1-6)/,所有节点都如下图就代表成功了">http://192.168.157.128:920(1-6)/,所有节点都如下图就代表成功了</a></p>
 </blockquote>
-<p><img src="/assets/ElasticSearch%E9%9B%86%E7%BE%A4/eb7ab4f257004257f159787ab3d32e31.png" alt="image-20220214170000283"></p>
+<p><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/assets/ElasticSearch%E9%9B%86%E7%BE%A4/eb7ab4f257004257f159787ab3d32e31.png" alt="image-20220214170000283"></p>
 <p><a target="_blank" rel="noopener" href="http://192.168.157.128:9201/_nodes/process?pretty">http://192.168.157.128:9201/_nodes/process?pretty</a> 查看节点状况</p>
 <p><a target="_blank" rel="noopener" href="http://192.168.157.128:9201/_cluster/stats?pretty">http://192.168.157.128:9201/_cluster/stats?pretty</a> 查看集群状态<br><a target="_blank" rel="noopener" href="http://192.168.157.128:9201/_cluster/health?pretty">http://192.168.157.128:9201/_cluster/health?pretty</a> 查看集群健康状况</p>
-<p><img src="/assets/ElasticSearch%E9%9B%86%E7%BE%A4/aeb22118189ad67c88a7f49b8b3859b4.png" alt="image-20220214170636904"></p>
+<p><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/assets/ElasticSearch%E9%9B%86%E7%BE%A4/aeb22118189ad67c88a7f49b8b3859b4.png" alt="image-20220214170636904"></p>
 <p><a target="_blank" rel="noopener" href="http://192.168.157.128:9202/_cat/nodes">http://192.168.157.128:9202/_cat/nodes</a> 查看各个节点信息  </p>
-<p><img src="/assets/ElasticSearch%E9%9B%86%E7%BE%A4/4280577c32ed8054b68280ee9355e71a.png" alt="image-20220214170526283"></p>
-<h5 id="5-2-5-1-关闭主节点测试"><a href="#5-2-5-1-关闭主节点测试" class="headerlink" title="5.2.5.1 关闭主节点测试"></a>5.2.5.1 关闭主节点测试</h5><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">#</span><span class="language-bash">关闭主节点</span></span><br><span class="line">docker stop elasticsearch-node-1</span><br></pre></td></tr></table></figure>
+<p><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/assets/ElasticSearch%E9%9B%86%E7%BE%A4/4280577c32ed8054b68280ee9355e71a.png" alt="image-20220214170526283"></p>
+<h5 id="5-2-5-1-关闭主节点测试"><a href="#5-2-5-1-关闭主节点测试" class="headerlink" title="5.2.5.1 关闭主节点测试"></a>5.2.5.1 关闭主节点测试</h5><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta prompt_">#</span><span class="language-bash">关闭主节点</span><br>docker stop elasticsearch-node-1<br></code></pre></td></tr></table></figure>
 
 
 <p><a target="_blank" rel="noopener" href="http://192.168.157.128:9202/_cat/nodes">192.168.157.128:9202&#x2F;_cat&#x2F;nodes</a>查看各个节点健康状况</p>
 <p>主节点切换到之前的备选主节点es-master-3</p>
-<p><img src="/assets/ElasticSearch%E9%9B%86%E7%BE%A4/f81efba568937176ffe508d06dfeb68d.png" alt="image-20220214171116716"></p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">#</span><span class="language-bash">启动主节点</span></span><br><span class="line">docker start elasticsearch-node-1</span><br></pre></td></tr></table></figure>
+<p><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/assets/ElasticSearch%E9%9B%86%E7%BE%A4/f81efba568937176ffe508d06dfeb68d.png" alt="image-20220214171116716"></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta prompt_">#</span><span class="language-bash">启动主节点</span><br>docker start elasticsearch-node-1<br></code></pre></td></tr></table></figure>
 
 
 <p><a target="_blank" rel="noopener" href="http://192.168.157.128:9202/_cat/nodes">192.168.157.128:9202&#x2F;_cat&#x2F;nodes</a>查看各个节点健康状况</p>
 <p>es-node-1变为备选主节点,es-node-3变为主节点</p>
-<p><img src="/assets/ElasticSearch%E9%9B%86%E7%BE%A4/89a16f5d9ba50ee2a8e49d08d1587c7f.png" alt="image-20220214171335617"></p>
-</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>Author: </span><span class="post-copyright-info"><a href="https://yuanzhang788.github.io">Yuanz</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>Link: </span><span class="post-copyright-info"><a href="https://yuanzhang788.github.io/2022/02/14/ElasticSearch%E9%9B%86%E7%BE%A4/">https://yuanzhang788.github.io/2022/02/14/ElasticSearch%E9%9B%86%E7%BE%A4/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>Copyright Notice: </span><span class="post-copyright-info">All articles on this blog are licensed under <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless otherwise stated.</span></div></div><div class="tag_share"><div class="post-share"><div class="social-share" data-image="/img/butterfly-icon.png" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2022/02/15/RabbitMQ%E9%9B%86%E7%BE%A4/" title="RabbitMQ集群"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info"><div class="info-1"><div class="info-item-1">Previous</div><div class="info-item-2">RabbitMQ集群</div></div><div class="info-2"><div class="info-item-1">6. RabbitMQ集群6.1 集群形式RabbiMQ 是用 Erlang 开发的， 集群非常方便， 因为 Erlang 天生就是一门分布式语言， 但其本身并不支持负载均衡。 RabbitMQ 集群中节点包括内存节点(RAM)、 磁盘节点(Disk， 消息持久化)， 集群中至少有一个 Disk 节点。   6.1.1 普通模式(默认)对于普通模式， 集群中各节点有相同的队列结构， 但消息只会存在于集群中的一个节点。 对于消费者来说， 若消息进入 A 节点的 Queue 中， 当从 B 节点拉取时， RabbitMQ 会将消息从 A 中取出， 并经过 B 发送给消费者。  应用场景： 该模式各适合于消息无需持久化的场合， 如日志队列。 当队列非持久化， 且创建该队列的节点宕机， 客户端才可以重连集群其他节点， 并重新创建队列。 若为持久化，只能等故障节点恢复。  6.1.2 镜像模式与普通模式不同之处是消息实体会主动在镜像节点间同步， 而不是在取数据时临时拉取， 高可用； 该模式下， mirror queue 有一套选举算法， 即 1 个 master、 n 个 slaver， ...</div></div></div></a><a class="pagination-related" href="/2022/02/14/Redis%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA/" title="Redis集群搭建"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">Next</div><div class="info-item-2">Redis集群搭建</div></div><div class="info-2"><div class="info-item-1">4. Redis集群4.1 redis集群形式4.1.1 数据分区方案 优点: 不使用 第三方中间件， 分区逻辑 可控， 配置 简单， 节点之间无关联， 容易 线性扩展， 灵活性强。   缺点: **客户端 无法 动态增删 服务节点， 客户端需要自行维护 分发逻辑， 客户端之间 无连接共享，会造成 连接浪费。 ** 4.1.2 代理分区 代理分区常用方案有 Twemproxy 和 Codis,类似于mysql的sharding proxy。   4.1.3 redis-cluster Redis Cluster 是 Redis 原生的数据分片实现，可以自动在多个节点上分布数据，不需要依赖任何外部的工具。 优点:  高性能 Redis Cluster 的性能与单节点部署是同级别的。   高可用 Redis Cluster 支持标准的 master-replica 配置来保障高可用和高可靠。 Redis Cluster 也实现了一个类似 Raft 的共识方式，来保障整个集群的可用性。   易扩展 向 Redis Cluster 中添加新节点，或者移除节点，都是透明的，不需要停机。水平...</div></div></div></a></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/butterfly-icon.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">Yuanz</div><div class="author-info-description">Yuanz的个人博客</div><div class="site-data"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">176</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">0</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">0</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>Announcement</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>Contents</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#5-ElasticSearch%E9%9B%86%E7%BE%A4"><span class="toc-number">1.</span> <span class="toc-text">5. ElasticSearch集群</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#5-1-ElasticSearch%E9%9B%86%E7%BE%A4%E5%8E%9F%E7%90%86"><span class="toc-number">1.1.</span> <span class="toc-text">5.1 ElasticSearch集群原理</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#5-1-1-%E5%8D%95%E8%8A%82%E7%82%B9"><span class="toc-number">1.1.1.</span> <span class="toc-text">5.1.1 单节点</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#5-1-2-%E9%9B%86%E7%BE%A4%E5%81%A5%E5%BA%B7"><span class="toc-number">1.1.2.</span> <span class="toc-text">5.1.2 集群健康</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#5-1-3-%E5%88%86%E7%89%87"><span class="toc-number">1.1.3.</span> <span class="toc-text">5.1.3 分片</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#5-1-4-%E6%96%B0%E5%A2%9E%E8%8A%82%E7%82%B9-%E7%BB%BF%E8%89%B2%E6%A1%86%E4%BB%A3%E8%A1%A8%E4%B8%BB%E5%88%86%E7%89%87"><span class="toc-number">1.1.4.</span> <span class="toc-text">5.1.4 新增节点(绿色框代表主分片)</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#5-1-5-%E6%B0%B4%E5%B9%B3%E6%89%A9%E5%AE%B9-%E5%90%AF%E5%8A%A8%E7%AC%AC%E4%B8%89%E4%B8%AA%E8%8A%82%E7%82%B9-%E7%BB%BF%E8%89%B2%E6%A1%86%E4%BB%A3%E8%A1%A8%E4%B8%BB%E5%88%86%E7%89%87"><span class="toc-number">1.1.5.</span> <span class="toc-text">5.1.5 水平扩容-启动第三个节点  (绿色框代表主分片)</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#5-1-6-%E5%BA%94%E5%AF%B9%E6%95%85%E9%9A%9C"><span class="toc-number">1.1.6.</span> <span class="toc-text">5.1.6 应对故障</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#5-1-7-%E9%97%AE%E9%A2%98%E4%B8%8E%E8%A7%A3%E5%86%B3"><span class="toc-number">1.1.7.</span> <span class="toc-text">5.1.7 问题与解决</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#5-1-7-1-%E4%B8%BB%E8%8A%82%E7%82%B9"><span class="toc-number">1.1.7.1.</span> <span class="toc-text">5.1.7.1 主节点</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#5-1-7-2-%E5%80%99%E9%80%89%E4%B8%BB%E8%8A%82%E7%82%B9"><span class="toc-number">1.1.7.2.</span> <span class="toc-text">5.1.7.2 候选主节点</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#5-1-7-3-%E6%95%B0%E6%8D%AE%E8%8A%82%E7%82%B9"><span class="toc-number">1.1.7.3.</span> <span class="toc-text">5.1.7.3 数据节点</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#5-1-7-4-%E5%AE%A2%E6%88%B7%E7%AB%AF%E8%8A%82%E7%82%B9"><span class="toc-number">1.1.7.4.</span> <span class="toc-text">5.1.7.4 客户端节点</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#5-1-7-5-%E8%84%91%E8%A3%82%E9%97%AE%E9%A2%98%E5%8F%AF%E8%83%BD%E7%9A%84%E5%8E%9F%E5%9B%A0"><span class="toc-number">1.1.7.5.</span> <span class="toc-text">5.1.7.5 脑裂问题可能的原因</span></a><ol class="toc-child"><li class="toc-item toc-level-6"><a class="toc-link" href="#5-1-7-5-1-%E8%84%91%E8%A3%82%E9%97%AE%E9%A2%98%E7%9A%84%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88"><span class="toc-number">1.1.7.5.1.</span> <span class="toc-text">5.1.7.5.1 脑裂问题的解决方案</span></a></li></ol></li></ol></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-2-ElasticSearch%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA"><span class="toc-number">1.2.</span> <span class="toc-text">5.2 ElasticSearch集群搭建</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#5-2-1-%E4%BF%AE%E6%94%B9%E6%9C%80%E5%A4%A7map%E6%95%B0-%E5%87%86%E5%A4%87%E5%B7%A5%E4%BD%9C"><span class="toc-number">1.2.1.</span> <span class="toc-text">5.2.1 修改最大map数(准备工作)</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#5-2-2-%E5%87%86%E5%A4%87docker%E7%BD%91%E7%BB%9C-%E5%87%86%E5%A4%87%E5%B7%A5%E4%BD%9C"><span class="toc-number">1.2.2.</span> <span class="toc-text">5.2.2 准备docker网络(准备工作)</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#5-2-3-Master%E8%8A%82%E7%82%B9%E5%88%9B%E5%BB%BA"><span class="toc-number">1.2.3.</span> <span class="toc-text">5.2.3 Master节点创建</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#5-2-3-1-WARNING-IPv4-forwarding-is-disabled-Networking-will-not-work-%E9%97%AE%E9%A2%98"><span class="toc-number">1.2.3.1.</span> <span class="toc-text">5.2.3.1 WARNING: IPv4 forwarding is disabled. Networking will not work.问题</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#5-2-3-2-%E5%86%8D%E6%AC%A1%E5%90%AF%E5%8A%A8elasticsearch%E9%9B%86%E7%BE%A4"><span class="toc-number">1.2.3.2.</span> <span class="toc-text">5.2.3.2 再次启动elasticsearch集群</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#5-2-4-Data-Node-%E5%88%9B%E5%BB%BA"><span class="toc-number">1.2.4.</span> <span class="toc-text">5.2.4 Data-Node 创建</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#5-2-5-%E6%B5%8B%E8%AF%95%E9%9B%86%E7%BE%A4"><span class="toc-number">1.2.5.</span> <span class="toc-text">5.2.5 测试集群</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#5-2-5-1-%E5%85%B3%E9%97%AD%E4%B8%BB%E8%8A%82%E7%82%B9%E6%B5%8B%E8%AF%95"><span class="toc-number">1.2.5.1.</span> <span class="toc-text">5.2.5.1 关闭主节点测试</span></a></li></ol></li></ol></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Posts</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/06/05/hello-world/" title="Hello World">Hello World</a><time datetime="2026-06-05T09:30:56.120Z" title="Created 2026-06-05 17:30:56">2026-06-05</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/05/28/%E4%BB%8E%E9%9B%B6%E5%BC%80%E5%A7%8B%EF%BC%8C%E5%9F%BA%E4%BA%8E-Hexo-GitHub-Pages-%E6%90%AD%E5%BB%BA%E4%B8%80%E4%B8%AA%E5%B1%9E%E4%BA%8E%E8%87%AA%E5%B7%B1%E7%9A%84%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2%EF%BC%8C%E5%B9%B6%E5%AE%8C%E6%88%90%E4%B8%BB%E9%A2%98%E5%88%87%E6%8D%A2%E4%B8%8E%E9%83%A8%E7%BD%B2%E3%80%82%EF%BC%88%E8%B6%85%E8%AF%A6%E7%BB%86%E6%95%99%E7%A8%8B%EF%BC%89/" title="从零开始，基于 Hexo + GitHub Pages 搭建一个属于自己的个人博客，并完成主题切换与部署。（超详细教程）">从零开始，基于 Hexo + GitHub Pages 搭建一个属于自己的个人博客，并完成主题切换与部署。（超详细教程）</a><time datetime="2026-05-28T06:27:02.000Z" title="Created 2026-05-28 14:27:02">2026-05-28</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/05/22/%E7%AC%AC%E4%B8%80%E7%AF%87-Github-Pages%E5%8D%9A%E5%AE%A2/" title="第一篇 Github Pages博客">第一篇 Github Pages博客</a><time datetime="2026-05-22T09:25:44.000Z" title="Created 2026-05-22 17:25:44">2026-05-22</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/05/20/Java%20Excel%E5%AF%BC%E5%87%BA%EF%BC%9A%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E8%87%AA%E5%AE%9A%E4%B9%89%E8%A1%A8%E5%A4%B4%E4%B8%8E%E5%AD%97%E6%AE%B5%E9%A1%BA%E5%BA%8F%E7%9A%84%E5%AE%8C%E5%85%A8%E6%8E%A7%E5%88%B6/" title="Java Excel导出：如何实现自定义表头与字段顺序的完全控制">Java Excel导出：如何实现自定义表头与字段顺序的完全控制</a><time datetime="2026-05-20T10:02:18.000Z" title="Created 2026-05-20 18:02:18">2026-05-20</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/05/07/Docker%20%E5%AE%89%E8%A3%85%20%E6%95%B0%E6%8D%AE%E5%BA%93%E5%B7%A5%E5%8D%95%E7%B3%BB%E7%BB%9FYearning%E4%BB%A5%E5%8F%8A%E4%BD%BF%E7%94%A8/" title="Docker 安装 数据库工单系统Yearning以及使用">Docker 安装 数据库工单系统Yearning以及使用</a><time datetime="2026-05-07T06:10:08.000Z" title="Created 2026-05-07 14:10:08">2026-05-07</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2025 - 2026 By Yuanz</span><span class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 8.1.2</a><span class="footer-separator">|</span><span>Theme </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.5.5-b1</a></span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="Reading Mode"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="Toggle Between Light and Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle Between Single-column and Double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="Settings"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="Table of Contents"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="Back to Top"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.5.5-b1"></script><script src="/js/main.js?v=5.5.5-b1"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
+<p><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/assets/ElasticSearch%E9%9B%86%E7%BE%A4/89a16f5d9ba50ee2a8e49d08d1587c7f.png" alt="image-20220214171335617"></p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://yuanzhang788.github.io">Yuanz</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://yuanzhang788.github.io/2022/02/14/ElasticSearch%E9%9B%86%E7%BE%A4/">https://yuanzhang788.github.io/2022/02/14/ElasticSearch集群/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://yuanzhang788.github.io" target="_blank">Yuanz</a>！</span></div></div><div class="tag_share"><div class="post-share"><div class="social-share" data-image="https://api.r10086.com/img-api.php?type=%E9%A3%8E%E6%99%AF&amp;cd=2024" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2022/02/15/RabbitMQ%E9%9B%86%E7%BE%A4/" title="RabbitMQ集群"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://api.r10086.com/img-api.php?type=%E9%A3%8E%E6%99%AF&amp;cd=2024" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">RabbitMQ集群</div></div><div class="info-2"><div class="info-item-1">6. RabbitMQ集群6.1 集群形式RabbiMQ 是用 Erlang 开发的， 集群非常方便， 因为 Erlang 天生就是一门分布式语言， 但其本身并不支持负载均衡。 RabbitMQ 集群中节点包括内存节点(RAM)、 磁盘节点(Disk， 消息持久化)， 集群中至少有一个 Disk 节点。   6.1.1 普通模式(默认)对于普通模式， 集群中各节点有相同的队列结构， 但消息只会存在于集群中的一个节点。 对于消费者来说， 若消息进入 A 节点的 Queue 中， 当从 B 节点拉取时， RabbitMQ 会将消息从 A 中取出， 并经过 B 发送给消费者。  应用场景： 该...</div></div></div></a><a class="pagination-related" href="/2022/02/14/Redis%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA/" title="Redis集群搭建"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://api.r10086.com/img-api.php?type=%E9%A3%8E%E6%99%AF&amp;cd=2024" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">Redis集群搭建</div></div><div class="info-2"><div class="info-item-1">4. Redis集群4.1 redis集群形式4.1.1 数据分区方案 优点: 不使用 第三方中间件， 分区逻辑 可控， 配置 简单， 节点之间无关联， 容易 线性扩展， 灵活性强。   缺点: **客户端 无法 动态增删 服务节点， 客户端需要自行维护 分发逻辑， 客户端之间 无连接共享，会造成 连接浪费。 ** 4.1.2 代理分区 代理分区常用方案有 Twemproxy 和 Codis,类似于mysql的sharding proxy。   4.1.3 redis-cluster Redis Cluster 是 Redis 原生的数据分片实现，可以自动在多个节点上分布数据，不需要依赖...</div></div></div></a></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">Yuanz</div><div class="author-info-description">Yuanz的个人博客</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">176</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">0</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">0</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/yuanzhang788"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/yuanzhang788" target="_blank" title="Github"><i class="fab fa-github" style="color: #4a7dbe;"></i></a><a class="social-icon" href="mailto:2437264464@qq.com" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #49b1f5;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎访问 Yuanz 的个人博客！</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#5-ElasticSearch%E9%9B%86%E7%BE%A4"><span class="toc-number">1.</span> <span class="toc-text">5. ElasticSearch集群</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#5-1-ElasticSearch%E9%9B%86%E7%BE%A4%E5%8E%9F%E7%90%86"><span class="toc-number">1.1.</span> <span class="toc-text">5.1 ElasticSearch集群原理</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#5-1-1-%E5%8D%95%E8%8A%82%E7%82%B9"><span class="toc-number">1.1.1.</span> <span class="toc-text">5.1.1 单节点</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#5-1-2-%E9%9B%86%E7%BE%A4%E5%81%A5%E5%BA%B7"><span class="toc-number">1.1.2.</span> <span class="toc-text">5.1.2 集群健康</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#5-1-3-%E5%88%86%E7%89%87"><span class="toc-number">1.1.3.</span> <span class="toc-text">5.1.3 分片</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#5-1-4-%E6%96%B0%E5%A2%9E%E8%8A%82%E7%82%B9-%E7%BB%BF%E8%89%B2%E6%A1%86%E4%BB%A3%E8%A1%A8%E4%B8%BB%E5%88%86%E7%89%87"><span class="toc-number">1.1.4.</span> <span class="toc-text">5.1.4 新增节点(绿色框代表主分片)</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#5-1-5-%E6%B0%B4%E5%B9%B3%E6%89%A9%E5%AE%B9-%E5%90%AF%E5%8A%A8%E7%AC%AC%E4%B8%89%E4%B8%AA%E8%8A%82%E7%82%B9-%E7%BB%BF%E8%89%B2%E6%A1%86%E4%BB%A3%E8%A1%A8%E4%B8%BB%E5%88%86%E7%89%87"><span class="toc-number">1.1.5.</span> <span class="toc-text">5.1.5 水平扩容-启动第三个节点  (绿色框代表主分片)</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#5-1-6-%E5%BA%94%E5%AF%B9%E6%95%85%E9%9A%9C"><span class="toc-number">1.1.6.</span> <span class="toc-text">5.1.6 应对故障</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#5-1-7-%E9%97%AE%E9%A2%98%E4%B8%8E%E8%A7%A3%E5%86%B3"><span class="toc-number">1.1.7.</span> <span class="toc-text">5.1.7 问题与解决</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#5-1-7-1-%E4%B8%BB%E8%8A%82%E7%82%B9"><span class="toc-number">1.1.7.1.</span> <span class="toc-text">5.1.7.1 主节点</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#5-1-7-2-%E5%80%99%E9%80%89%E4%B8%BB%E8%8A%82%E7%82%B9"><span class="toc-number">1.1.7.2.</span> <span class="toc-text">5.1.7.2 候选主节点</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#5-1-7-3-%E6%95%B0%E6%8D%AE%E8%8A%82%E7%82%B9"><span class="toc-number">1.1.7.3.</span> <span class="toc-text">5.1.7.3 数据节点</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#5-1-7-4-%E5%AE%A2%E6%88%B7%E7%AB%AF%E8%8A%82%E7%82%B9"><span class="toc-number">1.1.7.4.</span> <span class="toc-text">5.1.7.4 客户端节点</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#5-1-7-5-%E8%84%91%E8%A3%82%E9%97%AE%E9%A2%98%E5%8F%AF%E8%83%BD%E7%9A%84%E5%8E%9F%E5%9B%A0"><span class="toc-number">1.1.7.5.</span> <span class="toc-text">5.1.7.5 脑裂问题可能的原因</span></a><ol class="toc-child"><li class="toc-item toc-level-6"><a class="toc-link" href="#5-1-7-5-1-%E8%84%91%E8%A3%82%E9%97%AE%E9%A2%98%E7%9A%84%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88"><span class="toc-number">1.1.7.5.1.</span> <span class="toc-text">5.1.7.5.1 脑裂问题的解决方案</span></a></li></ol></li></ol></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-2-ElasticSearch%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA"><span class="toc-number">1.2.</span> <span class="toc-text">5.2 ElasticSearch集群搭建</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#5-2-1-%E4%BF%AE%E6%94%B9%E6%9C%80%E5%A4%A7map%E6%95%B0-%E5%87%86%E5%A4%87%E5%B7%A5%E4%BD%9C"><span class="toc-number">1.2.1.</span> <span class="toc-text">5.2.1 修改最大map数(准备工作)</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#5-2-2-%E5%87%86%E5%A4%87docker%E7%BD%91%E7%BB%9C-%E5%87%86%E5%A4%87%E5%B7%A5%E4%BD%9C"><span class="toc-number">1.2.2.</span> <span class="toc-text">5.2.2 准备docker网络(准备工作)</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#5-2-3-Master%E8%8A%82%E7%82%B9%E5%88%9B%E5%BB%BA"><span class="toc-number">1.2.3.</span> <span class="toc-text">5.2.3 Master节点创建</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#5-2-3-1-WARNING-IPv4-forwarding-is-disabled-Networking-will-not-work-%E9%97%AE%E9%A2%98"><span class="toc-number">1.2.3.1.</span> <span class="toc-text">5.2.3.1 WARNING: IPv4 forwarding is disabled. Networking will not work.问题</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#5-2-3-2-%E5%86%8D%E6%AC%A1%E5%90%AF%E5%8A%A8elasticsearch%E9%9B%86%E7%BE%A4"><span class="toc-number">1.2.3.2.</span> <span class="toc-text">5.2.3.2 再次启动elasticsearch集群</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#5-2-4-Data-Node-%E5%88%9B%E5%BB%BA"><span class="toc-number">1.2.4.</span> <span class="toc-text">5.2.4 Data-Node 创建</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#5-2-5-%E6%B5%8B%E8%AF%95%E9%9B%86%E7%BE%A4"><span class="toc-number">1.2.5.</span> <span class="toc-text">5.2.5 测试集群</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#5-2-5-1-%E5%85%B3%E9%97%AD%E4%B8%BB%E8%8A%82%E7%82%B9%E6%B5%8B%E8%AF%95"><span class="toc-number">1.2.5.1.</span> <span class="toc-text">5.2.5.1 关闭主节点测试</span></a></li></ol></li></ol></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2026/06/05/hello-world/" title="Hello World"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://api.r10086.com/img-api.php?type=%E9%A3%8E%E6%99%AF&amp;cd=2024" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Hello World"/></a><div class="content"><a class="title" href="/2026/06/05/hello-world/" title="Hello World">Hello World</a><time datetime="2026-06-05T09:30:56.120Z" title="发表于 2026-06-05 17:30:56">2026-06-05</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2026/05/28/%E4%BB%8E%E9%9B%B6%E5%BC%80%E5%A7%8B%EF%BC%8C%E5%9F%BA%E4%BA%8E-Hexo-GitHub-Pages-%E6%90%AD%E5%BB%BA%E4%B8%80%E4%B8%AA%E5%B1%9E%E4%BA%8E%E8%87%AA%E5%B7%B1%E7%9A%84%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2%EF%BC%8C%E5%B9%B6%E5%AE%8C%E6%88%90%E4%B8%BB%E9%A2%98%E5%88%87%E6%8D%A2%E4%B8%8E%E9%83%A8%E7%BD%B2%E3%80%82%EF%BC%88%E8%B6%85%E8%AF%A6%E7%BB%86%E6%95%99%E7%A8%8B%EF%BC%89/" title="从零开始，基于 Hexo + GitHub Pages 搭建一个属于自己的个人博客，并完成主题切换与部署。（超详细教程）"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://api.r10086.com/img-api.php?type=%E9%A3%8E%E6%99%AF&amp;cd=2024" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="从零开始，基于 Hexo + GitHub Pages 搭建一个属于自己的个人博客，并完成主题切换与部署。（超详细教程）"/></a><div class="content"><a class="title" href="/2026/05/28/%E4%BB%8E%E9%9B%B6%E5%BC%80%E5%A7%8B%EF%BC%8C%E5%9F%BA%E4%BA%8E-Hexo-GitHub-Pages-%E6%90%AD%E5%BB%BA%E4%B8%80%E4%B8%AA%E5%B1%9E%E4%BA%8E%E8%87%AA%E5%B7%B1%E7%9A%84%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2%EF%BC%8C%E5%B9%B6%E5%AE%8C%E6%88%90%E4%B8%BB%E9%A2%98%E5%88%87%E6%8D%A2%E4%B8%8E%E9%83%A8%E7%BD%B2%E3%80%82%EF%BC%88%E8%B6%85%E8%AF%A6%E7%BB%86%E6%95%99%E7%A8%8B%EF%BC%89/" title="从零开始，基于 Hexo + GitHub Pages 搭建一个属于自己的个人博客，并完成主题切换与部署。（超详细教程）">从零开始，基于 Hexo + GitHub Pages 搭建一个属于自己的个人博客，并完成主题切换与部署。（超详细教程）</a><time datetime="2026-05-28T06:27:02.000Z" title="发表于 2026-05-28 14:27:02">2026-05-28</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2026/05/22/%E7%AC%AC%E4%B8%80%E7%AF%87-Github-Pages%E5%8D%9A%E5%AE%A2/" title="第一篇 Github Pages博客"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://api.r10086.com/img-api.php?type=%E9%A3%8E%E6%99%AF&amp;cd=2024" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="第一篇 Github Pages博客"/></a><div class="content"><a class="title" href="/2026/05/22/%E7%AC%AC%E4%B8%80%E7%AF%87-Github-Pages%E5%8D%9A%E5%AE%A2/" title="第一篇 Github Pages博客">第一篇 Github Pages博客</a><time datetime="2026-05-22T09:25:44.000Z" title="发表于 2026-05-22 17:25:44">2026-05-22</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2026/05/20/Java%20Excel%E5%AF%BC%E5%87%BA%EF%BC%9A%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E8%87%AA%E5%AE%9A%E4%B9%89%E8%A1%A8%E5%A4%B4%E4%B8%8E%E5%AD%97%E6%AE%B5%E9%A1%BA%E5%BA%8F%E7%9A%84%E5%AE%8C%E5%85%A8%E6%8E%A7%E5%88%B6/" title="Java Excel导出：如何实现自定义表头与字段顺序的完全控制"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://api.r10086.com/img-api.php?type=%E9%A3%8E%E6%99%AF&amp;cd=2024" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Java Excel导出：如何实现自定义表头与字段顺序的完全控制"/></a><div class="content"><a class="title" href="/2026/05/20/Java%20Excel%E5%AF%BC%E5%87%BA%EF%BC%9A%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E8%87%AA%E5%AE%9A%E4%B9%89%E8%A1%A8%E5%A4%B4%E4%B8%8E%E5%AD%97%E6%AE%B5%E9%A1%BA%E5%BA%8F%E7%9A%84%E5%AE%8C%E5%85%A8%E6%8E%A7%E5%88%B6/" title="Java Excel导出：如何实现自定义表头与字段顺序的完全控制">Java Excel导出：如何实现自定义表头与字段顺序的完全控制</a><time datetime="2026-05-20T10:02:18.000Z" title="发表于 2026-05-20 18:02:18">2026-05-20</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2026/05/07/Docker%20%E5%AE%89%E8%A3%85%20%E6%95%B0%E6%8D%AE%E5%BA%93%E5%B7%A5%E5%8D%95%E7%B3%BB%E7%BB%9FYearning%E4%BB%A5%E5%8F%8A%E4%BD%BF%E7%94%A8/" title="Docker 安装 数据库工单系统Yearning以及使用"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://api.r10086.com/img-api.php?type=%E9%A3%8E%E6%99%AF&amp;cd=2024" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Docker 安装 数据库工单系统Yearning以及使用"/></a><div class="content"><a class="title" href="/2026/05/07/Docker%20%E5%AE%89%E8%A3%85%20%E6%95%B0%E6%8D%AE%E5%BA%93%E5%B7%A5%E5%8D%95%E7%B3%BB%E7%BB%9FYearning%E4%BB%A5%E5%8F%8A%E4%BD%BF%E7%94%A8/" title="Docker 安装 数据库工单系统Yearning以及使用">Docker 安装 数据库工单系统Yearning以及使用</a><time datetime="2026-05-07T06:10:08.000Z" title="发表于 2026-05-07 14:10:08">2026-05-07</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2024 - 2026 By Yuanz</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 8.1.2</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.5.5-b1</a></span></div><div class="footer_custom_text"><a href="https://github.com/yuanzhang788" target="_blank" rel="noopener noreferrer">Yuanz</a> &copy; <span id="year"></span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page/instantpage.min.js" type="module"></script><script src="https://cdn.jsdelivr.net/npm/vanilla-lazyload/dist/lazyload.iife.min.js"></script><script src="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.js"></script><div class="js-pjax"><script>(() => {
+  const parseViewBox = viewBox => {
+    if (!viewBox) return null
+    const parts = viewBox.trim().split(/[\s,]+/).map(n => Number(n))
+    if (parts.length !== 4 || parts.some(n => Number.isNaN(n))) return null
+    return parts
+  }
+
+  const getSvgViewBox = svg => {
+    const attr = parseViewBox(svg.getAttribute('viewBox'))
+    if (attr) return attr
+
+    // Fallback: use bbox to build a viewBox
+    try {
+      const bbox = svg.getBBox()
+      if (bbox && bbox.width && bbox.height) return [bbox.x, bbox.y, bbox.width, bbox.height]
+    } catch (e) {
+      // getBBox may fail on some edge cases; ignore
+    }
+
+    const w = Number(svg.getAttribute('width')) || 0
+    const h = Number(svg.getAttribute('height')) || 0
+    if (w > 0 && h > 0) return [0, 0, w, h]
+    return [0, 0, 100, 100]
+  }
+
+  const setSvgViewBox = (svg, vb) => {
+    svg.setAttribute('viewBox', `${vb[0]} ${vb[1]} ${vb[2]} ${vb[3]}`)
+  }
+
+  const clamp = (v, min, max) => Math.max(min, Math.min(max, v))
+
+  const openSvgInNewTab = ({ source, initViewBox }) => {
+    const getClonedSvg = () => {
+      if (typeof source === 'string') {
+        const template = document.createElement('template')
+        template.innerHTML = source.trim()
+        const svg = template.content.querySelector('svg')
+        return svg ? svg.cloneNode(true) : null
+      }
+      if (source && typeof source.cloneNode === 'function') {
+        return source.cloneNode(true)
+      }
+      return null
+    }
+
+    const clone = getClonedSvg()
+    if (!clone) return
+    if (initViewBox && initViewBox.length === 4) {
+      clone.setAttribute('viewBox', initViewBox.join(' '))
+    }
+    if (!clone.getAttribute('xmlns')) clone.setAttribute('xmlns', 'http://www.w3.org/2000/svg')
+    if (!clone.getAttribute('xmlns:xlink') && clone.outerHTML.includes('xlink:')) {
+      clone.setAttribute('xmlns:xlink', 'http://www.w3.org/1999/xlink')
+    }
+    // inject background to match current theme
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark'
+    const bg = getComputedStyle(document.body).backgroundColor || (isDark ? '#1e1e1e' : '#ffffff')
+    if (!clone.style.background) clone.style.background = bg
+
+    const serializer = new XMLSerializer()
+    const svgSource = serializer.serializeToString(clone)
+    const htmlSource = `<!doctype html><html><head><meta charset="utf-8" />
+      <style>
+        html, body { width: 100%; height: 100%; margin: 0; display: flex; align-items: center; justify-content: center; background: ${bg}; }
+        svg { max-width: 100%; max-height: 100%; height: auto; width: auto; }
+      </style>
+      </head><body>${svgSource}</body></html>`
+    const blob = new Blob([htmlSource], { type: 'text/html;charset=utf-8' })
+    const url = URL.createObjectURL(blob)
+    window.open(url, '_blank', 'noopener')
+    setTimeout(() => URL.revokeObjectURL(url), 30000)
+  }
+
+  const attachMermaidViewerButton = wrap => {
+    let btn = wrap.querySelector('.mermaid-open-btn')
+    if (!btn) {
+      btn = document.createElement('button')
+      btn.type = 'button'
+      btn.className = 'mermaid-open-btn'
+      wrap.appendChild(btn)
+    }
+
+    btn.innerHTML = '<i class="fa fa-search fa-fw" aria-hidden="true"></i>'
+
+    if (!btn.__mermaidViewerBound) {
+      btn.addEventListener('click', e => {
+        e.preventDefault()
+        e.stopPropagation()
+        const svg = wrap.__mermaidOriginalSvg || wrap.querySelector('svg')
+        if (!svg) return
+        const initViewBox = wrap.__mermaidInitViewBox
+        if (typeof svg === 'string') {
+          openSvgInNewTab({ source: svg, initViewBox })
+          return
+        }
+        openSvgInNewTab({ source: svg, initViewBox })
+      })
+      btn.__mermaidViewerBound = true
+    }
+  }
+
+  // Zoom around a point (px, py) in the SVG viewport (in viewBox coordinates)
+  const zoomAtPoint = (vb, factor, px, py) => {
+    const w = vb[2] * factor
+    const h = vb[3] * factor
+    const nx = px - (px - vb[0]) * factor
+    const ny = py - (py - vb[1]) * factor
+    return [nx, ny, w, h]
+  }
+
+  const initMermaidGestures = wrap => {
+    const svg = wrap.querySelector('svg')
+    if (!svg) return
+
+    // Ensure viewBox exists so gestures always work
+    const initVb = getSvgViewBox(svg)
+    wrap.__mermaidInitViewBox = initVb
+    wrap.__mermaidCurViewBox = initVb.slice()
+    setSvgViewBox(svg, initVb)
+
+    // Avoid binding multiple times on themeChange/pjax
+    if (wrap.__mermaidGestureBound) return
+    wrap.__mermaidGestureBound = true
+
+    // Helper: map client (viewport) coordinate -> viewBox coordinate
+    const clientToViewBox = (clientX, clientY) => {
+      const rect = svg.getBoundingClientRect()
+      const vb = wrap.__mermaidCurViewBox || getSvgViewBox(svg)
+      const x = vb[0] + (clientX - rect.left) * (vb[2] / rect.width)
+      const y = vb[1] + (clientY - rect.top) * (vb[3] / rect.height)
+      return { x, y, rect, vb }
+    }
+
+    const state = {
+      pointers: new Map(),
+      startVb: null,
+      startDist: 0,
+      startCenter: null
+    }
+
+    const clampVb = vb => {
+      const init = wrap.__mermaidInitViewBox || vb
+      const minW = init[2] * 0.1
+      const maxW = init[2] * 10
+      const minH = init[3] * 0.1
+      const maxH = init[3] * 10
+      vb[2] = clamp(vb[2], minW, maxW)
+      vb[3] = clamp(vb[3], minH, maxH)
+      return vb
+    }
+
+    const setCurVb = vb => {
+      vb = clampVb(vb)
+      wrap.__mermaidCurViewBox = vb
+      setSvgViewBox(svg, vb)
+    }
+
+    const onPointerDown = e => {
+      // Allow only primary button for mouse
+      if (e.pointerType === 'mouse' && e.button !== 0) return
+      svg.setPointerCapture(e.pointerId)
+      state.pointers.set(e.pointerId, { x: e.clientX, y: e.clientY })
+
+      if (state.pointers.size === 1) {
+        state.startVb = (wrap.__mermaidCurViewBox || getSvgViewBox(svg)).slice()
+      } else if (state.pointers.size === 2) {
+        const pts = [...state.pointers.values()]
+        const dx = pts[0].x - pts[1].x
+        const dy = pts[0].y - pts[1].y
+        state.startDist = Math.hypot(dx, dy)
+        state.startVb = (wrap.__mermaidCurViewBox || getSvgViewBox(svg)).slice()
+        state.startCenter = { x: (pts[0].x + pts[1].x) / 2, y: (pts[0].y + pts[1].y) / 2 }
+      }
+    }
+
+    const onPointerMove = e => {
+      if (!state.pointers.has(e.pointerId)) return
+      state.pointers.set(e.pointerId, { x: e.clientX, y: e.clientY })
+
+      // Pan with 1 pointer
+      if (state.pointers.size === 1 && state.startVb) {
+        const p = [...state.pointers.values()][0]
+        const prev = { x: e.clientX - e.movementX, y: e.clientY - e.movementY }
+        // movementX/Y unreliable on touch, compute from stored last position
+        const last = wrap.__mermaidLastSinglePointer || p
+        const dxClient = p.x - last.x
+        const dyClient = p.y - last.y
+        wrap.__mermaidLastSinglePointer = p
+
+        const { rect } = clientToViewBox(p.x, p.y)
+        const vb = (wrap.__mermaidCurViewBox || getSvgViewBox(svg)).slice()
+        const dx = dxClient * (vb[2] / rect.width)
+        const dy = dyClient * (vb[3] / rect.height)
+        setCurVb([vb[0] - dx, vb[1] - dy, vb[2], vb[3]])
+        return
+      }
+
+      // Pinch zoom with 2 pointers
+      if (state.pointers.size === 2 && state.startVb && state.startDist > 0) {
+        const pts = [...state.pointers.values()]
+        const dx = pts[0].x - pts[1].x
+        const dy = pts[0].y - pts[1].y
+        const dist = Math.hypot(dx, dy)
+        if (!dist) return
+        const factor = state.startDist / dist // dist bigger => zoom in (viewBox smaller)
+
+        const cx = (pts[0].x + pts[1].x) / 2
+        const cy = (pts[0].y + pts[1].y) / 2
+        const centerClient = { x: cx, y: cy }
+
+        const pxy = clientToViewBox(centerClient.x, centerClient.y)
+        const cpx = pxy.x
+        const cpy = pxy.y
+
+        const vb = zoomAtPoint(state.startVb, factor, cpx, cpy)
+        setCurVb(vb)
+      }
+    }
+
+    const onPointerUpOrCancel = e => {
+      state.pointers.delete(e.pointerId)
+      if (state.pointers.size === 0) {
+        state.startVb = null
+        state.startDist = 0
+        state.startCenter = null
+        wrap.__mermaidLastSinglePointer = null
+      } else if (state.pointers.size === 1) {
+        // reset single pointer baseline to avoid jump
+        wrap.__mermaidLastSinglePointer = [...state.pointers.values()][0]
+      }
+    }
+
+    // Wheel zoom (mouse/trackpad)
+    const onWheel = e => {
+      // ctrlKey on mac trackpad pinch; we treat both as zoom
+      e.preventDefault()
+      const delta = e.deltaY
+      const zoomFactor = delta > 0 ? 1.1 : 0.9
+      const { x, y } = clientToViewBox(e.clientX, e.clientY)
+      const vb = (wrap.__mermaidCurViewBox || getSvgViewBox(svg)).slice()
+      setCurVb(zoomAtPoint(vb, zoomFactor, x, y))
+    }
+
+    const onDblClick = () => {
+      const init = wrap.__mermaidInitViewBox
+      if (!init) return
+      wrap.__mermaidCurViewBox = init.slice()
+      setSvgViewBox(svg, init)
+    }
+
+    svg.addEventListener('pointerdown', onPointerDown)
+    svg.addEventListener('pointermove', onPointerMove)
+    svg.addEventListener('pointerup', onPointerUpOrCancel)
+    svg.addEventListener('pointercancel', onPointerUpOrCancel)
+    svg.addEventListener('wheel', onWheel, { passive: false })
+    svg.addEventListener('dblclick', onDblClick)
+  }
+
+  const runMermaid = ele => {
+    window.loadMermaid = true
+    const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'default'
+
+    ele.forEach((item, index) => {
+      const mermaidSrc = item.firstElementChild
+
+      // Clear old render (themeChange/pjax will rerun)
+      const oldSvg = item.querySelector('svg')
+      if (oldSvg) oldSvg.remove()
+      item.__mermaidGestureBound = false
+
+      const config = mermaidSrc.dataset.config ? JSON.parse(mermaidSrc.dataset.config) : {}
+      if (!config.theme) {
+        config.theme = theme
+      }
+      const mermaidThemeConfig = `%%{init: ${JSON.stringify(config)}}%%\n`
+      const mermaidID = `mermaid-${index}`
+      const mermaidDefinition = mermaidThemeConfig + mermaidSrc.textContent
+
+      const renderFn = mermaid.render(mermaidID, mermaidDefinition)
+      const renderMermaid = svg => {
+        mermaidSrc.insertAdjacentHTML('afterend', svg)
+        if (true) initMermaidGestures(item)
+        item.__mermaidOriginalSvg = svg
+        if (true) attachMermaidViewerButton(item)
+      }
+
+
+      // mermaid v9 and v10 compatibility
+      typeof renderFn === 'string' ? renderMermaid(renderFn) : renderFn.then(({ svg }) => renderMermaid(svg))
+    })
+  }
+
+  const codeToMermaid = () => {
+    const codeMermaidEle = document.querySelectorAll('pre > code.mermaid')
+    if (codeMermaidEle.length === 0) return
+
+    codeMermaidEle.forEach(ele => {
+      const preEle = document.createElement('pre')
+      preEle.className = 'mermaid-src'
+      preEle.hidden = true
+      preEle.textContent = ele.textContent
+      const newEle = document.createElement('div')
+      newEle.className = 'mermaid-wrap'
+      newEle.appendChild(preEle)
+      ele.parentNode.replaceWith(newEle)
+    })
+  }
+
+  const loadMermaid = () => {
+    if (false) codeToMermaid()
+    const $mermaid = document.querySelectorAll('#article-container .mermaid-wrap')
+    if ($mermaid.length === 0) return
+
+    const runMermaidFn = () => runMermaid($mermaid)
+    btf.addGlobalFn('themeChange', runMermaidFn, 'mermaid')
+    window.loadMermaid ? runMermaidFn() : btf.getScript('https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js').then(runMermaidFn)
+  }
+
+  btf.addGlobalFn('encrypt', loadMermaid, 'mermaid')
+  window.pjax ? loadMermaid() : document.addEventListener('DOMContentLoaded', loadMermaid)
+})()</script></div><script id="canvas_nest" defer="defer" color="0,155,255" opacity="0.5" zIndex="-1" count="60" mobile="false" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/canvas-nest.min.js"></script><script id="click-show-text" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/click-show-text.min.js" data-mobile="false" data-text="富强,民主,文明,和谐,自由,平等,公正,法治" data-fontsize="14px" data-random="true" async="async"></script><script src="https://cdn.jsdelivr.net/npm/pjax/pjax.min.js" defer="defer"></script><script>document.addEventListener('DOMContentLoaded', () => {
+  const pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+  window.pjax = new Pjax({
+    elements: 'a:not([target="_blank"])',
+    selectors: pjaxSelectors,
+    cacheBust: false,
+    analytics: false,
+    scrollRestoration: false
+  })
+
+  const triggerPjaxFn = (val) => {
+    if (!val) return
+    Object.values(val).forEach(fn => {
+      try {
+        fn()
+      } catch (err) {
+        console.debug('Pjax callback failed:', err)
+      }
+    })
+  }
+
+  document.addEventListener('pjax:send', () => {
+    // removeEventListener
+    btf.removeGlobalFnEvent('pjaxSendOnce')
+    btf.removeGlobalFnEvent('themeChange')
+
+    // reset readmode
+    const $bodyClassList = document.body.classList
+    if ($bodyClassList.contains('read-mode')) $bodyClassList.remove('read-mode')
+
+    triggerPjaxFn(window.globalFn.pjaxSend)
+  })
+
+  document.addEventListener('pjax:complete', () => {
+    btf.removeGlobalFnEvent('pjaxCompleteOnce')
+    document.querySelectorAll('script[data-pjax]').forEach(item => {
+      const newScript = document.createElement('script')
+      const content = item.text || item.textContent || item.innerHTML || ""
+      Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+      newScript.appendChild(document.createTextNode(content))
+      item.parentNode.replaceChild(newScript, item)
+    })
+
+    triggerPjaxFn(window.globalFn.pjaxComplete)
+  })
+
+  document.addEventListener('pjax:error', e => {
+    if (e.request.status === 404) {
+      false
+        ? pjax.loadUrl('/404.html')
+        : window.location.href = e.request.responseURL
+    }
+  })
+})</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><i class="fas fa-spinner fa-pulse" id="loading-status" hidden="hidden"></i><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="local-search-input"><input placeholder="搜索文章..." type="text"/></div><hr/><div id="local-search-results"></div><div class="ais-Pagination" id="local-search-pagination" style="display:none;"><ul class="ais-Pagination-list"></ul></div><div id="local-search-stats"></div></div><div id="search-mask"></div><script src="/js/search/local-search.js"></script></div></div></body></html>
