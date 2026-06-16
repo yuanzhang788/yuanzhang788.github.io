@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Git 提交节点流转图</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    background: #0f172a;
+    color: #e2e8f0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 30px 20px;
+  }
+  h1 {
+    font-size: 24px;
+    font-weight: 700;
+    background: linear-gradient(135deg, #60a5fa, #a78bfa);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 6px;
+  }
+  .subtitle { color: #64748b; font-size: 13px; margin-bottom: 30px; }
+
+  /* 控制栏 */
+  .controls {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .controls button {
+    padding: 8px 20px;
+    border-radius: 8px;
+    border: 1.5px solid rgba(148,163,184,0.3);
+    background: rgba(148,163,184,0.08);
+    color: #94a3b8;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .controls button:hover {
+    background: rgba(96,165,250,0.15);
+    border-color: rgba(96,165,250,0.5);
+    color: #93c5fd;
+  }
+  .controls button.active {
+    background: rgba(96,165,250,0.2);
+    border-color: rgba(96,165,250,0.6);
+    color: #60a5fa;
+  }
+
+  /* SVG 画布 */
+  .canvas-wrap {
+    width: 100%;
+    max-width: 1100px;
+    overflow-x: auto;
+    padding: 10px 0;
+  }
+  svg { display: block; margin: 0 auto; }
+
+  /* 图例 */
+  .legend {
+    display: flex;
+    gap: 28px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: #94a3b8;
+  }
+  .legend-line {
+    width: 30px;
+    height: 3px;
+    border-radius: 2px;
+  }
+
+  /* 步骤说明 */
+  .step-info {
+    max-width: 700px;
+    text-align: center;
+    margin-top: 24px;
+    padding: 16px 24px;
+    border-radius: 12px;
+    background: rgba(96,165,250,0.06);
+    border: 1px solid rgba(96,165,250,0.15);
+    font-size: 14px;
+    line-height: 1.8;
+    color: #cbd5e1;
+    min-height: 70px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s;
+  }
+  .step-info .highlight {
+    color: #60a5fa;
+    font-weight: 600;
+  }
+
+  /* 动画 */
+  .fade-in {
+    opacity: 0;
+    transition: opacity 0.5s ease;
+  }
+  .fade-in.visible { opacity: 1; }
+
+  .pulse {
+    animation: pulse-anim 1.5s ease-in-out infinite;
+  }
+  @keyframes pulse-anim {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  /* 响应式 */
+  @media (max-width: 700px) {
+    h1 { font-size: 18px; }
+    .step-info { font-size: 13px; padding: 12px 16px; }
+  }
+</style>
+</head>
+<body>
+
+<h1>Git 提交节点流转图</h1>
+<p class="subtitle">prod / test / dev-feature-xx 三分支模型 · 点击步骤逐步演示</p>
+
+<!-- 图例 -->
+<div class="legend">
+  <div class="legend-item">
+    <div class="legend-line" style="background:#ef4444;"></div> prod（主分支）
+  </div>
+  <div class="legend-item">
+    <div class="legend-line" style="background:#fbbf24;"></div> test（测试分支）
+  </div>
+  <div class="legend-item">
+    <div class="legend-line" style="background:#22c55e;"></div> dev-feature-xx（开发分支）
+  </div>
+  <div class="legend-item">
+    <div class="legend-line" style="background:#818cf8; height:2px; border-style:dashed;"></div> merge 操作
+  </div>
+</div>
+
+<!-- 控制按钮 -->
+<div class="controls">
+  <button onclick="showStep(0)" class="active" id="btn-0">全览</button>
+  <button onclick="showStep(1)" id="btn-1">Step 1 · 拉分支</button>
+  <button onclick="showStep(2)" id="btn-2">Step 2 · 开发提交</button>
+  <button onclick="showStep(3)" id="btn-3">Step 3 · 合并到 test</button>
+  <button onclick="showStep(4)" id="btn-4">Step 4 · 修复 & 重测</button>
+  <button onclick="showStep(5)" id="btn-5">Step 5 · MR → prod</button>
+  <button onclick="showStep(6)" id="btn-6">Step 6 · 发版</button>
+</div>
+
+<!-- SVG 画布 -->
+<div class="canvas-wrap">
+<svg id="diagram" viewBox="0 0 1050 580" width="1050" height="580" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- 箭头标记 -->
+    <marker id="arrow-prod" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#ef4444"/>
+    </marker>
+    <marker id="arrow-test" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#fbbf24"/>
+    </marker>
+    <marker id="arrow-dev" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#22c55e"/>
+    </marker>
+    <marker id="arrow-merge" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#818cf8"/>
+    </marker>
+    <marker id="arrow-fix" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#fb923c"/>
+    </marker>
+    <!-- 发光 -->
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="glow-strong">
+      <feGaussianBlur stdDeviation="6" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <!-- ============ 分支标签 ============ -->
+  <g class="branch-labels">
+    <rect x="8" y="58" width="56" height="24" rx="6" fill="rgba(239,68,68,0.15)" stroke="rgba(239,68,68,0.4)" stroke-width="1.5"/>
+    <text x="36" y="75" text-anchor="middle" fill="#fca5a5" font-size="11" font-weight="700">prod</text>
+
+    <rect x="8" y="238" width="44" height="24" rx="6" fill="rgba(251,191,36,0.15)" stroke="rgba(251,191,36,0.4)" stroke-width="1.5"/>
+    <text x="30" y="255" text-anchor="middle" fill="#fde68a" font-size="11" font-weight="700">test</text>
+
+    <rect x="8" y="418" width="30" height="24" rx="6" fill="rgba(34,197,94,0.15)" stroke="rgba(34,197,94,0.4)" stroke-width="1.5"/>
+    <text x="23" y="435" text-anchor="middle" fill="#86efac" font-size="11" font-weight="700">dev</text>
+  </g>
+
+  <!-- 锁标记 -->
+  <g class="lock-icon">
+    <text x="36" y="52" text-anchor="middle" fill="#ef4444" font-size="16">🔒</text>
+  </g>
+
+  <!-- ============ PROD 主线 ============ -->
+  <!-- prod 基线 -->
+  <line x1="80" y1="70" x2="960" y2="70" stroke="rgba(239,68,68,0.15)" stroke-width="2"/>
+
+  <!-- prod commits -->
+  <g class="prod-commits">
+    <!-- C1 -->
+    <circle cx="120" cy="70" r="14" fill="#1e293b" stroke="#ef4444" stroke-width="2.5"/>
+    <text x="120" y="75" text-anchor="middle" fill="#fca5a5" font-size="10" font-weight="700">C1</text>
+    <text x="120" y="100" text-anchor="middle" fill="#64748b" font-size="9">a1b2c3d</text>
+
+    <!-- C2 -->
+    <circle cx="230" cy="70" r="14" fill="#1e293b" stroke="#ef4444" stroke-width="2.5"/>
+    <text x="230" y="75" text-anchor="middle" fill="#fca5a5" font-size="10" font-weight="700">C2</text>
+    <text x="230" y="100" text-anchor="middle" fill="#64748b" font-size="9">e4f5g6h</text>
+
+    <!-- prod 线段 C1→C2 -->
+    <line x1="134" y1="70" x2="216" y2="70" stroke="#ef4444" stroke-width="2.5" marker-end="url(#arrow-prod)"/>
+
+    <!-- C3 (发版点) - step 6 才显示 -->
+    <g class="step-6-only" opacity="0">
+      <line x1="244" y1="70" x2="836" y2="70" stroke="#ef4444" stroke-width="2.5" stroke-dasharray="6,4" marker-end="url(#arrow-prod)"/>
+      <circle cx="850" cy="70" r="18" fill="#1e293b" stroke="#ef4444" stroke-width="3" filter="url(#glow-strong)"/>
+      <text x="850" y="75" text-anchor="middle" fill="#fca5a5" font-size="10" font-weight="700">C7</text>
+      <text x="850" y="102" text-anchor="middle" fill="#fbbf24" font-size="10" font-weight="700">🚀 发版</text>
+      <text x="850" y="116" text-anchor="middle" fill="#64748b" font-size="9">merge commit</text>
+    </g>
+  </g>
+
+  <!-- ============ 分支起点标记 (Step 1) ============ -->
+  <g class="step-1-only" opacity="0">
+    <!-- 从 C2 分叉标记 -->
+    <circle cx="230" cy="70" r="20" fill="none" stroke="#22c55e" stroke-width="2" stroke-dasharray="4,3">
+      <animate attributeName="r" values="18;24;18" dur="1.5s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="1;0.3;1" dur="1.5s" repeatCount="indefinite"/>
+    </circle>
+    <text x="280" y="56" fill="#22c55e" font-size="11" font-weight="600">⬇ 从这里拉分支</text>
+  </g>
+
+  <!-- ============ DEV 分支线 (Step 2) ============ -->
+  <g class="step-2-only" opacity="0">
+    <!-- 分叉线 -->
+    <path d="M 230,84 L 230,430" stroke="rgba(34,197,94,0.3)" stroke-width="1.5" stroke-dasharray="5,3"/>
+    <line x1="230" y1="430" x2="290" y2="430" stroke="#22c55e" stroke-width="2.5" marker-end="url(#arrow-dev)"/>
+
+    <!-- dev 基线 -->
+    <line x1="120" y1="430" x2="620" y2="430" stroke="rgba(34,197,94,0.12)" stroke-width="2"/>
+
+    <!-- C3 on dev -->
+    <circle cx="310" cy="430" r="14" fill="#1e293b" stroke="#22c55e" stroke-width="2.5"/>
+    <text x="310" y="435" text-anchor="middle" fill="#86efac" font-size="10" font-weight="700">C3</text>
+    <text x="310" y="458" text-anchor="middle" fill="#64748b" font-size="9">i7j8k9l</text>
+
+    <!-- C4 on dev -->
+    <line x1="324" y1="430" x2="406" y2="430" stroke="#22c55e" stroke-width="2.5" marker-end="url(#arrow-dev)"/>
+    <circle cx="420" cy="430" r="14" fill="#1e293b" stroke="#22c55e" stroke-width="2.5"/>
+    <text x="420" y="435" text-anchor="middle" fill="#86efac" font-size="10" font-weight="700">C4</text>
+    <text x="420" y="458" text-anchor="middle" fill="#64748b" font-size="9">m0n1o2p</text>
+
+    <!-- 标注 -->
+    <rect x="330" y="468" width="120" height="22" rx="6" fill="rgba(34,197,94,0.08)" stroke="rgba(34,197,94,0.2)" stroke-width="1"/>
+    <text x="390" y="483" text-anchor="middle" fill="#86efac" font-size="10">功能开发提交...</text>
+  </g>
+
+  <!-- ============ TEST 分支线 (Step 3) ============ -->
+  <g class="step-3-only" opacity="0">
+    <!-- test 基线 -->
+    <line x1="120" y1="250" x2="720" y2="250" stroke="rgba(251,191,36,0.12)" stroke-width="2"/>
+
+    <!-- merge 箭头 dev→test -->
+    <path d="M 420,416 C 420,340 530,310 530,264" stroke="#818cf8" stroke-width="2.5" fill="none" stroke-dasharray="6,4" marker-end="url(#arrow-merge)"/>
+
+    <!-- merge 标注 -->
+    <rect x="430" y="330" width="90" height="22" rx="6" fill="rgba(129,140,248,0.1)" stroke="rgba(129,140,248,0.3)" stroke-width="1"/>
+    <text x="475" y="345" text-anchor="middle" fill="#a5b4fc" font-size="10" font-weight="600">merge → test</text>
+
+    <!-- C4' on test (merge commit) -->
+    <circle cx="540" cy="250" r="16" fill="#1e293b" stroke="#fbbf24" stroke-width="2.5" filter="url(#glow)"/>
+    <text x="540" y="255" text-anchor="middle" fill="#fde68a" font-size="10" font-weight="700">C4'</text>
+    <text x="540" y="278" text-anchor="middle" fill="#64748b" font-size="9">merge commit</text>
+
+    <!-- test 标注 -->
+    <rect x="570" y="228" width="80" height="22" rx="6" fill="rgba(251,191,36,0.08)" stroke="rgba(251,191,36,0.2)" stroke-width="1"/>
+    <text x="610" y="243" text-anchor="middle" fill="#fde68a" font-size="10">🧪 测试中</text>
+  </g>
+
+  <!-- ============ 修复重测 (Step 4) ============ -->
+  <g class="step-4-only" opacity="0">
+    <!-- dev 继续延伸 C5 -->
+    <line x1="434" y1="430" x2="576" y2="430" stroke="#22c55e" stroke-width="2.5" marker-end="url(#arrow-dev)"/>
+    <circle cx="590" cy="430" r="14" fill="#1e293b" stroke="#fb923c" stroke-width="2.5"/>
+    <text x="590" y="435" text-anchor="middle" fill="#fdba74" font-size="10" font-weight="700">C5</text>
+    <text x="590" y="458" text-anchor="middle" fill="#64748b" font-size="9">q3r4s5t</text>
+
+    <!-- 修复标注 -->
+    <rect x="540" y="468" width="100" height="22" rx="6" fill="rgba(251,146,60,0.08)" stroke="rgba(251,146,60,0.2)" stroke-width="1"/>
+    <text x="590" y="483" text-anchor="middle" fill="#fdba74" font-size="10">🔧 Bug 修复</text>
+
+    <!-- 再次 merge 到 test -->
+    <path d="M 590,416 C 590,340 680,310 680,264" stroke="#fb923c" stroke-width="2.5" fill="none" stroke-dasharray="6,4" marker-end="url(#arrow-fix)"/>
+
+    <!-- 修复 merge 标注 -->
+    <rect x="604" y="330" width="100" height="22" rx="6" fill="rgba(251,146,60,0.1)" stroke="rgba(251,146,60,0.3)" stroke-width="1"/>
+    <text x="654" y="345" text-anchor="middle" fill="#fdba74" font-size="10" font-weight="600">修复后 → test</text>
+
+    <!-- C5' on test -->
+    <circle cx="690" cy="250" r="16" fill="#1e293b" stroke="#fbbf24" stroke-width="2.5" filter="url(#glow)"/>
+    <text x="690" y="255" text-anchor="middle" fill="#fde68a" font-size="10" font-weight="700">C5'</text>
+    <text x="690" y="278" text-anchor="middle" fill="#64748b" font-size="9">merge commit</text>
+
+    <!-- 测试通过 -->
+    <rect x="720" y="228" width="100" height="22" rx="6" fill="rgba(34,197,94,0.08)" stroke="rgba(34,197,94,0.3)" stroke-width="1"/>
+    <text x="770" y="243" text-anchor="middle" fill="#86efac" font-size="10" font-weight="600">✅ 测试通过</text>
+  </g>
+
+  <!-- ============ MR → prod (Step 5) ============ -->
+  <g class="step-5-only" opacity="0">
+    <!-- MR 箭头 test → prod -->
+    <path d="M 690,234 C 690,160 830,120 830,84" stroke="#818cf8" stroke-width="3" fill="none" stroke-dasharray="8,4" marker-end="url(#arrow-merge)"/>
+
+    <!-- MR 标注 -->
+    <rect x="710" y="150" width="130" height="36" rx="8" fill="rgba(129,140,248,0.1)" stroke="rgba(129,140,248,0.4)" stroke-width="1.5"/>
+    <text x="775" y="165" text-anchor="middle" fill="#a5b4fc" font-size="11" font-weight="700">📋 Merge Request</text>
+    <text x="775" y="179" text-anchor="middle" fill="#818cf8" font-size="9">代码审查 → prod</text>
+
+    <!-- 审查标记 -->
+    <rect x="830" y="40" width="60" height="20" rx="5" fill="rgba(96,165,250,0.1)" stroke="rgba(96,165,250,0.3)" stroke-width="1"/>
+    <text x="860" y="54" text-anchor="middle" fill="#93c5fd" font-size="9">Review</text>
+  </g>
+
+  <!-- ============ 时间轴 ============ -->
+  <g class="timeline">
+    <line x1="100" y1="530" x2="960" y2="530" stroke="rgba(148,163,184,0.2)" stroke-width="1.5" marker-end="url(#arrow-prod)" opacity="0.5"/>
+    <text x="540" y="555" text-anchor="middle" fill="#475569" font-size="12" font-weight="600">时间 →</text>
+  </g>
+
+</svg>
+</div>
+
+<!-- 步骤说明 -->
+<div class="step-info" id="step-info">
+  点击上方步骤按钮，逐步查看 Git 提交节点的流转过程
+</div>
+
+<script>
+const stepDescriptions = [
+  '点击上方步骤按钮，逐步查看 Git 提交节点的流转过程',
+  '<span class="highlight">Step 1 · 拉取开发分支</span> — 从 prod 最新 commit（C2）拉取开发分支 dev-feature-xx，后续所有开发在此分支进行',
+  '<span class="highlight">Step 2 · 开发提交</span> — 在 dev 分支上进行功能开发，每次提交生成新的 commit（C3、C4...）',
+  '<span class="highlight">Step 3 · 合并到 test</span> — 开发完成后，将 dev 分支 merge 到 test 分支进行测试',
+  '<span class="highlight">Step 4 · 修复 & 重测</span> — 如测试发现问题，回到 dev 分支修复（C5），再次 merge 到 test 验证',
+  '<span class="highlight">Step 5 · MR → prod</span> — 测试通过后，发起 Merge Request 请求合并到 prod，等待代码审查',
+  '<span class="highlight">Step 6 · 发版上线</span> — 代码审查通过，merge 到 prod 主分支，生成发版 commit（C7），完成上线 🚀',
+];
+
+function showStep(step) {
+  // 更新按钮状态
+  document.querySelectorAll('.controls button').forEach(b => b.classList.remove('active'));
+  document.getElementById('btn-' + step).classList.add('active');
+
+  // 更新说明
+  document.getElementById('step-info').innerHTML = stepDescriptions[step];
+
+  // 控制 SVG 分组可见性
+  const groups = [
+    'step-1-only', 'step-2-only', 'step-3-only', 'step-4-only', 'step-5-only', 'step-6-only'
+  ];
+
+  groups.forEach((cls, i) => {
+    const el = document.querySelector('.' + cls);
+    if (!el) return;
+    const groupStep = i + 1;
+    if (step === 0) {
+      // 全览模式：全部显示
+      el.setAttribute('opacity', '1');
+      el.style.transition = 'opacity 0.4s';
+    } else if (groupStep <= step) {
+      el.setAttribute('opacity', '1');
+      el.style.transition = 'opacity 0.4s';
+    } else {
+      el.setAttribute('opacity', '0');
+      el.style.transition = 'opacity 0.4s';
+    }
+  });
+}
+
+// 初始全览
+showStep(0);
+</script>
+</body>
+</html>
