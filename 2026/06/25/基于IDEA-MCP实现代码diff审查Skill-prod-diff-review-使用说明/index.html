@@ -1,0 +1,801 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>基于IDEA MCP实现代码Diff审查 - prod-diff-review Skill使用指南 | Yuanz</title><meta name="author" content="Yuanz"><meta name="copyright" content="Yuanz"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="ffffff"><meta name="description" content="📥 项目地址Gitee仓库: zr&#x2F;prod-diff-review 这是一个基于 IDEA MCP 实现的自动化代码评审工具，专门用于对比当前分支与指定基准分支（默认 prod）之间的代码变更，并提供系统化的代码审查报告。 🎯 功能概述该 Skill 专为”基于基准分支的 Git Diff 代码评审”场景设计，提供以下核心能力：  智能差异获取：自动获取 prod...HEAD 或">
+<meta property="og:type" content="article">
+<meta property="og:title" content="基于IDEA MCP实现代码Diff审查 - prod-diff-review Skill使用指南">
+<meta property="og:url" content="https://yuanzhang788.github.io/2026/06/25/%E5%9F%BA%E4%BA%8EIDEA-MCP%E5%AE%9E%E7%8E%B0%E4%BB%A3%E7%A0%81diff%E5%AE%A1%E6%9F%A5Skill-prod-diff-review-%E4%BD%BF%E7%94%A8%E8%AF%B4%E6%98%8E/index.html">
+<meta property="og:site_name" content="Yuanz">
+<meta property="og:description" content="📥 项目地址Gitee仓库: zr&#x2F;prod-diff-review 这是一个基于 IDEA MCP 实现的自动化代码评审工具，专门用于对比当前分支与指定基准分支（默认 prod）之间的代码变更，并提供系统化的代码审查报告。 🎯 功能概述该 Skill 专为”基于基准分支的 Git Diff 代码评审”场景设计，提供以下核心能力：  智能差异获取：自动获取 prod...HEAD 或">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://yuanzhang788.github.io/assets/%E5%9F%BA%E4%BA%8EIDEA-MCP%E5%AE%9E%E7%8E%B0%E4%BB%A3%E7%A0%81diff%E5%AE%A1%E6%9F%A5Skill-prod-diff-review-%E4%BD%BF%E7%94%A8%E8%AF%B4%E6%98%8E/1782370842658-3cf46fbd-cec4-4b62-826a-f7cae32ce009.png">
+<meta property="article:published_time" content="2026-06-25T07:23:55.000Z">
+<meta property="article:modified_time" content="2026-06-25T08:13:41.474Z">
+<meta property="article:author" content="Yuanz">
+<meta property="article:tag" content="AI">
+<meta property="article:tag" content="Cursor">
+<meta property="article:tag" content="Git Diff">
+<meta property="article:tag" content="Skill">
+<meta property="article:tag" content="代码审查">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://yuanzhang788.github.io/assets/%E5%9F%BA%E4%BA%8EIDEA-MCP%E5%AE%9E%E7%8E%B0%E4%BB%A3%E7%A0%81diff%E5%AE%A1%E6%9F%A5Skill-prod-diff-review-%E4%BD%BF%E7%94%A8%E8%AF%B4%E6%98%8E/1782370842658-3cf46fbd-cec4-4b62-826a-f7cae32ce009.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "基于IDEA MCP实现代码Diff审查 - prod-diff-review Skill使用指南",
+  "url": "https://yuanzhang788.github.io/2026/06/25/%E5%9F%BA%E4%BA%8EIDEA-MCP%E5%AE%9E%E7%8E%B0%E4%BB%A3%E7%A0%81diff%E5%AE%A1%E6%9F%A5Skill-prod-diff-review-%E4%BD%BF%E7%94%A8%E8%AF%B4%E6%98%8E/",
+  "image": "https://yuanzhang788.github.io/assets/%E5%9F%BA%E4%BA%8EIDEA-MCP%E5%AE%9E%E7%8E%B0%E4%BB%A3%E7%A0%81diff%E5%AE%A1%E6%9F%A5Skill-prod-diff-review-%E4%BD%BF%E7%94%A8%E8%AF%B4%E6%98%8E/1782370842658-3cf46fbd-cec4-4b62-826a-f7cae32ce009.png",
+  "datePublished": "2026-06-25T07:23:55.000Z",
+  "dateModified": "2026-06-25T08:13:41.474Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "Yuanz",
+      "url": "https://yuanzhang788.github.io"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://yuanzhang788.github.io/2026/06/25/%E5%9F%BA%E4%BA%8EIDEA-MCP%E5%AE%9E%E7%8E%B0%E4%BB%A3%E7%A0%81diff%E5%AE%A1%E6%9F%A5Skill-prod-diff-review-%E4%BD%BF%E7%94%A8%E8%AF%B4%E6%98%8E/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!true && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          const mediaQueryDark = window.matchMedia('(prefers-color-scheme: dark)')
+          const mediaQueryLight = window.matchMedia('(prefers-color-scheme: light)')
+
+          if (theme === undefined) {
+            if (mediaQueryLight.matches) activateLightMode()
+            else if (mediaQueryDark.matches) activateDarkMode()
+            else {
+              const hour = new Date().getHours()
+              const isNight = hour <= 6 || hour >= 18
+              isNight ? activateDarkMode() : activateLightMode()
+            }
+            mediaQueryDark.addEventListener('change', () => {
+              if (saveToLocal.get('theme') === undefined) {
+                e.matches ? activateDarkMode() : activateLightMode()
+              }
+            })
+          } else {
+            theme === 'light' ? activateLightMode() : activateDarkMode()
+          }
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.json","preload":false,"top_n_per_article":1,"unescape":false,"pagination":{"enable":false,"hitsPerPage":8},"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":400,"highlightFullpage":true,"highlightMacStyle":true},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: true,
+    post: false
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: {"limitCount":50,"languages":{"author":"作者: Yuanz","link":"链接: ","source":"来源: Yuanz","info":"著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。"}},
+  lightbox: 'fancybox',
+  Snackbar: {"chs_to_cht":"已切换为繁体中文","cht_to_chs":"已切换为简体中文","day_to_night":"已切换为深色模式","night_to_day":"已切换为浅色模式","bgLight":"#49b1f5","bgDark":"#1f1f1f","position":"bottom-left"},
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: true,
+  islazyloadPlugin: true,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: true
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '基于IDEA MCP实现代码Diff审查 - prod-diff-review Skill使用指南',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="stylesheet" href="/css/custom.css"><meta name="generator" content="Hexo 8.1.2"></head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div><script>(()=>{
+  const $loadingBox = document.getElementById('loading-box')
+  const $body = document.body
+  const preloader = {
+    endLoading: () => {
+      if ($loadingBox.classList.contains('loaded')) return
+      $body.style.overflow = ''
+      $loadingBox.classList.add('loaded')
+    },
+    initLoading: () => {
+      $body.style.overflow = 'hidden'
+      $loadingBox.classList.remove('loaded')
+    }
+  }
+
+  preloader.initLoading()
+
+  if (document.readyState === 'complete') {
+    preloader.endLoading()
+  } else {
+    window.addEventListener('load', preloader.endLoading)
+    document.addEventListener('DOMContentLoaded', preloader.endLoading)
+    // Add timeout protection: force end after 7 seconds
+    setTimeout(preloader.endLoading, 7000)
+  }
+
+  if (true) {
+    btf.addGlobalFn('pjaxSend', preloader.initLoading, 'preloader_init')
+    btf.addGlobalFn('pjaxComplete', preloader.endLoading, 'preloader_end')
+  }
+})()</script><div class="bg-animation" id="web_bg" style="background-image: url(/assets/Abanner/index.jpg);"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/assets/Abanner/avatar.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">180</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">106</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">0</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg fixed" id="page-header" style="background-image: url(/assets/%E5%9F%BA%E4%BA%8EIDEA-MCP%E5%AE%9E%E7%8E%B0%E4%BB%A3%E7%A0%81diff%E5%AE%A1%E6%9F%A5Skill-prod-diff-review-%E4%BD%BF%E7%94%A8%E8%AF%B4%E6%98%8E/1782370842658-3cf46fbd-cec4-4b62-826a-f7cae32ce009.png);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">Yuanz</span></a><a class="nav-page-title" href="/"><span class="site-name">基于IDEA MCP实现代码Diff审查 - prod-diff-review Skill使用指南</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">基于IDEA MCP实现代码Diff审查 - prod-diff-review Skill使用指南</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2026-06-25T07:23:55.000Z" title="发表于 2026-06-25 15:23:55">2026-06-25</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-06-25T08:13:41.474Z" title="更新于 2026-06-25 16:13:41">2026-06-25</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><div id="post-outdate-notice" data="{&quot;limitDay&quot;:365,&quot;messagePrev&quot;:&quot;已经过了&quot;,&quot;messageNext&quot;:&quot;天自上次更新，文章内容可能已过时。&quot;,&quot;postUpdate&quot;:&quot;2026-06-25 16:13:41&quot;}" hidden></div><h2 id="📥-项目地址"><a href="#📥-项目地址" class="headerlink" title="📥 项目地址"></a>📥 项目地址</h2><p><strong>Gitee仓库</strong>: <a target="_blank" rel="noopener" href="https://gitee.com/zhourui815/prod-diff-review">zr&#x2F;prod-diff-review</a></p>
+<p>这是一个基于 IDEA MCP 实现的自动化代码评审工具，专门用于对比当前分支与指定基准分支（默认 <code>prod</code>）之间的代码变更，并提供系统化的代码审查报告。</p>
+<h2 id="🎯-功能概述"><a href="#🎯-功能概述" class="headerlink" title="🎯 功能概述"></a>🎯 功能概述</h2><p>该 Skill 专为”基于基准分支的 Git Diff 代码评审”场景设计，提供以下核心能力：</p>
+<ul>
+<li><strong>智能差异获取</strong>：自动获取 <code>prod...HEAD</code> 或指定分支的代码差异</li>
+<li><strong>标准化评审</strong>：按照固定的 10 条评审规则逐条检查代码质量</li>
+<li><strong>结构化输出</strong>：以 Markdown 表格形式呈现评审结果，清晰标注通过项与待优化项</li>
+<li><strong>可执行建议</strong>：针对每个待优化项提供详细的问题描述和修正建议（含关键代码片段）</li>
+</ul>
+<h2 id="⚡-快速开始"><a href="#⚡-快速开始" class="headerlink" title="⚡ 快速开始"></a>⚡ 快速开始</h2><h3 id="触发方式"><a href="#触发方式" class="headerlink" title="触发方式"></a>触发方式</h3><p>在 Cursor 对话中输入以下命令即可触发代码评审：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-comment"># 方式1：默认对比 prod 分支</span><br>/prod-diff-review 评审<br><br><span class="hljs-comment"># 方式2：指定对比分支（例如 test 分支）</span><br>/prod-diff-review <span class="hljs-built_in">test</span><br></code></pre></td></tr></table></figure>
+
+<p><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/assets/%E5%9F%BA%E4%BA%8EIDEA-MCP%E5%AE%9E%E7%8E%B0%E4%BB%A3%E7%A0%81diff%E5%AE%A1%E6%9F%A5Skill-prod-diff-review-%E4%BD%BF%E7%94%A8%E8%AF%B4%E6%98%8E/1782370960464-9da39e71-3c21-4b67-9f2e-21b87ad7690e.png" alt="评审非默认分支"></p>
+<p>或者直接在对话中明确提出需求，如：”请基于 <code>prod</code> 分支的 diff 进行代码评审”，Skill 将根据你的场景自动调用。</p>
+<h2 id="🔧-前置条件"><a href="#🔧-前置条件" class="headerlink" title="🔧 前置条件"></a>🔧 前置条件</h2><p>在使用该 Skill 之前，请确保满足以下条件：</p>
+<h3 id="1-Git-分支准备"><a href="#1-Git-分支准备" class="headerlink" title="1. Git 分支准备"></a>1. Git 分支准备</h3><ul>
+<li><strong>基准分支存在</strong>：本地需要存在可对比的基线分支（默认为 <code>prod</code>）</li>
+<li><strong>分支验证</strong>：Skill 会自动在本地验证基准分支是否存在</li>
+<li><strong>备选方案</strong>：若本地没有 <code>prod</code> 分支，Skill 会提示你指定其他可用基准分支，或你需要先在本地拉取基线分支</li>
+</ul>
+<h3 id="2-Git-环境配置"><a href="#2-Git-环境配置" class="headerlink" title="2. Git 环境配置"></a>2. Git 环境配置</h3><p><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/assets/%E5%9F%BA%E4%BA%8EIDEA-MCP%E5%AE%9E%E7%8E%B0%E4%BB%A3%E7%A0%81diff%E5%AE%A1%E6%9F%A5Skill-prod-diff-review-%E4%BD%BF%E7%94%A8%E8%AF%B4%E6%98%8E/1782370686481-eaa31008-13e8-458d-a797-7c89451ad333.png" alt="验证gitdiff"></p>
+<ul>
+<li>Skill 依赖 <code>git</code> 命令生成代码差异</li>
+<li>确保 Git 已正确安装并配置到系统环境变量</li>
+</ul>
+<h3 id="3-IDEA-MCP-服务配置"><a href="#3-IDEA-MCP-服务配置" class="headerlink" title="3. IDEA MCP 服务配置"></a>3. IDEA MCP 服务配置</h3><h4 id="为什么选择-IDEA-MCP？"><a href="#为什么选择-IDEA-MCP？" class="headerlink" title="为什么选择 IDEA MCP？"></a>为什么选择 IDEA MCP？</h4><blockquote>
+<p><strong>优势对比</strong>：相比独立的 Git MCP 服务，IDEA MCP 具有以下优势：</p>
+<ul>
+<li>✅ 无需额外搭建独立服务</li>
+<li>✅ 只需在 IDEA 中开启开关即可使用</li>
+<li>✅ IDEA 原生支持 Git Diff，集成度更高</li>
+</ul>
+</blockquote>
+<h4 id="配置步骤"><a href="#配置步骤" class="headerlink" title="配置步骤"></a>配置步骤</h4><p><strong>Step 1</strong>：在 IntelliJ IDEA 中启用 MCP Server</p>
+<p><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/assets/%E5%9F%BA%E4%BA%8EIDEA-MCP%E5%AE%9E%E7%8E%B0%E4%BB%A3%E7%A0%81diff%E5%AE%A1%E6%9F%A5Skill-prod-diff-review-%E4%BD%BF%E7%94%A8%E8%AF%B4%E6%98%8E/1782370506270-717d0f6a-4375-42d4-a197-75377b7d0e90.png" alt="idea打开MCP server"></p>
+<p><strong>Step 2</strong>：在 Cursor 中配置 IDEA MCP 连接</p>
+<p><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/assets/%E5%9F%BA%E4%BA%8EIDEA-MCP%E5%AE%9E%E7%8E%B0%E4%BB%A3%E7%A0%81diff%E5%AE%A1%E6%9F%A5Skill-prod-diff-review-%E4%BD%BF%E7%94%A8%E8%AF%B4%E6%98%8E/1782370552907-f7050fe5-0e82-4f31-abee-2e6d4e5b6af2.png" alt="cursor中配置idea mcp"></p>
+<p><strong>Step 3</strong>：验证 MCP 连接状态（必须显示为可用）</p>
+<p><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/assets/%E5%9F%BA%E4%BA%8EIDEA-MCP%E5%AE%9E%E7%8E%B0%E4%BB%A3%E7%A0%81diff%E5%AE%A1%E6%9F%A5Skill-prod-diff-review-%E4%BD%BF%E7%94%A8%E8%AF%B4%E6%98%8E/1782370524935-31bb9668-1d0a-4850-9458-2213cef20955.png" alt="mcp agent处必须是可用的"></p>
+<h2 id="🔐-MCP-权限配置（关键）"><a href="#🔐-MCP-权限配置（关键）" class="headerlink" title="🔐 MCP 权限配置（关键）"></a>🔐 MCP 权限配置（关键）</h2><p>该 Skill 依赖 <code>user-jetbrains</code> MCP 服务，需要授权执行终端命令权限。</p>
+<h3 id="使用的-MCP-工具"><a href="#使用的-MCP-工具" class="headerlink" title="使用的 MCP 工具"></a>使用的 MCP 工具</h3><ul>
+<li><strong>工具名称</strong>：<code>execute_terminal_command</code></li>
+<li><strong>执行环境</strong>：IDE 集成终端 &#x2F; IDE 运行环境</li>
+<li><strong>执行的命令</strong>：<ul>
+<li><code>git diff --name-only &lt;BASE_BRANCH&gt;...HEAD</code>（获取变更文件列表）</li>
+<li><code>git diff &lt;BASE_BRANCH&gt;...HEAD -- &lt;关键文件&gt;</code>（获取关键文件的详细差异）</li>
+</ul>
+</li>
+</ul>
+<h3 id="注意事项"><a href="#注意事项" class="headerlink" title="注意事项"></a>注意事项</h3><ol>
+<li><p><strong>权限授予</strong>：当 MCP 请求执行命令时，请务必选择”允许”</p>
+<ul>
+<li>若选择”跳过&#x2F;拒绝”，Skill 将无法获取 diff 信息</li>
+<li>此时你需要手动粘贴 <code>${BASE_BRANCH}...HEAD</code> 的完整 diff 输出</li>
+</ul>
+</li>
+<li><p><strong>大文件处理</strong>：diff 输出可能较长</p>
+<ul>
+<li>Skill 采用”关键文件分段获取”策略，避免单次输出过长导致超时</li>
+<li>优先获取核心业务逻辑文件的差异内容</li>
+</ul>
+</li>
+</ol>
+<h2 id="📊-评审输出格式"><a href="#📊-评审输出格式" class="headerlink" title="📊 评审输出格式"></a>📊 评审输出格式</h2><p>Skill 以 Markdown 表格形式输出结构化的评审报告：</p>
+<p><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/assets/%E5%9F%BA%E4%BA%8EIDEA-MCP%E5%AE%9E%E7%8E%B0%E4%BB%A3%E7%A0%81diff%E5%AE%A1%E6%9F%A5Skill-prod-diff-review-%E4%BD%BF%E7%94%A8%E8%AF%B4%E6%98%8E/1782370787388-4fae2131-c7c5-42c4-b2bc-357b11de74f5.png" alt="评审表格"></p>
+<h3 id="表格字段说明"><a href="#表格字段说明" class="headerlink" title="表格字段说明"></a>表格字段说明</h3><table>
+<thead>
+<tr>
+<th>字段</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>评审规则</td>
+<td>对应的评审规则编号</td>
+</tr>
+<tr>
+<td>评审内容</td>
+<td>具体的评审维度描述</td>
+</tr>
+<tr>
+<td>评审结论</td>
+<td>✅ 通过 &#x2F; ⚠️ 待优化</td>
+</tr>
+<tr>
+<td>完成时间</td>
+<td>评审完成的时间戳</td>
+</tr>
+</tbody></table>
+<h3 id="评审结论类型"><a href="#评审结论类型" class="headerlink" title="评审结论类型"></a>评审结论类型</h3><ul>
+<li><strong>✅ 通过</strong>：该项检查未发现明显问题</li>
+<li><strong>⚠️ 待优化</strong>：发现潜在问题或改进空间</li>
+</ul>
+<h3 id="待优化项详细说明"><a href="#待优化项详细说明" class="headerlink" title="待优化项详细说明"></a>待优化项详细说明</h3><p>当某条评审结论为 <code>⚠️ 待优化</code> 时，除了表格中的简短原因外，还会追加详细的分析：</p>
+<p><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/assets/%E5%9F%BA%E4%BA%8EIDEA-MCP%E5%AE%9E%E7%8E%B0%E4%BB%A3%E7%A0%81diff%E5%AE%A1%E6%9F%A5Skill-prod-diff-review-%E4%BD%BF%E7%94%A8%E8%AF%B4%E6%98%8E/1782370842658-3cf46fbd-cec4-4b62-826a-f7cae32ce009.png" alt="评审详情"></p>
+<p>包含以下内容：</p>
+<ol>
+<li><strong>审查结论</strong>：对该问题的整体评估</li>
+<li><strong>改动检查</strong>：相关代码变更的检查结果</li>
+<li><strong>阻断项</strong>：是否属于必须先修复的阻断性问题</li>
+<li><strong>问题描述</strong>：详细说明发现的问题及其潜在影响</li>
+<li><strong>修正建议</strong>：提供可执行的改进方案，包含可直接复制的关键代码片段</li>
+</ol>
+<h2 id="⚠️-重要提示"><a href="#⚠️-重要提示" class="headerlink" title="⚠️ 重要提示"></a>⚠️ 重要提示</h2><h3 id="待优化项的处理策略"><a href="#待优化项的处理策略" class="headerlink" title="待优化项的处理策略"></a>待优化项的处理策略</h3><ul>
+<li><code>⚠️ 待优化</code> 不仅表示”建议”，也可能代表<strong>阻断性问题</strong>，需要在合并前修复</li>
+<li><strong>强烈建议</strong>：在代码合并到主分支前，优先处理所有标记为 <code>⚠️ 待优化</code> 的条目</li>
+<li>对于严重级别的问题，修正建议中会明确标注”必须先修复”</li>
+</ul>
+<h3 id="输出有效性说明"><a href="#输出有效性说明" class="headerlink" title="输出有效性说明"></a>输出有效性说明</h3><ul>
+<li>若本次 diff 未覆盖某条评审规则对应的风险面，Skill 将输出 <code>✅ 通过</code></li>
+<li>同时在评审内容中注明”diff 未覆盖&#x2F;无法判断”，保持透明度</li>
+</ul>
+<h2 id="❓-常见问题-FAQ"><a href="#❓-常见问题-FAQ" class="headerlink" title="❓ 常见问题 FAQ"></a>❓ 常见问题 FAQ</h2><h3 id="Q1：为什么某些风险项显示”无法判断”？"><a href="#Q1：为什么某些风险项显示”无法判断”？" class="headerlink" title="Q1：为什么某些风险项显示”无法判断”？"></a>Q1：为什么某些风险项显示”无法判断”？</h3><p><strong>原因</strong>：本次 diff 未涉及对应代码路径。例如：</p>
+<ul>
+<li>未出现虚拟线程相关代码 → 虚拟线程安全性检查无法判断</li>
+<li>未使用 CountDownLatch → 并发工具检查无法判断</li>
+<li>未涉及 Redis 操作 → 缓存加锁检查无法判断</li>
+</ul>
+<p><strong>解决方案</strong>：这是正常现象，说明当前变更不涉及该类风险。</p>
+<h3 id="Q2：MCP-权限请求总是被我拒绝怎么办？"><a href="#Q2：MCP-权限请求总是被我拒绝怎么办？" class="headerlink" title="Q2：MCP 权限请求总是被我拒绝怎么办？"></a>Q2：MCP 权限请求总是被我拒绝怎么办？</h3><p><strong>影响</strong>：拒绝后 Skill 无法自动获取 diff 信息</p>
+<p><strong>解决方案</strong>：</p>
+<ol>
+<li><strong>推荐</strong>：在 MCP 权限请求时选择”允许执行 <code>execute_terminal_command</code>“</li>
+<li><strong>备选</strong>：手动执行以下命令并粘贴结果：<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">git diff prod...HEAD<br></code></pre></td></tr></table></figure></li>
+</ol>
+<p><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/assets/%E5%9F%BA%E4%BA%8EIDEA-MCP%E5%AE%9E%E7%8E%B0%E4%BB%A3%E7%A0%81diff%E5%AE%A1%E6%9F%A5Skill-prod-diff-review-%E4%BD%BF%E7%94%A8%E8%AF%B4%E6%98%8E/1782368876834-b64d08ed-c0f6-421f-8dfe-db8013441e6a.png" alt="允许execute_terminal_command"></p>
+<h3 id="Q3：如何自定义基准分支？"><a href="#Q3：如何自定义基准分支？" class="headerlink" title="Q3：如何自定义基准分支？"></a>Q3：如何自定义基准分支？</h3><p><strong>方法</strong>：使用命令 <code>/prod-diff-review &lt;branch_name&gt;</code> 指定任意基准分支</p>
+<p>示例：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash">/prod-diff-review develop    <span class="hljs-comment"># 对比 develop 分支</span><br>/prod-diff-review release    <span class="hljs-comment"># 对比 release 分支</span><br></code></pre></td></tr></table></figure>
+
+<h3 id="Q4：diff-内容过多会导致超时吗？"><a href="#Q4：diff-内容过多会导致超时吗？" class="headerlink" title="Q4：diff 内容过多会导致超时吗？"></a>Q4：diff 内容过多会导致超时吗？</h3><p><strong>不会</strong>。Skill 采用智能分段策略：</p>
+<ul>
+<li>优先获取变更的核心业务文件</li>
+<li>对超大文件进行分批读取</li>
+<li>自动过滤非关键文件（如配置文件、静态资源等）</li>
+</ul>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://yuanzhang788.github.io">Yuanz</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://yuanzhang788.github.io/2026/06/25/%E5%9F%BA%E4%BA%8EIDEA-MCP%E5%AE%9E%E7%8E%B0%E4%BB%A3%E7%A0%81diff%E5%AE%A1%E6%9F%A5Skill-prod-diff-review-%E4%BD%BF%E7%94%A8%E8%AF%B4%E6%98%8E/">https://yuanzhang788.github.io/2026/06/25/基于IDEA-MCP实现代码diff审查Skill-prod-diff-review-使用说明/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://yuanzhang788.github.io" target="_blank">Yuanz</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/AI/">AI</a><a class="post-meta__tags" href="/tags/Skill/">Skill</a><a class="post-meta__tags" href="/tags/Cursor/">Cursor</a><a class="post-meta__tags" href="/tags/%E4%BB%A3%E7%A0%81%E5%AE%A1%E6%9F%A5/">代码审查</a><a class="post-meta__tags" href="/tags/Git-Diff/">Git Diff</a></div><div class="post-share"><div class="social-share" data-image="/assets/%E5%9F%BA%E4%BA%8EIDEA-MCP%E5%AE%9E%E7%8E%B0%E4%BB%A3%E7%A0%81diff%E5%AE%A1%E6%9F%A5Skill-prod-diff-review-%E4%BD%BF%E7%94%A8%E8%AF%B4%E6%98%8E/1782370842658-3cf46fbd-cec4-4b62-826a-f7cae32ce009.png" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related full-width" href="/2026/06/18/spring%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB%E8%B7%AF%E7%BA%BF/" title="spring源码阅读路线"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/assets/Abanner/default_cover.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">spring源码阅读路线</div></div><div class="info-2"><div class="info-item-1">关键源码方法（强烈建议自己去撸一遍）  org.springframework.context.support.AbstractApplicationContext#refresh(入口) org.springframework.context.support.AbstractApplicationContext#finishBeanFactoryInitialization(初始化单例对象入口) org.springframework.beans.factory.config.ConfigurableListableBeanFactory#preInstantiateSingleton...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/2024/09/09/jantic_DeOldify%E9%83%A8%E7%BD%B2%EF%BC%88%E5%9B%BE%E7%89%87%E4%B8%8A%E8%89%B2%EF%BC%89%E9%99%84%E5%B8%A6Dockerfile%E5%92%8C%E9%95%9C%E5%83%8F/" title="jantic&#x2F;DeOldify部署（图片上色）附带Dockerfile和镜像"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/assets/Abanner/default_cover.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-09-09</div><div class="info-item-2">jantic&#x2F;DeOldify部署（图片上色）附带Dockerfile和镜像</div></div><div class="info-2"><div class="info-item-1">1. 克隆代码到DeOldify1git clone https://github.com/jantic/DeOldify.git DeOldify     DeOldify源码   2. 安装依赖 这里会安装python以及创建deoldify环境  12cd DeOldifyconda env create -f environment.yml   123456789101112131415161718192021222324252627(base) root@DESKTOP-1FOD6A8:~/DeOldify# conda env create -f environment.ym...</div></div></div></a><a class="pagination-related" href="/2024/07/29/TencentARC_GFPGAN%E4%BA%BA%E8%84%B8%E6%81%A2%E5%A4%8DUbuntu-22.04%E6%90%AD%E5%BB%BA(%E9%99%84%E5%B8%A6Docker%E9%95%9C%E5%83%8F)/" title="TencentARC&#x2F;GFPGAN人脸恢复Ubuntu-22.04搭建(附带Docker镜像)"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/assets/Abanner/default_cover.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-07-29</div><div class="info-item-2">TencentARC&#x2F;GFPGAN人脸恢复Ubuntu-22.04搭建(附带Docker镜像)</div></div><div class="info-2"><div class="info-item-1">代码下载与环境说明 特殊说明:  作者使用的wsl Ubuntu-22.04子系统,然后借用本机代理 读者也可以换源(但是我之前使用换源,部分依赖没有下载成功)   官方文档  我在root目录下克隆代码  12git clone https://github.com/TencentARC/GFPGAN.gitcd GFPGAN    所需依赖  此处因为我是使用已经训练好的模型,所以我没有使用NVIDA GPU + CUDA 会影响安装PyTorch的命令(有GPU需要自己训练的可以使用GPU版本,我使用的是CPU版本) 我使用的是Ubuntu-22.04    依赖安装1.安装 An...</div></div></div></a><a class="pagination-related" href="/2025/10/20/Spring%20AI%20Alibaba%20%E6%A6%82%E8%A7%88/" title="Spring AI Alibaba 概览"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/assets/Abanner/default_cover.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-10-20</div><div class="info-item-2">Spring AI Alibaba 概览</div></div><div class="info-2"><div class="info-item-1">✅ Spring AI Alibaba 概览 官网文档地址  Spring AI Alibaba 概览 ✅ 什么是 Spring AI Alibaba Spring AI Alibaba（SAA） 是一款以 Spring AI 为基础，深度集成百炼平台，支持 ChatBot、工作流、多智能体应用开发模式的 AI 框架。   在 1.0 版本中，Spring AI Alibaba 提供以下核心能力，让开发者可以快速构建自己的 Agent、Workflow 或 Multi-agent 应用。  **Graph 多智能体框架。**基于 Spring AI Alibaba Graph 开发者可快...</div></div></div></a><a class="pagination-related" href="/2025/02/06/%E5%9F%BA%E4%BA%8E%20Ollama+Docker+OpenWebUI%20%E7%9A%84%E6%9C%AC%E5%9C%B0%E5%8C%96%E9%83%A8%E7%BD%B2deepseek%E6%B5%81%E7%A8%8B/" title="基于 Ollama+Docker+OpenWebUI 的本地化部署deepseek流程"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/assets/Abanner/default_cover.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-02-06</div><div class="info-item-2">基于 Ollama+Docker+OpenWebUI 的本地化部署deepseek流程</div></div><div class="info-2"><div class="info-item-1">搭建deepseek安装OllamaOllama官方下载地址  下载完成后双击打开Ollama进行安装,点击install  安装完成后系统会弹出下图提示代表安装成功并且已启动  验证安装 1ollama -v   安装完成后，cmd 打开命令行窗口，输入 “ollama -v” 测试，显示 ollama 的版本为 “0.5.7”，表明安装成功。  Ollama 没有用户界面，在后台运行。 打开浏览器，输入 “http://localhost:11434/”，显示 “Ollama is running”。  Ollma 安装 deepseek-r1 模型deepseek-r1 模型介绍从...</div></div></div></a><a class="pagination-related" href="/2025/10/28/SpringBoot%20+%20%E7%99%BE%E5%BA%A6%E5%86%85%E5%AE%B9%E5%AE%89%E5%85%A8%E5%AE%9E%E6%88%98%EF%BC%9A%E8%87%AA%E5%AE%9A%E4%B9%89%E6%B3%A8%E8%A7%A3%20+%20AOP%20%E5%AE%9E%E7%8E%B0%E7%BB%9F%E4%B8%80%E5%86%85%E5%AE%B9%E5%AE%A1%E6%A0%B8%EF%BC%88%E6%94%AF%E6%8C%81%E6%96%87%E6%9C%AC%20_%20%E5%9B%BE%E7%89%87%20_%20%E8%A7%86%E9%A2%91%20+%20%E7%99%BD%E5%90%8D%E5%8D%95%20+%20%E5%8A%A8%E6%80%81%E5%BC%80%E5%85%B3%EF%BC%89/" title="SpringBoot + 百度内容安全实战：自定义注解 + AOP 实现统一内容审核（支持文本 &#x2F; 图片 &#x2F; 视频 + 白名单 + 动态开关）"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/assets/Abanner/default_cover.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-10-28</div><div class="info-item-2">SpringBoot + 百度内容安全实战：自定义注解 + AOP 实现统一内容审核（支持文本 &#x2F; 图片 &#x2F; 视频 + 白名单 + 动态开关）</div></div><div class="info-2"><div class="info-item-1">🧩 一、为什么要做内容审核在实际业务（如用户发帖、评论、任务描述、AI生成内容等）中，往往需要防止以下问题：  🧨 用户发布涉政、色情、辱骂等敏感内容； 🖼️ 上传违规图片或视频； 🤖 机器人刷垃圾广告、推广链接； ⚙️ 需要为不同场景设置灵活的开关与白名单。  这篇文章带你从 架构设计 到 代码实现，一步步构建出企业级的 内容审核中间层。  📘 二、核心功能概览✅ 支持类型：文本、图片、视频✅ 实现方式：自定义注解 + AOP 自动拦截✅ 集成能力：百度内容安全 API（AipContentCensor）✅ 动态配置：从配置中心获取审核开关与白名单（infraConfigAp...</div></div></div></a><a class="pagination-related" href="/2024/10/25/HivisionIDPhoto%20Docker%E9%83%A8%E7%BD%B2%E4%BB%A5%E5%8F%8ASpringboot%E6%8E%A5%E5%8F%A3%E5%AF%B9%E6%8E%A5(AI%E8%AF%81%E4%BB%B6%E7%85%A7%E5%88%B6%E4%BD%9C)/" title="HivisionIDPhoto Docker部署以及Springboot接口对接(AI证件照制作)"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/assets/Abanner/default_cover.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-10-25</div><div class="info-item-2">HivisionIDPhoto Docker部署以及Springboot接口对接(AI证件照制作)</div></div><div class="info-2"><div class="info-item-1">项目简介项目以及官方文档地址 HivisionIDPhoto 旨在开发一种实用、系统性的证件照智能制作算法。 它利用一套完善的AI模型工作流程，实现对多种用户拍照场景的识别、抠图与证件照生成。 HivisionIDPhoto 可以做到：  轻量级抠图（纯离线，仅需 CPU 即可快速推理） 根据不同尺寸规格生成不同的标准证件照、六寸排版照 支持 纯离线 或 端云 推理 美颜 智能换正装（waiting）  Docker 部署拉取镜像 官方再docker hub是有镜像源的,但是因为某些原因可能pull失败,我备份了一份到阿里云镜像仓库(官方版本为1.2.9),如下拉取镜像  1docker...</div></div></div></a></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="twikoo-wrap"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/assets/Abanner/avatar.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">Yuanz</div><div class="author-info-description">Yuanz的个人博客</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">180</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">106</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">0</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/yuanzhang788"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/yuanzhang788" target="_blank" title="Github"><i class="fab fa-github" style="color: #4a7dbe;"></i></a><a class="social-icon" href="mailto:2437264464@qq.com" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #49b1f5;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎访问 Yuanz 的个人博客！</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%93%A5-%E9%A1%B9%E7%9B%AE%E5%9C%B0%E5%9D%80"><span class="toc-number">1.</span> <span class="toc-text">📥 项目地址</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%8E%AF-%E5%8A%9F%E8%83%BD%E6%A6%82%E8%BF%B0"><span class="toc-number">2.</span> <span class="toc-text">🎯 功能概述</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E2%9A%A1-%E5%BF%AB%E9%80%9F%E5%BC%80%E5%A7%8B"><span class="toc-number">3.</span> <span class="toc-text">⚡ 快速开始</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%A7%A6%E5%8F%91%E6%96%B9%E5%BC%8F"><span class="toc-number">3.1.</span> <span class="toc-text">触发方式</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%94%A7-%E5%89%8D%E7%BD%AE%E6%9D%A1%E4%BB%B6"><span class="toc-number">4.</span> <span class="toc-text">🔧 前置条件</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-Git-%E5%88%86%E6%94%AF%E5%87%86%E5%A4%87"><span class="toc-number">4.1.</span> <span class="toc-text">1. Git 分支准备</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-Git-%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE"><span class="toc-number">4.2.</span> <span class="toc-text">2. Git 环境配置</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-IDEA-MCP-%E6%9C%8D%E5%8A%A1%E9%85%8D%E7%BD%AE"><span class="toc-number">4.3.</span> <span class="toc-text">3. IDEA MCP 服务配置</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E9%80%89%E6%8B%A9-IDEA-MCP%EF%BC%9F"><span class="toc-number">4.3.1.</span> <span class="toc-text">为什么选择 IDEA MCP？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%85%8D%E7%BD%AE%E6%AD%A5%E9%AA%A4"><span class="toc-number">4.3.2.</span> <span class="toc-text">配置步骤</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%94%90-MCP-%E6%9D%83%E9%99%90%E9%85%8D%E7%BD%AE%EF%BC%88%E5%85%B3%E9%94%AE%EF%BC%89"><span class="toc-number">5.</span> <span class="toc-text">🔐 MCP 权限配置（关键）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8%E7%9A%84-MCP-%E5%B7%A5%E5%85%B7"><span class="toc-number">5.1.</span> <span class="toc-text">使用的 MCP 工具</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9"><span class="toc-number">5.2.</span> <span class="toc-text">注意事项</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%93%8A-%E8%AF%84%E5%AE%A1%E8%BE%93%E5%87%BA%E6%A0%BC%E5%BC%8F"><span class="toc-number">6.</span> <span class="toc-text">📊 评审输出格式</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%A1%A8%E6%A0%BC%E5%AD%97%E6%AE%B5%E8%AF%B4%E6%98%8E"><span class="toc-number">6.1.</span> <span class="toc-text">表格字段说明</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AF%84%E5%AE%A1%E7%BB%93%E8%AE%BA%E7%B1%BB%E5%9E%8B"><span class="toc-number">6.2.</span> <span class="toc-text">评审结论类型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BE%85%E4%BC%98%E5%8C%96%E9%A1%B9%E8%AF%A6%E7%BB%86%E8%AF%B4%E6%98%8E"><span class="toc-number">6.3.</span> <span class="toc-text">待优化项详细说明</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E2%9A%A0%EF%B8%8F-%E9%87%8D%E8%A6%81%E6%8F%90%E7%A4%BA"><span class="toc-number">7.</span> <span class="toc-text">⚠️ 重要提示</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BE%85%E4%BC%98%E5%8C%96%E9%A1%B9%E7%9A%84%E5%A4%84%E7%90%86%E7%AD%96%E7%95%A5"><span class="toc-number">7.1.</span> <span class="toc-text">待优化项的处理策略</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%BE%93%E5%87%BA%E6%9C%89%E6%95%88%E6%80%A7%E8%AF%B4%E6%98%8E"><span class="toc-number">7.2.</span> <span class="toc-text">输出有效性说明</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E2%9D%93-%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98-FAQ"><span class="toc-number">8.</span> <span class="toc-text">❓ 常见问题 FAQ</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Q1%EF%BC%9A%E4%B8%BA%E4%BB%80%E4%B9%88%E6%9F%90%E4%BA%9B%E9%A3%8E%E9%99%A9%E9%A1%B9%E6%98%BE%E7%A4%BA%E2%80%9D%E6%97%A0%E6%B3%95%E5%88%A4%E6%96%AD%E2%80%9D%EF%BC%9F"><span class="toc-number">8.1.</span> <span class="toc-text">Q1：为什么某些风险项显示”无法判断”？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Q2%EF%BC%9AMCP-%E6%9D%83%E9%99%90%E8%AF%B7%E6%B1%82%E6%80%BB%E6%98%AF%E8%A2%AB%E6%88%91%E6%8B%92%E7%BB%9D%E6%80%8E%E4%B9%88%E5%8A%9E%EF%BC%9F"><span class="toc-number">8.2.</span> <span class="toc-text">Q2：MCP 权限请求总是被我拒绝怎么办？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Q3%EF%BC%9A%E5%A6%82%E4%BD%95%E8%87%AA%E5%AE%9A%E4%B9%89%E5%9F%BA%E5%87%86%E5%88%86%E6%94%AF%EF%BC%9F"><span class="toc-number">8.3.</span> <span class="toc-text">Q3：如何自定义基准分支？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Q4%EF%BC%9Adiff-%E5%86%85%E5%AE%B9%E8%BF%87%E5%A4%9A%E4%BC%9A%E5%AF%BC%E8%87%B4%E8%B6%85%E6%97%B6%E5%90%97%EF%BC%9F"><span class="toc-number">8.4.</span> <span class="toc-text">Q4：diff 内容过多会导致超时吗？</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2026/06/25/%E5%9F%BA%E4%BA%8EIDEA-MCP%E5%AE%9E%E7%8E%B0%E4%BB%A3%E7%A0%81diff%E5%AE%A1%E6%9F%A5Skill-prod-diff-review-%E4%BD%BF%E7%94%A8%E8%AF%B4%E6%98%8E/" title="基于IDEA MCP实现代码Diff审查 - prod-diff-review Skill使用指南"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/assets/%E5%9F%BA%E4%BA%8EIDEA-MCP%E5%AE%9E%E7%8E%B0%E4%BB%A3%E7%A0%81diff%E5%AE%A1%E6%9F%A5Skill-prod-diff-review-%E4%BD%BF%E7%94%A8%E8%AF%B4%E6%98%8E/1782370842658-3cf46fbd-cec4-4b62-826a-f7cae32ce009.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="基于IDEA MCP实现代码Diff审查 - prod-diff-review Skill使用指南"/></a><div class="content"><a class="title" href="/2026/06/25/%E5%9F%BA%E4%BA%8EIDEA-MCP%E5%AE%9E%E7%8E%B0%E4%BB%A3%E7%A0%81diff%E5%AE%A1%E6%9F%A5Skill-prod-diff-review-%E4%BD%BF%E7%94%A8%E8%AF%B4%E6%98%8E/" title="基于IDEA MCP实现代码Diff审查 - prod-diff-review Skill使用指南">基于IDEA MCP实现代码Diff审查 - prod-diff-review Skill使用指南</a><time datetime="2026-06-25T07:23:55.000Z" title="发表于 2026-06-25 15:23:55">2026-06-25</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2026/06/18/spring%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB%E8%B7%AF%E7%BA%BF/" title="spring源码阅读路线"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/assets/Abanner/default_cover.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="spring源码阅读路线"/></a><div class="content"><a class="title" href="/2026/06/18/spring%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB%E8%B7%AF%E7%BA%BF/" title="spring源码阅读路线">spring源码阅读路线</a><time datetime="2026-06-18T08:49:17.000Z" title="发表于 2026-06-18 16:49:17">2026-06-18</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2026/06/18/Cursor%E5%AE%89%E8%A3%85Skill%E7%9A%84%E5%87%A0%E7%A7%8D%E6%96%B9%E5%BC%8F/" title="Cursor安装Skill的几种方式"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/assets/Abanner/default_cover.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Cursor安装Skill的几种方式"/></a><div class="content"><a class="title" href="/2026/06/18/Cursor%E5%AE%89%E8%A3%85Skill%E7%9A%84%E5%87%A0%E7%A7%8D%E6%96%B9%E5%BC%8F/" title="Cursor安装Skill的几种方式">Cursor安装Skill的几种方式</a><time datetime="2026-06-18T06:26:21.000Z" title="发表于 2026-06-18 14:26:21">2026-06-18</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2026/06/15/%E4%BB%A3%E7%A0%81%E6%8F%90%E4%BA%A4%E8%A7%84%E8%8C%83-%E4%BB%A3%E7%A0%81%E8%B4%A8%E9%87%8F%E6%A3%80%E6%B5%8B%E6%96%B9%E6%A1%88/" title="代码提交规范 &amp; 代码质量检测方案"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/assets/Abanner/default_cover.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="代码提交规范 &amp; 代码质量检测方案"/></a><div class="content"><a class="title" href="/2026/06/15/%E4%BB%A3%E7%A0%81%E6%8F%90%E4%BA%A4%E8%A7%84%E8%8C%83-%E4%BB%A3%E7%A0%81%E8%B4%A8%E9%87%8F%E6%A3%80%E6%B5%8B%E6%96%B9%E6%A1%88/" title="代码提交规范 &amp; 代码质量检测方案">代码提交规范 &amp; 代码质量检测方案</a><time datetime="2026-06-15T09:13:18.000Z" title="发表于 2026-06-15 17:13:18">2026-06-15</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2026/06/05/hello-world/" title="Hello World"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/assets/Abanner/default_cover.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Hello World"/></a><div class="content"><a class="title" href="/2026/06/05/hello-world/" title="Hello World">Hello World</a><time datetime="2026-06-05T09:30:56.120Z" title="发表于 2026-06-05 17:30:56">2026-06-05</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2024 - 2026 By Yuanz</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 8.1.2</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.5.5-b1</a></span></div><div class="footer_custom_text"><a href="https://github.com/yuanzhang788" target="_blank" rel="noopener noreferrer">Yuanz</a> &copy; <span id="year"></span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="前往评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page/instantpage.min.js" type="module"></script><script src="https://cdn.jsdelivr.net/npm/vanilla-lazyload/dist/lazyload.iife.min.js"></script><script src="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.js"></script><div class="js-pjax"><script>(() => {
+  const parseViewBox = viewBox => {
+    if (!viewBox) return null
+    const parts = viewBox.trim().split(/[\s,]+/).map(n => Number(n))
+    if (parts.length !== 4 || parts.some(n => Number.isNaN(n))) return null
+    return parts
+  }
+
+  const getSvgViewBox = svg => {
+    const attr = parseViewBox(svg.getAttribute('viewBox'))
+    if (attr) return attr
+
+    // Fallback: use bbox to build a viewBox
+    try {
+      const bbox = svg.getBBox()
+      if (bbox && bbox.width && bbox.height) return [bbox.x, bbox.y, bbox.width, bbox.height]
+    } catch (e) {
+      // getBBox may fail on some edge cases; ignore
+    }
+
+    const w = Number(svg.getAttribute('width')) || 0
+    const h = Number(svg.getAttribute('height')) || 0
+    if (w > 0 && h > 0) return [0, 0, w, h]
+    return [0, 0, 100, 100]
+  }
+
+  const setSvgViewBox = (svg, vb) => {
+    svg.setAttribute('viewBox', `${vb[0]} ${vb[1]} ${vb[2]} ${vb[3]}`)
+  }
+
+  const clamp = (v, min, max) => Math.max(min, Math.min(max, v))
+
+  const openSvgInNewTab = ({ source, initViewBox }) => {
+    const getClonedSvg = () => {
+      if (typeof source === 'string') {
+        const template = document.createElement('template')
+        template.innerHTML = source.trim()
+        const svg = template.content.querySelector('svg')
+        return svg ? svg.cloneNode(true) : null
+      }
+      if (source && typeof source.cloneNode === 'function') {
+        return source.cloneNode(true)
+      }
+      return null
+    }
+
+    const clone = getClonedSvg()
+    if (!clone) return
+    if (initViewBox && initViewBox.length === 4) {
+      clone.setAttribute('viewBox', initViewBox.join(' '))
+    }
+    if (!clone.getAttribute('xmlns')) clone.setAttribute('xmlns', 'http://www.w3.org/2000/svg')
+    if (!clone.getAttribute('xmlns:xlink') && clone.outerHTML.includes('xlink:')) {
+      clone.setAttribute('xmlns:xlink', 'http://www.w3.org/1999/xlink')
+    }
+    // inject background to match current theme
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark'
+    const bg = getComputedStyle(document.body).backgroundColor || (isDark ? '#1e1e1e' : '#ffffff')
+    if (!clone.style.background) clone.style.background = bg
+
+    const serializer = new XMLSerializer()
+    const svgSource = serializer.serializeToString(clone)
+    const htmlSource = `<!doctype html><html><head><meta charset="utf-8" />
+      <style>
+        html, body { width: 100%; height: 100%; margin: 0; display: flex; align-items: center; justify-content: center; background: ${bg}; }
+        svg { max-width: 100%; max-height: 100%; height: auto; width: auto; }
+      </style>
+      </head><body>${svgSource}</body></html>`
+    const blob = new Blob([htmlSource], { type: 'text/html;charset=utf-8' })
+    const url = URL.createObjectURL(blob)
+    window.open(url, '_blank', 'noopener')
+    setTimeout(() => URL.revokeObjectURL(url), 30000)
+  }
+
+  const attachMermaidViewerButton = wrap => {
+    let btn = wrap.querySelector('.mermaid-open-btn')
+    if (!btn) {
+      btn = document.createElement('button')
+      btn.type = 'button'
+      btn.className = 'mermaid-open-btn'
+      wrap.appendChild(btn)
+    }
+
+    btn.innerHTML = '<i class="fa fa-search fa-fw" aria-hidden="true"></i>'
+
+    if (!btn.__mermaidViewerBound) {
+      btn.addEventListener('click', e => {
+        e.preventDefault()
+        e.stopPropagation()
+        const svg = wrap.__mermaidOriginalSvg || wrap.querySelector('svg')
+        if (!svg) return
+        const initViewBox = wrap.__mermaidInitViewBox
+        if (typeof svg === 'string') {
+          openSvgInNewTab({ source: svg, initViewBox })
+          return
+        }
+        openSvgInNewTab({ source: svg, initViewBox })
+      })
+      btn.__mermaidViewerBound = true
+    }
+  }
+
+  // Zoom around a point (px, py) in the SVG viewport (in viewBox coordinates)
+  const zoomAtPoint = (vb, factor, px, py) => {
+    const w = vb[2] * factor
+    const h = vb[3] * factor
+    const nx = px - (px - vb[0]) * factor
+    const ny = py - (py - vb[1]) * factor
+    return [nx, ny, w, h]
+  }
+
+  const initMermaidGestures = wrap => {
+    const svg = wrap.querySelector('svg')
+    if (!svg) return
+
+    // Ensure viewBox exists so gestures always work
+    const initVb = getSvgViewBox(svg)
+    wrap.__mermaidInitViewBox = initVb
+    wrap.__mermaidCurViewBox = initVb.slice()
+    setSvgViewBox(svg, initVb)
+
+    // Avoid binding multiple times on themeChange/pjax
+    if (wrap.__mermaidGestureBound) return
+    wrap.__mermaidGestureBound = true
+
+    // Helper: map client (viewport) coordinate -> viewBox coordinate
+    const clientToViewBox = (clientX, clientY) => {
+      const rect = svg.getBoundingClientRect()
+      const vb = wrap.__mermaidCurViewBox || getSvgViewBox(svg)
+      const x = vb[0] + (clientX - rect.left) * (vb[2] / rect.width)
+      const y = vb[1] + (clientY - rect.top) * (vb[3] / rect.height)
+      return { x, y, rect, vb }
+    }
+
+    const state = {
+      pointers: new Map(),
+      startVb: null,
+      startDist: 0,
+      startCenter: null
+    }
+
+    const clampVb = vb => {
+      const init = wrap.__mermaidInitViewBox || vb
+      const minW = init[2] * 0.1
+      const maxW = init[2] * 10
+      const minH = init[3] * 0.1
+      const maxH = init[3] * 10
+      vb[2] = clamp(vb[2], minW, maxW)
+      vb[3] = clamp(vb[3], minH, maxH)
+      return vb
+    }
+
+    const setCurVb = vb => {
+      vb = clampVb(vb)
+      wrap.__mermaidCurViewBox = vb
+      setSvgViewBox(svg, vb)
+    }
+
+    const onPointerDown = e => {
+      // Allow only primary button for mouse
+      if (e.pointerType === 'mouse' && e.button !== 0) return
+      svg.setPointerCapture(e.pointerId)
+      state.pointers.set(e.pointerId, { x: e.clientX, y: e.clientY })
+
+      if (state.pointers.size === 1) {
+        state.startVb = (wrap.__mermaidCurViewBox || getSvgViewBox(svg)).slice()
+      } else if (state.pointers.size === 2) {
+        const pts = [...state.pointers.values()]
+        const dx = pts[0].x - pts[1].x
+        const dy = pts[0].y - pts[1].y
+        state.startDist = Math.hypot(dx, dy)
+        state.startVb = (wrap.__mermaidCurViewBox || getSvgViewBox(svg)).slice()
+        state.startCenter = { x: (pts[0].x + pts[1].x) / 2, y: (pts[0].y + pts[1].y) / 2 }
+      }
+    }
+
+    const onPointerMove = e => {
+      if (!state.pointers.has(e.pointerId)) return
+      state.pointers.set(e.pointerId, { x: e.clientX, y: e.clientY })
+
+      // Pan with 1 pointer
+      if (state.pointers.size === 1 && state.startVb) {
+        const p = [...state.pointers.values()][0]
+        const prev = { x: e.clientX - e.movementX, y: e.clientY - e.movementY }
+        // movementX/Y unreliable on touch, compute from stored last position
+        const last = wrap.__mermaidLastSinglePointer || p
+        const dxClient = p.x - last.x
+        const dyClient = p.y - last.y
+        wrap.__mermaidLastSinglePointer = p
+
+        const { rect } = clientToViewBox(p.x, p.y)
+        const vb = (wrap.__mermaidCurViewBox || getSvgViewBox(svg)).slice()
+        const dx = dxClient * (vb[2] / rect.width)
+        const dy = dyClient * (vb[3] / rect.height)
+        setCurVb([vb[0] - dx, vb[1] - dy, vb[2], vb[3]])
+        return
+      }
+
+      // Pinch zoom with 2 pointers
+      if (state.pointers.size === 2 && state.startVb && state.startDist > 0) {
+        const pts = [...state.pointers.values()]
+        const dx = pts[0].x - pts[1].x
+        const dy = pts[0].y - pts[1].y
+        const dist = Math.hypot(dx, dy)
+        if (!dist) return
+        const factor = state.startDist / dist // dist bigger => zoom in (viewBox smaller)
+
+        const cx = (pts[0].x + pts[1].x) / 2
+        const cy = (pts[0].y + pts[1].y) / 2
+        const centerClient = { x: cx, y: cy }
+
+        const pxy = clientToViewBox(centerClient.x, centerClient.y)
+        const cpx = pxy.x
+        const cpy = pxy.y
+
+        const vb = zoomAtPoint(state.startVb, factor, cpx, cpy)
+        setCurVb(vb)
+      }
+    }
+
+    const onPointerUpOrCancel = e => {
+      state.pointers.delete(e.pointerId)
+      if (state.pointers.size === 0) {
+        state.startVb = null
+        state.startDist = 0
+        state.startCenter = null
+        wrap.__mermaidLastSinglePointer = null
+      } else if (state.pointers.size === 1) {
+        // reset single pointer baseline to avoid jump
+        wrap.__mermaidLastSinglePointer = [...state.pointers.values()][0]
+      }
+    }
+
+    // Wheel zoom (mouse/trackpad)
+    const onWheel = e => {
+      // ctrlKey on mac trackpad pinch; we treat both as zoom
+      e.preventDefault()
+      const delta = e.deltaY
+      const zoomFactor = delta > 0 ? 1.1 : 0.9
+      const { x, y } = clientToViewBox(e.clientX, e.clientY)
+      const vb = (wrap.__mermaidCurViewBox || getSvgViewBox(svg)).slice()
+      setCurVb(zoomAtPoint(vb, zoomFactor, x, y))
+    }
+
+    const onDblClick = () => {
+      const init = wrap.__mermaidInitViewBox
+      if (!init) return
+      wrap.__mermaidCurViewBox = init.slice()
+      setSvgViewBox(svg, init)
+    }
+
+    svg.addEventListener('pointerdown', onPointerDown)
+    svg.addEventListener('pointermove', onPointerMove)
+    svg.addEventListener('pointerup', onPointerUpOrCancel)
+    svg.addEventListener('pointercancel', onPointerUpOrCancel)
+    svg.addEventListener('wheel', onWheel, { passive: false })
+    svg.addEventListener('dblclick', onDblClick)
+  }
+
+  const runMermaid = ele => {
+    window.loadMermaid = true
+    const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'default'
+
+    ele.forEach((item, index) => {
+      const mermaidSrc = item.firstElementChild
+
+      // Clear old render (themeChange/pjax will rerun)
+      const oldSvg = item.querySelector('svg')
+      if (oldSvg) oldSvg.remove()
+      item.__mermaidGestureBound = false
+
+      const config = mermaidSrc.dataset.config ? JSON.parse(mermaidSrc.dataset.config) : {}
+      if (!config.theme) {
+        config.theme = theme
+      }
+      const mermaidThemeConfig = `%%{init: ${JSON.stringify(config)}}%%\n`
+      const mermaidID = `mermaid-${index}`
+      const mermaidDefinition = mermaidThemeConfig + mermaidSrc.textContent
+
+      const renderFn = mermaid.render(mermaidID, mermaidDefinition)
+      const renderMermaid = svg => {
+        mermaidSrc.insertAdjacentHTML('afterend', svg)
+        if (true) initMermaidGestures(item)
+        item.__mermaidOriginalSvg = svg
+        if (true) attachMermaidViewerButton(item)
+      }
+
+
+      // mermaid v9 and v10 compatibility
+      typeof renderFn === 'string' ? renderMermaid(renderFn) : renderFn.then(({ svg }) => renderMermaid(svg))
+    })
+  }
+
+  const codeToMermaid = () => {
+    const codeMermaidEle = document.querySelectorAll('pre > code.mermaid')
+    if (codeMermaidEle.length === 0) return
+
+    codeMermaidEle.forEach(ele => {
+      const preEle = document.createElement('pre')
+      preEle.className = 'mermaid-src'
+      preEle.hidden = true
+      preEle.textContent = ele.textContent
+      const newEle = document.createElement('div')
+      newEle.className = 'mermaid-wrap'
+      newEle.appendChild(preEle)
+      ele.parentNode.replaceWith(newEle)
+    })
+  }
+
+  const loadMermaid = () => {
+    if (false) codeToMermaid()
+    const $mermaid = document.querySelectorAll('#article-container .mermaid-wrap')
+    if ($mermaid.length === 0) return
+
+    const runMermaidFn = () => runMermaid($mermaid)
+    btf.addGlobalFn('themeChange', runMermaidFn, 'mermaid')
+    window.loadMermaid ? runMermaidFn() : btf.getScript('https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js').then(runMermaidFn)
+  }
+
+  btf.addGlobalFn('encrypt', loadMermaid, 'mermaid')
+  window.pjax ? loadMermaid() : document.addEventListener('DOMContentLoaded', loadMermaid)
+})()</script><script>(() => {
+  const isShuoshuo = GLOBAL_CONFIG_SITE.pageType === 'shuoshuo'
+  const option = null
+
+  const getCount = () => {
+    const countELement = document.getElementById('twikoo-count')
+    if(!countELement) return
+    twikoo.getCommentsCount({
+      envId: 'https://twikoo-gvzc.vercel.app',
+      region: '',
+      urls: [window.location.pathname],
+      includeReply: false
+    }).then(res => {
+      countELement.textContent = res[0].count
+    }).catch(err => {
+      console.error(err)
+    })
+  }
+
+  const init = (el = document, path = location.pathname) => {
+    twikoo.init({
+      el: el.querySelector('#twikoo-wrap'),
+      envId: 'https://twikoo-gvzc.vercel.app',
+      region: '',
+      onCommentLoaded: () => {
+        btf.loadLightbox(document.querySelectorAll('#twikoo .tk-content img:not(.tk-owo-emotion)'))
+      },
+      ...option,
+      path: isShuoshuo ? path : (option && option.path) || path
+    })
+
+    GLOBAL_CONFIG_SITE.pageType === 'post' && getCount()
+
+    isShuoshuo && (window.shuoshuoComment.destroyTwikoo = () => {
+      if (el.children.length) {
+        el.innerHTML = ''
+        el.classList.add('no-comment')
+      }
+    })
+  }
+
+  const loadTwikoo = (el, path) => {
+    if (typeof twikoo === 'object') setTimeout(() => init(el, path), 0)
+    else btf.getScript('https://cdn.jsdelivr.net/npm/twikoo/dist/twikoo.all.min.js').then(() => init(el, path))
+  }
+
+  if (isShuoshuo) {
+    'Twikoo' === 'Twikoo'
+      ? window.shuoshuoComment = { loadComment: loadTwikoo }
+      : window.loadOtherComment = loadTwikoo
+    return
+  }
+
+  if ('Twikoo' === 'Twikoo' || !true) {
+    if (true) btf.loadComment(document.getElementById('twikoo-wrap'), loadTwikoo)
+    else loadTwikoo()
+  } else {
+    window.loadOtherComment = loadTwikoo
+  }
+})()</script></div><div class="aplayer no-destroy" data-id="18066081268" data-server="netease" data-type="playlist" data-fixed="true" data-mini="true" data-autoplay="true" data-theme="#49b1f5" data-loop="all" data-order="list" data-preload="auto" data-volume="0.7" data-mutex="true" data-listfolded="true" data-listmaxheight="340px"> </div><script id="canvas_nest" defer="defer" color="0,155,255" opacity="0.5" zIndex="-1" count="60" mobile="false" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/canvas-nest.min.js"></script><script id="click-show-text" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/click-show-text.min.js" data-mobile="false" data-text="富强,民主,文明,和谐,自由,平等,公正,法治" data-fontsize="14px" data-random="true" async="async"></script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js"></script><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/metingjs/dist/Meting.min.js"></script><script>(() => {
+  const destroyAplayer = () => {
+    if (window.aplayers) {
+      for (let i = 0; i < window.aplayers.length; i++) {
+        if (!window.aplayers[i].options.fixed) {
+          window.aplayers[i].destroy()
+        }
+      }
+    }
+  }
+
+  const runMetingJS = () => {
+    typeof loadMeting === 'function' && document.getElementsByClassName('aplayer').length && loadMeting()
+  }
+
+  btf.addGlobalFn('pjaxSend', destroyAplayer, 'destroyAplayer')
+  btf.addGlobalFn('pjaxComplete', loadMeting, 'runMetingJS')
+})()</script><script src="https://cdn.jsdelivr.net/npm/pjax/pjax.min.js" defer="defer"></script><script>document.addEventListener('DOMContentLoaded', () => {
+  const pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+  window.pjax = new Pjax({
+    elements: 'a:not([target="_blank"]):not([href="/html/git-workflow.html"])',
+    selectors: pjaxSelectors,
+    cacheBust: false,
+    analytics: false,
+    scrollRestoration: false
+  })
+
+  const triggerPjaxFn = (val) => {
+    if (!val) return
+    Object.values(val).forEach(fn => {
+      try {
+        fn()
+      } catch (err) {
+        console.debug('Pjax callback failed:', err)
+      }
+    })
+  }
+
+  document.addEventListener('pjax:send', () => {
+    // removeEventListener
+    btf.removeGlobalFnEvent('pjaxSendOnce')
+    btf.removeGlobalFnEvent('themeChange')
+
+    // reset readmode
+    const $bodyClassList = document.body.classList
+    if ($bodyClassList.contains('read-mode')) $bodyClassList.remove('read-mode')
+
+    triggerPjaxFn(window.globalFn.pjaxSend)
+  })
+
+  document.addEventListener('pjax:complete', () => {
+    btf.removeGlobalFnEvent('pjaxCompleteOnce')
+    document.querySelectorAll('script[data-pjax]').forEach(item => {
+      const newScript = document.createElement('script')
+      const content = item.text || item.textContent || item.innerHTML || ""
+      Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+      newScript.appendChild(document.createTextNode(content))
+      item.parentNode.replaceChild(newScript, item)
+    })
+
+    triggerPjaxFn(window.globalFn.pjaxComplete)
+  })
+
+  document.addEventListener('pjax:error', e => {
+    if (e.request.status === 404) {
+      false
+        ? pjax.loadUrl('/404.html')
+        : window.location.href = e.request.responseURL
+    }
+  })
+})</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><i class="fas fa-spinner fa-pulse" id="loading-status" hidden="hidden"></i><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="local-search-input"><input placeholder="搜索文章..." type="text"/></div><hr/><div id="local-search-results"></div><div class="ais-Pagination" id="local-search-pagination" style="display:none;"><ul class="ais-Pagination-list"></ul></div><div id="local-search-stats"></div></div><div id="search-mask"></div><script src="/js/search/local-search.js"></script></div></div></body></html>
