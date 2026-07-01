@@ -1,0 +1,797 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>Yuanz | Yuanz</title><meta name="author" content="Yuanz"><meta name="copyright" content="Yuanz"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="ffffff"><meta name="description" content="Spring Boot 如何实现整合谷歌令牌本文说明如何在 Spring Boot + Vue 后台管理系统中接入 Google Authenticator（TOTP 动态令牌），实现「创建用户绑定 + 登录强制校验」。   1. 功能目标   场景 说明    新增用户 自动生成密钥 mfa，管理端展示二维码供扫码绑定   用户登录 除账号密码外，必须输入 6 位动态令牌   历史用户 上线前需">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Yuanz">
+<meta property="og:url" content="https://yuanzhang788.github.io/2026/07/01/springboot%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E6%95%B4%E5%90%88%E8%B0%B7%E6%AD%8C%E4%BB%A4%E7%89%8C/index.html">
+<meta property="og:site_name" content="Yuanz">
+<meta property="og:description" content="Spring Boot 如何实现整合谷歌令牌本文说明如何在 Spring Boot + Vue 后台管理系统中接入 Google Authenticator（TOTP 动态令牌），实现「创建用户绑定 + 登录强制校验」。   1. 功能目标   场景 说明    新增用户 自动生成密钥 mfa，管理端展示二维码供扫码绑定   用户登录 除账号密码外，必须输入 6 位动态令牌   历史用户 上线前需">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://yuanzhang788.github.io/assets/Abanner/default_cover.png">
+<meta property="article:published_time" content="2026-07-01T06:30:18.212Z">
+<meta property="article:modified_time" content="2026-07-01T06:35:47.054Z">
+<meta property="article:author" content="Yuanz">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://yuanzhang788.github.io/assets/Abanner/default_cover.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "",
+  "url": "https://yuanzhang788.github.io/2026/07/01/springboot%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E6%95%B4%E5%90%88%E8%B0%B7%E6%AD%8C%E4%BB%A4%E7%89%8C/",
+  "image": "https://yuanzhang788.github.io/assets/Abanner/default_cover.png",
+  "datePublished": "2026-07-01T06:30:18.212Z",
+  "dateModified": "2026-07-01T06:35:47.054Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "Yuanz",
+      "url": "https://yuanzhang788.github.io"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://yuanzhang788.github.io/2026/07/01/springboot%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E6%95%B4%E5%90%88%E8%B0%B7%E6%AD%8C%E4%BB%A4%E7%89%8C/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!true && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          const mediaQueryDark = window.matchMedia('(prefers-color-scheme: dark)')
+          const mediaQueryLight = window.matchMedia('(prefers-color-scheme: light)')
+
+          if (theme === undefined) {
+            if (mediaQueryLight.matches) activateLightMode()
+            else if (mediaQueryDark.matches) activateDarkMode()
+            else {
+              const hour = new Date().getHours()
+              const isNight = hour <= 6 || hour >= 18
+              isNight ? activateDarkMode() : activateLightMode()
+            }
+            mediaQueryDark.addEventListener('change', () => {
+              if (saveToLocal.get('theme') === undefined) {
+                e.matches ? activateDarkMode() : activateLightMode()
+              }
+            })
+          } else {
+            theme === 'light' ? activateLightMode() : activateDarkMode()
+          }
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.json","preload":false,"top_n_per_article":1,"unescape":false,"pagination":{"enable":false,"hitsPerPage":8},"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":400,"highlightFullpage":true,"highlightMacStyle":true},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: true,
+    post: false
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: {"limitCount":50,"languages":{"author":"作者: Yuanz","link":"链接: ","source":"来源: Yuanz","info":"著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。"}},
+  lightbox: 'fancybox',
+  Snackbar: {"chs_to_cht":"已切换为繁体中文","cht_to_chs":"已切换为简体中文","day_to_night":"已切换为深色模式","night_to_day":"已切换为浅色模式","bgLight":"#49b1f5","bgDark":"#1f1f1f","position":"bottom-left"},
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: true,
+  islazyloadPlugin: true,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: true
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Yuanz',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="stylesheet" href="/css/custom.css"><meta name="generator" content="Hexo 8.1.2"></head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div><script>(()=>{
+  const $loadingBox = document.getElementById('loading-box')
+  const $body = document.body
+  const preloader = {
+    endLoading: () => {
+      if ($loadingBox.classList.contains('loaded')) return
+      $body.style.overflow = ''
+      $loadingBox.classList.add('loaded')
+    },
+    initLoading: () => {
+      $body.style.overflow = 'hidden'
+      $loadingBox.classList.remove('loaded')
+    }
+  }
+
+  preloader.initLoading()
+
+  if (document.readyState === 'complete') {
+    preloader.endLoading()
+  } else {
+    window.addEventListener('load', preloader.endLoading)
+    document.addEventListener('DOMContentLoaded', preloader.endLoading)
+    // Add timeout protection: force end after 7 seconds
+    setTimeout(preloader.endLoading, 7000)
+  }
+
+  if (true) {
+    btf.addGlobalFn('pjaxSend', preloader.initLoading, 'preloader_init')
+    btf.addGlobalFn('pjaxComplete', preloader.endLoading, 'preloader_end')
+  }
+})()</script><div class="bg-animation" id="web_bg" style="background-image: url(/assets/Abanner/index.jpg);"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/assets/Abanner/avatar.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">183</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">111</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">0</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/categories/Spring%E6%BA%90%E7%A0%81/"><i class="fa-fw fas fa-book"></i><span> Spring源码</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg fixed" id="page-header" style="background-image: url(/assets/Abanner/default_cover.png);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">Yuanz</span></a><a class="nav-page-title" href="/"><span class="site-name">Yuanz</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/categories/Spring%E6%BA%90%E7%A0%81/"><i class="fa-fw fas fa-book"></i><span> Spring源码</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">无标题</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2026-07-01T06:30:18.212Z" title="发表于 2026-07-01 14:30:18">2026-07-01</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-07-01T06:35:47.054Z" title="更新于 2026-07-01 14:35:47">2026-07-01</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><div id="post-outdate-notice" data="{&quot;limitDay&quot;:365,&quot;messagePrev&quot;:&quot;已经过了&quot;,&quot;messageNext&quot;:&quot;天自上次更新，文章内容可能已过时。&quot;,&quot;postUpdate&quot;:&quot;2026-07-01 14:35:47&quot;}" hidden></div><h1 id="Spring-Boot-如何实现整合谷歌令牌"><a href="#Spring-Boot-如何实现整合谷歌令牌" class="headerlink" title="Spring Boot 如何实现整合谷歌令牌"></a>Spring Boot 如何实现整合谷歌令牌</h1><p>本文说明如何在 Spring Boot + Vue 后台管理系统中接入 Google Authenticator（TOTP 动态令牌），实现「创建用户绑定 + 登录强制校验」。</p>
+<p><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/../assets/Spring-Boot-%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E6%95%B4%E5%90%88%E8%B0%B7%E6%AD%8C%E4%BB%A4%E7%89%8C/image-20260701142534919.png" alt="image-20260701142534919"></p>
+<hr>
+<h2 id="1-功能目标"><a href="#1-功能目标" class="headerlink" title="1. 功能目标"></a>1. 功能目标</h2><table>
+<thead>
+<tr>
+<th>场景</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>新增用户</td>
+<td>自动生成密钥 <code>mfa</code>，管理端展示二维码供扫码绑定</td>
+</tr>
+<tr>
+<td>用户登录</td>
+<td>除账号密码外，必须输入 6 位动态令牌</td>
+</tr>
+<tr>
+<td>历史用户</td>
+<td>上线前需批量补齐 <code>mfa</code>，否则无法登录</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="2-整体流程"><a href="#2-整体流程" class="headerlink" title="2. 整体流程"></a>2. 整体流程</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">┌─────────────┐     用户名+密码+动态码      ┌─────────────┐<br>│   前端登录   │ ────────────────────────► │  Auth 接口   │<br>└─────────────┘                           └──────┬──────┘<br>                                                 │<br>                    ① 校验密码                    │<br>                    ② 读取用户 mfa                │<br>                    ③ TOTP 校验 code              │<br>                    ④ 通过后签发 JWT              ▼<br>                                          ┌─────────────┐<br>                                          │  返回 token  │<br>                                          └─────────────┘<br><br>┌─────────────┐     输入用户名              ┌─────────────┐<br>│ 新增用户弹窗 │ ────────────────────────► │ 前端本地生成  │<br>└─────────────┘                           │ mfa + 二维码 │<br>                                          └──────┬──────┘<br>                                                 │ 提交表单含 mfa<br>                                                 ▼<br>                                          ┌─────────────┐<br>                                          │  用户入库    │<br>                                          └─────────────┘<br></code></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="3-数据库"><a href="#3-数据库" class="headerlink" title="3. 数据库"></a>3. 数据库</h2><p>在用户表增加字段，存储 Base32 编码的 TOTP 密钥：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">ALTER TABLE</span> `sys_user`<br><span class="hljs-keyword">ADD</span> <span class="hljs-keyword">COLUMN</span> `mfa` <span class="hljs-type">varchar</span>(<span class="hljs-number">64</span>) <span class="hljs-keyword">DEFAULT</span> <span class="hljs-keyword">NULL</span> COMMENT <span class="hljs-string">&#x27;谷歌令牌密钥&#x27;</span> AFTER `password`;<br></code></pre></td></tr></table></figure>
+
+<blockquote>
+<p>MySQL 5.7 不支持 <code>ADD COLUMN IF NOT EXISTS</code>，若字段已存在会报错，需先确认或用手动判断后再执行。</p>
+</blockquote>
+<hr>
+<h2 id="4-后端实现"><a href="#4-后端实现" class="headerlink" title="4. 后端实现"></a>4. 后端实现</h2><h3 id="4-1-TOTP-核心服务（GoogleAuthService）"><a href="#4-1-TOTP-核心服务（GoogleAuthService）" class="headerlink" title="4.1 TOTP 核心服务（GoogleAuthService）"></a>4.1 TOTP 核心服务（GoogleAuthService）</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">import</span> lombok.extern.slf4j.Slf4j;<br><span class="hljs-keyword">import</span> org.springframework.stereotype.Service;<br><br><span class="hljs-keyword">import</span> javax.crypto.Mac;<br><span class="hljs-keyword">import</span> javax.crypto.spec.SecretKeySpec;<br><span class="hljs-keyword">import</span> java.security.InvalidKeyException;<br><span class="hljs-keyword">import</span> java.security.NoSuchAlgorithmException;<br><span class="hljs-keyword">import</span> java.security.SecureRandom;<br><span class="hljs-keyword">import</span> java.util.Base64;<br><br><span class="hljs-meta">@Service</span><br><span class="hljs-meta">@Slf4j</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">GoogleAuthService</span> &#123;<br><br>    <span class="hljs-comment">// taken from Google pam docs - we probably don&#x27;t need to mess with these</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> <span class="hljs-type">int</span> <span class="hljs-variable">SECRET_SIZE</span> <span class="hljs-operator">=</span> <span class="hljs-number">10</span>;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> <span class="hljs-type">String</span> <span class="hljs-variable">SEED</span> <span class="hljs-operator">=</span> <span class="hljs-string">&quot;g8GjEvTbW5oVSV7avLBdwIHqGlUYNzKFI7izOF8GwLDVKs2m0QN7vxRs2im5MDaNCWGmcD2rvcZx&quot;</span>;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> <span class="hljs-type">String</span> <span class="hljs-variable">RANDOM_NUMBER_ALGORITHM</span> <span class="hljs-operator">=</span> <span class="hljs-string">&quot;SHA1PRNG&quot;</span>;<br><br>    <span class="hljs-type">int</span> <span class="hljs-variable">window_size</span> <span class="hljs-operator">=</span> <span class="hljs-number">3</span>; <span class="hljs-comment">// default 3 - max 17 (from google docs)最多可偏移的时间</span><br><br>    <span class="hljs-comment">/**</span><br><span class="hljs-comment">     * set the windows size. This is an integer value representing the number of 30 second windows</span><br><span class="hljs-comment">     * we allow</span><br><span class="hljs-comment">     * The bigger the window, the more tolerant of clock skew we are.</span><br><span class="hljs-comment">     * <span class="hljs-doctag">@param</span> s window size - must be &gt;=1 and &lt;=17. Other values are ignored</span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">setWindowSize</span><span class="hljs-params">(<span class="hljs-type">int</span> s)</span> &#123;<br>        <span class="hljs-keyword">if</span> (s &gt;= <span class="hljs-number">1</span> &amp;&amp; s &lt;= <span class="hljs-number">17</span>)<br>            window_size = s;<br>    &#125;<br><br>    <span class="hljs-comment">/**</span><br><span class="hljs-comment">     * Generate a random secret key. This must be saved by the server and associated with the</span><br><span class="hljs-comment">     * users account to verify the code displayed by Google Authenticator.</span><br><span class="hljs-comment">     * The user must register this secret on their device.</span><br><span class="hljs-comment">     * <span class="hljs-doctag">@return</span> secret key</span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> String <span class="hljs-title function_">generateSecretKey</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-type">SecureRandom</span> <span class="hljs-variable">sr</span> <span class="hljs-operator">=</span> <span class="hljs-literal">null</span>;<br>        <span class="hljs-keyword">try</span> &#123;<br>            sr = SecureRandom.getInstance(RANDOM_NUMBER_ALGORITHM);<br>            sr.setSeed(Base64.getDecoder().decode(SEED));<br>            <span class="hljs-type">byte</span>[] buffer = sr.generateSeed(SECRET_SIZE);<br>            me.zhengjie.modules.security.service.<span class="hljs-type">Base32</span> <span class="hljs-variable">codec</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">me</span>.zhengjie.modules.security.service.Base32();<br>            <span class="hljs-type">byte</span>[] bEncodedKey = codec.encode(buffer).getBytes();<br>            <span class="hljs-type">String</span> <span class="hljs-variable">encodedKey</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">String</span>(bEncodedKey);<br>            <span class="hljs-keyword">return</span> encodedKey;<br>        &#125;<span class="hljs-keyword">catch</span> (NoSuchAlgorithmException e) &#123;<br>            <span class="hljs-comment">// should never occur... configuration error</span><br>        &#125;<br>        <span class="hljs-keyword">return</span> <span class="hljs-literal">null</span>;<br>    &#125;<br><br>    <span class="hljs-comment">/**</span><br><span class="hljs-comment">     * Return a URL that generates and displays a QR barcode. The user scans this bar code with the</span><br><span class="hljs-comment">     * Google Authenticator application on their smartphone to register the auth code. They can also</span><br><span class="hljs-comment">     * manually enter the</span><br><span class="hljs-comment">     * secret if desired</span><br><span class="hljs-comment">     * <span class="hljs-doctag">@param</span> user user id (e.g. fflinstone)</span><br><span class="hljs-comment">     * <span class="hljs-doctag">@param</span> host host or system that the code is for (e.g. myapp.com)</span><br><span class="hljs-comment">     * <span class="hljs-doctag">@param</span> secret the secret that was previously generated for this user</span><br><span class="hljs-comment">     * <span class="hljs-doctag">@return</span> the URL for the QR code to scan</span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> String <span class="hljs-title function_">getQRBarcodeURL</span><span class="hljs-params">(String user, String host, String secret)</span> &#123;<br>        <span class="hljs-type">String</span> <span class="hljs-variable">format</span> <span class="hljs-operator">=</span> <span class="hljs-string">&quot;https://www.google.com/chart?chs=200x200&amp;chld=M%%7C0&amp;cht=qr&amp;chl=otpauth://totp/%s@%s%%3Fsecret%%3D%s&quot;</span>;<br>        <span class="hljs-keyword">return</span> String.format(format, user, host, secret);<br>    &#125;<br><br>    <span class="hljs-comment">/**</span><br><span class="hljs-comment">     * Check the code entered by the user to see if it is valid</span><br><span class="hljs-comment">     * <span class="hljs-doctag">@param</span> secret The users secret.</span><br><span class="hljs-comment">     * <span class="hljs-doctag">@param</span> code The code displayed on the users device</span><br><span class="hljs-comment">     * <span class="hljs-doctag">@return</span></span><br><span class="hljs-comment">     * <span class="hljs-doctag">@throws</span> Exception</span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-type">boolean</span> <span class="hljs-title function_">check_code</span><span class="hljs-params">(String secret, <span class="hljs-type">long</span> code, <span class="hljs-type">long</span> timeMsec)</span> <span class="hljs-keyword">throws</span> Exception &#123;<br>        <span class="hljs-type">Base32</span> <span class="hljs-variable">codec</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Base32</span>();<br>        <span class="hljs-type">byte</span>[] decodedKey = codec.decode(secret);<br>        <span class="hljs-comment">// convert unix msec time into a 30 second &quot;window&quot;</span><br>        <span class="hljs-comment">// this is per the TOTP spec (see the RFC for details)</span><br>        <span class="hljs-type">long</span> <span class="hljs-variable">t</span> <span class="hljs-operator">=</span> (timeMsec / <span class="hljs-number">1000L</span>) / <span class="hljs-number">30L</span>;<br>        <span class="hljs-comment">// Window is used to check codes generated in the near past.</span><br>        <span class="hljs-comment">// You can use this value to tune how far you&#x27;re willing to go.</span><br>        <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> <span class="hljs-variable">i</span> <span class="hljs-operator">=</span> -window_size; i &lt;= window_size; ++i) &#123;<br>            <span class="hljs-type">long</span> hash;<br>            <span class="hljs-keyword">try</span> &#123;<br>                hash = verify_code(decodedKey, t + i);<br>            &#125;<span class="hljs-keyword">catch</span> (Exception e) &#123;<br>                <span class="hljs-comment">// Yes, this is bad form - but</span><br>                <span class="hljs-comment">// the exceptions thrown would be rare and a static configuration problem</span><br>                e.printStackTrace();<br>                <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">RuntimeException</span>(e.getMessage());<br>                <span class="hljs-comment">//return false;</span><br>            &#125;<br>            <span class="hljs-keyword">if</span> (hash == code) &#123;<br>                <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;<br>            &#125;<br>        &#125;<br>        <span class="hljs-comment">// The validation code is invalid.</span><br>        <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;<br>    &#125;<br><br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-type">int</span> <span class="hljs-title function_">verify_code</span><span class="hljs-params">(<span class="hljs-type">byte</span>[] key, <span class="hljs-type">long</span> t)</span> <span class="hljs-keyword">throws</span> NoSuchAlgorithmException, InvalidKeyException &#123;<br>        <span class="hljs-type">byte</span>[] data = <span class="hljs-keyword">new</span> <span class="hljs-title class_">byte</span>[<span class="hljs-number">8</span>];<br>        <span class="hljs-type">long</span> <span class="hljs-variable">value</span> <span class="hljs-operator">=</span> t;<br>        <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> <span class="hljs-variable">i</span> <span class="hljs-operator">=</span> <span class="hljs-number">8</span>; i-- &gt; <span class="hljs-number">0</span>; value &gt;&gt;&gt;= <span class="hljs-number">8</span>) &#123;<br>            data[i] = (<span class="hljs-type">byte</span>) value;<br>        &#125;<br>        <span class="hljs-type">SecretKeySpec</span> <span class="hljs-variable">signKey</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">SecretKeySpec</span>(key, <span class="hljs-string">&quot;HmacSHA1&quot;</span>);<br>        <span class="hljs-type">Mac</span> <span class="hljs-variable">mac</span> <span class="hljs-operator">=</span> Mac.getInstance(<span class="hljs-string">&quot;HmacSHA1&quot;</span>);<br>        mac.init(signKey);<br>        <span class="hljs-type">byte</span>[] hash = mac.doFinal(data);<br>        <span class="hljs-type">int</span> <span class="hljs-variable">offset</span> <span class="hljs-operator">=</span> hash[<span class="hljs-number">20</span> - <span class="hljs-number">1</span>] &amp; <span class="hljs-number">0xF</span>;<br>        <span class="hljs-comment">// We&#x27;re using a long because Java hasn&#x27;t got unsigned int.</span><br>        <span class="hljs-type">long</span> <span class="hljs-variable">truncatedHash</span> <span class="hljs-operator">=</span> <span class="hljs-number">0</span>;<br>        <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> <span class="hljs-variable">i</span> <span class="hljs-operator">=</span> <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">4</span>; ++i) &#123;<br>            truncatedHash &lt;&lt;= <span class="hljs-number">8</span>;<br>            <span class="hljs-comment">// We are dealing with signed bytes:</span><br>            <span class="hljs-comment">// we just keep the first byte.</span><br>            truncatedHash |= (hash[offset + i] &amp; <span class="hljs-number">0xFF</span>);<br>        &#125;<br>        truncatedHash &amp;= <span class="hljs-number">0x7FFFFFFF</span>;<br>        truncatedHash %= <span class="hljs-number">1000000</span>;<br>        <span class="hljs-keyword">return</span> (<span class="hljs-type">int</span>) truncatedHash;<br>    &#125;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> &#123;<br><span class="hljs-comment">//        String secret = GoogleAuthService.generateSecretKey();</span><br><span class="hljs-comment">//        String url = GoogleAuthService.getQRBarcodeURL(&quot;testuser&quot;, &quot;testhost&quot;, secret);</span><br><span class="hljs-comment">//        System.out.println(&quot;Please register &quot; + url);</span><br><br><span class="hljs-comment">//        String secret = GoogleAuthService.generateSecretKey();</span><br><span class="hljs-comment">//        System.out.println(&quot;secret=&quot;+secret);</span><br><span class="hljs-comment">//        String url = GoogleAuthService.getQRBarcodeURL(&quot;testuser&quot;, &quot;testhost&quot;, secret);</span><br><span class="hljs-comment">//        System.out.println(&quot;Please register &quot; + url);</span><br><span class="hljs-comment">//        System.out.println(&quot;Secret key is &quot; + secret);</span><br><br>        <span class="hljs-type">String</span> <span class="hljs-variable">secret</span> <span class="hljs-operator">=</span> <span class="hljs-string">&quot;IU2EOSKQLAYFCR2B&quot;</span>;<br>        <span class="hljs-keyword">try</span> &#123;<br>            <span class="hljs-type">long</span> <span class="hljs-variable">code</span> <span class="hljs-operator">=</span> <span class="hljs-number">95902</span>;<br>            <span class="hljs-type">long</span> <span class="hljs-variable">t</span> <span class="hljs-operator">=</span> System.currentTimeMillis();<br>            <span class="hljs-type">GoogleAuthService</span> <span class="hljs-variable">ga</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">GoogleAuthService</span>();<br>            ga.setWindowSize(<span class="hljs-number">1</span>); <span class="hljs-comment">//should give 5 * 30 seconds of grace...</span><br>            <span class="hljs-type">boolean</span> <span class="hljs-variable">r</span> <span class="hljs-operator">=</span> ga.check_code(secret, code, t);<br>            System.out.println(r);<br>        &#125;<span class="hljs-keyword">catch</span> (Exception e)&#123;<br>            e.printStackTrace();<br>        &#125;<br><br><br>    &#125;<br>&#125;<br><br></code></pre></td></tr></table></figure>
+
+<p>无需引入第三方 MFA 库，实现三个能力即可：</p>
+<p><strong>① 生成密钥</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> String <span class="hljs-title function_">generateSecretKey</span><span class="hljs-params">()</span> &#123;<br>    <span class="hljs-type">SecureRandom</span> <span class="hljs-variable">sr</span> <span class="hljs-operator">=</span> SecureRandom.getInstance(<span class="hljs-string">&quot;SHA1PRNG&quot;</span>);<br>    <span class="hljs-type">byte</span>[] buffer = sr.generateSeed(<span class="hljs-number">10</span>);<br>    <span class="hljs-type">Base32</span> <span class="hljs-variable">codec</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Base32</span>();<br>    <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">String</span>(codec.encode(buffer).getBytes());<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p><strong>② 校验动态码</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-type">boolean</span> <span class="hljs-title function_">check_code</span><span class="hljs-params">(String secret, <span class="hljs-type">long</span> code, <span class="hljs-type">long</span> timeMsec)</span> <span class="hljs-keyword">throws</span> Exception &#123;<br>    <span class="hljs-type">Base32</span> <span class="hljs-variable">codec</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Base32</span>();<br>    <span class="hljs-type">byte</span>[] decodedKey = codec.decode(secret);<br>    <span class="hljs-type">long</span> <span class="hljs-variable">t</span> <span class="hljs-operator">=</span> (timeMsec / <span class="hljs-number">1000L</span>) / <span class="hljs-number">30L</span>;  <span class="hljs-comment">// 30 秒为一个窗口</span><br>    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> <span class="hljs-variable">i</span> <span class="hljs-operator">=</span> -window_size; i &lt;= window_size; ++i) &#123;<br>        <span class="hljs-keyword">if</span> (verify_code(decodedKey, t + i) == code) &#123;<br>            <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;<br>        &#125;<br>    &#125;<br>    <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p><code>window_size</code> 建议设为 1～3，允许前后若干时间窗口，缓解手机与服务器时钟偏差。</p>
+<p><strong>③ Base32 编解码</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Base32</span> &#123;<br><br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> <span class="hljs-type">char</span>[] ALPHABET = &#123; <span class="hljs-string">&#x27;A&#x27;</span>, <span class="hljs-string">&#x27;B&#x27;</span>, <span class="hljs-string">&#x27;C&#x27;</span>, <span class="hljs-string">&#x27;D&#x27;</span>, <span class="hljs-string">&#x27;E&#x27;</span>, <span class="hljs-string">&#x27;F&#x27;</span>, <span class="hljs-string">&#x27;G&#x27;</span>, <span class="hljs-string">&#x27;H&#x27;</span>, <span class="hljs-string">&#x27;I&#x27;</span>, <span class="hljs-string">&#x27;J&#x27;</span>, <span class="hljs-string">&#x27;K&#x27;</span>, <span class="hljs-string">&#x27;L&#x27;</span>, <span class="hljs-string">&#x27;M&#x27;</span>, <span class="hljs-string">&#x27;N&#x27;</span>, <span class="hljs-string">&#x27;O&#x27;</span>,<br>            <span class="hljs-string">&#x27;P&#x27;</span>, <span class="hljs-string">&#x27;Q&#x27;</span>, <span class="hljs-string">&#x27;R&#x27;</span>, <span class="hljs-string">&#x27;S&#x27;</span>, <span class="hljs-string">&#x27;T&#x27;</span>, <span class="hljs-string">&#x27;U&#x27;</span>, <span class="hljs-string">&#x27;V&#x27;</span>, <span class="hljs-string">&#x27;W&#x27;</span>, <span class="hljs-string">&#x27;X&#x27;</span>, <span class="hljs-string">&#x27;Y&#x27;</span>, <span class="hljs-string">&#x27;Z&#x27;</span>, <span class="hljs-string">&#x27;2&#x27;</span>, <span class="hljs-string">&#x27;3&#x27;</span>, <span class="hljs-string">&#x27;4&#x27;</span>, <span class="hljs-string">&#x27;5&#x27;</span>, <span class="hljs-string">&#x27;6&#x27;</span>, <span class="hljs-string">&#x27;7&#x27;</span> &#125;;<br><br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> <span class="hljs-type">byte</span>[] DECODE_TABLE;<br><br>    <span class="hljs-keyword">static</span> &#123;<br>        DECODE_TABLE = <span class="hljs-keyword">new</span> <span class="hljs-title class_">byte</span>[<span class="hljs-number">128</span>];<br><br>        <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> <span class="hljs-variable">i</span> <span class="hljs-operator">=</span> <span class="hljs-number">0</span>; i &lt; DECODE_TABLE.length; i++) &#123;<br>            DECODE_TABLE[i] = (<span class="hljs-type">byte</span>) <span class="hljs-number">0xFF</span>;<br>        &#125;<br>        <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> <span class="hljs-variable">i</span> <span class="hljs-operator">=</span> <span class="hljs-number">0</span>; i &lt; ALPHABET.length; i++) &#123;<br>            DECODE_TABLE[(<span class="hljs-type">int</span>) ALPHABET[i]] = (<span class="hljs-type">byte</span>) i;<br>            <span class="hljs-keyword">if</span> (i &lt; <span class="hljs-number">24</span>) &#123;<br>                DECODE_TABLE[(<span class="hljs-type">int</span>) Character.toLowerCase(ALPHABET[i])] = (<span class="hljs-type">byte</span>) i;<br>            &#125;<br>        &#125;<br>    &#125;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> String <span class="hljs-title function_">encode</span><span class="hljs-params">(<span class="hljs-type">byte</span>[] data)</span> &#123;<br><br>        <span class="hljs-type">char</span>[] chars = <span class="hljs-keyword">new</span> <span class="hljs-title class_">char</span>[((data.length * <span class="hljs-number">8</span>) / <span class="hljs-number">5</span>) + ((data.length % <span class="hljs-number">5</span>) != <span class="hljs-number">0</span> ? <span class="hljs-number">1</span> : <span class="hljs-number">0</span>)];<br><br>        <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> <span class="hljs-variable">i</span> <span class="hljs-operator">=</span> <span class="hljs-number">0</span>, j = <span class="hljs-number">0</span>, index = <span class="hljs-number">0</span>; i &lt; chars.length; i++) &#123;<br>            <span class="hljs-keyword">if</span> (index &gt; <span class="hljs-number">3</span>) &#123;<br>                <span class="hljs-type">int</span> <span class="hljs-variable">b</span> <span class="hljs-operator">=</span> data[j] &amp; (<span class="hljs-number">0xFF</span> &gt;&gt; index);<br>                index = (index + <span class="hljs-number">5</span>) % <span class="hljs-number">8</span>;<br>                b &lt;&lt;= index;<br>                <span class="hljs-keyword">if</span> (j &lt; data.length - <span class="hljs-number">1</span>) &#123;<br>                    b |= (data[j + <span class="hljs-number">1</span>] &amp; <span class="hljs-number">0xFF</span>) &gt;&gt; (<span class="hljs-number">8</span> - index);<br>                &#125;<br>                chars[i] = ALPHABET[b];<br>                j++;<br>            &#125; <span class="hljs-keyword">else</span> &#123;<br>                chars[i] = ALPHABET[((data[j] &gt;&gt; (<span class="hljs-number">8</span> - (index + <span class="hljs-number">5</span>))) &amp; <span class="hljs-number">0x1F</span>)];<br>                index = (index + <span class="hljs-number">5</span>) % <span class="hljs-number">8</span>;<br>                <span class="hljs-keyword">if</span> (index == <span class="hljs-number">0</span>) &#123;<br>                    j++;<br>                &#125;<br>            &#125;<br>        &#125;<br><br>        <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">String</span>(chars);<br>    &#125;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-type">byte</span>[] decode(String s) <span class="hljs-keyword">throws</span> Exception &#123;<br><br>        <span class="hljs-type">char</span>[] stringData = s.toCharArray();<br>        <span class="hljs-type">byte</span>[] data = <span class="hljs-keyword">new</span> <span class="hljs-title class_">byte</span>[(stringData.length * <span class="hljs-number">5</span>) / <span class="hljs-number">8</span>];<br><br>        <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> <span class="hljs-variable">i</span> <span class="hljs-operator">=</span> <span class="hljs-number">0</span>, j = <span class="hljs-number">0</span>, index = <span class="hljs-number">0</span>; i &lt; stringData.length; i++) &#123;<br>            <span class="hljs-type">int</span> val;<br><br>            <span class="hljs-keyword">try</span> &#123;<br>                val = DECODE_TABLE[stringData[i]];<br>            &#125; <span class="hljs-keyword">catch</span> (ArrayIndexOutOfBoundsException e) &#123;<br>                <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Exception</span>(<span class="hljs-string">&quot;Illegal character&quot;</span>);<br>            &#125;<br><br>            <span class="hljs-keyword">if</span> (val == <span class="hljs-number">0xFF</span>) &#123;<br>                <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Exception</span>(<span class="hljs-string">&quot;Illegal character&quot;</span>);<br>            &#125;<br><br>            <span class="hljs-keyword">if</span> (index &lt;= <span class="hljs-number">3</span>) &#123;<br>                index = (index + <span class="hljs-number">5</span>) % <span class="hljs-number">8</span>;<br>                <span class="hljs-keyword">if</span> (index == <span class="hljs-number">0</span>) &#123;<br>                    data[j++] |= val;<br>                &#125; <span class="hljs-keyword">else</span> &#123;<br>                    data[j] |= val &lt;&lt; (<span class="hljs-number">8</span> - index);<br>                &#125;<br>            &#125; <span class="hljs-keyword">else</span> &#123;<br>                index = (index + <span class="hljs-number">5</span>) % <span class="hljs-number">8</span>;<br>                data[j++] |= (val &gt;&gt; index);<br>                <span class="hljs-keyword">if</span> (j &lt; data.length) &#123;<br>                    data[j] |= val &lt;&lt; (<span class="hljs-number">8</span> - index);<br>                &#125;<br>            &#125;<br>        &#125;<br><br>        <span class="hljs-keyword">return</span> data;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>TOTP 密钥与 Google Authenticator 约定使用 Base32，需单独实现 <code>Base32.encode</code> &#x2F; <code>Base32.decode</code>（或复用现有工具类）。</p>
+<hr>
+<h3 id="4-2-用户实体"><a href="#4-2-用户实体" class="headerlink" title="4.2 用户实体"></a>4.2 用户实体</h3><p>在用户实体中增加字段：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@ApiModelProperty(value = &quot;谷歌令牌密钥&quot;)</span><br><span class="hljs-keyword">private</span> String mfa;<br></code></pre></td></tr></table></figure>
+
+<p>MyBatis 映射时，登录查询（按用户名查用户）必须带上 <code>mfa</code> 列，否则登录校验读不到密钥。</p>
+<hr>
+<h3 id="4-3-新增用户：自动绑定-mfa"><a href="#4-3-新增用户：自动绑定-mfa" class="headerlink" title="4.3 新增用户：自动绑定 mfa"></a>4.3 新增用户：自动绑定 mfa</h3><p>创建用户接口中，若前端未传 <code>mfa</code>，后端兜底生成：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@PostMapping</span><br><span class="hljs-keyword">public</span> ResponseEntity&lt;Object&gt; <span class="hljs-title function_">createUser</span><span class="hljs-params">(<span class="hljs-meta">@Validated</span> <span class="hljs-meta">@RequestBody</span> User resources)</span> &#123;<br>    resources.setPassword(passwordEncoder.encode(<span class="hljs-string">&quot;123456&quot;</span>));  <span class="hljs-comment">// 默认密码</span><br>    <span class="hljs-keyword">if</span> (StringUtils.isBlank(resources.getMfa())) &#123;<br>        resources.setMfa(GoogleAuthService.generateSecretKey());<br>    &#125;<br>    userService.create(resources);<br>    <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">ResponseEntity</span>&lt;&gt;(HttpStatus.CREATED);<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>推荐由<strong>前端</strong>在新增弹窗里生成 <code>mfa</code> 并随表单提交，后端仅做兜底；这样二维码与入库密钥一致。</p>
+<hr>
+<h3 id="4-4-登录：强制校验动态令牌"><a href="#4-4-登录：强制校验动态令牌" class="headerlink" title="4.4 登录：强制校验动态令牌"></a>4.4 登录：强制校验动态令牌</h3><p>登录 DTO 沿用原有 <code>code</code> 字段，语义改为「谷歌令牌 6 位数字」。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@PostMapping(&quot;/login&quot;)</span><br><span class="hljs-keyword">public</span> ResponseEntity&lt;Object&gt; <span class="hljs-title function_">login</span><span class="hljs-params">(<span class="hljs-meta">@RequestBody</span> AuthUserDto authUser, HttpServletRequest request)</span> <span class="hljs-keyword">throws</span> Exception &#123;<br>    <span class="hljs-type">String</span> <span class="hljs-variable">password</span> <span class="hljs-operator">=</span> RsaUtils.decryptByPrivateKey(privateKey, authUser.getPassword());<br>    <span class="hljs-type">JwtUserDto</span> <span class="hljs-variable">jwtUser</span> <span class="hljs-operator">=</span> userDetailsService.loadUserByUsername(authUser.getUsername());<br><br>    <span class="hljs-keyword">if</span> (!passwordEncoder.matches(password, jwtUser.getPassword())) &#123;<br>        <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">BadRequestException</span>(<span class="hljs-string">&quot;登录密码错误&quot;</span>);<br>    &#125;<br>    <span class="hljs-keyword">if</span> (StringUtils.isBlank(jwtUser.getUser().getMfa())) &#123;<br>        <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">BadRequestException</span>(<span class="hljs-string">&quot;当前用户未绑定谷歌令牌&quot;</span>);<br>    &#125;<br><br>    <span class="hljs-type">long</span> tokenCode;<br>    <span class="hljs-keyword">try</span> &#123;<br>        tokenCode = Long.parseLong(authUser.getCode());<br>    &#125; <span class="hljs-keyword">catch</span> (Exception e) &#123;<br>        <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">BadRequestException</span>(<span class="hljs-string">&quot;谷歌令牌格式错误&quot;</span>);<br>    &#125;<br><br>    <span class="hljs-type">boolean</span> <span class="hljs-variable">passed</span> <span class="hljs-operator">=</span> googleAuthService.check_code(<br>        jwtUser.getUser().getMfa(),<br>        tokenCode,<br>        System.currentTimeMillis()<br>    );<br>    <span class="hljs-keyword">if</span> (!passed) &#123;<br>        <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">BadRequestException</span>(<span class="hljs-string">&quot;谷歌令牌错误&quot;</span>);<br>    &#125;<br><br>    <span class="hljs-comment">// 校验通过后再签发 JWT、保存在线用户等</span><br>    <span class="hljs-type">String</span> <span class="hljs-variable">token</span> <span class="hljs-operator">=</span> tokenProvider.createToken(jwtUser);<br>    <span class="hljs-comment">// ...</span><br>    <span class="hljs-keyword">return</span> ResponseEntity.ok(authInfo);<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>要点：</p>
+<ul>
+<li>去掉图形验证码校验（若原登录用 Redis 存验证码，可删除相关逻辑）。</li>
+<li>密码正确 ≠ 登录成功，必须 TOTP 也通过。</li>
+<li>异常信息区分：未绑定 &#x2F; 格式错误 &#x2F; 令牌错误。</li>
+</ul>
+<hr>
+<h2 id="5-前端实现（Vue2）"><a href="#5-前端实现（Vue2）" class="headerlink" title="5. 前端实现（Vue2）"></a>5. 前端实现（Vue2）</h2><h3 id="5-1-登录页"><a href="#5-1-登录页" class="headerlink" title="5.1 登录页"></a>5.1 登录页</h3><ul>
+<li>输入框文案改为「谷歌令牌」。</li>
+<li>仍提交字段 <code>code</code>（6 位数字）。</li>
+<li>不再请求图形验证码接口。</li>
+</ul>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs javascript"><span class="hljs-comment">// 登录请求体示例</span><br>&#123;<br>  <span class="hljs-attr">username</span>: <span class="hljs-string">&#x27;admin&#x27;</span>,<br>  <span class="hljs-attr">password</span>: <span class="hljs-string">&#x27;加密后的密码&#x27;</span>,<br>  <span class="hljs-attr">code</span>: <span class="hljs-string">&#x27;123456&#x27;</span>,   <span class="hljs-comment">// 谷歌令牌，非图形验证码</span><br>  <span class="hljs-attr">uuid</span>: <span class="hljs-string">&#x27;&#x27;</span><br>&#125;<br></code></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="5-2-新增用户：本地生成-otpauth-二维码"><a href="#5-2-新增用户：本地生成-otpauth-二维码" class="headerlink" title="5.2 新增用户：本地生成 otpauth + 二维码"></a>5.2 新增用户：本地生成 otpauth + 二维码</h3><p><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/../assets/Spring-Boot-%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E6%95%B4%E5%90%88%E8%B0%B7%E6%AD%8C%E4%BB%A4%E7%89%8C/image-20260701142735354.png" alt="image-20260701142534919"></p>
+<p><strong>不要</strong>使用 <code>https://www.google.com/chart?...</code> 生成二维码（该服务已不可用，会 404）。</p>
+<p>推荐做法（与参考项目一致）：</p>
+<ol>
+<li>安装本地二维码组件：<code>npm install vue-qrcode-component</code></li>
+<li>准备 Base32 编码工具（前端 <code>utils/base32.js</code>）</li>
+<li>用户输入用户名时，前端生成密钥并渲染二维码</li>
+</ol>
+<p><strong>模板片段：</strong></p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">el-form-item</span> <span class="hljs-attr">label</span>=<span class="hljs-string">&quot;动态认证&quot;</span> <span class="hljs-attr">v-if</span>=<span class="hljs-string">&quot;!editMfa&quot;</span>&gt;</span><br>  <span class="hljs-tag">&lt;<span class="hljs-name">span</span> <span class="hljs-attr">v-show</span>=<span class="hljs-string">&quot;!authQr&quot;</span> <span class="hljs-attr">style</span>=<span class="hljs-string">&quot;color:#409EFF&quot;</span>&gt;</span>请输入账号生成动态验证码<span class="hljs-tag">&lt;/<span class="hljs-name">span</span>&gt;</span><br>  <span class="hljs-tag">&lt;<span class="hljs-name">qr-code</span> <span class="hljs-attr">v-show</span>=<span class="hljs-string">&quot;authQr&quot;</span> <span class="hljs-attr">:text</span>=<span class="hljs-string">&quot;authQr&quot;</span> <span class="hljs-attr">:size</span>=<span class="hljs-string">&quot;150&quot;</span> /&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">el-form-item</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<p><strong>逻辑片段：</strong></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><code class="hljs javascript"><span class="hljs-keyword">import</span> qrCode <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;vue-qrcode-component&#x27;</span><br><span class="hljs-keyword">import</span> base32 <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;@/utils/base32&#x27;</span><br><br><span class="hljs-title function_">createQr</span>(<span class="hljs-params"></span>) &#123;<br>  <span class="hljs-keyword">if</span> (!<span class="hljs-variable language_">this</span>.<span class="hljs-property">form</span>.<span class="hljs-property">username</span>) &#123;<br>    <span class="hljs-variable language_">this</span>.<span class="hljs-property">form</span>.<span class="hljs-property">mfa</span> = <span class="hljs-literal">null</span><br>    <span class="hljs-variable language_">this</span>.<span class="hljs-property">authQr</span> = <span class="hljs-string">&#x27;&#x27;</span><br>    <span class="hljs-keyword">return</span><br>  &#125;<br>  <span class="hljs-keyword">const</span> raw = <span class="hljs-variable language_">this</span>.<span class="hljs-title function_">createKey</span>()                    <span class="hljs-comment">// 10 位随机串</span><br>  <span class="hljs-variable language_">this</span>.<span class="hljs-property">form</span>.<span class="hljs-property">mfa</span> = base32.<span class="hljs-title function_">encode</span>(raw)              <span class="hljs-comment">// Base32 密钥</span><br>  <span class="hljs-variable language_">this</span>.<span class="hljs-property">authQr</span> = <span class="hljs-string">`otpauth://totp/eladmin:<span class="hljs-subst">$&#123;<span class="hljs-variable language_">this</span>.form.username&#125;</span>?secret=<span class="hljs-subst">$&#123;<span class="hljs-variable language_">this</span>.form.mfa&#125;</span>&amp;issuer=eladmin`</span><br>&#125;,<br><br><span class="hljs-title function_">createKey</span>(<span class="hljs-params"></span>) &#123;<br>  <span class="hljs-keyword">const</span> expect = <span class="hljs-number">10</span><br>  <span class="hljs-keyword">let</span> str = <span class="hljs-title class_">Math</span>.<span class="hljs-title function_">random</span>().<span class="hljs-title function_">toString</span>(<span class="hljs-number">36</span>).<span class="hljs-title function_">substring</span>(<span class="hljs-number">2</span>)<br>  <span class="hljs-keyword">while</span> (str.<span class="hljs-property">length</span> &lt; expect) &#123;<br>    str += <span class="hljs-title class_">Math</span>.<span class="hljs-title function_">random</span>().<span class="hljs-title function_">toString</span>(<span class="hljs-number">36</span>).<span class="hljs-title function_">substring</span>(<span class="hljs-number">2</span>)<br>  &#125;<br>  <span class="hljs-keyword">return</span> str.<span class="hljs-title function_">substring</span>(<span class="hljs-number">0</span>, expect).<span class="hljs-title function_">toUpperCase</span>()<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>提交创建用户时，<code>form.mfa</code> 会随 JSON 一并提交，后端写入数据库。</p>
+<p>编辑用户时不展示二维码（<code>editMfa</code> 有值则隐藏），避免重复绑定。</p>
+<hr>
+<h2 id="6-历史用户迁移"><a href="#6-历史用户迁移" class="headerlink" title="6. 历史用户迁移"></a>6. 历史用户迁移</h2><p>开启强制令牌前，必须为已有用户补齐 <code>mfa</code>：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-comment">-- 示例：为 mfa 为空的用户生成占位密钥（需结合业务决定如何通知用户扫码）</span><br><span class="hljs-keyword">UPDATE</span> sys_user<br><span class="hljs-keyword">SET</span> mfa <span class="hljs-operator">=</span> <span class="hljs-built_in">UPPER</span>(<span class="hljs-built_in">SUBSTRING</span>(SHA2(CONCAT(<span class="hljs-string">&#x27;MFA-&#x27;</span>, user_id, <span class="hljs-string">&#x27;-&#x27;</span>, username), <span class="hljs-number">256</span>), <span class="hljs-number">1</span>, <span class="hljs-number">16</span>))<br><span class="hljs-keyword">WHERE</span> mfa <span class="hljs-keyword">IS</span> <span class="hljs-keyword">NULL</span> <span class="hljs-keyword">OR</span> <span class="hljs-built_in">TRIM</span>(mfa) <span class="hljs-operator">=</span> <span class="hljs-string">&#x27;&#x27;</span>;<br></code></pre></td></tr></table></figure>
+
+<p>上线顺序建议：</p>
+<ol>
+<li>执行 DDL 增加字段  </li>
+<li>批量补齐历史用户 <code>mfa</code>  </li>
+<li>通知用户用 Google Authenticator 扫码或手动录入密钥  </li>
+<li>发布前后端强制校验版本</li>
+</ol>
+<hr>
+<h2 id="7-接口约定小结"><a href="#7-接口约定小结" class="headerlink" title="7. 接口约定小结"></a>7. 接口约定小结</h2><table>
+<thead>
+<tr>
+<th>接口</th>
+<th>方法</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>/auth/login</code></td>
+<td>POST</td>
+<td>body 含 <code>username</code>、<code>password</code>、<code>code</code>（动态令牌）</td>
+</tr>
+<tr>
+<td><code>/api/users</code></td>
+<td>POST</td>
+<td>body 含用户信息及 <code>mfa</code>（可选，后端可兜底生成）</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="8-常见问题"><a href="#8-常见问题" class="headerlink" title="8. 常见问题"></a>8. 常见问题</h2><p><strong>Q：二维码显示不出来，Network 里 google.com&#x2F;chart 404？</strong><br>A：改用前端 <code>vue-qrcode-component</code> 渲染 <code>otpauth://</code> 字符串，不要依赖 Google Chart API。</p>
+<p><strong>Q：令牌总是错误？</strong><br>A：检查服务器 NTP 时间；确认入库 <code>mfa</code> 与扫码绑定密钥一致；适当增大 <code>window_size</code>。</p>
+<p><strong>Q：老用户登录提示未绑定？</strong><br>A：该用户 <code>mfa</code> 为空，需先跑迁移 SQL 或在管理端重新生成密钥。</p>
+<p><strong>Q：MySQL 执行 ADD COLUMN 报语法错误？</strong><br>A：低版本不支持 <code>IF NOT EXISTS</code>，改用先查 <code>information_schema.COLUMNS</code> 再决定是否 ALTER。</p>
+<hr>
+<h2 id="9-安全建议"><a href="#9-安全建议" class="headerlink" title="9. 安全建议"></a>9. 安全建议</h2><ul>
+<li><code>mfa</code> 为敏感字段，日志中禁止打印完整密钥与动态码  </li>
+<li>重置密钥后旧令牌立即失效  </li>
+<li>可配合登录失败次数限制，降低暴力猜码风险  </li>
+<li>生产环境务必使用 HTTPS</li>
+</ul>
+<h2 id=""><a href="#" class="headerlink" title=""></a></h2><p>完成以上步骤后，Spring Boot 与 Google Authenticator 的整合即可投入使用。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://yuanzhang788.github.io">Yuanz</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://yuanzhang788.github.io/2026/07/01/springboot%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E6%95%B4%E5%90%88%E8%B0%B7%E6%AD%8C%E4%BB%A4%E7%89%8C/">https://yuanzhang788.github.io/2026/07/01/springboot如何实现整合谷歌令牌/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://yuanzhang788.github.io" target="_blank">Yuanz</a>！</span></div></div><div class="tag_share"><div class="post-share"><div class="social-share" data-image="/assets/Abanner/default_cover.png" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2026/07/01/Spring-Boot-%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E6%95%B4%E5%90%88%E8%B0%B7%E6%AD%8C%E4%BB%A4%E7%89%8C/" title="Spring Boot 如何实现整合谷歌令牌"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/assets/Abanner/default_cover.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">Spring Boot 如何实现整合谷歌令牌</div></div><div class="info-2"><div class="info-item-1">Spring Boot 如何实现整合谷歌令牌本文说明如何在 Spring Boot + Vue 后台管理系统中接入 Google Authenticator（TOTP 动态令牌），实现「创建用户绑定 + 登录强制校验」。   1. 功能目标   场景 说明    新增用户 自动生成密钥 mfa，管理端展示二维码供扫码绑定   用户登录 除账号密码外，必须输入 6 位动态令牌   历史用户 上线前需批量补齐 mfa，否则无法登录    2. 整体流程123456789101112131415161718192021┌─────────────┐     用户名+密码+动态码      ┌─...</div></div></div></a><a class="pagination-related" href="/2026/06/26/JDBC%E6%B1%89%E5%AD%97%E7%BC%96%E7%A0%81%E5%AF%BC%E8%87%B4%E6%9F%A5%E8%AF%A2%E5%BC%82%E5%B8%B8/" title="JDBC汉字编码导致查询异常"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/assets/Abanner/default_cover.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">JDBC汉字编码导致查询异常</div></div><div class="info-2"><div class="info-item-1">记一次诡异的 JDBC 查询：Navicat 有数据，代码里却查不到？ 一条看似人畜无害的 SQL，藏着字符编码埋下的深坑。   一、问题浮现项目里有一个领取优惠券的接口，逻辑很简单： 1234@Transactionalpublic List&lt;CurrencyRecharge&gt; acquire(String type, BigDecimal denomination, int limit) &#123;    return mapper.selectAvailable(type, denomination, limit);&#125;  对应的 MyBatis SQL： 1...</div></div></div></a></nav><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="twikoo-wrap"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/assets/Abanner/avatar.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">Yuanz</div><div class="author-info-description">Yuanz的个人博客</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">183</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">111</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">0</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/yuanzhang788"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/yuanzhang788" target="_blank" title="Github"><i class="fab fa-github" style="color: #4a7dbe;"></i></a><a class="social-icon" href="mailto:2437264464@qq.com" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #49b1f5;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎访问 Yuanz 的个人博客！</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Spring-Boot-%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E6%95%B4%E5%90%88%E8%B0%B7%E6%AD%8C%E4%BB%A4%E7%89%8C"><span class="toc-number">1.</span> <span class="toc-text">Spring Boot 如何实现整合谷歌令牌</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E5%8A%9F%E8%83%BD%E7%9B%AE%E6%A0%87"><span class="toc-number">1.1.</span> <span class="toc-text">1. 功能目标</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E6%95%B4%E4%BD%93%E6%B5%81%E7%A8%8B"><span class="toc-number">1.2.</span> <span class="toc-text">2. 整体流程</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-%E6%95%B0%E6%8D%AE%E5%BA%93"><span class="toc-number">1.3.</span> <span class="toc-text">3. 数据库</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-%E5%90%8E%E7%AB%AF%E5%AE%9E%E7%8E%B0"><span class="toc-number">1.4.</span> <span class="toc-text">4. 后端实现</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#4-1-TOTP-%E6%A0%B8%E5%BF%83%E6%9C%8D%E5%8A%A1%EF%BC%88GoogleAuthService%EF%BC%89"><span class="toc-number">1.4.1.</span> <span class="toc-text">4.1 TOTP 核心服务（GoogleAuthService）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-2-%E7%94%A8%E6%88%B7%E5%AE%9E%E4%BD%93"><span class="toc-number">1.4.2.</span> <span class="toc-text">4.2 用户实体</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-3-%E6%96%B0%E5%A2%9E%E7%94%A8%E6%88%B7%EF%BC%9A%E8%87%AA%E5%8A%A8%E7%BB%91%E5%AE%9A-mfa"><span class="toc-number">1.4.3.</span> <span class="toc-text">4.3 新增用户：自动绑定 mfa</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-4-%E7%99%BB%E5%BD%95%EF%BC%9A%E5%BC%BA%E5%88%B6%E6%A0%A1%E9%AA%8C%E5%8A%A8%E6%80%81%E4%BB%A4%E7%89%8C"><span class="toc-number">1.4.4.</span> <span class="toc-text">4.4 登录：强制校验动态令牌</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-%E5%89%8D%E7%AB%AF%E5%AE%9E%E7%8E%B0%EF%BC%88Vue2%EF%BC%89"><span class="toc-number">1.5.</span> <span class="toc-text">5. 前端实现（Vue2）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#5-1-%E7%99%BB%E5%BD%95%E9%A1%B5"><span class="toc-number">1.5.1.</span> <span class="toc-text">5.1 登录页</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-2-%E6%96%B0%E5%A2%9E%E7%94%A8%E6%88%B7%EF%BC%9A%E6%9C%AC%E5%9C%B0%E7%94%9F%E6%88%90-otpauth-%E4%BA%8C%E7%BB%B4%E7%A0%81"><span class="toc-number">1.5.2.</span> <span class="toc-text">5.2 新增用户：本地生成 otpauth + 二维码</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-%E5%8E%86%E5%8F%B2%E7%94%A8%E6%88%B7%E8%BF%81%E7%A7%BB"><span class="toc-number">1.6.</span> <span class="toc-text">6. 历史用户迁移</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#7-%E6%8E%A5%E5%8F%A3%E7%BA%A6%E5%AE%9A%E5%B0%8F%E7%BB%93"><span class="toc-number">1.7.</span> <span class="toc-text">7. 接口约定小结</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#8-%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98"><span class="toc-number">1.8.</span> <span class="toc-text">8. 常见问题</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#9-%E5%AE%89%E5%85%A8%E5%BB%BA%E8%AE%AE"><span class="toc-number">1.9.</span> <span class="toc-text">9. 安全建议</span></a></li><li class="toc-item toc-level-2"><a class="toc-link"><span class="toc-number">1.10.</span> <span class="toc-text"></span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2026/07/01/Spring-Boot-%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E6%95%B4%E5%90%88%E8%B0%B7%E6%AD%8C%E4%BB%A4%E7%89%8C/" title="Spring Boot 如何实现整合谷歌令牌"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/assets/Abanner/default_cover.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Spring Boot 如何实现整合谷歌令牌"/></a><div class="content"><a class="title" href="/2026/07/01/Spring-Boot-%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E6%95%B4%E5%90%88%E8%B0%B7%E6%AD%8C%E4%BB%A4%E7%89%8C/" title="Spring Boot 如何实现整合谷歌令牌">Spring Boot 如何实现整合谷歌令牌</a><time datetime="2026-07-01T06:32:09.000Z" title="发表于 2026-07-01 14:32:09">2026-07-01</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2026/07/01/springboot%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E6%95%B4%E5%90%88%E8%B0%B7%E6%AD%8C%E4%BB%A4%E7%89%8C/" title="无标题"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/assets/Abanner/default_cover.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="无标题"/></a><div class="content"><a class="title" href="/2026/07/01/springboot%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E6%95%B4%E5%90%88%E8%B0%B7%E6%AD%8C%E4%BB%A4%E7%89%8C/" title="无标题">无标题</a><time datetime="2026-07-01T06:30:18.212Z" title="发表于 2026-07-01 14:30:18">2026-07-01</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2026/06/26/JDBC%E6%B1%89%E5%AD%97%E7%BC%96%E7%A0%81%E5%AF%BC%E8%87%B4%E6%9F%A5%E8%AF%A2%E5%BC%82%E5%B8%B8/" title="JDBC汉字编码导致查询异常"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/assets/Abanner/default_cover.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="JDBC汉字编码导致查询异常"/></a><div class="content"><a class="title" href="/2026/06/26/JDBC%E6%B1%89%E5%AD%97%E7%BC%96%E7%A0%81%E5%AF%BC%E8%87%B4%E6%9F%A5%E8%AF%A2%E5%BC%82%E5%B8%B8/" title="JDBC汉字编码导致查询异常">JDBC汉字编码导致查询异常</a><time datetime="2026-06-26T08:24:25.000Z" title="发表于 2026-06-26 16:24:25">2026-06-26</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2026/06/25/%E5%9F%BA%E4%BA%8EIDEA-MCP%E5%AE%9E%E7%8E%B0%E4%BB%A3%E7%A0%81diff%E5%AE%A1%E6%9F%A5Skill-prod-diff-review-%E4%BD%BF%E7%94%A8%E8%AF%B4%E6%98%8E/" title="基于IDEA MCP实现代码Diff审查 - prod-diff-review Skill使用指南"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/../assets/%E5%9F%BA%E4%BA%8EIDEA-MCP%E5%AE%9E%E7%8E%B0%E4%BB%A3%E7%A0%81diff%E5%AE%A1%E6%9F%A5Skill-prod-diff-review-%E4%BD%BF%E7%94%A8%E8%AF%B4%E6%98%8E/1782370842658-3cf46fbd-cec4-4b62-826a-f7cae32ce009.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="基于IDEA MCP实现代码Diff审查 - prod-diff-review Skill使用指南"/></a><div class="content"><a class="title" href="/2026/06/25/%E5%9F%BA%E4%BA%8EIDEA-MCP%E5%AE%9E%E7%8E%B0%E4%BB%A3%E7%A0%81diff%E5%AE%A1%E6%9F%A5Skill-prod-diff-review-%E4%BD%BF%E7%94%A8%E8%AF%B4%E6%98%8E/" title="基于IDEA MCP实现代码Diff审查 - prod-diff-review Skill使用指南">基于IDEA MCP实现代码Diff审查 - prod-diff-review Skill使用指南</a><time datetime="2026-06-25T07:23:55.000Z" title="发表于 2026-06-25 15:23:55">2026-06-25</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2026/06/18/spring%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB%E8%B7%AF%E7%BA%BF/" title="spring源码阅读路线"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/assets/Abanner/default_cover.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="spring源码阅读路线"/></a><div class="content"><a class="title" href="/2026/06/18/spring%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB%E8%B7%AF%E7%BA%BF/" title="spring源码阅读路线">spring源码阅读路线</a><time datetime="2026-06-18T08:49:17.000Z" title="发表于 2026-06-18 16:49:17">2026-06-18</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2024 - 2026 By Yuanz</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 8.1.2</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.5.5-b1</a></span></div><div class="footer_custom_text"><a href="https://github.com/yuanzhang788" target="_blank" rel="noopener noreferrer">Yuanz</a> &copy; <span id="year"></span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="前往评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page/instantpage.min.js" type="module"></script><script src="https://cdn.jsdelivr.net/npm/vanilla-lazyload/dist/lazyload.iife.min.js"></script><script src="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.js"></script><div class="js-pjax"><script>(() => {
+  const parseViewBox = viewBox => {
+    if (!viewBox) return null
+    const parts = viewBox.trim().split(/[\s,]+/).map(n => Number(n))
+    if (parts.length !== 4 || parts.some(n => Number.isNaN(n))) return null
+    return parts
+  }
+
+  const getSvgViewBox = svg => {
+    const attr = parseViewBox(svg.getAttribute('viewBox'))
+    if (attr) return attr
+
+    // Fallback: use bbox to build a viewBox
+    try {
+      const bbox = svg.getBBox()
+      if (bbox && bbox.width && bbox.height) return [bbox.x, bbox.y, bbox.width, bbox.height]
+    } catch (e) {
+      // getBBox may fail on some edge cases; ignore
+    }
+
+    const w = Number(svg.getAttribute('width')) || 0
+    const h = Number(svg.getAttribute('height')) || 0
+    if (w > 0 && h > 0) return [0, 0, w, h]
+    return [0, 0, 100, 100]
+  }
+
+  const setSvgViewBox = (svg, vb) => {
+    svg.setAttribute('viewBox', `${vb[0]} ${vb[1]} ${vb[2]} ${vb[3]}`)
+  }
+
+  const clamp = (v, min, max) => Math.max(min, Math.min(max, v))
+
+  const openSvgInNewTab = ({ source, initViewBox }) => {
+    const getClonedSvg = () => {
+      if (typeof source === 'string') {
+        const template = document.createElement('template')
+        template.innerHTML = source.trim()
+        const svg = template.content.querySelector('svg')
+        return svg ? svg.cloneNode(true) : null
+      }
+      if (source && typeof source.cloneNode === 'function') {
+        return source.cloneNode(true)
+      }
+      return null
+    }
+
+    const clone = getClonedSvg()
+    if (!clone) return
+    if (initViewBox && initViewBox.length === 4) {
+      clone.setAttribute('viewBox', initViewBox.join(' '))
+    }
+    if (!clone.getAttribute('xmlns')) clone.setAttribute('xmlns', 'http://www.w3.org/2000/svg')
+    if (!clone.getAttribute('xmlns:xlink') && clone.outerHTML.includes('xlink:')) {
+      clone.setAttribute('xmlns:xlink', 'http://www.w3.org/1999/xlink')
+    }
+    // inject background to match current theme
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark'
+    const bg = getComputedStyle(document.body).backgroundColor || (isDark ? '#1e1e1e' : '#ffffff')
+    if (!clone.style.background) clone.style.background = bg
+
+    const serializer = new XMLSerializer()
+    const svgSource = serializer.serializeToString(clone)
+    const htmlSource = `<!doctype html><html><head><meta charset="utf-8" />
+      <style>
+        html, body { width: 100%; height: 100%; margin: 0; display: flex; align-items: center; justify-content: center; background: ${bg}; }
+        svg { max-width: 100%; max-height: 100%; height: auto; width: auto; }
+      </style>
+      </head><body>${svgSource}</body></html>`
+    const blob = new Blob([htmlSource], { type: 'text/html;charset=utf-8' })
+    const url = URL.createObjectURL(blob)
+    window.open(url, '_blank', 'noopener')
+    setTimeout(() => URL.revokeObjectURL(url), 30000)
+  }
+
+  const attachMermaidViewerButton = wrap => {
+    let btn = wrap.querySelector('.mermaid-open-btn')
+    if (!btn) {
+      btn = document.createElement('button')
+      btn.type = 'button'
+      btn.className = 'mermaid-open-btn'
+      wrap.appendChild(btn)
+    }
+
+    btn.innerHTML = '<i class="fa fa-search fa-fw" aria-hidden="true"></i>'
+
+    if (!btn.__mermaidViewerBound) {
+      btn.addEventListener('click', e => {
+        e.preventDefault()
+        e.stopPropagation()
+        const svg = wrap.__mermaidOriginalSvg || wrap.querySelector('svg')
+        if (!svg) return
+        const initViewBox = wrap.__mermaidInitViewBox
+        if (typeof svg === 'string') {
+          openSvgInNewTab({ source: svg, initViewBox })
+          return
+        }
+        openSvgInNewTab({ source: svg, initViewBox })
+      })
+      btn.__mermaidViewerBound = true
+    }
+  }
+
+  // Zoom around a point (px, py) in the SVG viewport (in viewBox coordinates)
+  const zoomAtPoint = (vb, factor, px, py) => {
+    const w = vb[2] * factor
+    const h = vb[3] * factor
+    const nx = px - (px - vb[0]) * factor
+    const ny = py - (py - vb[1]) * factor
+    return [nx, ny, w, h]
+  }
+
+  const initMermaidGestures = wrap => {
+    const svg = wrap.querySelector('svg')
+    if (!svg) return
+
+    // Ensure viewBox exists so gestures always work
+    const initVb = getSvgViewBox(svg)
+    wrap.__mermaidInitViewBox = initVb
+    wrap.__mermaidCurViewBox = initVb.slice()
+    setSvgViewBox(svg, initVb)
+
+    // Avoid binding multiple times on themeChange/pjax
+    if (wrap.__mermaidGestureBound) return
+    wrap.__mermaidGestureBound = true
+
+    // Helper: map client (viewport) coordinate -> viewBox coordinate
+    const clientToViewBox = (clientX, clientY) => {
+      const rect = svg.getBoundingClientRect()
+      const vb = wrap.__mermaidCurViewBox || getSvgViewBox(svg)
+      const x = vb[0] + (clientX - rect.left) * (vb[2] / rect.width)
+      const y = vb[1] + (clientY - rect.top) * (vb[3] / rect.height)
+      return { x, y, rect, vb }
+    }
+
+    const state = {
+      pointers: new Map(),
+      startVb: null,
+      startDist: 0,
+      startCenter: null
+    }
+
+    const clampVb = vb => {
+      const init = wrap.__mermaidInitViewBox || vb
+      const minW = init[2] * 0.1
+      const maxW = init[2] * 10
+      const minH = init[3] * 0.1
+      const maxH = init[3] * 10
+      vb[2] = clamp(vb[2], minW, maxW)
+      vb[3] = clamp(vb[3], minH, maxH)
+      return vb
+    }
+
+    const setCurVb = vb => {
+      vb = clampVb(vb)
+      wrap.__mermaidCurViewBox = vb
+      setSvgViewBox(svg, vb)
+    }
+
+    const onPointerDown = e => {
+      // Allow only primary button for mouse
+      if (e.pointerType === 'mouse' && e.button !== 0) return
+      svg.setPointerCapture(e.pointerId)
+      state.pointers.set(e.pointerId, { x: e.clientX, y: e.clientY })
+
+      if (state.pointers.size === 1) {
+        state.startVb = (wrap.__mermaidCurViewBox || getSvgViewBox(svg)).slice()
+      } else if (state.pointers.size === 2) {
+        const pts = [...state.pointers.values()]
+        const dx = pts[0].x - pts[1].x
+        const dy = pts[0].y - pts[1].y
+        state.startDist = Math.hypot(dx, dy)
+        state.startVb = (wrap.__mermaidCurViewBox || getSvgViewBox(svg)).slice()
+        state.startCenter = { x: (pts[0].x + pts[1].x) / 2, y: (pts[0].y + pts[1].y) / 2 }
+      }
+    }
+
+    const onPointerMove = e => {
+      if (!state.pointers.has(e.pointerId)) return
+      state.pointers.set(e.pointerId, { x: e.clientX, y: e.clientY })
+
+      // Pan with 1 pointer
+      if (state.pointers.size === 1 && state.startVb) {
+        const p = [...state.pointers.values()][0]
+        const prev = { x: e.clientX - e.movementX, y: e.clientY - e.movementY }
+        // movementX/Y unreliable on touch, compute from stored last position
+        const last = wrap.__mermaidLastSinglePointer || p
+        const dxClient = p.x - last.x
+        const dyClient = p.y - last.y
+        wrap.__mermaidLastSinglePointer = p
+
+        const { rect } = clientToViewBox(p.x, p.y)
+        const vb = (wrap.__mermaidCurViewBox || getSvgViewBox(svg)).slice()
+        const dx = dxClient * (vb[2] / rect.width)
+        const dy = dyClient * (vb[3] / rect.height)
+        setCurVb([vb[0] - dx, vb[1] - dy, vb[2], vb[3]])
+        return
+      }
+
+      // Pinch zoom with 2 pointers
+      if (state.pointers.size === 2 && state.startVb && state.startDist > 0) {
+        const pts = [...state.pointers.values()]
+        const dx = pts[0].x - pts[1].x
+        const dy = pts[0].y - pts[1].y
+        const dist = Math.hypot(dx, dy)
+        if (!dist) return
+        const factor = state.startDist / dist // dist bigger => zoom in (viewBox smaller)
+
+        const cx = (pts[0].x + pts[1].x) / 2
+        const cy = (pts[0].y + pts[1].y) / 2
+        const centerClient = { x: cx, y: cy }
+
+        const pxy = clientToViewBox(centerClient.x, centerClient.y)
+        const cpx = pxy.x
+        const cpy = pxy.y
+
+        const vb = zoomAtPoint(state.startVb, factor, cpx, cpy)
+        setCurVb(vb)
+      }
+    }
+
+    const onPointerUpOrCancel = e => {
+      state.pointers.delete(e.pointerId)
+      if (state.pointers.size === 0) {
+        state.startVb = null
+        state.startDist = 0
+        state.startCenter = null
+        wrap.__mermaidLastSinglePointer = null
+      } else if (state.pointers.size === 1) {
+        // reset single pointer baseline to avoid jump
+        wrap.__mermaidLastSinglePointer = [...state.pointers.values()][0]
+      }
+    }
+
+    // Wheel zoom (mouse/trackpad)
+    const onWheel = e => {
+      // ctrlKey on mac trackpad pinch; we treat both as zoom
+      e.preventDefault()
+      const delta = e.deltaY
+      const zoomFactor = delta > 0 ? 1.1 : 0.9
+      const { x, y } = clientToViewBox(e.clientX, e.clientY)
+      const vb = (wrap.__mermaidCurViewBox || getSvgViewBox(svg)).slice()
+      setCurVb(zoomAtPoint(vb, zoomFactor, x, y))
+    }
+
+    const onDblClick = () => {
+      const init = wrap.__mermaidInitViewBox
+      if (!init) return
+      wrap.__mermaidCurViewBox = init.slice()
+      setSvgViewBox(svg, init)
+    }
+
+    svg.addEventListener('pointerdown', onPointerDown)
+    svg.addEventListener('pointermove', onPointerMove)
+    svg.addEventListener('pointerup', onPointerUpOrCancel)
+    svg.addEventListener('pointercancel', onPointerUpOrCancel)
+    svg.addEventListener('wheel', onWheel, { passive: false })
+    svg.addEventListener('dblclick', onDblClick)
+  }
+
+  const runMermaid = ele => {
+    window.loadMermaid = true
+    const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'default'
+
+    ele.forEach((item, index) => {
+      const mermaidSrc = item.firstElementChild
+
+      // Clear old render (themeChange/pjax will rerun)
+      const oldSvg = item.querySelector('svg')
+      if (oldSvg) oldSvg.remove()
+      item.__mermaidGestureBound = false
+
+      const config = mermaidSrc.dataset.config ? JSON.parse(mermaidSrc.dataset.config) : {}
+      if (!config.theme) {
+        config.theme = theme
+      }
+      const mermaidThemeConfig = `%%{init: ${JSON.stringify(config)}}%%\n`
+      const mermaidID = `mermaid-${index}`
+      const mermaidDefinition = mermaidThemeConfig + mermaidSrc.textContent
+
+      const renderFn = mermaid.render(mermaidID, mermaidDefinition)
+      const renderMermaid = svg => {
+        mermaidSrc.insertAdjacentHTML('afterend', svg)
+        if (true) initMermaidGestures(item)
+        item.__mermaidOriginalSvg = svg
+        if (true) attachMermaidViewerButton(item)
+      }
+
+
+      // mermaid v9 and v10 compatibility
+      typeof renderFn === 'string' ? renderMermaid(renderFn) : renderFn.then(({ svg }) => renderMermaid(svg))
+    })
+  }
+
+  const codeToMermaid = () => {
+    const codeMermaidEle = document.querySelectorAll('pre > code.mermaid')
+    if (codeMermaidEle.length === 0) return
+
+    codeMermaidEle.forEach(ele => {
+      const preEle = document.createElement('pre')
+      preEle.className = 'mermaid-src'
+      preEle.hidden = true
+      preEle.textContent = ele.textContent
+      const newEle = document.createElement('div')
+      newEle.className = 'mermaid-wrap'
+      newEle.appendChild(preEle)
+      ele.parentNode.replaceWith(newEle)
+    })
+  }
+
+  const loadMermaid = () => {
+    if (false) codeToMermaid()
+    const $mermaid = document.querySelectorAll('#article-container .mermaid-wrap')
+    if ($mermaid.length === 0) return
+
+    const runMermaidFn = () => runMermaid($mermaid)
+    btf.addGlobalFn('themeChange', runMermaidFn, 'mermaid')
+    window.loadMermaid ? runMermaidFn() : btf.getScript('https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js').then(runMermaidFn)
+  }
+
+  btf.addGlobalFn('encrypt', loadMermaid, 'mermaid')
+  window.pjax ? loadMermaid() : document.addEventListener('DOMContentLoaded', loadMermaid)
+})()</script><script>(() => {
+  const isShuoshuo = GLOBAL_CONFIG_SITE.pageType === 'shuoshuo'
+  const option = null
+
+  const getCount = () => {
+    const countELement = document.getElementById('twikoo-count')
+    if(!countELement) return
+    twikoo.getCommentsCount({
+      envId: 'https://twikoo-gvzc.vercel.app',
+      region: '',
+      urls: [window.location.pathname],
+      includeReply: false
+    }).then(res => {
+      countELement.textContent = res[0].count
+    }).catch(err => {
+      console.error(err)
+    })
+  }
+
+  const init = (el = document, path = location.pathname) => {
+    twikoo.init({
+      el: el.querySelector('#twikoo-wrap'),
+      envId: 'https://twikoo-gvzc.vercel.app',
+      region: '',
+      onCommentLoaded: () => {
+        btf.loadLightbox(document.querySelectorAll('#twikoo .tk-content img:not(.tk-owo-emotion)'))
+      },
+      ...option,
+      path: isShuoshuo ? path : (option && option.path) || path
+    })
+
+    GLOBAL_CONFIG_SITE.pageType === 'post' && getCount()
+
+    isShuoshuo && (window.shuoshuoComment.destroyTwikoo = () => {
+      if (el.children.length) {
+        el.innerHTML = ''
+        el.classList.add('no-comment')
+      }
+    })
+  }
+
+  const loadTwikoo = (el, path) => {
+    if (typeof twikoo === 'object') setTimeout(() => init(el, path), 0)
+    else btf.getScript('https://cdn.jsdelivr.net/npm/twikoo/dist/twikoo.all.min.js').then(() => init(el, path))
+  }
+
+  if (isShuoshuo) {
+    'Twikoo' === 'Twikoo'
+      ? window.shuoshuoComment = { loadComment: loadTwikoo }
+      : window.loadOtherComment = loadTwikoo
+    return
+  }
+
+  if ('Twikoo' === 'Twikoo' || !true) {
+    if (true) btf.loadComment(document.getElementById('twikoo-wrap'), loadTwikoo)
+    else loadTwikoo()
+  } else {
+    window.loadOtherComment = loadTwikoo
+  }
+})()</script></div><div class="aplayer no-destroy" data-id="18066081268" data-server="netease" data-type="playlist" data-fixed="true" data-mini="true" data-autoplay="true" data-theme="#49b1f5" data-loop="all" data-order="list" data-preload="auto" data-volume="0.7" data-mutex="true" data-listfolded="true" data-listmaxheight="340px"> </div><script id="canvas_nest" defer="defer" color="0,155,255" opacity="0.5" zIndex="-1" count="60" mobile="false" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/canvas-nest.min.js"></script><script id="click-show-text" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/click-show-text.min.js" data-mobile="false" data-text="富强,民主,文明,和谐,自由,平等,公正,法治" data-fontsize="14px" data-random="true" async="async"></script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js"></script><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/metingjs/dist/Meting.min.js"></script><script>(() => {
+  const destroyAplayer = () => {
+    if (window.aplayers) {
+      for (let i = 0; i < window.aplayers.length; i++) {
+        if (!window.aplayers[i].options.fixed) {
+          window.aplayers[i].destroy()
+        }
+      }
+    }
+  }
+
+  const runMetingJS = () => {
+    typeof loadMeting === 'function' && document.getElementsByClassName('aplayer').length && loadMeting()
+  }
+
+  btf.addGlobalFn('pjaxSend', destroyAplayer, 'destroyAplayer')
+  btf.addGlobalFn('pjaxComplete', loadMeting, 'runMetingJS')
+})()</script><script src="https://cdn.jsdelivr.net/npm/pjax/pjax.min.js" defer="defer"></script><script>document.addEventListener('DOMContentLoaded', () => {
+  const pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+  window.pjax = new Pjax({
+    elements: 'a:not([target="_blank"]):not([href="/html/git-workflow.html"])',
+    selectors: pjaxSelectors,
+    cacheBust: false,
+    analytics: false,
+    scrollRestoration: false
+  })
+
+  const triggerPjaxFn = (val) => {
+    if (!val) return
+    Object.values(val).forEach(fn => {
+      try {
+        fn()
+      } catch (err) {
+        console.debug('Pjax callback failed:', err)
+      }
+    })
+  }
+
+  document.addEventListener('pjax:send', () => {
+    // removeEventListener
+    btf.removeGlobalFnEvent('pjaxSendOnce')
+    btf.removeGlobalFnEvent('themeChange')
+
+    // reset readmode
+    const $bodyClassList = document.body.classList
+    if ($bodyClassList.contains('read-mode')) $bodyClassList.remove('read-mode')
+
+    triggerPjaxFn(window.globalFn.pjaxSend)
+  })
+
+  document.addEventListener('pjax:complete', () => {
+    btf.removeGlobalFnEvent('pjaxCompleteOnce')
+    document.querySelectorAll('script[data-pjax]').forEach(item => {
+      const newScript = document.createElement('script')
+      const content = item.text || item.textContent || item.innerHTML || ""
+      Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+      newScript.appendChild(document.createTextNode(content))
+      item.parentNode.replaceChild(newScript, item)
+    })
+
+    triggerPjaxFn(window.globalFn.pjaxComplete)
+  })
+
+  document.addEventListener('pjax:error', e => {
+    if (e.request.status === 404) {
+      false
+        ? pjax.loadUrl('/404.html')
+        : window.location.href = e.request.responseURL
+    }
+  })
+})</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><i class="fas fa-spinner fa-pulse" id="loading-status" hidden="hidden"></i><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="local-search-input"><input placeholder="搜索文章..." type="text"/></div><hr/><div id="local-search-results"></div><div class="ais-Pagination" id="local-search-pagination" style="display:none;"><ul class="ais-Pagination-list"></ul></div><div id="local-search-stats"></div></div><div id="search-mask"></div><script src="/js/search/local-search.js"></script></div></div></body></html>
