@@ -1,0 +1,1194 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>从零搭建云上代理池：基于阿里云抢占式 ECS 的动态代理服务架构解析 | Yuanz</title><meta name="author" content="Yuanz"><meta name="copyright" content="Yuanz"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="ffffff"><meta name="description" content="基于真实项目「vpn 模块」的深度解析：如何用阿里云抢占式 ECS 构建一个价格感知、多账号多区域、自动预热、异步回收的 HTTP 代理池服务，含全部核心代码设计细节。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="从零搭建云上代理池：基于阿里云抢占式 ECS 的动态代理服务架构解析">
+<meta property="og:url" content="https://yuanzhang788.github.io/2026/08/12/%E4%BB%8E%E9%9B%B6%E6%90%AD%E5%BB%BA%E4%BA%91%E4%B8%8A%E4%BB%A3%E7%90%86%E6%B1%A0%EF%BC%9A%E5%9F%BA%E4%BA%8E%E9%98%BF%E9%87%8C%E4%BA%91%E6%8A%A2%E5%8D%A0%E5%BC%8F-ECS-%E7%9A%84%E5%8A%A8%E6%80%81%E4%BB%A3%E7%90%86%E6%9C%8D%E5%8A%A1%E6%9E%B6%E6%9E%84%E8%A7%A3%E6%9E%90%E4%BB%8E%E9%9B%B6%E6%90%AD%E5%BB%BA%E4%BA%91%E4%B8%8A%E4%BB%A3%E7%90%86%E6%B1%A0%EF%BC%9A%E5%9F%BA%E4%BA%8E%E9%98%BF%E9%87%8C%E4%BA%91%E6%8A%A2%E5%8D%A0%E5%BC%8F-ECS-%E7%9A%84%E5%8A%A8%E6%80%81%E4%BB%A3%E7%90%86%E6%9C%8D%E5%8A%A1%E6%9E%B6%E6%9E%84%E8%A7%A3%E6%9E%90/index.html">
+<meta property="og:site_name" content="Yuanz">
+<meta property="og:description" content="基于真实项目「vpn 模块」的深度解析：如何用阿里云抢占式 ECS 构建一个价格感知、多账号多区域、自动预热、异步回收的 HTTP 代理池服务，含全部核心代码设计细节。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://yuanzhang788.github.io/images/proxy-pool-cover.png">
+<meta property="article:published_time" content="2026-08-12T08:55:03.000Z">
+<meta property="article:modified_time" content="2026-08-12T08:55:03.000Z">
+<meta property="article:author" content="Yuanz">
+<meta property="article:tag" content="ECS">
+<meta property="article:tag" content="Java">
+<meta property="article:tag" content="Redis">
+<meta property="article:tag" content="Spring Boot">
+<meta property="article:tag" content="代理池">
+<meta property="article:tag" content="抢占式实例">
+<meta property="article:tag" content="阿里云">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://yuanzhang788.github.io/images/proxy-pool-cover.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "从零搭建云上代理池：基于阿里云抢占式 ECS 的动态代理服务架构解析",
+  "url": "https://yuanzhang788.github.io/2026/08/12/%E4%BB%8E%E9%9B%B6%E6%90%AD%E5%BB%BA%E4%BA%91%E4%B8%8A%E4%BB%A3%E7%90%86%E6%B1%A0%EF%BC%9A%E5%9F%BA%E4%BA%8E%E9%98%BF%E9%87%8C%E4%BA%91%E6%8A%A2%E5%8D%A0%E5%BC%8F-ECS-%E7%9A%84%E5%8A%A8%E6%80%81%E4%BB%A3%E7%90%86%E6%9C%8D%E5%8A%A1%E6%9E%B6%E6%9E%84%E8%A7%A3%E6%9E%90%E4%BB%8E%E9%9B%B6%E6%90%AD%E5%BB%BA%E4%BA%91%E4%B8%8A%E4%BB%A3%E7%90%86%E6%B1%A0%EF%BC%9A%E5%9F%BA%E4%BA%8E%E9%98%BF%E9%87%8C%E4%BA%91%E6%8A%A2%E5%8D%A0%E5%BC%8F-ECS-%E7%9A%84%E5%8A%A8%E6%80%81%E4%BB%A3%E7%90%86%E6%9C%8D%E5%8A%A1%E6%9E%B6%E6%9E%84%E8%A7%A3%E6%9E%90/",
+  "image": "https://yuanzhang788.github.io/images/proxy-pool-cover.png",
+  "datePublished": "2026-08-12T08:55:03.000Z",
+  "dateModified": "2026-08-12T08:55:03.000Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "Yuanz",
+      "url": "https://yuanzhang788.github.io"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://yuanzhang788.github.io/2026/08/12/%E4%BB%8E%E9%9B%B6%E6%90%AD%E5%BB%BA%E4%BA%91%E4%B8%8A%E4%BB%A3%E7%90%86%E6%B1%A0%EF%BC%9A%E5%9F%BA%E4%BA%8E%E9%98%BF%E9%87%8C%E4%BA%91%E6%8A%A2%E5%8D%A0%E5%BC%8F-ECS-%E7%9A%84%E5%8A%A8%E6%80%81%E4%BB%A3%E7%90%86%E6%9C%8D%E5%8A%A1%E6%9E%B6%E6%9E%84%E8%A7%A3%E6%9E%90%E4%BB%8E%E9%9B%B6%E6%90%AD%E5%BB%BA%E4%BA%91%E4%B8%8A%E4%BB%A3%E7%90%86%E6%B1%A0%EF%BC%9A%E5%9F%BA%E4%BA%8E%E9%98%BF%E9%87%8C%E4%BA%91%E6%8A%A2%E5%8D%A0%E5%BC%8F-ECS-%E7%9A%84%E5%8A%A8%E6%80%81%E4%BB%A3%E7%90%86%E6%9C%8D%E5%8A%A1%E6%9E%B6%E6%9E%84%E8%A7%A3%E6%9E%90/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!true && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          const mediaQueryDark = window.matchMedia('(prefers-color-scheme: dark)')
+          const mediaQueryLight = window.matchMedia('(prefers-color-scheme: light)')
+
+          if (theme === undefined) {
+            if (mediaQueryLight.matches) activateLightMode()
+            else if (mediaQueryDark.matches) activateDarkMode()
+            else {
+              const hour = new Date().getHours()
+              const isNight = hour <= 6 || hour >= 18
+              isNight ? activateDarkMode() : activateLightMode()
+            }
+            mediaQueryDark.addEventListener('change', () => {
+              if (saveToLocal.get('theme') === undefined) {
+                e.matches ? activateDarkMode() : activateLightMode()
+              }
+            })
+          } else {
+            theme === 'light' ? activateLightMode() : activateDarkMode()
+          }
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.json","preload":false,"top_n_per_article":1,"unescape":false,"pagination":{"enable":false,"hitsPerPage":8},"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":400,"highlightFullpage":true,"highlightMacStyle":true},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: true,
+    post: false
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: {"limitCount":50,"languages":{"author":"作者: Yuanz","link":"链接: ","source":"来源: Yuanz","info":"著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。"}},
+  lightbox: 'fancybox',
+  Snackbar: {"chs_to_cht":"已切换为繁体中文","cht_to_chs":"已切换为简体中文","day_to_night":"已切换为深色模式","night_to_day":"已切换为浅色模式","bgLight":"#49b1f5","bgDark":"#1f1f1f","position":"bottom-left"},
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: true,
+  islazyloadPlugin: true,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: true
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '从零搭建云上代理池：基于阿里云抢占式 ECS 的动态代理服务架构解析',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="stylesheet" href="/css/custom.css"><meta name="generator" content="Hexo 8.1.2"></head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div><script>(()=>{
+  const $loadingBox = document.getElementById('loading-box')
+  const $body = document.body
+  const preloader = {
+    endLoading: () => {
+      if ($loadingBox.classList.contains('loaded')) return
+      $body.style.overflow = ''
+      $loadingBox.classList.add('loaded')
+    },
+    initLoading: () => {
+      $body.style.overflow = 'hidden'
+      $loadingBox.classList.remove('loaded')
+    }
+  }
+
+  preloader.initLoading()
+
+  if (document.readyState === 'complete') {
+    preloader.endLoading()
+  } else {
+    window.addEventListener('load', preloader.endLoading)
+    document.addEventListener('DOMContentLoaded', preloader.endLoading)
+    // Add timeout protection: force end after 7 seconds
+    setTimeout(preloader.endLoading, 7000)
+  }
+
+  if (true) {
+    btf.addGlobalFn('pjaxSend', preloader.initLoading, 'preloader_init')
+    btf.addGlobalFn('pjaxComplete', preloader.endLoading, 'preloader_end')
+  }
+})()</script><div class="bg-animation" id="web_bg" style="background-image: url(/assets/Abanner/index.jpg);"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/assets/Abanner/avatar.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">185</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">124</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">1</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/categories/Spring%E6%BA%90%E7%A0%81/"><i class="fa-fw fas fa-book"></i><span> Spring源码</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg fixed" id="page-header" style="background-image: url(/images/proxy-pool-cover.png);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">Yuanz</span></a><a class="nav-page-title" href="/"><span class="site-name">从零搭建云上代理池：基于阿里云抢占式 ECS 的动态代理服务架构解析</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/categories/Spring%E6%BA%90%E7%A0%81/"><i class="fa-fw fas fa-book"></i><span> Spring源码</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">从零搭建云上代理池：基于阿里云抢占式 ECS 的动态代理服务架构解析</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2026-08-12T08:55:03.000Z" title="发表于 2026-08-12 16:55:03">2026-08-12</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-08-12T08:55:03.000Z" title="更新于 2026-08-12 16:55:03">2026-08-12</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E5%90%8E%E7%AB%AF%E6%9E%B6%E6%9E%84/">后端架构</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><div id="post-outdate-notice" data="{&quot;limitDay&quot;:365,&quot;messagePrev&quot;:&quot;已经过了&quot;,&quot;messageNext&quot;:&quot;天自上次更新，文章内容可能已过时。&quot;,&quot;postUpdate&quot;:&quot;2026-08-12 16:55:03&quot;}" hidden></div><h1 id="从零搭建云上代理池：基于阿里云抢占式-ECS-的动态代理服务架构解析"><a href="#从零搭建云上代理池：基于阿里云抢占式-ECS-的动态代理服务架构解析" class="headerlink" title="从零搭建云上代理池：基于阿里云抢占式 ECS 的动态代理服务架构解析"></a>从零搭建云上代理池：基于阿里云抢占式 ECS 的动态代理服务架构解析</h1><blockquote>
+<p>这不是一篇讲 WireGuard &#x2F; OpenVPN 隧道的文章，而是对<strong>真实生产项目</strong>的拆解——一个用 Spring Boot 写的、以阿里云<strong>抢占式实例</strong>为底层资源的 HTTP 代理池服务（项目代号 <code>vpn</code>）。它解决的问题很实在：<strong>如何用最低的成本，随时拿到一批干净、可用、可独占的海外代理 IP</strong>。</p>
+</blockquote>
+<hr>
+<h2 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h2><ol>
+<li><a href="#1-%E9%A1%B9%E7%9B%AE%E8%83%8C%E6%99%AF%E8%BF%99%E4%B8%AAvpn-%E6%A8%A1%E5%9D%97%E5%88%B0%E5%BA%95%E6%98%AF%E4%BB%80%E4%B9%88">项目背景：这个”VPN 模块”到底是什么</a></li>
+<li><a href="#2-%E6%95%B4%E4%BD%93%E6%9E%B6%E6%9E%84%E6%80%BB%E8%A7%88">整体架构总览</a></li>
+<li><a href="#3-%E6%8A%80%E6%9C%AF%E6%A0%88">技术栈</a></li>
+<li><a href="#4-%E6%A0%B8%E5%BF%83%E8%AE%BE%E8%AE%A1%E4%B8%80%E5%A4%9A%E8%B4%A6%E5%8F%B7%E5%A4%9A%E5%8C%BA%E5%9F%9F%E9%85%8D%E7%BD%AE%E6%A8%A1%E5%9E%8B">核心设计一：多账号多区域配置模型</a></li>
+<li><a href="#5-%E6%A0%B8%E5%BF%83%E8%AE%BE%E8%AE%A1%E4%BA%8C%E4%BB%B7%E6%A0%BC%E6%84%9F%E7%9F%A5%E7%9A%84%E5%80%99%E9%80%89%E8%B0%83%E5%BA%A6">核心设计二：价格感知的候选调度</a></li>
+<li><a href="#6-%E6%A0%B8%E5%BF%83%E8%AE%BE%E8%AE%A1%E4%B8%89redis-%E5%AE%9E%E4%BE%8B%E6%B3%A8%E5%86%8C%E8%A1%A8">核心设计三：Redis 实例注册表</a></li>
+<li><a href="#7-%E6%A0%B8%E5%BF%83%E8%AE%BE%E8%AE%A1%E5%9B%9B%E5%88%86%E9%85%8D%E7%AD%96%E7%95%A5%E7%8B%AC%E5%8D%A0%E4%B8%8E%E5%8E%BB%E9%87%8D">核心设计四：分配策略（独占与去重）</a></li>
+<li><a href="#8-%E6%A0%B8%E5%BF%83%E8%AE%BE%E8%AE%A1%E4%BA%94%E5%BC%82%E6%AD%A5%E5%88%A0%E9%99%A4%E9%98%9F%E5%88%97">核心设计五：异步删除队列</a></li>
+<li><a href="#9-%E6%A0%B8%E5%BF%83%E8%AE%BE%E8%AE%A1%E5%85%AD%E9%A2%84%E7%83%AD%E4%B8%8E%E6%B0%B4%E4%BD%8D%E6%8E%A7%E5%88%B6">核心设计六：预热与水位控制</a></li>
+<li><a href="#10-%E5%8A%A8%E6%80%81-ip-%E6%A8%A1%E5%9D%97ipipgo-%E6%8E%A5%E5%85%A5">动态 IP 模块（IPIPGO 接入）</a></li>
+<li><a href="#11-%E6%93%8D%E4%BD%9C%E5%AE%A1%E8%AE%A1">操作审计</a></li>
+<li><a href="#12-api-%E4%B8%80%E8%A7%88">API 一览</a></li>
+<li><a href="#13-%E8%B8%A9%E5%9D%91%E4%B8%8E%E5%B7%A5%E7%A8%8B%E7%BB%8F%E9%AA%8C">踩坑与工程经验</a></li>
+<li><a href="#14-%E5%8F%AF%E6%94%B9%E8%BF%9B%E6%96%B9%E5%90%91">可改进方向</a></li>
+<li><a href="#15-%E6%80%BB%E7%BB%93">总结</a></li>
+</ol>
+<hr>
+<h2 id="1-项目背景：这个”VPN-模块”到底是什么"><a href="#1-项目背景：这个”VPN-模块”到底是什么" class="headerlink" title="1. 项目背景：这个”VPN 模块”到底是什么"></a>1. 项目背景：这个”VPN 模块”到底是什么</h2><p>先纠正一个直觉：目录名是 <code>vpn</code>，但它<strong>不是传统意义的 VPN</strong>。传统 VPN 解决的是”加密隧道打通网络”，而本项目做的是<strong>动态 HTTP 代理池</strong>：</p>
+<blockquote>
+<p>在阿里云海外区域（日本 &#x2F; 新加坡 &#x2F; 美国）批量拉起<strong>抢占式实例</strong>（Spot Instance，价格通常只有按量付费的 1~2 折），实例上预置 HTTP 代理服务，通过一套 REST API 对外提供代理节点的 <strong>获取 &#x2F; 创建 &#x2F; 释放 &#x2F; 独占</strong> 管理。</p>
+</blockquote>
+<p>为什么用抢占式实例？因为代理节点的业务特征是<strong>短生命周期、可随时替换</strong>——被释放了再拉起一台就是。抢占式实例 90%+ 的价格折扣，让它成为代理池的天然底座。</p>
+<p>项目的几个硬性约束（决定了下文的所有设计）：</p>
+<table>
+<thead>
+<tr>
+<th>约束</th>
+<th>影响</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>抢占式实例随时可能被回收</td>
+<td>必须自动预热补足、异步回收、状态自愈</td>
+</tr>
+<tr>
+<td>代理 IP 是稀缺资源，不能乱发</td>
+<td>独占机制 + useType 去重 + 实例上限</td>
+</tr>
+<tr>
+<td>多账号、多区域、价格波动</td>
+<td>配置驱动 + 定时刷新价格候选 + 选最便宜的创建</td>
+</tr>
+<tr>
+<td>每个 ECS 实例都花钱</td>
+<td>用不完就释放，删除队列异步批量回收</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="2-整体架构总览"><a href="#2-整体架构总览" class="headerlink" title="2. 整体架构总览"></a>2. 整体架构总览</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">                        ┌──────────────────────────────────────────────┐<br>                        │              Spring Boot (端口 9066)          │<br>                        │                                              │<br> 业务方 ──HTTP──► API 层 │  ProxyApiController / ProxyIpApiController   │<br>(get/create/           │              │              │                 │<br> release/stats)        │              ▼              ▼                 │<br>                        │   AliServerProxyService   SmartProxyIpService│<br>                        │   (分配/创建/独占/删除队列)  (IPIPGO 动态 IP)  │<br>                        │              │                               │<br>                        │      ┌───────┴────────┐                      │<br>                        │      ▼                ▼                      │<br>                        │  EcsService×N     FastProxyGuardExecTask     │<br>                        │  (阿里云 ECS/VPC   (定时刷新/预热/队列消费)     │<br>                        │   Tea SDK 封装)    ProxyWarmupRunner(启动)    │<br>                        │      │                │                       │<br>                        └──────┼────────────────┼───────────────────────┘<br>                               ▼                ▼<br>                       ┌─────────────┐   ┌─────────────┐<br>                       │   Redis     │   │ 阿里云 ECS  │<br>                       │ (缓存/队列/  │   │ (JP/SGP/US  │<br>                       │  注册表/锁)  │   │  抢占式实例) │<br>                       └─────────────┘   └─────────────┘<br>                               │<br>                       ┌───────┴───────┐<br>                       │   MySQL(可选)  │<br>                       │  操作审计落库   │<br>                       └───────────────┘<br></code></pre></td></tr></table></figure>
+
+<p><strong>两条流量路径（项目演进的结果）：</strong></p>
+<ol>
+<li><strong>新版路径（推荐，API 直连实例）</strong>：<code>GET /api/proxy/server/get</code> 直接返回 <code>ip:port</code>，实例注册表在 Redis 中实时维护，业务方拿 <code>ip:port</code> 自己配 HTTP 代理使用。</li>
+<li><strong>旧版路径（内部队列）</strong>：<code>FastProxyGuardExecTask.getProxy()</code> 从 Redis 的 <code>vpn:proxy:queue</code> 队列 <code>rightPop</code> 节点，带过期校验 + TCP 连通性检测 + 复用倍数（multiple）释放阈值。README 已标注为旧版取用路径。</li>
+</ol>
+<hr>
+<h2 id="3-技术栈"><a href="#3-技术栈" class="headerlink" title="3. 技术栈"></a>3. 技术栈</h2><table>
+<thead>
+<tr>
+<th>组件</th>
+<th>版本&#x2F;选型</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Java</td>
+<td>21</td>
+<td>语言</td>
+</tr>
+<tr>
+<td>Spring Boot</td>
+<td>3.2.5</td>
+<td>框架</td>
+</tr>
+<tr>
+<td>Redis</td>
+<td>Spring Data Redis（<code>StringRedisTemplate</code> + 对象 <code>RedisTemplate</code>）</td>
+<td>缓存 &#x2F; 队列 &#x2F; 注册表 &#x2F; 分布式锁</td>
+</tr>
+<tr>
+<td>MySQL</td>
+<td>MyBatis-Plus 3.5.17</td>
+<td>操作审计（可选，挂掉不影响主流程）</td>
+</tr>
+<tr>
+<td>阿里云 SDK</td>
+<td>Tea 系：<code>ecs20140526</code> 6.1.0、<code>vpc20160428</code> 2.0.3</td>
+<td>ECS 生命周期管理与 VPC 交换机查询</td>
+</tr>
+<tr>
+<td>Nacos Config</td>
+<td>Spring Cloud Alibaba 2023.0.1.2</td>
+<td>远端配置（<code>vpn-service.yml</code>）</td>
+</tr>
+<tr>
+<td>Knife4j</td>
+<td>4.4.0</td>
+<td>在线文档（<code>/doc.html</code>）</td>
+</tr>
+<tr>
+<td>Eclipse Collections</td>
+<td>11.1.0</td>
+<td>高性能集合（<code>MutableList</code>&#x2F;<code>ImmutableMap</code>）</td>
+</tr>
+<tr>
+<td>Hutool &#x2F; FastJSON2</td>
+<td>5.8.34 &#x2F; 2.0.43</td>
+<td>工具与 JSON</td>
+</tr>
+<tr>
+<td>HttpClient5</td>
+<td>Apache</td>
+<td>IPIPGO 调用</td>
+</tr>
+</tbody></table>
+<blockquote>
+<p>细节：pom 里做了 <strong>lib 外置 + ZIP 布局</strong> 打包（<code>maven-dependency-plugin</code> 把依赖拷到 <code>target/lib</code>，boot jar 不含 lib），这是典型的瘦身部署方案；同时用 <code>build-helper-maven-plugin</code> 在包名里打了时间戳（<code>vpn-1.0-SNAPSHOT-20260812165503.jar</code>）。</p>
+</blockquote>
+<hr>
+<h2 id="4-核心设计一：多账号多区域配置模型"><a href="#4-核心设计一：多账号多区域配置模型" class="headerlink" title="4. 核心设计一：多账号多区域配置模型"></a>4. 核心设计一：多账号多区域配置模型</h2><h3 id="4-1-配置结构"><a href="#4-1-配置结构" class="headerlink" title="4.1 配置结构"></a>4.1 配置结构</h3><p><code>application.yml</code> 中 <code>aliyun.proxies</code> 是一个<strong>配置组列表</strong>，每组代表一个阿里云账号，组内可挂多个 ECS 区域：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><code class="hljs yaml"><span class="hljs-attr">aliyun:</span><br>  <span class="hljs-attr">proxies:</span><br>    <span class="hljs-bullet">-</span> <span class="hljs-attr">code:</span> <span class="hljs-string">jp-sgp-main</span>          <span class="hljs-comment"># 配置组标识（内部用，对外隐藏）</span><br>      <span class="hljs-attr">tag-key:</span> <span class="hljs-string">api-proxy</span>          <span class="hljs-comment"># ECS 实例标签 key（用于识别自己创建的机器）</span><br>      <span class="hljs-attr">tag-val:</span> <span class="hljs-string">test</span>               <span class="hljs-comment"># ECS 实例标签 value</span><br>      <span class="hljs-attr">port:</span> <span class="hljs-number">9266</span>                  <span class="hljs-comment"># 代理端口（实例上预置的 HTTP 代理端口）</span><br>      <span class="hljs-attr">disk-size:</span> <span class="hljs-number">20</span>               <span class="hljs-comment"># 系统盘大小 GB</span><br>      <span class="hljs-attr">job-start:</span> <span class="hljs-literal">true</span>             <span class="hljs-comment"># 是否参与定时刷新与预热</span><br>      <span class="hljs-attr">access-key-id:</span> <span class="hljs-string">$&#123;ALIYUN_AK&#125;</span><br>      <span class="hljs-attr">access-key-secret:</span> <span class="hljs-string">$&#123;ALIYUN_SK&#125;</span><br>      <span class="hljs-attr">ecs:</span><br>        <span class="hljs-bullet">-</span> <span class="hljs-attr">endpoint:</span> <span class="hljs-string">ap-northeast-1</span><br>          <span class="hljs-attr">regionCode:</span> <span class="hljs-string">JP</span>          <span class="hljs-comment"># 对外业务区域编码</span><br>          <span class="hljs-attr">active-proxy-count:</span> <span class="hljs-number">1</span>   <span class="hljs-comment"># 预热目标数量</span><br>          <span class="hljs-attr">max-proxy-count:</span> <span class="hljs-number">3</span>      <span class="hljs-comment"># 该区域最大实例数（硬上限）</span><br>          <span class="hljs-attr">server-address:</span> <span class="hljs-string">ecs.ap-northeast-1.aliyuncs.com</span><br>          <span class="hljs-attr">vpc-id:</span> <span class="hljs-string">vpc-xxx</span><br>          <span class="hljs-attr">security-group-id:</span> <span class="hljs-string">sg-xxx</span><br>          <span class="hljs-attr">image-id:</span> <span class="hljs-string">m-xxx</span>         <span class="hljs-comment"># 预置了代理软件的镜像</span><br></code></pre></td></tr></table></figure>
+
+<h3 id="4-2-关键概念"><a href="#4-2-关键概念" class="headerlink" title="4.2 关键概念"></a>4.2 关键概念</h3><table>
+<thead>
+<tr>
+<th>概念</th>
+<th>格式&#x2F;说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>proxyCode</code></td>
+<td>配置组标识（多账号区分），未配置时自动生成 <code>proxy-0</code>、<code>proxy-1</code></td>
+</tr>
+<tr>
+<td><code>serviceKey</code></td>
+<td><strong><code>{proxyCode}:{ecsIndex}:{endpoint}</code></strong>，如 <code>jp-sgp-main:1:ap-southeast-1</code>，唯一标识一个”账号×区域”服务单元</td>
+</tr>
+<tr>
+<td><code>regionCode</code></td>
+<td>对外业务区域：<code>JP</code> &#x2F; <code>SGP</code> &#x2F; <code>US</code>（<code>RegionCode</code> 枚举）</td>
+</tr>
+<tr>
+<td><code>active-proxy-count</code></td>
+<td>预热目标数（0 &#x3D; 不预热，但 API 仍可按需创建）</td>
+</tr>
+<tr>
+<td><code>max-proxy-count</code></td>
+<td><strong>创建硬上限</strong>（预热与 API 都受此约束）</td>
+</tr>
+</tbody></table>
+<h3 id="4-3-启动装配"><a href="#4-3-启动装配" class="headerlink" title="4.3 启动装配"></a>4.3 启动装配</h3><p><code>AliServerProxyService.init()</code> 在 <code>@PostConstruct</code> 时遍历配置，为每个”账号×区域”构建一个 <code>EcsService</code> 实例（持有独立的 ECS&#x2F;VPC Client、配额、标签），并以 <code>serviceKey</code> 为 key 存入 <code>ImmutableMap</code>：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> <span class="hljs-variable">ecsIndex</span> <span class="hljs-operator">=</span> <span class="hljs-number">0</span>; ecsIndex &lt; ecsList.size(); ecsIndex++) &#123;<br>    <span class="hljs-type">AliEcsDTO</span> <span class="hljs-variable">ecsDTO</span> <span class="hljs-operator">=</span> ecsList.get(ecsIndex);<br>    <span class="hljs-type">String</span> <span class="hljs-variable">serviceKey</span> <span class="hljs-operator">=</span> buildServiceKey(proxyCode, ecsIndex, ecsDTO.getEndpoint());<br>    <span class="hljs-type">int</span>[] proxyLimits = resolveProxyLimits(ecsDTO, serviceKey);   <span class="hljs-comment">// active/max 校验</span><br>    <span class="hljs-type">EcsService</span> <span class="hljs-variable">ecsService</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">EcsService</span>(serviceKey, proxyCode, ...);<br>    capacity.put(serviceKey, ecsService);<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>配额校验有个防御逻辑：<code>active &gt; max</code> 或负数时，直接 fallback 到 <code>1/3</code> 并打 error 日志——配置错了宁可保守也不放开。</p>
+<p><strong>这个模型的价值</strong>：多账号天然隔离（每个配置组有自己的 AK&#x2F;SK），多区域聚合对外统一暴露 <code>regionCode</code>，调用方完全感知不到内部账号路由。</p>
+<hr>
+<h2 id="5-核心设计二：价格感知的候选调度"><a href="#5-核心设计二：价格感知的候选调度" class="headerlink" title="5. 核心设计二：价格感知的候选调度"></a>5. 核心设计二：价格感知的候选调度</h2><p>这是本项目<strong>最”值钱”<strong>的部分：创建实例时不是随机选，而是</strong>实时选最便宜的</strong>。</p>
+<h3 id="5-1-候选生成链路"><a href="#5-1-候选生成链路" class="headerlink" title="5.1 候选生成链路"></a>5.1 候选生成链路</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">serviceListVO()  [每 60 秒定时刷新 + API 按需触发]<br>  ├─ 并行查每个 EcsService（priceQueryExecutor，20~40 线程）<br>  │    ├─ 1. 查实例规格集合 serviceSpecs()<br>  │    │      └─ describeInstanceTypes，过滤 ≤ maxCpuCores / ≤ maxMemoryGb（即&quot;2核2G以内&quot;）<br>  │    ├─ 2. 查可用资源 describeAvailableResource()<br>  │    │      └─ 只保留 status=Available 且 statusCategory=WithStock 的可用区+规格<br>  │    ├─ 3. 查磁盘兼容 instanceSystemDisk()<br>  │    │      └─ 每个规格可用的磁盘类型（cloud_efficiency / cloud_ssd）<br>  │    └─ 4. 拼 PriceCandidate(zoneId, specs, cloudType) 候选集<br>  │<br>  ├─ 并行查价 findCheapestFromCandidates()<br>  │    └─ 每个候选走 describePrice（抢占 SpotAsPriceGo + 按流量计费），带 Redis 缓存<br>  │<br>  └─ 过滤 price ≤ maxAcceptablePrice，按价格升序排序<br></code></pre></td></tr></table></figure>
+
+<p>关键点：<strong>查价是 I&#x2F;O 密集型</strong>，全部用 <code>CompletableFuture</code> + 20~40 线程池并行，候选多时收益巨大。</p>
+<h3 id="5-2-三层-Redis-缓存（避免打爆阿里云-OpenAPI）"><a href="#5-2-三层-Redis-缓存（避免打爆阿里云-OpenAPI）" class="headerlink" title="5.2 三层 Redis 缓存（避免打爆阿里云 OpenAPI）"></a>5.2 三层 Redis 缓存（避免打爆阿里云 OpenAPI）</h3><table>
+<thead>
+<tr>
+<th>缓存 Key</th>
+<th>内容</th>
+<th>TTL</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>vpn:proxy:specs:{serviceKey}</code></td>
+<td>该区域可用规格集合</td>
+<td>分钟级</td>
+</tr>
+<tr>
+<td><code>vpn:proxy:resources:{serviceKey}</code></td>
+<td>该区域可用资源（可用区×规格）</td>
+<td>分钟级</td>
+</tr>
+<tr>
+<td><code>vpn:proxy:price:{regionId}:{zoneId}:{specs}:{cloudType}:{diskSize}</code></td>
+<td>单价（<code>BigDecimal</code> 字符串）</td>
+<td>小时级</td>
+</tr>
+<tr>
+<td><code>vpn:proxy:disk:{spotStrategy}:{regionId}:{specs}</code></td>
+<td>规格支持的磁盘类型</td>
+<td>小时级</td>
+</tr>
+<tr>
+<td><code>vpn:proxy:vswitch:{serviceKey}:{zoneId}</code></td>
+<td>交换机 ID（含 Pending 轮询等待）</td>
+<td>小时级</td>
+</tr>
+</tbody></table>
+<p>缓存未命中 → 实时查阿里云 → 回填 Redis，<strong>降级链路清晰</strong>。</p>
+<h3 id="5-3-权重随机算法（旧版内部队列用）"><a href="#5-3-权重随机算法（旧版内部队列用）" class="headerlink" title="5.3 权重随机算法（旧版内部队列用）"></a>5.3 权重随机算法（旧版内部队列用）</h3><p><code>ServiceListVO.setPrice()</code> 里有个值得注意的设计：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-comment">// 权重 = 10000 * (10 - price)，乘 10000 是因为价格精确到小数点后 4 位</span><br><span class="hljs-built_in">this</span>.weight = BigDecimal.valueOf(<span class="hljs-number">10L</span>).subtract(price).multiply(BigDecimal.valueOf(<span class="hljs-number">10000_00</span>)).longValue();<br></code></pre></td></tr></table></figure>
+
+<p>价格越低权重越大，用于旧版队列的随机加权取用。虽然新版 API 路径已经直接按”最低价优先”创建，但这个权重字段保留了下来，可见项目的演进痕迹。</p>
+<h3 id="5-4-创建前的配额过滤"><a href="#5-4-创建前的配额过滤" class="headerlink" title="5.4 创建前的配额过滤"></a>5.4 创建前的配额过滤</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs java">availableServers = filterServersUnderMax(availableServers, num);  <span class="hljs-comment">// 过滤已达 max 的区域</span><br><span class="hljs-keyword">if</span> (availableServers.isEmpty()) &#123;<br>    <span class="hljs-keyword">throw</span> ProxyException.maxProxyCountReached(<br>        buildMaxProxyCountMessage(serversBeforeQuotaFilter, regionCode));<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>异常信息非常友好：<code>区域 JP 已达最大代理数上限，无法创建新实例：JP(3/3)、SGP(2/3)</code>——直接把每个区域的 <code>当前/上限</code> 打出来，排障不用猜。</p>
+<hr>
+<h2 id="6-核心设计三：Redis-实例注册表"><a href="#6-核心设计三：Redis-实例注册表" class="headerlink" title="6. 核心设计三：Redis 实例注册表"></a>6. 核心设计三：Redis 实例注册表</h2><p>ECS 实例列表是全系统的<strong>事实来源</strong>，但每次都实时调 <code>describeInstances</code> 太慢。项目用 Redis 做了一层<strong>实例注册表</strong>：</p>
+<h3 id="6-1-Key-设计"><a href="#6-1-Key-设计" class="headerlink" title="6.1 Key 设计"></a>6.1 Key 设计</h3><table>
+<thead>
+<tr>
+<th>Key</th>
+<th>类型</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>vpn:proxy:instance:{proxyCode}:{regionId}:{instanceId}</code></td>
+<td>String(JSON)</td>
+<td>实例详情 DTO</td>
+</tr>
+<tr>
+<td><code>vpn:proxy:instance:index:{serviceKey}</code></td>
+<td>Set</td>
+<td>该 service 下的实例 ID 索引</td>
+</tr>
+<tr>
+<td><code>vpn:proxy:exclusive:{proxyCode}:{regionId}:{instanceId}</code></td>
+<td>String</td>
+<td>独占标记（<code>setIfAbsent</code> 实现）</td>
+</tr>
+<tr>
+<td><code>vpn:proxy:used-types:{proxyCode}:{regionId}:{instanceId}</code></td>
+<td>Set</td>
+<td>已使用的 useType 集合</td>
+</tr>
+</tbody></table>
+<h3 id="6-2-读取路径（批量-去脏）"><a href="#6-2-读取路径（批量-去脏）" class="headerlink" title="6.2 读取路径（批量 + 去脏）"></a>6.2 读取路径（批量 + 去脏）</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> MutableList&lt;ProxyServerDTO&gt; <span class="hljs-title function_">loadProxyInstancesFromRedis</span><span class="hljs-params">(EcsService service)</span> &#123;<br>    Set&lt;String&gt; instanceIds = redisTemplate.opsForSet().members(indexKey);<br>    List&lt;String&gt; keys = instanceIds.stream()<br>            .map(id -&gt; RedisKey.proxyInstance(proxyCode, regionId, id)).toList();<br>    List&lt;String&gt; jsonList = redisTemplate.opsForValue().multiGet(keys);  <span class="hljs-comment">// 一次 mget</span><br>    <span class="hljs-comment">// 解析失败的 instanceId 收集为 staleIds，从索引 Set 中剔除</span><br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p><code>mget</code> 批量读取 + 自动清理脏索引，这个细节很务实——实例被抢占回收后，Redis 里的脏数据必须能自愈。</p>
+<h3 id="6-3-状态自愈三件套"><a href="#6-3-状态自愈三件套" class="headerlink" title="6.3 状态自愈三件套"></a>6.3 状态自愈三件套</h3><table>
+<thead>
+<tr>
+<th>时机</th>
+<th>行为</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>启动时</strong> <code>hydrateProxyInstanceRegistry()</code></td>
+<td><code>ApplicationReadyEvent</code> 后，全量调 <code>describeInstances</code> 把存量实例灌入注册表</td>
+</tr>
+<tr>
+<td><strong>每 5 秒</strong> <code>syncPendingProxyInstances()</code></td>
+<td>对非 Running 状态的实例逐个刷新（<code>ProxyInstanceStatusSyncTask</code>）</td>
+</tr>
+<tr>
+<td><strong>创建后</strong> <code>waitForCreatedProxyServer()</code></td>
+<td>轮询最多 <code>createPollMaxAttempts</code> 次（默认 3 次、间隔 1s），直到实例 <code>runing</code> 且有公网 IP</td>
+</tr>
+</tbody></table>
+<p><code>isAllocatable()</code> 的定义是核心判定：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">private</span> <span class="hljs-type">boolean</span> <span class="hljs-title function_">isAllocatable</span><span class="hljs-params">(ProxyServerDTO server)</span> &#123;<br>    <span class="hljs-keyword">return</span> server != <span class="hljs-literal">null</span><br>            &amp;&amp; ProxyServerStateDTO.runing.equals(server.getState())<br>            &amp;&amp; StringUtils.hasText(server.getIp());<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p><strong>只有 Running 且拿到公网 IP 的实例才允许对外分配</strong>——状态机：<code>created</code>(Pending) → <code>wait_start</code>(Starting) → <code>runing</code>(Running) → <code>devastate</code>(其他)。</p>
+<hr>
+<h2 id="7-核心设计四：分配策略（独占与去重）"><a href="#7-核心设计四：分配策略（独占与去重）" class="headerlink" title="7. 核心设计四：分配策略（独占与去重）"></a>7. 核心设计四：分配策略（独占与去重）</h2><h3 id="7-1-三种分配模式"><a href="#7-1-三种分配模式" class="headerlink" title="7.1 三种分配模式"></a>7.1 三种分配模式</h3><p><code>GET /api/proxy/server/get</code> 支持三个参数：<code>regionCode</code>、<code>exclusive</code>、<code>useType</code>。分配逻辑在 <code>selectFromAllocatableServers()</code> 中分支：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">allocatable = 过滤 isAllocatable 的实例<br>├─ useType == null<br>│    ├─ exclusive=false → 随机返回一台（可被多次 get 命中，共享）<br>│    └─ exclusive=true  → 从未独占的机器中随机挑，setIfAbsent 抢锁成功才返回<br>└─ useType != null<br>     └─ 排除&quot;该 useType 已用&quot;的机器 → 随机挑 → 打 useType 标记<br></code></pre></td></tr></table></figure>
+
+<h3 id="7-2-独占-Redis-分布式锁"><a href="#7-2-独占-Redis-分布式锁" class="headerlink" title="7.2 独占 &#x3D; Redis 分布式锁"></a>7.2 独占 &#x3D; Redis 分布式锁</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">private</span> <span class="hljs-type">boolean</span> <span class="hljs-title function_">markExclusive</span><span class="hljs-params">(ProxyServerDTO dto)</span> &#123;<br>    <span class="hljs-type">Boolean</span> <span class="hljs-variable">locked</span> <span class="hljs-operator">=</span> redisTemplate.opsForValue().setIfAbsent(<br>        RedisKey.proxyExclusive(proxyCode, regionId, instanceId),<br>        dto.getSid() == <span class="hljs-literal">null</span> ? dto.getServerId() : dto.getSid()<br>    );<br>    <span class="hljs-keyword">if</span> (!Boolean.TRUE.equals(locked)) <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;      <span class="hljs-comment">// 已被别人独占</span><br>    <span class="hljs-keyword">if</span> (exclusiveTtlMinutes &gt; <span class="hljs-number">0</span>) redisTemplate.expire(key, ttl, MINUTES);<br>    <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li><code>setIfAbsent</code>（SETNX）天然原子，多实例部署也安全；</li>
+<li>TTL 可配置（兜底防死锁），但默认语义是<strong>主动归还</strong>：<code>POST /api/proxy/server/exclusive/return</code>；</li>
+<li>归还接口做了容错：实例已不存在时仅清理标记，不额外操作 ECS。</li>
+</ul>
+<h3 id="7-3-useType-去重（业务隔离）"><a href="#7-3-useType-去重（业务隔离）" class="headerlink" title="7.3 useType 去重（业务隔离）"></a>7.3 useType 去重（业务隔离）</h3><p><code>useType</code> 的设计很妙：同一个业务类型（如 <code>order</code>）拿到的代理<strong>不会重复</strong>，但不同业务类型可以共享同一台机器。实现上每个实例维护一个 <code>used-types</code> Set，<code>SADD</code> 成功（返回 1）才算抢到：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-type">Long</span> <span class="hljs-variable">added</span> <span class="hljs-operator">=</span> redisTemplate.opsForSet().add(usedTypesKey, useType);<br><span class="hljs-keyword">if</span> (added == <span class="hljs-literal">null</span> || added &lt;= <span class="hljs-number">0</span>) <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;   <span class="hljs-comment">// 该类型已用过这台</span><br></code></pre></td></tr></table></figure>
+
+<p>批量判断时用 <strong>pipeline</strong> 一次查所有实例的独占&#x2F;已用状态（<code>fillExclusiveFlags</code> &#x2F; <code>batchUsedByType</code>），避免 N 次 RTT。</p>
+<h3 id="7-4-失败回滚"><a href="#7-4-失败回滚" class="headerlink" title="7.4 失败回滚"></a>7.4 失败回滚</h3><p><code>finalizeProxyServerAllocation()</code> 处理了组合失败的情况：独占成功但 useType 标记失败 → 回滚独占标记，保证不残留半状态。</p>
+<hr>
+<h2 id="8-核心设计五：异步删除队列"><a href="#8-核心设计五：异步删除队列" class="headerlink" title="8. 核心设计五：异步删除队列"></a>8. 核心设计五：异步删除队列</h2><p>释放 ECS 是<strong>异步</strong>的：<code>release</code> 只是把任务丢进 Redis List，后台每 1 秒消费。这是为了避免突发释放时把阿里云 OpenAPI 打爆。</p>
+<h3 id="8-1-队列元素"><a href="#8-1-队列元素" class="headerlink" title="8.1 队列元素"></a>8.1 队列元素</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">DeleteInstanceDTO</span> &#123;<br>    <span class="hljs-keyword">private</span> String proxyCode;<br>    <span class="hljs-keyword">private</span> String regionId;<br>    <span class="hljs-keyword">private</span> String instanceId;<br>    <span class="hljs-keyword">private</span> Long nextDeletePoint;     <span class="hljs-comment">// 重试延迟点</span><br>    <span class="hljs-keyword">private</span> Integer deleteFailCount;  <span class="hljs-comment">// 失败重试计数</span><br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h3 id="8-2-消费逻辑（doProcessDeleteFromRedis）"><a href="#8-2-消费逻辑（doProcessDeleteFromRedis）" class="headerlink" title="8.2 消费逻辑（doProcessDeleteFromRedis）"></a>8.2 消费逻辑（<code>doProcessDeleteFromRedis</code>）</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">每 intervalSeconds（默认1s）轮询 drainMaxPerTick 条<br>  ├─ deleteFailCount &gt;= 5 → 丢弃（放弃归队，防死循环）<br>  ├─ nextDeletePoint 未到 → 重新入队（延迟重试）<br>  └─ 就绪 → groupDeleteInstances()<br>        └─ 按 proxyCode:regionId 分组 → 每组按 aliyunBatchSize 分批<br>             └─ service.deleteBatchInstance(ids) 批量删除<br>                  └─ 成功：清 Redis 标记 + 移除注册表<br>                  └─ 失败：failCount+1，1 分钟后归队重试<br></code></pre></td></tr></table></figure>
+
+<p>细节：</p>
+<ul>
+<li><code>deleteBatchInstance</code> 用阿里云 <code>DeleteInstances</code> <strong>批量接口</strong>（1~100 台&#x2F;次），而不是逐台删；</li>
+<li><strong>分组键是 <code>proxyCode:regionId</code></strong>，因为不同账号的实例必须用对应 AK 的 client 删；</li>
+<li>删除成功后要清理三处 Redis 残留：独占标记、useType 标记、实例注册表；</li>
+<li>单线程调度器 + <code>ReentrantLock</code>（<code>batchLock</code>）双保险，防止多线程并发消费；</li>
+<li><code>@PreDestroy</code> 时 <code>fullDelete1(30)</code>：优雅停机时把队列 <strong>drain 干净</strong>再退出，避免实例遗留继续烧钱。</li>
+</ul>
+<h3 id="8-3-创建也限流"><a href="#8-3-创建也限流" class="headerlink" title="8.3 创建也限流"></a>8.3 创建也限流</h3><p>创建路径有 <code>Semaphore(5)</code> 兜底，防止并发 create 打爆配额或 API：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">private</span> <span class="hljs-keyword">final</span> <span class="hljs-type">Semaphore</span> <span class="hljs-variable">semaphore</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Semaphore</span>(<span class="hljs-number">5</span>);<br>semaphore.acquire();<br><span class="hljs-keyword">try</span> &#123; <span class="hljs-keyword">return</span> service.createEcsServer(...); &#125;<br><span class="hljs-keyword">finally</span> &#123; semaphore.release(); &#125;<br></code></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="9-核心设计六：预热与水位控制"><a href="#9-核心设计六：预热与水位控制" class="headerlink" title="9. 核心设计六：预热与水位控制"></a>9. 核心设计六：预热与水位控制</h2><h3 id="9-1-目标水位"><a href="#9-1-目标水位" class="headerlink" title="9.1 目标水位"></a>9.1 目标水位</h3><p>每个 <code>serviceKey</code> 有两个水位：<strong>active（期望池容量）</strong> 和 <strong>max（硬上限）</strong>。预热的目标是把”池中就绪数”补到 active。</p>
+<h3 id="9-2-触发链路"><a href="#9-2-触发链路" class="headerlink" title="9.2 触发链路"></a>9.2 触发链路</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">ProxyWarmupRunner (ApplicationReadyEvent)<br>  └─ hydrateProxyInstanceRegistry()   // 先灌注册表<br>       └─ runWarmupForAllServices()   // 再按区域预热<br><br>FastProxyGuardExecTask.refreshService() [每 60 秒]<br>  ├─ refreshAllServiceCache()          // 刷新 :all 候选缓存<br>  ├─ refreshJobStartServiceCache()     // 刷新 :jobstart 候选缓存<br>  └─ warmupActiveProxyServers()        // 按 active 水位补足<br><br>get 接口返回后 → runWarmupForRegionAsync(regionCode)  // 消费后异步补池<br></code></pre></td></tr></table></figure>
+
+<h3 id="9-3-预热防并发"><a href="#9-3-预热防并发" class="headerlink" title="9.3 预热防并发"></a>9.3 预热防并发</h3><p>每个 serviceKey 一把 <code>ReentrantLock</code>（<code>warmupLocks</code>），<code>tryLock</code> 失败直接跳过——避免多个定时任务&#x2F;请求同时触发创建：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-type">ReentrantLock</span> <span class="hljs-variable">lock</span> <span class="hljs-operator">=</span> warmupLocks.computeIfAbsent(serviceKey, k -&gt; <span class="hljs-keyword">new</span> <span class="hljs-title class_">ReentrantLock</span>());<br><span class="hljs-keyword">if</span> (!lock.tryLock()) &#123; log.info(<span class="hljs-string">&quot;预热跳过，已有进行中的预热任务&quot;</span>); <span class="hljs-keyword">return</span>; &#125;<br><span class="hljs-keyword">try</span> &#123; ... &#125; <span class="hljs-keyword">finally</span> &#123; lock.unlock(); &#125;<br></code></pre></td></tr></table></figure>
+
+<p>每轮还有 <code>warmupMaxPerTick</code> 上限，防止一次预热太多台。预热线程池用 <code>newCachedThreadPool</code>（daemon 线程），不阻塞主流程。</p>
+<h3 id="9-4-“就绪”口径"><a href="#9-4-“就绪”口径" class="headerlink" title="9.4 “就绪”口径"></a>9.4 “就绪”口径</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-type">boolean</span> <span class="hljs-title function_">isPoolReady</span><span class="hljs-params">(ProxyServerDTO server)</span> &#123;<br>    <span class="hljs-keyword">if</span> (server == <span class="hljs-literal">null</span> || !hasText(server.getServerId())) <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;<br>    <span class="hljs-keyword">if</span> (Boolean.TRUE.equals(server.getExclusive())) <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;      <span class="hljs-comment">// 独占的不算池容量</span><br>    <span class="hljs-keyword">return</span> !hasAnyUseTypeMark(proxyCode, regionId, instanceId);        <span class="hljs-comment">// 被 useType 占用的也不算</span><br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p><strong>池容量 &#x3D; Running + 有 IP + 未独占 + 无 useType 标记</strong>，口径严格，避免”数着有 5 台，实际能发出去的只有 1 台”的错觉。</p>
+<hr>
+<h2 id="10-动态-IP-模块（IPIPGO-接入）"><a href="#10-动态-IP-模块（IPIPGO-接入）" class="headerlink" title="10. 动态 IP 模块（IPIPGO 接入）"></a>10. 动态 IP 模块（IPIPGO 接入）</h2><p>除了自建 ECS 代理池，项目还接了一个第三方动态 IP 服务 <code>IPIPGO</code>，作为<strong>补充通道</strong>：</p>
+<figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs http">GET /api/proxy/ip/get?num=10&amp;cc=US&amp;life=5&amp;protocol=1<br></code></pre></td></tr></table></figure>
+
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>说明</th>
+<th>约束</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>num</code></td>
+<td>提取数量</td>
+<td>1~500</td>
+</tr>
+<tr>
+<td><code>cc</code></td>
+<td>国家代码（逗号分隔多国）</td>
+<td>可选</td>
+</tr>
+<tr>
+<td><code>state</code> &#x2F; <code>city</code></td>
+<td>地区 &#x2F; 城市</td>
+<td>可选</td>
+</tr>
+<tr>
+<td><code>life</code></td>
+<td>IP 时效（分钟）</td>
+<td>3~60</td>
+</tr>
+<tr>
+<td><code>protocol</code></td>
+<td>1&#x3D;http&#x2F;https，2&#x3D;socks5</td>
+<td>可选</td>
+</tr>
+</tbody></table>
+<p>实现的亮点：</p>
+<ol>
+<li><strong>参数默认值合并</strong>：请求参数与配置默认值合并（<code>mergeQuery</code>），调用方可以只传关心的参数；</li>
+<li><strong>出站代理支持</strong>：访问 IPIPGO 时可选先走自己的代理（<code>outboundProxy.enabled</code>，支持账号密码认证）——<strong>用自己代理池的 IP 去提取第三方 IP</strong>，避免本机 IP 被 IPIPGO 风控；</li>
+<li><strong>日志脱敏</strong>：<code>maskKeyInUrl()</code> 把 URL 里的 <code>key=***</code>，防止 AppKey 泄漏进日志；</li>
+<li><strong>响应容错</strong>：非 200 状态码抛异常，业务失败 code 透传，<code>success/code</code> 双判断。</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-comment">// 关键：参数校验</span><br><span class="hljs-keyword">if</span> (query.getNum() == <span class="hljs-literal">null</span> || query.getNum() &lt; <span class="hljs-number">1</span> || query.getNum() &gt; MAX_NUM) &#123;<br>    <span class="hljs-keyword">return</span> Result.fail(<span class="hljs-string">&quot;num 必须在 1 到 500 之间&quot;</span>);<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="11-操作审计"><a href="#11-操作审计" class="headerlink" title="11. 操作审计"></a>11. 操作审计</h2><p>关键操作异步写入 MySQL 表 <code>proxy_server_operation_record</code>（MyBatis-Plus）：</p>
+<table>
+<thead>
+<tr>
+<th>操作</th>
+<th><code>operation_type</code></th>
+<th>触发接口</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>获取代理</td>
+<td><code>GET</code></td>
+<td><code>GET /api/proxy/server/get</code></td>
+</tr>
+<tr>
+<td>释放实例</td>
+<td><code>RELEASE</code></td>
+<td><code>POST /api/proxy/server/release</code></td>
+</tr>
+<tr>
+<td>归还独占</td>
+<td><code>EXCLUSIVE_RETURN</code></td>
+<td><code>POST /api/proxy/server/exclusive/return</code></td>
+</tr>
+</tbody></table>
+<p>审计字段：<code>requestRegionCode</code>、<code>exclusiveRequested</code>、<code>proxyCode</code>、<code>regionId</code>、<code>serverId/ip/port</code>、<code>callerIp</code>、<code>callerPlatform</code>（从 <code>X-Platform</code> 等请求头推断，兜底 UA）、<code>status</code>（SUCCESS&#x2F;FAIL）、<code>message</code>（截断 512 字符）。</p>
+<p>两个工程细节：</p>
+<ol>
+<li><strong>审计失败不影响主流程</strong>——<code>recordOperation</code> 内部 try-catch，只打 error 日志。数据库挂了代理照常发。</li>
+<li><strong>调用方平台识别</strong>：支持 <code>X-Platform</code> &#x2F; <code>Platform</code> &#x2F; <code>X-Client-Platform</code> &#x2F; <code>X-App-Platform</code> 四个请求头，未传时从 User-Agent 推断。这是典型的 To-B API 审计设计。</li>
+</ol>
+<hr>
+<h2 id="12-API-一览"><a href="#12-API-一览" class="headerlink" title="12. API 一览"></a>12. API 一览</h2><table>
+<thead>
+<tr>
+<th>方法</th>
+<th>路径</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>GET</td>
+<td><code>/api/proxy/server/get</code></td>
+<td><strong>获取代理（推荐）</strong>：有现成直接返回，没有自动创建并轮询</td>
+</tr>
+<tr>
+<td>POST</td>
+<td><code>/api/proxy/server/create</code></td>
+<td>仅创建（可指定 <code>count</code>，需同时传 <code>regionCode</code>）</td>
+</tr>
+<tr>
+<td>GET</td>
+<td><code>/api/proxy/server/list</code></td>
+<td>实例列表（<code>regionCode</code> 过滤 + 多账号聚合）</td>
+</tr>
+<tr>
+<td>GET</td>
+<td><code>/api/proxy/server/stats</code></td>
+<td>状态统计（总数 + 各区域 Running&#x2F;Pending&#x2F;Starting&#x2F;Other）</td>
+</tr>
+<tr>
+<td>POST</td>
+<td><code>/api/proxy/server/release</code></td>
+<td>释放单台（入删除队列，异步）</td>
+</tr>
+<tr>
+<td>POST</td>
+<td><code>/api/proxy/server/release-all</code></td>
+<td>释放全部（返回 <code>totalCount/successCount/failCount</code>）</td>
+</tr>
+<tr>
+<td>POST</td>
+<td><code>/api/proxy/server/exclusive/return</code></td>
+<td>归还独占</td>
+</tr>
+<tr>
+<td>GET</td>
+<td><code>/api/proxy/ip/get</code></td>
+<td>IPIPGO 动态 IP 提取</td>
+</tr>
+</tbody></table>
+<p>统一响应 <code>Result&lt;T&gt;</code>：<code>code</code>（200 成功）&#x2F; <code>msg</code> &#x2F; <code>data</code> &#x2F; <code>timestamp</code>。</p>
+<p><strong>安全设计</strong>：<code>proxyCode</code>（内部账号标识）在返回前被 <code>sanitize*</code> 方法置空——<strong>对外只暴露 <code>regionCode</code>，不暴露账号路由细节</strong>。</p>
+<hr>
+<h2 id="13-踩坑与工程经验"><a href="#13-踩坑与工程经验" class="headerlink" title="13. 踩坑与工程经验"></a>13. 踩坑与工程经验</h2><h3 id="13-1-时区坑（UTC-vs-UTC-8）"><a href="#13-1-时区坑（UTC-vs-UTC-8）" class="headerlink" title="13.1 时区坑（UTC vs UTC+8）"></a>13.1 时区坑（UTC vs UTC+8）</h3><p>阿里云 API 返回的时间是 UTC，且<strong>自动释放时间的格式还可能有秒、可能没有秒</strong>。项目用 <code>DateTimeFormatterBuilder</code> 做了容错解析，再统一 +8 输出：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-type">DateTimeFormatter</span> <span class="hljs-variable">formatter</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">DateTimeFormatterBuilder</span>()<br>        .appendPattern(<span class="hljs-string">&quot;yyyy-MM-dd&#x27;T&#x27;HH:mm&quot;</span>)<br>        .optionalStart().appendPattern(<span class="hljs-string">&quot;:ss&quot;</span>).optionalEnd()   <span class="hljs-comment">// 秒可选</span><br>        .appendPattern(<span class="hljs-string">&quot;X&quot;</span>)                                    <span class="hljs-comment">// 支持 &#x27;Z&#x27; 或偏移</span><br>        .toFormatter();<br></code></pre></td></tr></table></figure>
+
+<p>创建实例时 <code>createEcsServer</code> 里还有一条注释特别醒目：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-comment">// ios 时间会自动+8 小时，所以先-8</span><br><span class="hljs-type">String</span> <span class="hljs-variable">date</span> <span class="hljs-operator">=</span> LocalDateTime.now().minusHours(<span class="hljs-number">8</span>)<br>        .plusMinutes(autoReleaseMinutes)<br>        .format(DateTimeFormatter.ofPattern(<span class="hljs-string">&quot;yyyy-MM-dd&#x27;T&#x27;HH:mm:ss&#x27;Z&#x27;&quot;</span>));<br></code></pre></td></tr></table></figure>
+
+<p>抢占式实例的 <code>autoReleaseTime</code> 只支持最长 1 小时（<code>spotDuration=1</code> &#x2F; 手动设），所以创建后<strong>必须</strong>再用 <code>modifyInstanceAutoReleaseTime</code> 校准更长的保留期——<code>instanceAutoReleaseTime()</code> 里同样有 +8 校正注释。</p>
+<h3 id="13-2-两种-RedisTemplate-的共存"><a href="#13-2-两种-RedisTemplate-的共存" class="headerlink" title="13.2 两种 RedisTemplate 的共存"></a>13.2 两种 RedisTemplate 的共存</h3><ul>
+<li><code>StringRedisTemplate</code>：价格、规格等字符串缓存；</li>
+<li><code>RedisTemplate&lt;String, Object&gt;</code>（<code>RedisConfig.OBJ</code> qualifier）：对象序列化，用于实例注册表、删除队列（存 <code>DeleteInstanceDTO</code> 对象）、<code>multiGet</code> 批量读。</li>
+</ul>
+<p>删除队列消费时对历史脏数据做了<strong>双格式兼容</strong>（对象 &#x2F; Map &#x2F; JSON 字符串三种解析），说明线上换过序列化方案，兼容代码是血泪教训留下的。</p>
+<h3 id="13-3-并发控制全家桶"><a href="#13-3-并发控制全家桶" class="headerlink" title="13.3 并发控制全家桶"></a>13.3 并发控制全家桶</h3><table>
+<thead>
+<tr>
+<th>场景</th>
+<th>手段</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>多区域并行查价</td>
+<td>20~40 线程 <code>ThreadPoolExecutor</code> + <code>CompletableFuture</code></td>
+</tr>
+<tr>
+<td>创建限流</td>
+<td><code>Semaphore(5)</code></td>
+</tr>
+<tr>
+<td>预热防重</td>
+<td>每 serviceKey 一把 <code>ReentrantLock</code> + <code>tryLock</code></td>
+</tr>
+<tr>
+<td>删除防重</td>
+<td><code>batchLock</code> 全局锁 + 单线程调度器</td>
+</tr>
+<tr>
+<td>独占原子性</td>
+<td>Redis <code>setIfAbsent</code>（SETNX）</td>
+</tr>
+</tbody></table>
+<h3 id="13-4-主动健康检查（旧版队列）"><a href="#13-4-主动健康检查（旧版队列）" class="headerlink" title="13.4 主动健康检查（旧版队列）"></a>13.4 主动健康检查（旧版队列）</h3><p><code>ProxyChecker</code> 用 1s 超时的 TCP connect 探测代理端口连通性；<code>FastProxyGuardExecTask.getProxy()</code> 拉取节点时若探测失败，会触发 <code>closeProxyServer</code> 回收——<strong>发出去的节点必须能用</strong>，这是代理服务的底线。</p>
+<hr>
+<h2 id="14-可改进方向"><a href="#14-可改进方向" class="headerlink" title="14. 可改进方向"></a>14. 可改进方向</h2><p>基于代码现状，列出几个我看到的优化空间（也算给自己的 TODO）：</p>
+<ol>
+<li><strong>Redis 独占标记防死锁</strong>：目前 TTL 是兜底，可以引入 Lease（续租）机制，或归还时校验持有者（对比 value 里的 sid）。</li>
+<li><strong>实例注册表与真实 ECS 的对账</strong>：目前依赖定时刷新 + 消费时清理，可以考虑周期性全量 <code>describeInstances</code> 做差量对账，自动清理幽灵索引。</li>
+<li><strong>价格缓存的时效性</strong>：价格按小时缓存，抢占式价格波动快，可对热点规格缩短 TTL。</li>
+<li><strong>创建失败的类型化降级</strong>：<code>createEcsServer</code> 失败目前直接抛异常，可区分”库存不足 &#x2F; 配额超限 &#x2F; 网络错误”做不同重试策略。</li>
+<li><strong>审计表分区&#x2F;归档</strong>：GET 操作量大，长期运行建议按月分表或归档。</li>
+<li><strong>IPIPGO 结果落库</strong>：动态 IP 提取后可以本地缓存去重，减少第三方调用成本。</li>
+</ol>
+<hr>
+<h2 id="15-总结"><a href="#15-总结" class="headerlink" title="15. 总结"></a>15. 总结</h2><p>把这个项目过完一遍，最值得学习的是它的<strong>成本意识</strong>和<strong>状态管理</strong>：</p>
+<table>
+<thead>
+<tr>
+<th>维度</th>
+<th>设计</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>省钱</td>
+<td>抢占式实例 + 价格感知调度 + 用不完即释放 + 批量删除</td>
+</tr>
+<tr>
+<td>可靠</td>
+<td>实例注册表 + 启动 hydrate + 定时状态同步 + 删除队列重试归队</td>
+</tr>
+<tr>
+<td>并发安全</td>
+<td>SETNX 独占 + 双重锁 + 信号量 + pipeline 批量检查</td>
+</tr>
+<tr>
+<td>业务隔离</td>
+<td>useType 去重分配 + 多账号聚合 + proxyCode 对外隐藏</td>
+</tr>
+<tr>
+<td>可观测</td>
+<td>Knife4j 文档 + 全链路操作审计 + 结构化日志</td>
+</tr>
+</tbody></table>
+<p>一句话：<strong>这不是一个”VPN 模块”，而是一个把云计算资源当成”可编程代理池”来运营的完整系统</strong>——它把”云上资源的创建、分配、回收、审计”全部服务化，对外只暴露一个干净的 HTTP 接口。这种”资源即服务”的思路，值得每一个做基础设施开发的工程师借鉴。</p>
+<hr>
+<h2 id="附：核心类地图"><a href="#附：核心类地图" class="headerlink" title="附：核心类地图"></a>附：核心类地图</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">com.tool.proxy<br>├── AliServerProxyService     # 核心门面：分配/创建/独占/useType/删除队列/预热<br>├── EcsService                # 阿里云 ECS/VPC Tea SDK 封装（每个 账号×区域 一个实例）<br>├── FastProxyGuardExecTask    # 定时刷新候选缓存 + 旧版代理队列消费<br>├── ProxyWarmupRunner         # 启动时 hydrate + 预热<br>├── ProxyChecker              # TCP 连通性检测<br>├── AliEcsConfig / AliProxyConfigItem  # @ConfigurationProperties 配置<br>├── api/<br>│   ├── ProxyApiController    # 代理服务器 REST API<br>│   └── ProxyIpApiController  # IPIPGO 动态 IP API<br>├── scheduler/<br>│   ├── ProxyInstanceStatusSyncTask  # 每 5 秒同步 Pending 状态<br>│   └── ProxyServerScheduler         # （已注释停用的旧版补充逻辑）<br>├── service/<br>│   ├── ProxyAuditService / ProxyRequestAuditContextResolver  # 操作审计<br>│   └── SmartProxyIpService          # IPIPGO 调用（含出站代理）<br>└── dto/                      # Result/ProxyServerDTO/RegionCode/RedisKey 等<br></code></pre></td></tr></table></figure>
+
+<hr>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://yuanzhang788.github.io">Yuanz</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://yuanzhang788.github.io/2026/08/12/%E4%BB%8E%E9%9B%B6%E6%90%AD%E5%BB%BA%E4%BA%91%E4%B8%8A%E4%BB%A3%E7%90%86%E6%B1%A0%EF%BC%9A%E5%9F%BA%E4%BA%8E%E9%98%BF%E9%87%8C%E4%BA%91%E6%8A%A2%E5%8D%A0%E5%BC%8F-ECS-%E7%9A%84%E5%8A%A8%E6%80%81%E4%BB%A3%E7%90%86%E6%9C%8D%E5%8A%A1%E6%9E%B6%E6%9E%84%E8%A7%A3%E6%9E%90%E4%BB%8E%E9%9B%B6%E6%90%AD%E5%BB%BA%E4%BA%91%E4%B8%8A%E4%BB%A3%E7%90%86%E6%B1%A0%EF%BC%9A%E5%9F%BA%E4%BA%8E%E9%98%BF%E9%87%8C%E4%BA%91%E6%8A%A2%E5%8D%A0%E5%BC%8F-ECS-%E7%9A%84%E5%8A%A8%E6%80%81%E4%BB%A3%E7%90%86%E6%9C%8D%E5%8A%A1%E6%9E%B6%E6%9E%84%E8%A7%A3%E6%9E%90/">https://yuanzhang788.github.io/2026/08/12/从零搭建云上代理池：基于阿里云抢占式-ECS-的动态代理服务架构解析从零搭建云上代理池：基于阿里云抢占式-ECS-的动态代理服务架构解析/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://yuanzhang788.github.io" target="_blank">Yuanz</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/Java/">Java</a><a class="post-meta__tags" href="/tags/Redis/">Redis</a><a class="post-meta__tags" href="/tags/%E9%98%BF%E9%87%8C%E4%BA%91/">阿里云</a><a class="post-meta__tags" href="/tags/Spring-Boot/">Spring Boot</a><a class="post-meta__tags" href="/tags/ECS/">ECS</a><a class="post-meta__tags" href="/tags/%E4%BB%A3%E7%90%86%E6%B1%A0/">代理池</a><a class="post-meta__tags" href="/tags/%E6%8A%A2%E5%8D%A0%E5%BC%8F%E5%AE%9E%E4%BE%8B/">抢占式实例</a></div><div class="post-share"><div class="social-share" data-image="/images/proxy-pool-cover.png" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related full-width" href="/2026/07/21/Spring-Boot-%E7%98%A6%E5%8C%85%E5%90%AF%E5%8A%A8/" title="Spring Boot 瘦包启动"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/assets/Abanner/default_cover.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">Spring Boot 瘦包启动</div></div><div class="info-2"><div class="info-item-1">Spring Boot 瘦包启动：java -Dloader.path 到底在干什么？ 踩坑记录：直接 java -jar 报 NoClassDefFoundError: SpringApplication，加一行 -Dloader.path=lib 就好了。这篇把 -Dloader 讲清楚。   一、先从一个报错说起打包后执行： 1java -jar vpn-1.0-SNAPSHOT-20260721141748.jar  报错： 12Caused by: java.lang.NoClassDefFoundError: org/springframework/boot/SpringAp...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/2024/03/12/SpringBoot%E6%95%B4%E5%90%88%E9%98%BF%E9%87%8C%E4%BA%91%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0OSS%E4%BB%A5%E5%8F%8A%E8%8E%B7%E5%8F%96oss%E4%B8%B4%E6%97%B6%E8%AE%BF%E9%97%AEurl(%E4%B8%B4%E6%97%B6url%E8%BF%9B%E8%A1%8C%E7%BC%A9%E6%94%BE)/" title="SpringBoot整合阿里云文件上传OSS以及获取oss临时访问url(临时url进行缩放)"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/assets/Abanner/default_cover.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-03-12</div><div class="info-item-2">SpringBoot整合阿里云文件上传OSS以及获取oss临时访问url(临时url进行缩放)</div></div><div class="info-2"><div class="info-item-1">SpringBoot整合阿里云文件上传OSS  1. 引入相关依赖  12345678910&lt;!--阿里云 OSS依赖--&gt;&lt;dependency&gt;    &lt;groupId&gt;com.aliyun.oss&lt;/groupId&gt;    &lt;artifactId&gt;aliyun-sdk-oss&lt;/artifactId&gt;    &lt;version&gt;3.10.2&lt;/version&gt;&lt;/dependency&gt;&lt;dependency&gt;    &lt;groupId&gt;org.spring...</div></div></div></a><a class="pagination-related" href="/2025/09/25/%E9%98%BF%E9%87%8C%E4%BA%91%E4%BA%91%E6%95%88%E5%B0%86%E6%9C%AC%E5%9C%B0%E7%9A%84maven%E7%9B%B8%E5%85%B3%E6%96%87%E4%BB%B6%E6%89%B9%E9%87%8F%E6%8E%A8%E9%80%81%E5%88%B0%E9%98%BF%E9%87%8C%E4%BA%91%E4%BB%93%E5%BA%93%E4%BB%A5%E5%8F%8A%E4%BD%BF%E7%94%A8/" title="阿里云云效将本地的maven相关文件批量推送到阿里云仓库以及使用"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/assets/Abanner/default_cover.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-09-25</div><div class="info-item-2">阿里云云效将本地的maven相关文件批量推送到阿里云仓库以及使用</div></div><div class="info-2"><div class="info-item-1"> 创建制品仓库    选择创建maven仓库    拉取(使用)&#x2F;推送   拉取或者推送选择不同tab有相关说明 拉取的setting.xml 可以通过点击下载链接直接下载使用 下列页面会进行一个脱敏操作 可以点击右侧红框的眼睛按钮查看脱敏数据 或者直接点击复制按钮,复制的内容的脱敏数据不会进行脱敏直接粘贴就可以使用      选择从本地文件批量上传   4.1 下载迁移工具  工具下载地址：https://agent-install-beijing.oss-cn-beijing.aliyuncs.com/artifact-migration-0.0.2-jar-with-de...</div></div></div></a><a class="pagination-related" href="/2024/06/17/Springboot%E6%95%B4%E5%90%88%E9%98%BF%E9%87%8C%E4%BA%91ONS%20RocketMq(4.0%20http)/" title="Springboot整合阿里云ONS RocketMq(4.0 http)"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/assets/Abanner/default_cover.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-06-17</div><div class="info-item-2">Springboot整合阿里云ONS RocketMq(4.0 http)</div></div><div class="info-2"><div class="info-item-1">1. 引入依赖123456&lt;!--阿里云ons，方便的接入到云服务--&gt;&lt;dependency&gt;  &lt;groupId&gt;com.aliyun.openservices&lt;/groupId&gt;  &lt;artifactId&gt;ons-client&lt;/artifactId&gt;  &lt;version&gt;1.8.4.Final&lt;/version&gt;&lt;/dependency&gt;  2. 配置 配置注意事项:  nameSrvAddr我这里是用的4.0版本的支持http,5.0不支持http      一个 Gro...</div></div></div></a><a class="pagination-related" href="/2024/06/20/Springboot%20%E9%A1%B9%E7%9B%AE%E5%90%AF%E5%8A%A8%E6%97%B6%E6%89%AB%E6%8F%8F%E6%89%80%E6%9C%89%E6%9E%9A%E4%B8%BE%E5%B9%B6%E5%AD%98%E5%85%A5%E7%BC%93%E5%AD%98(redis)/" title="Springboot 项目启动时扫描所有枚举并存入缓存(redis)"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/assets/Abanner/default_cover.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-06-20</div><div class="info-item-2">Springboot 项目启动时扫描所有枚举并存入缓存(redis)</div></div><div class="info-2"><div class="info-item-1">  为什么这么做?  为了springboot 注解属性转换字典方便一点(使用缓存的方式在Springboot 启动时获取字典数据)  在启动时会扫描com.vehicle.manager.core.enumerate包下的所有枚举(包括类中的内部枚举),并取出对应属性以json的方式存入redis  目录结构如下:       RedisUtil可以在RedisUtil获取 Springboot 项目启动时的处理都可以参考这个方式   1234567891011121314151617181920212223242526272829303132333435363738394041424...</div></div></div></a><a class="pagination-related" href="/2024/05/08/Springboot%E6%95%B4%E5%90%88%E9%A3%9E%E4%B9%A6%E5%90%91%E7%BE%A4%E7%BB%84_%E6%8C%87%E5%AE%9A%E4%B8%AA%E4%BA%BA%E5%8F%91%E9%80%81%E6%B6%88%E6%81%AF_%E9%A3%9E%E4%B9%A6%E7%99%BB%E5%BD%95/" title="Springboot整合飞书向群组&#x2F;指定个人发送消息&#x2F;飞书登录"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/assets/Abanner/default_cover.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-05-08</div><div class="info-item-2">Springboot整合飞书向群组&#x2F;指定个人发送消息&#x2F;飞书登录</div></div><div class="info-2"><div class="info-item-1">Springboot整合飞书向群组发送消息 飞书开放平台创建企业自建应用    添加应用能力-机器人    创建完成后，进入应用详情页，可以在首页看到 App Id 和 App Secret     在飞书pc端创建一群机器人        此处可以拿到该机器人的webhook地址,通过https的方式,也可以调用发送消息    从右侧菜单中，进入“安全设置”页面，配置回调地址    Springboot进行整合通过发送http请求  12345678910111213141516171819202122232425262728293031323334353637383940414243...</div></div></div></a><a class="pagination-related" href="/2021/11/15/%E8%B0%B7%E7%B2%92%E5%95%86%E5%9F%8E--nginx--%E9%AB%98%E7%BA%A7%E7%AF%87%E7%AC%94%E8%AE%B0%E5%9B%9B/" title="谷粒商城--nginx--高级篇笔记四"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/assets/Abanner/default_cover.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2021-11-15</div><div class="info-item-2">谷粒商城--nginx--高级篇笔记四</div></div><div class="info-2"><div class="info-item-1">谷粒商城–nginx–高级篇笔记四1. nginx搭建域名访问 (反向代理)1.1 动静分离 1.2 正向代理与反向代理 正向代理隐藏客户端 反向代理隐藏服务端   1.3 nginx与windows搭建域名访问环境 为什么能够通过修改host文件来实现域名访问?  众所周知域名解析是通过dns来解析的,但是在通过网络的dns解析之前需要找到本机的host文件查询是否有对应的域名映射,如果有就通过映射的域名地址访问,如果没有再访问dns 1.3.1 通过改host文件的方法就可以实现host文件地址C:\Windows\System32\drivers\etc  也可以使用工具Switc...</div></div></div></a></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="twikoo-wrap"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/assets/Abanner/avatar.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">Yuanz</div><div class="author-info-description">Yuanz的个人博客</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">185</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">124</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">1</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/yuanzhang788"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/yuanzhang788" target="_blank" title="Github"><i class="fab fa-github" style="color: #4a7dbe;"></i></a><a class="social-icon" href="mailto:2437264464@qq.com" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #49b1f5;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎访问 Yuanz 的个人博客！</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%BB%8E%E9%9B%B6%E6%90%AD%E5%BB%BA%E4%BA%91%E4%B8%8A%E4%BB%A3%E7%90%86%E6%B1%A0%EF%BC%9A%E5%9F%BA%E4%BA%8E%E9%98%BF%E9%87%8C%E4%BA%91%E6%8A%A2%E5%8D%A0%E5%BC%8F-ECS-%E7%9A%84%E5%8A%A8%E6%80%81%E4%BB%A3%E7%90%86%E6%9C%8D%E5%8A%A1%E6%9E%B6%E6%9E%84%E8%A7%A3%E6%9E%90"><span class="toc-number">1.</span> <span class="toc-text">从零搭建云上代理池：基于阿里云抢占式 ECS 的动态代理服务架构解析</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%9B%AE%E5%BD%95"><span class="toc-number">1.1.</span> <span class="toc-text">目录</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E9%A1%B9%E7%9B%AE%E8%83%8C%E6%99%AF%EF%BC%9A%E8%BF%99%E4%B8%AA%E2%80%9DVPN-%E6%A8%A1%E5%9D%97%E2%80%9D%E5%88%B0%E5%BA%95%E6%98%AF%E4%BB%80%E4%B9%88"><span class="toc-number">1.2.</span> <span class="toc-text">1. 项目背景：这个”VPN 模块”到底是什么</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E6%95%B4%E4%BD%93%E6%9E%B6%E6%9E%84%E6%80%BB%E8%A7%88"><span class="toc-number">1.3.</span> <span class="toc-text">2. 整体架构总览</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-%E6%8A%80%E6%9C%AF%E6%A0%88"><span class="toc-number">1.4.</span> <span class="toc-text">3. 技术栈</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-%E6%A0%B8%E5%BF%83%E8%AE%BE%E8%AE%A1%E4%B8%80%EF%BC%9A%E5%A4%9A%E8%B4%A6%E5%8F%B7%E5%A4%9A%E5%8C%BA%E5%9F%9F%E9%85%8D%E7%BD%AE%E6%A8%A1%E5%9E%8B"><span class="toc-number">1.5.</span> <span class="toc-text">4. 核心设计一：多账号多区域配置模型</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#4-1-%E9%85%8D%E7%BD%AE%E7%BB%93%E6%9E%84"><span class="toc-number">1.5.1.</span> <span class="toc-text">4.1 配置结构</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-2-%E5%85%B3%E9%94%AE%E6%A6%82%E5%BF%B5"><span class="toc-number">1.5.2.</span> <span class="toc-text">4.2 关键概念</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-3-%E5%90%AF%E5%8A%A8%E8%A3%85%E9%85%8D"><span class="toc-number">1.5.3.</span> <span class="toc-text">4.3 启动装配</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-%E6%A0%B8%E5%BF%83%E8%AE%BE%E8%AE%A1%E4%BA%8C%EF%BC%9A%E4%BB%B7%E6%A0%BC%E6%84%9F%E7%9F%A5%E7%9A%84%E5%80%99%E9%80%89%E8%B0%83%E5%BA%A6"><span class="toc-number">1.6.</span> <span class="toc-text">5. 核心设计二：价格感知的候选调度</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#5-1-%E5%80%99%E9%80%89%E7%94%9F%E6%88%90%E9%93%BE%E8%B7%AF"><span class="toc-number">1.6.1.</span> <span class="toc-text">5.1 候选生成链路</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-2-%E4%B8%89%E5%B1%82-Redis-%E7%BC%93%E5%AD%98%EF%BC%88%E9%81%BF%E5%85%8D%E6%89%93%E7%88%86%E9%98%BF%E9%87%8C%E4%BA%91-OpenAPI%EF%BC%89"><span class="toc-number">1.6.2.</span> <span class="toc-text">5.2 三层 Redis 缓存（避免打爆阿里云 OpenAPI）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-3-%E6%9D%83%E9%87%8D%E9%9A%8F%E6%9C%BA%E7%AE%97%E6%B3%95%EF%BC%88%E6%97%A7%E7%89%88%E5%86%85%E9%83%A8%E9%98%9F%E5%88%97%E7%94%A8%EF%BC%89"><span class="toc-number">1.6.3.</span> <span class="toc-text">5.3 权重随机算法（旧版内部队列用）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-4-%E5%88%9B%E5%BB%BA%E5%89%8D%E7%9A%84%E9%85%8D%E9%A2%9D%E8%BF%87%E6%BB%A4"><span class="toc-number">1.6.4.</span> <span class="toc-text">5.4 创建前的配额过滤</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-%E6%A0%B8%E5%BF%83%E8%AE%BE%E8%AE%A1%E4%B8%89%EF%BC%9ARedis-%E5%AE%9E%E4%BE%8B%E6%B3%A8%E5%86%8C%E8%A1%A8"><span class="toc-number">1.7.</span> <span class="toc-text">6. 核心设计三：Redis 实例注册表</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#6-1-Key-%E8%AE%BE%E8%AE%A1"><span class="toc-number">1.7.1.</span> <span class="toc-text">6.1 Key 设计</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-2-%E8%AF%BB%E5%8F%96%E8%B7%AF%E5%BE%84%EF%BC%88%E6%89%B9%E9%87%8F-%E5%8E%BB%E8%84%8F%EF%BC%89"><span class="toc-number">1.7.2.</span> <span class="toc-text">6.2 读取路径（批量 + 去脏）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-3-%E7%8A%B6%E6%80%81%E8%87%AA%E6%84%88%E4%B8%89%E4%BB%B6%E5%A5%97"><span class="toc-number">1.7.3.</span> <span class="toc-text">6.3 状态自愈三件套</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#7-%E6%A0%B8%E5%BF%83%E8%AE%BE%E8%AE%A1%E5%9B%9B%EF%BC%9A%E5%88%86%E9%85%8D%E7%AD%96%E7%95%A5%EF%BC%88%E7%8B%AC%E5%8D%A0%E4%B8%8E%E5%8E%BB%E9%87%8D%EF%BC%89"><span class="toc-number">1.8.</span> <span class="toc-text">7. 核心设计四：分配策略（独占与去重）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#7-1-%E4%B8%89%E7%A7%8D%E5%88%86%E9%85%8D%E6%A8%A1%E5%BC%8F"><span class="toc-number">1.8.1.</span> <span class="toc-text">7.1 三种分配模式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-2-%E7%8B%AC%E5%8D%A0-Redis-%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81"><span class="toc-number">1.8.2.</span> <span class="toc-text">7.2 独占 &#x3D; Redis 分布式锁</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-3-useType-%E5%8E%BB%E9%87%8D%EF%BC%88%E4%B8%9A%E5%8A%A1%E9%9A%94%E7%A6%BB%EF%BC%89"><span class="toc-number">1.8.3.</span> <span class="toc-text">7.3 useType 去重（业务隔离）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-4-%E5%A4%B1%E8%B4%A5%E5%9B%9E%E6%BB%9A"><span class="toc-number">1.8.4.</span> <span class="toc-text">7.4 失败回滚</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#8-%E6%A0%B8%E5%BF%83%E8%AE%BE%E8%AE%A1%E4%BA%94%EF%BC%9A%E5%BC%82%E6%AD%A5%E5%88%A0%E9%99%A4%E9%98%9F%E5%88%97"><span class="toc-number">1.9.</span> <span class="toc-text">8. 核心设计五：异步删除队列</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#8-1-%E9%98%9F%E5%88%97%E5%85%83%E7%B4%A0"><span class="toc-number">1.9.1.</span> <span class="toc-text">8.1 队列元素</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#8-2-%E6%B6%88%E8%B4%B9%E9%80%BB%E8%BE%91%EF%BC%88doProcessDeleteFromRedis%EF%BC%89"><span class="toc-number">1.9.2.</span> <span class="toc-text">8.2 消费逻辑（doProcessDeleteFromRedis）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#8-3-%E5%88%9B%E5%BB%BA%E4%B9%9F%E9%99%90%E6%B5%81"><span class="toc-number">1.9.3.</span> <span class="toc-text">8.3 创建也限流</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#9-%E6%A0%B8%E5%BF%83%E8%AE%BE%E8%AE%A1%E5%85%AD%EF%BC%9A%E9%A2%84%E7%83%AD%E4%B8%8E%E6%B0%B4%E4%BD%8D%E6%8E%A7%E5%88%B6"><span class="toc-number">1.10.</span> <span class="toc-text">9. 核心设计六：预热与水位控制</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#9-1-%E7%9B%AE%E6%A0%87%E6%B0%B4%E4%BD%8D"><span class="toc-number">1.10.1.</span> <span class="toc-text">9.1 目标水位</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#9-2-%E8%A7%A6%E5%8F%91%E9%93%BE%E8%B7%AF"><span class="toc-number">1.10.2.</span> <span class="toc-text">9.2 触发链路</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#9-3-%E9%A2%84%E7%83%AD%E9%98%B2%E5%B9%B6%E5%8F%91"><span class="toc-number">1.10.3.</span> <span class="toc-text">9.3 预热防并发</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#9-4-%E2%80%9C%E5%B0%B1%E7%BB%AA%E2%80%9D%E5%8F%A3%E5%BE%84"><span class="toc-number">1.10.4.</span> <span class="toc-text">9.4 “就绪”口径</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#10-%E5%8A%A8%E6%80%81-IP-%E6%A8%A1%E5%9D%97%EF%BC%88IPIPGO-%E6%8E%A5%E5%85%A5%EF%BC%89"><span class="toc-number">1.11.</span> <span class="toc-text">10. 动态 IP 模块（IPIPGO 接入）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#11-%E6%93%8D%E4%BD%9C%E5%AE%A1%E8%AE%A1"><span class="toc-number">1.12.</span> <span class="toc-text">11. 操作审计</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#12-API-%E4%B8%80%E8%A7%88"><span class="toc-number">1.13.</span> <span class="toc-text">12. API 一览</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#13-%E8%B8%A9%E5%9D%91%E4%B8%8E%E5%B7%A5%E7%A8%8B%E7%BB%8F%E9%AA%8C"><span class="toc-number">1.14.</span> <span class="toc-text">13. 踩坑与工程经验</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#13-1-%E6%97%B6%E5%8C%BA%E5%9D%91%EF%BC%88UTC-vs-UTC-8%EF%BC%89"><span class="toc-number">1.14.1.</span> <span class="toc-text">13.1 时区坑（UTC vs UTC+8）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#13-2-%E4%B8%A4%E7%A7%8D-RedisTemplate-%E7%9A%84%E5%85%B1%E5%AD%98"><span class="toc-number">1.14.2.</span> <span class="toc-text">13.2 两种 RedisTemplate 的共存</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#13-3-%E5%B9%B6%E5%8F%91%E6%8E%A7%E5%88%B6%E5%85%A8%E5%AE%B6%E6%A1%B6"><span class="toc-number">1.14.3.</span> <span class="toc-text">13.3 并发控制全家桶</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#13-4-%E4%B8%BB%E5%8A%A8%E5%81%A5%E5%BA%B7%E6%A3%80%E6%9F%A5%EF%BC%88%E6%97%A7%E7%89%88%E9%98%9F%E5%88%97%EF%BC%89"><span class="toc-number">1.14.4.</span> <span class="toc-text">13.4 主动健康检查（旧版队列）</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#14-%E5%8F%AF%E6%94%B9%E8%BF%9B%E6%96%B9%E5%90%91"><span class="toc-number">1.15.</span> <span class="toc-text">14. 可改进方向</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#15-%E6%80%BB%E7%BB%93"><span class="toc-number">1.16.</span> <span class="toc-text">15. 总结</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%99%84%EF%BC%9A%E6%A0%B8%E5%BF%83%E7%B1%BB%E5%9C%B0%E5%9B%BE"><span class="toc-number">1.17.</span> <span class="toc-text">附：核心类地图</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2026/08/12/%E4%BB%8E%E9%9B%B6%E6%90%AD%E5%BB%BA%E4%BA%91%E4%B8%8A%E4%BB%A3%E7%90%86%E6%B1%A0%EF%BC%9A%E5%9F%BA%E4%BA%8E%E9%98%BF%E9%87%8C%E4%BA%91%E6%8A%A2%E5%8D%A0%E5%BC%8F-ECS-%E7%9A%84%E5%8A%A8%E6%80%81%E4%BB%A3%E7%90%86%E6%9C%8D%E5%8A%A1%E6%9E%B6%E6%9E%84%E8%A7%A3%E6%9E%90%E4%BB%8E%E9%9B%B6%E6%90%AD%E5%BB%BA%E4%BA%91%E4%B8%8A%E4%BB%A3%E7%90%86%E6%B1%A0%EF%BC%9A%E5%9F%BA%E4%BA%8E%E9%98%BF%E9%87%8C%E4%BA%91%E6%8A%A2%E5%8D%A0%E5%BC%8F-ECS-%E7%9A%84%E5%8A%A8%E6%80%81%E4%BB%A3%E7%90%86%E6%9C%8D%E5%8A%A1%E6%9E%B6%E6%9E%84%E8%A7%A3%E6%9E%90/" title="从零搭建云上代理池：基于阿里云抢占式 ECS 的动态代理服务架构解析"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/images/proxy-pool-cover.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="从零搭建云上代理池：基于阿里云抢占式 ECS 的动态代理服务架构解析"/></a><div class="content"><a class="title" href="/2026/08/12/%E4%BB%8E%E9%9B%B6%E6%90%AD%E5%BB%BA%E4%BA%91%E4%B8%8A%E4%BB%A3%E7%90%86%E6%B1%A0%EF%BC%9A%E5%9F%BA%E4%BA%8E%E9%98%BF%E9%87%8C%E4%BA%91%E6%8A%A2%E5%8D%A0%E5%BC%8F-ECS-%E7%9A%84%E5%8A%A8%E6%80%81%E4%BB%A3%E7%90%86%E6%9C%8D%E5%8A%A1%E6%9E%B6%E6%9E%84%E8%A7%A3%E6%9E%90%E4%BB%8E%E9%9B%B6%E6%90%AD%E5%BB%BA%E4%BA%91%E4%B8%8A%E4%BB%A3%E7%90%86%E6%B1%A0%EF%BC%9A%E5%9F%BA%E4%BA%8E%E9%98%BF%E9%87%8C%E4%BA%91%E6%8A%A2%E5%8D%A0%E5%BC%8F-ECS-%E7%9A%84%E5%8A%A8%E6%80%81%E4%BB%A3%E7%90%86%E6%9C%8D%E5%8A%A1%E6%9E%B6%E6%9E%84%E8%A7%A3%E6%9E%90/" title="从零搭建云上代理池：基于阿里云抢占式 ECS 的动态代理服务架构解析">从零搭建云上代理池：基于阿里云抢占式 ECS 的动态代理服务架构解析</a><time datetime="2026-08-12T08:55:03.000Z" title="发表于 2026-08-12 16:55:03">2026-08-12</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2026/07/21/Spring-Boot-%E7%98%A6%E5%8C%85%E5%90%AF%E5%8A%A8/" title="Spring Boot 瘦包启动"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/assets/Abanner/default_cover.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Spring Boot 瘦包启动"/></a><div class="content"><a class="title" href="/2026/07/21/Spring-Boot-%E7%98%A6%E5%8C%85%E5%90%AF%E5%8A%A8/" title="Spring Boot 瘦包启动">Spring Boot 瘦包启动</a><time datetime="2026-07-21T10:26:36.000Z" title="发表于 2026-07-21 18:26:36">2026-07-21</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2026/07/03/cursor%E8%87%AA%E5%B8%A6skills-%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/" title="cursor自带skills-使用指南"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/assets/Abanner/default_cover.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="cursor自带skills-使用指南"/></a><div class="content"><a class="title" href="/2026/07/03/cursor%E8%87%AA%E5%B8%A6skills-%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/" title="cursor自带skills-使用指南">cursor自带skills-使用指南</a><time datetime="2026-07-03T03:03:28.000Z" title="发表于 2026-07-03 11:03:28">2026-07-03</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2026/07/01/Spring-Boot-%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E6%95%B4%E5%90%88%E8%B0%B7%E6%AD%8C%E4%BB%A4%E7%89%8C/" title="Spring Boot 如何实现整合谷歌令牌"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/assets/Abanner/default_cover.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Spring Boot 如何实现整合谷歌令牌"/></a><div class="content"><a class="title" href="/2026/07/01/Spring-Boot-%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E6%95%B4%E5%90%88%E8%B0%B7%E6%AD%8C%E4%BB%A4%E7%89%8C/" title="Spring Boot 如何实现整合谷歌令牌">Spring Boot 如何实现整合谷歌令牌</a><time datetime="2026-07-01T06:32:09.000Z" title="发表于 2026-07-01 14:32:09">2026-07-01</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2026/06/26/JDBC%E6%B1%89%E5%AD%97%E7%BC%96%E7%A0%81%E5%AF%BC%E8%87%B4%E6%9F%A5%E8%AF%A2%E5%BC%82%E5%B8%B8/" title="JDBC汉字编码导致查询异常"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/assets/Abanner/default_cover.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="JDBC汉字编码导致查询异常"/></a><div class="content"><a class="title" href="/2026/06/26/JDBC%E6%B1%89%E5%AD%97%E7%BC%96%E7%A0%81%E5%AF%BC%E8%87%B4%E6%9F%A5%E8%AF%A2%E5%BC%82%E5%B8%B8/" title="JDBC汉字编码导致查询异常">JDBC汉字编码导致查询异常</a><time datetime="2026-06-26T08:24:25.000Z" title="发表于 2026-06-26 16:24:25">2026-06-26</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2024 - 2026 By Yuanz</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 8.1.2</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.5.5-b1</a></span></div><div class="footer_custom_text"><a href="https://github.com/yuanzhang788" target="_blank" rel="noopener noreferrer">Yuanz</a> &copy; <span id="year"></span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="前往评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page/instantpage.min.js" type="module"></script><script src="https://cdn.jsdelivr.net/npm/vanilla-lazyload/dist/lazyload.iife.min.js"></script><script src="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.js"></script><div class="js-pjax"><script>(() => {
+  const parseViewBox = viewBox => {
+    if (!viewBox) return null
+    const parts = viewBox.trim().split(/[\s,]+/).map(n => Number(n))
+    if (parts.length !== 4 || parts.some(n => Number.isNaN(n))) return null
+    return parts
+  }
+
+  const getSvgViewBox = svg => {
+    const attr = parseViewBox(svg.getAttribute('viewBox'))
+    if (attr) return attr
+
+    // Fallback: use bbox to build a viewBox
+    try {
+      const bbox = svg.getBBox()
+      if (bbox && bbox.width && bbox.height) return [bbox.x, bbox.y, bbox.width, bbox.height]
+    } catch (e) {
+      // getBBox may fail on some edge cases; ignore
+    }
+
+    const w = Number(svg.getAttribute('width')) || 0
+    const h = Number(svg.getAttribute('height')) || 0
+    if (w > 0 && h > 0) return [0, 0, w, h]
+    return [0, 0, 100, 100]
+  }
+
+  const setSvgViewBox = (svg, vb) => {
+    svg.setAttribute('viewBox', `${vb[0]} ${vb[1]} ${vb[2]} ${vb[3]}`)
+  }
+
+  const clamp = (v, min, max) => Math.max(min, Math.min(max, v))
+
+  const openSvgInNewTab = ({ source, initViewBox }) => {
+    const getClonedSvg = () => {
+      if (typeof source === 'string') {
+        const template = document.createElement('template')
+        template.innerHTML = source.trim()
+        const svg = template.content.querySelector('svg')
+        return svg ? svg.cloneNode(true) : null
+      }
+      if (source && typeof source.cloneNode === 'function') {
+        return source.cloneNode(true)
+      }
+      return null
+    }
+
+    const clone = getClonedSvg()
+    if (!clone) return
+    if (initViewBox && initViewBox.length === 4) {
+      clone.setAttribute('viewBox', initViewBox.join(' '))
+    }
+    if (!clone.getAttribute('xmlns')) clone.setAttribute('xmlns', 'http://www.w3.org/2000/svg')
+    if (!clone.getAttribute('xmlns:xlink') && clone.outerHTML.includes('xlink:')) {
+      clone.setAttribute('xmlns:xlink', 'http://www.w3.org/1999/xlink')
+    }
+    // inject background to match current theme
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark'
+    const bg = getComputedStyle(document.body).backgroundColor || (isDark ? '#1e1e1e' : '#ffffff')
+    if (!clone.style.background) clone.style.background = bg
+
+    const serializer = new XMLSerializer()
+    const svgSource = serializer.serializeToString(clone)
+    const htmlSource = `<!doctype html><html><head><meta charset="utf-8" />
+      <style>
+        html, body { width: 100%; height: 100%; margin: 0; display: flex; align-items: center; justify-content: center; background: ${bg}; }
+        svg { max-width: 100%; max-height: 100%; height: auto; width: auto; }
+      </style>
+      </head><body>${svgSource}</body></html>`
+    const blob = new Blob([htmlSource], { type: 'text/html;charset=utf-8' })
+    const url = URL.createObjectURL(blob)
+    window.open(url, '_blank', 'noopener')
+    setTimeout(() => URL.revokeObjectURL(url), 30000)
+  }
+
+  const attachMermaidViewerButton = wrap => {
+    let btn = wrap.querySelector('.mermaid-open-btn')
+    if (!btn) {
+      btn = document.createElement('button')
+      btn.type = 'button'
+      btn.className = 'mermaid-open-btn'
+      wrap.appendChild(btn)
+    }
+
+    btn.innerHTML = '<i class="fa fa-search fa-fw" aria-hidden="true"></i>'
+
+    if (!btn.__mermaidViewerBound) {
+      btn.addEventListener('click', e => {
+        e.preventDefault()
+        e.stopPropagation()
+        const svg = wrap.__mermaidOriginalSvg || wrap.querySelector('svg')
+        if (!svg) return
+        const initViewBox = wrap.__mermaidInitViewBox
+        if (typeof svg === 'string') {
+          openSvgInNewTab({ source: svg, initViewBox })
+          return
+        }
+        openSvgInNewTab({ source: svg, initViewBox })
+      })
+      btn.__mermaidViewerBound = true
+    }
+  }
+
+  // Zoom around a point (px, py) in the SVG viewport (in viewBox coordinates)
+  const zoomAtPoint = (vb, factor, px, py) => {
+    const w = vb[2] * factor
+    const h = vb[3] * factor
+    const nx = px - (px - vb[0]) * factor
+    const ny = py - (py - vb[1]) * factor
+    return [nx, ny, w, h]
+  }
+
+  const initMermaidGestures = wrap => {
+    const svg = wrap.querySelector('svg')
+    if (!svg) return
+
+    // Ensure viewBox exists so gestures always work
+    const initVb = getSvgViewBox(svg)
+    wrap.__mermaidInitViewBox = initVb
+    wrap.__mermaidCurViewBox = initVb.slice()
+    setSvgViewBox(svg, initVb)
+
+    // Avoid binding multiple times on themeChange/pjax
+    if (wrap.__mermaidGestureBound) return
+    wrap.__mermaidGestureBound = true
+
+    // Helper: map client (viewport) coordinate -> viewBox coordinate
+    const clientToViewBox = (clientX, clientY) => {
+      const rect = svg.getBoundingClientRect()
+      const vb = wrap.__mermaidCurViewBox || getSvgViewBox(svg)
+      const x = vb[0] + (clientX - rect.left) * (vb[2] / rect.width)
+      const y = vb[1] + (clientY - rect.top) * (vb[3] / rect.height)
+      return { x, y, rect, vb }
+    }
+
+    const state = {
+      pointers: new Map(),
+      startVb: null,
+      startDist: 0,
+      startCenter: null
+    }
+
+    const clampVb = vb => {
+      const init = wrap.__mermaidInitViewBox || vb
+      const minW = init[2] * 0.1
+      const maxW = init[2] * 10
+      const minH = init[3] * 0.1
+      const maxH = init[3] * 10
+      vb[2] = clamp(vb[2], minW, maxW)
+      vb[3] = clamp(vb[3], minH, maxH)
+      return vb
+    }
+
+    const setCurVb = vb => {
+      vb = clampVb(vb)
+      wrap.__mermaidCurViewBox = vb
+      setSvgViewBox(svg, vb)
+    }
+
+    const onPointerDown = e => {
+      // Allow only primary button for mouse
+      if (e.pointerType === 'mouse' && e.button !== 0) return
+      svg.setPointerCapture(e.pointerId)
+      state.pointers.set(e.pointerId, { x: e.clientX, y: e.clientY })
+
+      if (state.pointers.size === 1) {
+        state.startVb = (wrap.__mermaidCurViewBox || getSvgViewBox(svg)).slice()
+      } else if (state.pointers.size === 2) {
+        const pts = [...state.pointers.values()]
+        const dx = pts[0].x - pts[1].x
+        const dy = pts[0].y - pts[1].y
+        state.startDist = Math.hypot(dx, dy)
+        state.startVb = (wrap.__mermaidCurViewBox || getSvgViewBox(svg)).slice()
+        state.startCenter = { x: (pts[0].x + pts[1].x) / 2, y: (pts[0].y + pts[1].y) / 2 }
+      }
+    }
+
+    const onPointerMove = e => {
+      if (!state.pointers.has(e.pointerId)) return
+      state.pointers.set(e.pointerId, { x: e.clientX, y: e.clientY })
+
+      // Pan with 1 pointer
+      if (state.pointers.size === 1 && state.startVb) {
+        const p = [...state.pointers.values()][0]
+        const prev = { x: e.clientX - e.movementX, y: e.clientY - e.movementY }
+        // movementX/Y unreliable on touch, compute from stored last position
+        const last = wrap.__mermaidLastSinglePointer || p
+        const dxClient = p.x - last.x
+        const dyClient = p.y - last.y
+        wrap.__mermaidLastSinglePointer = p
+
+        const { rect } = clientToViewBox(p.x, p.y)
+        const vb = (wrap.__mermaidCurViewBox || getSvgViewBox(svg)).slice()
+        const dx = dxClient * (vb[2] / rect.width)
+        const dy = dyClient * (vb[3] / rect.height)
+        setCurVb([vb[0] - dx, vb[1] - dy, vb[2], vb[3]])
+        return
+      }
+
+      // Pinch zoom with 2 pointers
+      if (state.pointers.size === 2 && state.startVb && state.startDist > 0) {
+        const pts = [...state.pointers.values()]
+        const dx = pts[0].x - pts[1].x
+        const dy = pts[0].y - pts[1].y
+        const dist = Math.hypot(dx, dy)
+        if (!dist) return
+        const factor = state.startDist / dist // dist bigger => zoom in (viewBox smaller)
+
+        const cx = (pts[0].x + pts[1].x) / 2
+        const cy = (pts[0].y + pts[1].y) / 2
+        const centerClient = { x: cx, y: cy }
+
+        const pxy = clientToViewBox(centerClient.x, centerClient.y)
+        const cpx = pxy.x
+        const cpy = pxy.y
+
+        const vb = zoomAtPoint(state.startVb, factor, cpx, cpy)
+        setCurVb(vb)
+      }
+    }
+
+    const onPointerUpOrCancel = e => {
+      state.pointers.delete(e.pointerId)
+      if (state.pointers.size === 0) {
+        state.startVb = null
+        state.startDist = 0
+        state.startCenter = null
+        wrap.__mermaidLastSinglePointer = null
+      } else if (state.pointers.size === 1) {
+        // reset single pointer baseline to avoid jump
+        wrap.__mermaidLastSinglePointer = [...state.pointers.values()][0]
+      }
+    }
+
+    // Wheel zoom (mouse/trackpad)
+    const onWheel = e => {
+      // ctrlKey on mac trackpad pinch; we treat both as zoom
+      e.preventDefault()
+      const delta = e.deltaY
+      const zoomFactor = delta > 0 ? 1.1 : 0.9
+      const { x, y } = clientToViewBox(e.clientX, e.clientY)
+      const vb = (wrap.__mermaidCurViewBox || getSvgViewBox(svg)).slice()
+      setCurVb(zoomAtPoint(vb, zoomFactor, x, y))
+    }
+
+    const onDblClick = () => {
+      const init = wrap.__mermaidInitViewBox
+      if (!init) return
+      wrap.__mermaidCurViewBox = init.slice()
+      setSvgViewBox(svg, init)
+    }
+
+    svg.addEventListener('pointerdown', onPointerDown)
+    svg.addEventListener('pointermove', onPointerMove)
+    svg.addEventListener('pointerup', onPointerUpOrCancel)
+    svg.addEventListener('pointercancel', onPointerUpOrCancel)
+    svg.addEventListener('wheel', onWheel, { passive: false })
+    svg.addEventListener('dblclick', onDblClick)
+  }
+
+  const runMermaid = ele => {
+    window.loadMermaid = true
+    const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'default'
+
+    ele.forEach((item, index) => {
+      const mermaidSrc = item.firstElementChild
+
+      // Clear old render (themeChange/pjax will rerun)
+      const oldSvg = item.querySelector('svg')
+      if (oldSvg) oldSvg.remove()
+      item.__mermaidGestureBound = false
+
+      const config = mermaidSrc.dataset.config ? JSON.parse(mermaidSrc.dataset.config) : {}
+      if (!config.theme) {
+        config.theme = theme
+      }
+      const mermaidThemeConfig = `%%{init: ${JSON.stringify(config)}}%%\n`
+      const mermaidID = `mermaid-${index}`
+      const mermaidDefinition = mermaidThemeConfig + mermaidSrc.textContent
+
+      const renderFn = mermaid.render(mermaidID, mermaidDefinition)
+      const renderMermaid = svg => {
+        mermaidSrc.insertAdjacentHTML('afterend', svg)
+        if (true) initMermaidGestures(item)
+        item.__mermaidOriginalSvg = svg
+        if (true) attachMermaidViewerButton(item)
+      }
+
+
+      // mermaid v9 and v10 compatibility
+      typeof renderFn === 'string' ? renderMermaid(renderFn) : renderFn.then(({ svg }) => renderMermaid(svg))
+    })
+  }
+
+  const codeToMermaid = () => {
+    const codeMermaidEle = document.querySelectorAll('pre > code.mermaid')
+    if (codeMermaidEle.length === 0) return
+
+    codeMermaidEle.forEach(ele => {
+      const preEle = document.createElement('pre')
+      preEle.className = 'mermaid-src'
+      preEle.hidden = true
+      preEle.textContent = ele.textContent
+      const newEle = document.createElement('div')
+      newEle.className = 'mermaid-wrap'
+      newEle.appendChild(preEle)
+      ele.parentNode.replaceWith(newEle)
+    })
+  }
+
+  const loadMermaid = () => {
+    if (false) codeToMermaid()
+    const $mermaid = document.querySelectorAll('#article-container .mermaid-wrap')
+    if ($mermaid.length === 0) return
+
+    const runMermaidFn = () => runMermaid($mermaid)
+    btf.addGlobalFn('themeChange', runMermaidFn, 'mermaid')
+    window.loadMermaid ? runMermaidFn() : btf.getScript('https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js').then(runMermaidFn)
+  }
+
+  btf.addGlobalFn('encrypt', loadMermaid, 'mermaid')
+  window.pjax ? loadMermaid() : document.addEventListener('DOMContentLoaded', loadMermaid)
+})()</script><script>(() => {
+  const isShuoshuo = GLOBAL_CONFIG_SITE.pageType === 'shuoshuo'
+  const option = null
+
+  const getCount = () => {
+    const countELement = document.getElementById('twikoo-count')
+    if(!countELement) return
+    twikoo.getCommentsCount({
+      envId: 'https://twikoo-gvzc.vercel.app',
+      region: '',
+      urls: [window.location.pathname],
+      includeReply: false
+    }).then(res => {
+      countELement.textContent = res[0].count
+    }).catch(err => {
+      console.error(err)
+    })
+  }
+
+  const init = (el = document, path = location.pathname) => {
+    twikoo.init({
+      el: el.querySelector('#twikoo-wrap'),
+      envId: 'https://twikoo-gvzc.vercel.app',
+      region: '',
+      onCommentLoaded: () => {
+        btf.loadLightbox(document.querySelectorAll('#twikoo .tk-content img:not(.tk-owo-emotion)'))
+      },
+      ...option,
+      path: isShuoshuo ? path : (option && option.path) || path
+    })
+
+    GLOBAL_CONFIG_SITE.pageType === 'post' && getCount()
+
+    isShuoshuo && (window.shuoshuoComment.destroyTwikoo = () => {
+      if (el.children.length) {
+        el.innerHTML = ''
+        el.classList.add('no-comment')
+      }
+    })
+  }
+
+  const loadTwikoo = (el, path) => {
+    if (typeof twikoo === 'object') setTimeout(() => init(el, path), 0)
+    else btf.getScript('https://cdn.jsdelivr.net/npm/twikoo/dist/twikoo.all.min.js').then(() => init(el, path))
+  }
+
+  if (isShuoshuo) {
+    'Twikoo' === 'Twikoo'
+      ? window.shuoshuoComment = { loadComment: loadTwikoo }
+      : window.loadOtherComment = loadTwikoo
+    return
+  }
+
+  if ('Twikoo' === 'Twikoo' || !true) {
+    if (true) btf.loadComment(document.getElementById('twikoo-wrap'), loadTwikoo)
+    else loadTwikoo()
+  } else {
+    window.loadOtherComment = loadTwikoo
+  }
+})()</script></div><div class="aplayer no-destroy" data-id="18066081268" data-server="netease" data-type="playlist" data-fixed="true" data-mini="true" data-autoplay="true" data-theme="#49b1f5" data-loop="all" data-order="list" data-preload="auto" data-volume="0.7" data-mutex="true" data-listfolded="true" data-listmaxheight="340px"> </div><script id="canvas_nest" defer="defer" color="0,155,255" opacity="0.5" zIndex="-1" count="60" mobile="false" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/canvas-nest.min.js"></script><script id="click-show-text" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/click-show-text.min.js" data-mobile="false" data-text="富强,民主,文明,和谐,自由,平等,公正,法治" data-fontsize="14px" data-random="true" async="async"></script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js"></script><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/metingjs/dist/Meting.min.js"></script><script>(() => {
+  const destroyAplayer = () => {
+    if (window.aplayers) {
+      for (let i = 0; i < window.aplayers.length; i++) {
+        if (!window.aplayers[i].options.fixed) {
+          window.aplayers[i].destroy()
+        }
+      }
+    }
+  }
+
+  const runMetingJS = () => {
+    typeof loadMeting === 'function' && document.getElementsByClassName('aplayer').length && loadMeting()
+  }
+
+  btf.addGlobalFn('pjaxSend', destroyAplayer, 'destroyAplayer')
+  btf.addGlobalFn('pjaxComplete', loadMeting, 'runMetingJS')
+})()</script><script src="https://cdn.jsdelivr.net/npm/pjax/pjax.min.js" defer="defer"></script><script>document.addEventListener('DOMContentLoaded', () => {
+  const pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+  window.pjax = new Pjax({
+    elements: 'a:not([target="_blank"]):not([href="/html/git-workflow.html"])',
+    selectors: pjaxSelectors,
+    cacheBust: false,
+    analytics: false,
+    scrollRestoration: false
+  })
+
+  const triggerPjaxFn = (val) => {
+    if (!val) return
+    Object.values(val).forEach(fn => {
+      try {
+        fn()
+      } catch (err) {
+        console.debug('Pjax callback failed:', err)
+      }
+    })
+  }
+
+  document.addEventListener('pjax:send', () => {
+    // removeEventListener
+    btf.removeGlobalFnEvent('pjaxSendOnce')
+    btf.removeGlobalFnEvent('themeChange')
+
+    // reset readmode
+    const $bodyClassList = document.body.classList
+    if ($bodyClassList.contains('read-mode')) $bodyClassList.remove('read-mode')
+
+    triggerPjaxFn(window.globalFn.pjaxSend)
+  })
+
+  document.addEventListener('pjax:complete', () => {
+    btf.removeGlobalFnEvent('pjaxCompleteOnce')
+    document.querySelectorAll('script[data-pjax]').forEach(item => {
+      const newScript = document.createElement('script')
+      const content = item.text || item.textContent || item.innerHTML || ""
+      Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+      newScript.appendChild(document.createTextNode(content))
+      item.parentNode.replaceChild(newScript, item)
+    })
+
+    triggerPjaxFn(window.globalFn.pjaxComplete)
+  })
+
+  document.addEventListener('pjax:error', e => {
+    if (e.request.status === 404) {
+      false
+        ? pjax.loadUrl('/404.html')
+        : window.location.href = e.request.responseURL
+    }
+  })
+})</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><i class="fas fa-spinner fa-pulse" id="loading-status" hidden="hidden"></i><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="local-search-input"><input placeholder="搜索文章..." type="text"/></div><hr/><div id="local-search-results"></div><div class="ais-Pagination" id="local-search-pagination" style="display:none;"><ul class="ais-Pagination-list"></ul></div><div id="local-search-stats"></div></div><div id="search-mask"></div><script src="/js/search/local-search.js"></script></div></div></body></html>
