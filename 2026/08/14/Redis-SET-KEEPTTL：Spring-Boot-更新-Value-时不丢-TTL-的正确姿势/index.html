@@ -1,0 +1,796 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>Redis SET KEEPTTL：Spring Boot 更新 Value 时不丢 TTL 的正确姿势 | Yuanz</title><meta name="author" content="Yuanz"><meta name="copyright" content="Yuanz"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="ffffff"><meta name="description" content="记录一次 Redis 会话缓存因普通 SET 清掉 TTL 导致 key 永不过期的排查过程，以及 Spring Boot 中正确使用 SET KEEPTTL 的实现方式。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Redis SET KEEPTTL：Spring Boot 更新 Value 时不丢 TTL 的正确姿势">
+<meta property="og:url" content="https://yuanzhang788.github.io/2026/08/14/Redis-SET-KEEPTTL%EF%BC%9ASpring-Boot-%E6%9B%B4%E6%96%B0-Value-%E6%97%B6%E4%B8%8D%E4%B8%A2-TTL-%E7%9A%84%E6%AD%A3%E7%A1%AE%E5%A7%BF%E5%8A%BF/index.html">
+<meta property="og:site_name" content="Yuanz">
+<meta property="og:description" content="记录一次 Redis 会话缓存因普通 SET 清掉 TTL 导致 key 永不过期的排查过程，以及 Spring Boot 中正确使用 SET KEEPTTL 的实现方式。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://yuanzhang788.github.io/assets/Abanner/default_cover.png">
+<meta property="article:published_time" content="2026-08-14T06:30:00.000Z">
+<meta property="article:modified_time" content="2026-08-14T06:30:00.000Z">
+<meta property="article:author" content="Yuanz">
+<meta property="article:tag" content="Java">
+<meta property="article:tag" content="Redis">
+<meta property="article:tag" content="Spring Boot">
+<meta property="article:tag" content="Spring Data Redis">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://yuanzhang788.github.io/assets/Abanner/default_cover.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Redis SET KEEPTTL：Spring Boot 更新 Value 时不丢 TTL 的正确姿势",
+  "url": "https://yuanzhang788.github.io/2026/08/14/Redis-SET-KEEPTTL%EF%BC%9ASpring-Boot-%E6%9B%B4%E6%96%B0-Value-%E6%97%B6%E4%B8%8D%E4%B8%A2-TTL-%E7%9A%84%E6%AD%A3%E7%A1%AE%E5%A7%BF%E5%8A%BF/",
+  "image": "https://yuanzhang788.github.io/assets/Abanner/default_cover.png",
+  "datePublished": "2026-08-14T06:30:00.000Z",
+  "dateModified": "2026-08-14T06:30:00.000Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "Yuanz",
+      "url": "https://yuanzhang788.github.io"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://yuanzhang788.github.io/2026/08/14/Redis-SET-KEEPTTL%EF%BC%9ASpring-Boot-%E6%9B%B4%E6%96%B0-Value-%E6%97%B6%E4%B8%8D%E4%B8%A2-TTL-%E7%9A%84%E6%AD%A3%E7%A1%AE%E5%A7%BF%E5%8A%BF/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!true && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          const mediaQueryDark = window.matchMedia('(prefers-color-scheme: dark)')
+          const mediaQueryLight = window.matchMedia('(prefers-color-scheme: light)')
+
+          if (theme === undefined) {
+            if (mediaQueryLight.matches) activateLightMode()
+            else if (mediaQueryDark.matches) activateDarkMode()
+            else {
+              const hour = new Date().getHours()
+              const isNight = hour <= 6 || hour >= 18
+              isNight ? activateDarkMode() : activateLightMode()
+            }
+            mediaQueryDark.addEventListener('change', () => {
+              if (saveToLocal.get('theme') === undefined) {
+                e.matches ? activateDarkMode() : activateLightMode()
+              }
+            })
+          } else {
+            theme === 'light' ? activateLightMode() : activateDarkMode()
+          }
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.json","preload":false,"top_n_per_article":1,"unescape":false,"pagination":{"enable":false,"hitsPerPage":8},"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":400,"highlightFullpage":true,"highlightMacStyle":true},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: true,
+    post: false
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: {"limitCount":50,"languages":{"author":"作者: Yuanz","link":"链接: ","source":"来源: Yuanz","info":"著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。"}},
+  lightbox: 'fancybox',
+  Snackbar: {"chs_to_cht":"已切换为繁体中文","cht_to_chs":"已切换为简体中文","day_to_night":"已切换为深色模式","night_to_day":"已切换为浅色模式","bgLight":"#49b1f5","bgDark":"#1f1f1f","position":"bottom-left"},
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: true,
+  islazyloadPlugin: true,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: true
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Redis SET KEEPTTL：Spring Boot 更新 Value 时不丢 TTL 的正确姿势',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="stylesheet" href="/css/custom.css"><meta name="generator" content="Hexo 8.1.2"></head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div><script>(()=>{
+  const $loadingBox = document.getElementById('loading-box')
+  const $body = document.body
+  const preloader = {
+    endLoading: () => {
+      if ($loadingBox.classList.contains('loaded')) return
+      $body.style.overflow = ''
+      $loadingBox.classList.add('loaded')
+    },
+    initLoading: () => {
+      $body.style.overflow = 'hidden'
+      $loadingBox.classList.remove('loaded')
+    }
+  }
+
+  preloader.initLoading()
+
+  if (document.readyState === 'complete') {
+    preloader.endLoading()
+  } else {
+    window.addEventListener('load', preloader.endLoading)
+    document.addEventListener('DOMContentLoaded', preloader.endLoading)
+    // Add timeout protection: force end after 7 seconds
+    setTimeout(preloader.endLoading, 7000)
+  }
+
+  if (true) {
+    btf.addGlobalFn('pjaxSend', preloader.initLoading, 'preloader_init')
+    btf.addGlobalFn('pjaxComplete', preloader.endLoading, 'preloader_end')
+  }
+})()</script><div class="bg-animation" id="web_bg" style="background-image: url(/assets/Abanner/index.jpg);"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/assets/Abanner/avatar.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">186</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">125</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">3</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/categories/Spring%E6%BA%90%E7%A0%81/"><i class="fa-fw fas fa-book"></i><span> Spring源码</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg fixed" id="page-header" style="background-image: url(/assets/Abanner/default_cover.png);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">Yuanz</span></a><a class="nav-page-title" href="/"><span class="site-name">Redis SET KEEPTTL：Spring Boot 更新 Value 时不丢 TTL 的正确姿势</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/categories/Spring%E6%BA%90%E7%A0%81/"><i class="fa-fw fas fa-book"></i><span> Spring源码</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">Redis SET KEEPTTL：Spring Boot 更新 Value 时不丢 TTL 的正确姿势</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2026-08-14T06:30:00.000Z" title="发表于 2026-08-14 14:30:00">2026-08-14</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-08-14T06:30:00.000Z" title="更新于 2026-08-14 14:30:00">2026-08-14</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E5%90%8E%E7%AB%AF/">后端</a><i class="fas fa-angle-right post-meta-separator"></i><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E5%90%8E%E7%AB%AF/%E8%B8%A9%E5%9D%91%E8%AE%B0%E5%BD%95/">踩坑记录</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><div id="post-outdate-notice" data="{&quot;limitDay&quot;:365,&quot;messagePrev&quot;:&quot;已经过了&quot;,&quot;messageNext&quot;:&quot;天自上次更新，文章内容可能已过时。&quot;,&quot;postUpdate&quot;:&quot;2026-08-14 14:30:00&quot;}" hidden></div><h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>最近在做一个基于 Redis 的访客结账会话缓存：init 时写入 session 快照，默认 TTL 12 分钟；后续绑卡、解绑时会多次 <code>save</code> 更新同一条 key。</p>
+<p>设计意图很明确：</p>
+<ul>
+<li><strong>新会话</strong>：写入并设置 12 分钟过期</li>
+<li><strong>已有会话</strong>：只更新 JSON 内容，<strong>不重置、不取消</strong>原有 TTL</li>
+</ul>
+<p>听起来很简单，直到我在 Redis 里看到某个 session key 的 TTL 变成了 <code>-1</code>——key 还在，但<strong>永不过期</strong>了。</p>
+<p>补偿定时任务于是反复扫描这个僵尸会话，remove 又一直失败，形成死循环。</p>
+<hr>
+<h2 id="Redis-TTL-的三个返回值"><a href="#Redis-TTL-的三个返回值" class="headerlink" title="Redis TTL 的三个返回值"></a>Redis TTL 的三个返回值</h2><p>先对齐语义，避免误判：</p>
+<table>
+<thead>
+<tr>
+<th><code>TTL key</code> 返回值</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>&gt; 0</code></td>
+<td>key 存在，N 秒后过期</td>
+</tr>
+<tr>
+<td><code>-1</code></td>
+<td>key 存在，<strong>没有</strong>设置过期时间（永不过期）</td>
+</tr>
+<tr>
+<td><code>-2</code></td>
+<td>key <strong>不存在</strong></td>
+</tr>
+</tbody></table>
+<p>很多人把 <code>-1</code> 理解成「已过期」，其实是反的：<strong><code>-2</code> 才是 key 没了</strong>。</p>
+<hr>
+<h2 id="问题出在哪：普通-SET-会清掉-TTL"><a href="#问题出在哪：普通-SET-会清掉-TTL" class="headerlink" title="问题出在哪：普通 SET 会清掉 TTL"></a>问题出在哪：普通 SET 会清掉 TTL</h2><p>最初的「保留 TTL」写法类似这样：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-type">Long</span> <span class="hljs-variable">remainingTtl</span> <span class="hljs-operator">=</span> stringRedisTemplate.getExpire(redisKey, TimeUnit.SECONDS);<br><span class="hljs-keyword">if</span> (remainingTtl != <span class="hljs-literal">null</span> &amp;&amp; remainingTtl &gt; <span class="hljs-number">0</span>) &#123;<br>    <span class="hljs-comment">// 意图：只更新 value，保留 TTL</span><br>    stringRedisTemplate.opsForValue().set(redisKey, json);<br>&#125; <span class="hljs-keyword">else</span> &#123;<br>    stringRedisTemplate.opsForValue().set(redisKey, json, sessionTtl);<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>注释写的是「保留原 TTL」，但 Redis 的普通 <code>SET key value</code> <strong>不会</strong>保留过期时间——它会<strong>清除</strong> key 上已有的 TTL。</p>
+<p>于是实际流程变成：</p>
+<ol>
+<li>init：<code>SET key value EX 720</code> → TTL ≈ 720s</li>
+<li>绑卡后 save：<code>SET key newValue</code>（无 EX）→ <strong>TTL 变成 -1</strong></li>
+<li>session key 永不过期，补偿任务永远能扫到它</li>
+</ol>
+<p>这就是典型的「代码意图和 Redis 语义不一致」。</p>
+<hr>
+<h2 id="SET-KEEPTTL-是什么"><a href="#SET-KEEPTTL-是什么" class="headerlink" title="SET KEEPTTL 是什么"></a>SET KEEPTTL 是什么</h2><p>Redis 6.0+ 起，<code>SET</code> 命令支持 <code>KEEPTTL</code> 选项：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">SET key value [NX | XX] [GET] [EX seconds | PX milliseconds | KEEPTTL]<br></code></pre></td></tr></table></figure>
+
+<p><code>KEEPTTL</code> 的作用：<strong>更新 value 的同时，保留 key 现有的过期时间</strong>。</p>
+<table>
+<thead>
+<tr>
+<th>操作</th>
+<th>对 TTL 的影响</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>SET key value EX 720</code></td>
+<td>新建或覆盖，TTL 重置为 720s</td>
+</tr>
+<tr>
+<td><code>SET key value</code></td>
+<td>覆盖 value，<strong>TTL 被清除</strong> → -1</td>
+</tr>
+<tr>
+<td><code>SET key value KEEPTTL</code></td>
+<td>覆盖 value，<strong>保留剩余 TTL</strong></td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="Spring-Data-Redis-怎么用-KEEPTTL"><a href="#Spring-Data-Redis-怎么用-KEEPTTL" class="headerlink" title="Spring Data Redis 怎么用 KEEPTTL"></a>Spring Data Redis 怎么用 KEEPTTL</h2><p>踩的第一个坑：Spring Data Redis <strong>没有</strong>高层 API 叫 <code>SetOptions</code>（至少 Boot 3.3 &#x2F; Spring Data Redis 3.x 里没有这个类）。</p>
+<p>正确姿势是走底层 <code>RedisConnection</code>，配合：</p>
+<ul>
+<li><code>Expiration.keepTtl()</code> — 对应 <code>KEEPTTL</code></li>
+<li><code>RedisStringCommands.SetOption.UPSERT</code> — 插入或更新</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">import</span> org.springframework.data.redis.connection.RedisStringCommands;<br><span class="hljs-keyword">import</span> org.springframework.data.redis.core.RedisCallback;<br><span class="hljs-keyword">import</span> org.springframework.data.redis.core.types.Expiration;<br><br><span class="hljs-keyword">import</span> java.nio.charset.StandardCharsets;<br><br>stringRedisTemplate.execute((RedisCallback&lt;Void&gt;) connection -&gt; &#123;<br>    connection.stringCommands().set(<br>            redisKey.getBytes(StandardCharsets.UTF_8),<br>            json.getBytes(StandardCharsets.UTF_8),<br>            Expiration.keepTtl(),<br>            RedisStringCommands.SetOption.UPSERT);<br>    <span class="hljs-keyword">return</span> <span class="hljs-literal">null</span>;<br>&#125;);<br></code></pre></td></tr></table></figure>
+
+<p>完整分支逻辑：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-type">Long</span> <span class="hljs-variable">remainingTtl</span> <span class="hljs-operator">=</span> stringRedisTemplate.getExpire(redisKey, TimeUnit.SECONDS);<br><span class="hljs-keyword">if</span> (remainingTtl != <span class="hljs-literal">null</span> &amp;&amp; remainingTtl &gt; <span class="hljs-number">0</span>) &#123;<br>    <span class="hljs-comment">// 已有 TTL：SET KEEPTTL</span><br>    stringRedisTemplate.execute((RedisCallback&lt;Void&gt;) connection -&gt; &#123;<br>        connection.stringCommands().set(<br>                redisKey.getBytes(StandardCharsets.UTF_8),<br>                json.getBytes(StandardCharsets.UTF_8),<br>                Expiration.keepTtl(),<br>                RedisStringCommands.SetOption.UPSERT);<br>        <span class="hljs-keyword">return</span> <span class="hljs-literal">null</span>;<br>    &#125;);<br>&#125; <span class="hljs-keyword">else</span> &#123;<br>    <span class="hljs-comment">// 新 key / 无 TTL / 已过期：正常 SET + EX</span><br>    stringRedisTemplate.opsForValue().set(redisKey, json, sessionTtl);<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="三种策略对比"><a href="#三种策略对比" class="headerlink" title="三种策略对比"></a>三种策略对比</h2><table>
+<thead>
+<tr>
+<th>策略</th>
+<th>session 生命周期</th>
+<th>典型问题</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>每次 <code>set(key, value, 12min)</code></td>
+<td>每次 save 续命 12 分钟</td>
+<td>会话可能永不淘汰</td>
+</tr>
+<tr>
+<td>普通 <code>set(key, value)</code></td>
+<td>第一次 save 后 TTL 变 -1</td>
+<td><strong>僵尸 key 永久驻留</strong></td>
+</tr>
+<tr>
+<td><code>SET KEEPTTL</code></td>
+<td>init 起算，12 分钟后自然过期</td>
+<td>符合「不续命、不丢 TTL」的设计</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="改完后的行为"><a href="#改完后的行为" class="headerlink" title="改完后的行为"></a>改完后的行为</h2><p>以 12 分钟 TTL 为例：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">T+0min   init          → SET EX 720，TTL=720<br>T+2min   绑卡 save     → SET KEEPTTL，TTL≈600（继续倒计时）<br>T+5min   remove save   → SET KEEPTTL，TTL≈420<br>T+12min  —             → key 自动过期删除<br></code></pre></td></tr></table></figure>
+
+<p>补偿定时任务扫不到已过期 session，不会对着僵尸 key 无限重试。</p>
+<hr>
+<h2 id="边界情况"><a href="#边界情况" class="headerlink" title="边界情况"></a>边界情况</h2><h3 id="1-已经是-TTL-1-的僵尸-key"><a href="#1-已经是-TTL-1-的僵尸-key" class="headerlink" title="1. 已经是 TTL&#x3D;-1 的僵尸 key"></a>1. 已经是 TTL&#x3D;-1 的僵尸 key</h3><p><code>KEEPTTL</code> <strong>救不了历史数据</strong>——对无 TTL 的 key 用 KEEPTTL，它仍然无 TTL。</p>
+<p>此时 <code>remainingTtl == -1</code> 会走 <code>else</code> 分支，用 <code>set(key, json, sessionTtl)</code> <strong>重新补上 TTL</strong>，反而是好事。</p>
+<p>已存在的僵尸 key 需要手动 <code>DEL</code> 或 <code>EXPIRE key 720</code>。</p>
+<h3 id="2-KEEPTTL-不解决业务失败"><a href="#2-KEEPTTL-不解决业务失败" class="headerlink" title="2. KEEPTTL 不解决业务失败"></a>2. KEEPTTL 不解决业务失败</h3><p>remove 失败、bound-pins 残留、Apple 会话失效等问题，KEEPTTL 管不了——它只保证 <strong>Redis key 会按时消失</strong>。</p>
+<h3 id="3-非原子备选方案（不推荐）"><a href="#3-非原子备选方案（不推荐）" class="headerlink" title="3. 非原子备选方案（不推荐）"></a>3. 非原子备选方案（不推荐）</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs java">stringRedisTemplate.opsForValue().set(redisKey, json);<br>stringRedisTemplate.expire(redisKey, Duration.ofSeconds(remainingTtl));<br></code></pre></td></tr></table></figure>
+
+<p>两步操作之间有窗口，高并发下可能出问题。优先用 <code>KEEPTTL</code> 一条命令搞定。</p>
+<hr>
+<h2 id="如何验证"><a href="#如何验证" class="headerlink" title="如何验证"></a>如何验证</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-comment"># init 后</span><br>TTL apple:guest-checkout:session:xxx<br><span class="hljs-comment"># 期望：~720</span><br><br><span class="hljs-comment"># 绑卡 / save 后</span><br>TTL apple:guest-checkout:session:xxx<br><span class="hljs-comment"># 期望：继续倒计时，不是 -1</span><br><br><span class="hljs-comment"># 12 分钟后</span><br>EXISTS apple:guest-checkout:session:xxx<br><span class="hljs-comment"># 期望：0</span><br></code></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h2><ul>
+<li>想在 Redis 里<strong>更新 value 但不动 TTL</strong>，必须用 <code>SET KEEPTTL</code>，普通 <code>SET</code> 会清掉过期时间。</li>
+<li>Spring Data Redis 高层 <code>opsForValue().set(key, value)</code> 不会自动 KEEPTTL，需要 <code>Expiration.keepTtl()</code> + 底层 <code>stringCommands().set(...)</code>。</li>
+<li>会话缓存类场景：<strong>init 设 TTL，后续 save 用 KEEPTTL</strong>，是比「每次续命」和「意外变永久 key」都更干净的做法。</li>
+</ul>
+<hr>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ul>
+<li><a target="_blank" rel="noopener" href="https://redis.io/commands/set/">Redis SET 命令文档</a></li>
+<li><a target="_blank" rel="noopener" href="https://docs.spring.io/spring-data/redis/docs/current/api/org/springframework/data/redis/core/types/Expiration.html">Spring Data Redis - Expiration.keepTtl()</a></li>
+</ul>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://yuanzhang788.github.io">Yuanz</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://yuanzhang788.github.io/2026/08/14/Redis-SET-KEEPTTL%EF%BC%9ASpring-Boot-%E6%9B%B4%E6%96%B0-Value-%E6%97%B6%E4%B8%8D%E4%B8%A2-TTL-%E7%9A%84%E6%AD%A3%E7%A1%AE%E5%A7%BF%E5%8A%BF/">https://yuanzhang788.github.io/2026/08/14/Redis-SET-KEEPTTL：Spring-Boot-更新-Value-时不丢-TTL-的正确姿势/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://yuanzhang788.github.io" target="_blank">Yuanz</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/Java/">Java</a><a class="post-meta__tags" href="/tags/Redis/">Redis</a><a class="post-meta__tags" href="/tags/Spring-Boot/">Spring Boot</a><a class="post-meta__tags" href="/tags/Spring-Data-Redis/">Spring Data Redis</a></div><div class="post-share"><div class="social-share" data-image="/assets/Abanner/default_cover.png" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related full-width" href="/2026/08/12/%E4%BB%8E%E9%9B%B6%E6%90%AD%E5%BB%BA%E4%BA%91%E4%B8%8A%E4%BB%A3%E7%90%86%E6%B1%A0%EF%BC%9A%E5%9F%BA%E4%BA%8E%E9%98%BF%E9%87%8C%E4%BA%91%E6%8A%A2%E5%8D%A0%E5%BC%8F-ECS-%E7%9A%84%E5%8A%A8%E6%80%81%E4%BB%A3%E7%90%86%E6%9C%8D%E5%8A%A1%E6%9E%B6%E6%9E%84%E8%A7%A3%E6%9E%90%E4%BB%8E%E9%9B%B6%E6%90%AD%E5%BB%BA%E4%BA%91%E4%B8%8A%E4%BB%A3%E7%90%86%E6%B1%A0%EF%BC%9A%E5%9F%BA%E4%BA%8E%E9%98%BF%E9%87%8C%E4%BA%91%E6%8A%A2%E5%8D%A0%E5%BC%8F-ECS-%E7%9A%84%E5%8A%A8%E6%80%81%E4%BB%A3%E7%90%86%E6%9C%8D%E5%8A%A1%E6%9E%B6%E6%9E%84%E8%A7%A3%E6%9E%90/" title="从零搭建云上代理池：基于阿里云抢占式 ECS 的动态代理服务架构解析"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/assets/Abanner/default_cover.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">从零搭建云上代理池：基于阿里云抢占式 ECS 的动态代理服务架构解析</div></div><div class="info-2"><div class="info-item-1">基于真实项目「vpn 模块」的深度解析：如何用阿里云抢占式 ECS 构建一个价格感知、多账号多区域、自动预热、异步回收的 HTTP 代理池服务，含全部核心代码设计细节。</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/2026/08/12/%E4%BB%8E%E9%9B%B6%E6%90%AD%E5%BB%BA%E4%BA%91%E4%B8%8A%E4%BB%A3%E7%90%86%E6%B1%A0%EF%BC%9A%E5%9F%BA%E4%BA%8E%E9%98%BF%E9%87%8C%E4%BA%91%E6%8A%A2%E5%8D%A0%E5%BC%8F-ECS-%E7%9A%84%E5%8A%A8%E6%80%81%E4%BB%A3%E7%90%86%E6%9C%8D%E5%8A%A1%E6%9E%B6%E6%9E%84%E8%A7%A3%E6%9E%90%E4%BB%8E%E9%9B%B6%E6%90%AD%E5%BB%BA%E4%BA%91%E4%B8%8A%E4%BB%A3%E7%90%86%E6%B1%A0%EF%BC%9A%E5%9F%BA%E4%BA%8E%E9%98%BF%E9%87%8C%E4%BA%91%E6%8A%A2%E5%8D%A0%E5%BC%8F-ECS-%E7%9A%84%E5%8A%A8%E6%80%81%E4%BB%A3%E7%90%86%E6%9C%8D%E5%8A%A1%E6%9E%B6%E6%9E%84%E8%A7%A3%E6%9E%90/" title="从零搭建云上代理池：基于阿里云抢占式 ECS 的动态代理服务架构解析"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/assets/Abanner/default_cover.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-08-12</div><div class="info-item-2">从零搭建云上代理池：基于阿里云抢占式 ECS 的动态代理服务架构解析</div></div><div class="info-2"><div class="info-item-1">基于真实项目「vpn 模块」的深度解析：如何用阿里云抢占式 ECS 构建一个价格感知、多账号多区域、自动预热、异步回收的 HTTP 代理池服务，含全部核心代码设计细节。</div></div></div></a><a class="pagination-related" href="/2024/06/20/Springboot%20%E9%A1%B9%E7%9B%AE%E5%90%AF%E5%8A%A8%E6%97%B6%E6%89%AB%E6%8F%8F%E6%89%80%E6%9C%89%E6%9E%9A%E4%B8%BE%E5%B9%B6%E5%AD%98%E5%85%A5%E7%BC%93%E5%AD%98(redis)/" title="Springboot 项目启动时扫描所有枚举并存入缓存(redis)"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/assets/Abanner/default_cover.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-06-20</div><div class="info-item-2">Springboot 项目启动时扫描所有枚举并存入缓存(redis)</div></div><div class="info-2"><div class="info-item-1">  为什么这么做?  为了springboot 注解属性转换字典方便一点(使用缓存的方式在Springboot 启动时获取字典数据)  在启动时会扫描com.vehicle.manager.core.enumerate包下的所有枚举(包括类中的内部枚举),并取出对应属性以json的方式存入redis  目录结构如下:       RedisUtil可以在RedisUtil获取 Springboot 项目启动时的处理都可以参考这个方式   1234567891011121314151617181920212223242526272829303132333435363738394041424...</div></div></div></a><a class="pagination-related" href="/2023/04/02/JUC%E9%AB%98%E7%BA%A7%E5%85%AD_CAS%E5%92%8C%E5%8E%9F%E5%AD%90%E7%B1%BB/" title="JUC高级六:CAS和原子类"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/assets/Abanner/default_cover.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2023-04-02</div><div class="info-item-2">JUC高级六:CAS和原子类</div></div><div class="info-2"><div class="info-item-1">JUC高级六-CAS和原子类1. CAS(compare and swap)1.1 没有CAS之前怎么解决基本数据类型的线程安全?多线程环境&#x3D;&#x3D;不使用原子类&#x3D;&#x3D;保证线程安全i++（基本数据类型）1234567891011121314public class T3&#123;    volatile int number = 0;    //读取    public int getNumber()    &#123;        return number;    &#125;    //写入加锁保证原子性    public synchroniz...</div></div></div></a><a class="pagination-related" href="/2022/04/01/JVM%E4%B8%8A%E7%AF%87%EF%BC%9A%E5%86%85%E5%AD%98%E4%B8%8E%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E7%AF%87%E4%BA%8C--%E7%B1%BB%E5%8A%A0%E8%BD%BD%E5%AD%90%E7%B3%BB%E7%BB%9F/" title="JVM上篇：内存与垃圾回收篇二--类加载子系统"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/assets/Abanner/default_cover.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2022-04-01</div><div class="info-item-2">JVM上篇：内存与垃圾回收篇二--类加载子系统</div></div><div class="info-2"><div class="info-item-1">JVM上篇：内存与垃圾回收篇二–类加载子系统1.内存结构概述  详细结构   如果自己想手写一个Java虚拟机的话，主要考虑哪些结构呢？  类加载器 执行引擎  1.2 类加载器子系统作用 类加载器子系统负责从文件系统或者网络中加载Class文件，class文件在文件开头有特定的文件标识。 ClassLoader只负责class文件的加载，至于它是否可以运行，则由Execution Engine执行引擎决定。 加载的类信息存放于一块称为方法区的内存空间。除了类的信息外，方法区中还会存放运行时常量池信息，可能还包括字符串字面量和数字常量（这部分常量信息是Class文件中常量池部分的内存映射...</div></div></div></a><a class="pagination-related" href="/2023/04/09/JUC%E9%AB%98%E7%BA%A7%E5%85%AB-Java%E5%AF%B9%E8%B1%A1%E5%86%85%E5%AD%98%E5%B8%83%E5%B1%80%E5%92%8C%E5%AF%B9%E8%B1%A1%E5%A4%B4/" title="JUC高级八-Java对象内存布局和对象头"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/assets/Abanner/default_cover.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2023-04-09</div><div class="info-item-2">JUC高级八-Java对象内存布局和对象头</div></div><div class="info-2"><div class="info-item-1">JUC高级八-Java对象内存布局和对象头1. 对象的内存布局在HotSpot虚拟机里，对象在堆内存中的存储布局可以划分为三个部分:对象头(Header）、实例数据（Instance Data）和对齐填充(Padding)（保证8个字节的倍数） 。  数组对象的对象头比常规对象多一个length,用于记录数组长度   1.1 &#x3D;&#x3D;对象头&#x3D;&#x3D;1.1.1 &#x3D;&#x3D;对象标记Mark Word&#x3D;&#x3D;1.1.1.1 32位(看一下即可，不用学了，以64位为准) 1.1.1.2 &#x3D;&#x3D;64位(重要)&#x3D...</div></div></div></a><a class="pagination-related" href="/2021/12/13/%E8%B0%B7%E7%B2%92%E5%95%86%E5%9F%8E--%E8%AE%A4%E8%AF%81%E4%B8%AD%E5%BF%83--%E9%AB%98%E7%BA%A7%E7%AF%87%E7%AC%94%E8%AE%B0%E5%85%AB/" title="谷粒商城--认证中心--高级篇笔记八"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/assets/Abanner/default_cover.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2021-12-13</div><div class="info-item-2">谷粒商城--认证中心--高级篇笔记八</div></div><div class="info-2"><div class="info-item-1">谷粒商城–认证中心–高级篇笔记八 1. 环境搭建1.1 新建模块gulimall-auth-server  1.2 pom文件上面没选好直接复制下面的pom文件,记得排除gulimall-common包的mybatis-plus 12345678910111213141516171819202122232425262728293031323334353637383940414243444546474849505152535455565758596061626364656667686970717273747576777879808182838485868788899091929394&lt...</div></div></div></a></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="twikoo-wrap"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/assets/Abanner/avatar.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">Yuanz</div><div class="author-info-description">Yuanz的个人博客</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">186</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">125</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">3</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/yuanzhang788"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/yuanzhang788" target="_blank" title="Github"><i class="fab fa-github" style="color: #4a7dbe;"></i></a><a class="social-icon" href="mailto:2437264464@qq.com" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #49b1f5;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎访问 Yuanz 的个人博客！</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%83%8C%E6%99%AF"><span class="toc-number">1.</span> <span class="toc-text">背景</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Redis-TTL-%E7%9A%84%E4%B8%89%E4%B8%AA%E8%BF%94%E5%9B%9E%E5%80%BC"><span class="toc-number">2.</span> <span class="toc-text">Redis TTL 的三个返回值</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%97%AE%E9%A2%98%E5%87%BA%E5%9C%A8%E5%93%AA%EF%BC%9A%E6%99%AE%E9%80%9A-SET-%E4%BC%9A%E6%B8%85%E6%8E%89-TTL"><span class="toc-number">3.</span> <span class="toc-text">问题出在哪：普通 SET 会清掉 TTL</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#SET-KEEPTTL-%E6%98%AF%E4%BB%80%E4%B9%88"><span class="toc-number">4.</span> <span class="toc-text">SET KEEPTTL 是什么</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Spring-Data-Redis-%E6%80%8E%E4%B9%88%E7%94%A8-KEEPTTL"><span class="toc-number">5.</span> <span class="toc-text">Spring Data Redis 怎么用 KEEPTTL</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%89%E7%A7%8D%E7%AD%96%E7%95%A5%E5%AF%B9%E6%AF%94"><span class="toc-number">6.</span> <span class="toc-text">三种策略对比</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%94%B9%E5%AE%8C%E5%90%8E%E7%9A%84%E8%A1%8C%E4%B8%BA"><span class="toc-number">7.</span> <span class="toc-text">改完后的行为</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%BE%B9%E7%95%8C%E6%83%85%E5%86%B5"><span class="toc-number">8.</span> <span class="toc-text">边界情况</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E5%B7%B2%E7%BB%8F%E6%98%AF-TTL-1-%E7%9A%84%E5%83%B5%E5%B0%B8-key"><span class="toc-number">8.1.</span> <span class="toc-text">1. 已经是 TTL&#x3D;-1 的僵尸 key</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-KEEPTTL-%E4%B8%8D%E8%A7%A3%E5%86%B3%E4%B8%9A%E5%8A%A1%E5%A4%B1%E8%B4%A5"><span class="toc-number">8.2.</span> <span class="toc-text">2. KEEPTTL 不解决业务失败</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-%E9%9D%9E%E5%8E%9F%E5%AD%90%E5%A4%87%E9%80%89%E6%96%B9%E6%A1%88%EF%BC%88%E4%B8%8D%E6%8E%A8%E8%8D%90%EF%BC%89"><span class="toc-number">8.3.</span> <span class="toc-text">3. 非原子备选方案（不推荐）</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A6%82%E4%BD%95%E9%AA%8C%E8%AF%81"><span class="toc-number">9.</span> <span class="toc-text">如何验证</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B0%8F%E7%BB%93"><span class="toc-number">10.</span> <span class="toc-text">小结</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83"><span class="toc-number">11.</span> <span class="toc-text">参考</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2026/08/14/Redis-SET-KEEPTTL%EF%BC%9ASpring-Boot-%E6%9B%B4%E6%96%B0-Value-%E6%97%B6%E4%B8%8D%E4%B8%A2-TTL-%E7%9A%84%E6%AD%A3%E7%A1%AE%E5%A7%BF%E5%8A%BF/" title="Redis SET KEEPTTL：Spring Boot 更新 Value 时不丢 TTL 的正确姿势"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/assets/Abanner/default_cover.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Redis SET KEEPTTL：Spring Boot 更新 Value 时不丢 TTL 的正确姿势"/></a><div class="content"><a class="title" href="/2026/08/14/Redis-SET-KEEPTTL%EF%BC%9ASpring-Boot-%E6%9B%B4%E6%96%B0-Value-%E6%97%B6%E4%B8%8D%E4%B8%A2-TTL-%E7%9A%84%E6%AD%A3%E7%A1%AE%E5%A7%BF%E5%8A%BF/" title="Redis SET KEEPTTL：Spring Boot 更新 Value 时不丢 TTL 的正确姿势">Redis SET KEEPTTL：Spring Boot 更新 Value 时不丢 TTL 的正确姿势</a><time datetime="2026-08-14T06:30:00.000Z" title="发表于 2026-08-14 14:30:00">2026-08-14</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2026/08/12/%E4%BB%8E%E9%9B%B6%E6%90%AD%E5%BB%BA%E4%BA%91%E4%B8%8A%E4%BB%A3%E7%90%86%E6%B1%A0%EF%BC%9A%E5%9F%BA%E4%BA%8E%E9%98%BF%E9%87%8C%E4%BA%91%E6%8A%A2%E5%8D%A0%E5%BC%8F-ECS-%E7%9A%84%E5%8A%A8%E6%80%81%E4%BB%A3%E7%90%86%E6%9C%8D%E5%8A%A1%E6%9E%B6%E6%9E%84%E8%A7%A3%E6%9E%90%E4%BB%8E%E9%9B%B6%E6%90%AD%E5%BB%BA%E4%BA%91%E4%B8%8A%E4%BB%A3%E7%90%86%E6%B1%A0%EF%BC%9A%E5%9F%BA%E4%BA%8E%E9%98%BF%E9%87%8C%E4%BA%91%E6%8A%A2%E5%8D%A0%E5%BC%8F-ECS-%E7%9A%84%E5%8A%A8%E6%80%81%E4%BB%A3%E7%90%86%E6%9C%8D%E5%8A%A1%E6%9E%B6%E6%9E%84%E8%A7%A3%E6%9E%90/" title="从零搭建云上代理池：基于阿里云抢占式 ECS 的动态代理服务架构解析"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/assets/Abanner/default_cover.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="从零搭建云上代理池：基于阿里云抢占式 ECS 的动态代理服务架构解析"/></a><div class="content"><a class="title" href="/2026/08/12/%E4%BB%8E%E9%9B%B6%E6%90%AD%E5%BB%BA%E4%BA%91%E4%B8%8A%E4%BB%A3%E7%90%86%E6%B1%A0%EF%BC%9A%E5%9F%BA%E4%BA%8E%E9%98%BF%E9%87%8C%E4%BA%91%E6%8A%A2%E5%8D%A0%E5%BC%8F-ECS-%E7%9A%84%E5%8A%A8%E6%80%81%E4%BB%A3%E7%90%86%E6%9C%8D%E5%8A%A1%E6%9E%B6%E6%9E%84%E8%A7%A3%E6%9E%90%E4%BB%8E%E9%9B%B6%E6%90%AD%E5%BB%BA%E4%BA%91%E4%B8%8A%E4%BB%A3%E7%90%86%E6%B1%A0%EF%BC%9A%E5%9F%BA%E4%BA%8E%E9%98%BF%E9%87%8C%E4%BA%91%E6%8A%A2%E5%8D%A0%E5%BC%8F-ECS-%E7%9A%84%E5%8A%A8%E6%80%81%E4%BB%A3%E7%90%86%E6%9C%8D%E5%8A%A1%E6%9E%B6%E6%9E%84%E8%A7%A3%E6%9E%90/" title="从零搭建云上代理池：基于阿里云抢占式 ECS 的动态代理服务架构解析">从零搭建云上代理池：基于阿里云抢占式 ECS 的动态代理服务架构解析</a><time datetime="2026-08-12T08:55:03.000Z" title="发表于 2026-08-12 16:55:03">2026-08-12</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2026/07/21/Spring-Boot-%E7%98%A6%E5%8C%85%E5%90%AF%E5%8A%A8/" title="Spring Boot 瘦包启动"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/assets/Abanner/default_cover.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Spring Boot 瘦包启动"/></a><div class="content"><a class="title" href="/2026/07/21/Spring-Boot-%E7%98%A6%E5%8C%85%E5%90%AF%E5%8A%A8/" title="Spring Boot 瘦包启动">Spring Boot 瘦包启动</a><time datetime="2026-07-21T10:26:36.000Z" title="发表于 2026-07-21 18:26:36">2026-07-21</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2026/07/03/cursor%E8%87%AA%E5%B8%A6skills-%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/" title="cursor自带skills-使用指南"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/assets/Abanner/default_cover.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="cursor自带skills-使用指南"/></a><div class="content"><a class="title" href="/2026/07/03/cursor%E8%87%AA%E5%B8%A6skills-%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/" title="cursor自带skills-使用指南">cursor自带skills-使用指南</a><time datetime="2026-07-03T03:03:28.000Z" title="发表于 2026-07-03 11:03:28">2026-07-03</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2026/07/01/Spring-Boot-%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E6%95%B4%E5%90%88%E8%B0%B7%E6%AD%8C%E4%BB%A4%E7%89%8C/" title="Spring Boot 如何实现整合谷歌令牌"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/assets/Abanner/default_cover.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Spring Boot 如何实现整合谷歌令牌"/></a><div class="content"><a class="title" href="/2026/07/01/Spring-Boot-%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E6%95%B4%E5%90%88%E8%B0%B7%E6%AD%8C%E4%BB%A4%E7%89%8C/" title="Spring Boot 如何实现整合谷歌令牌">Spring Boot 如何实现整合谷歌令牌</a><time datetime="2026-07-01T06:32:09.000Z" title="发表于 2026-07-01 14:32:09">2026-07-01</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2024 - 2026 By Yuanz</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 8.1.2</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.5.5-b1</a></span></div><div class="footer_custom_text"><a href="https://github.com/yuanzhang788" target="_blank" rel="noopener noreferrer">Yuanz</a> &copy; <span id="year"></span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="前往评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page/instantpage.min.js" type="module"></script><script src="https://cdn.jsdelivr.net/npm/vanilla-lazyload/dist/lazyload.iife.min.js"></script><script src="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.js"></script><div class="js-pjax"><script>(() => {
+  const parseViewBox = viewBox => {
+    if (!viewBox) return null
+    const parts = viewBox.trim().split(/[\s,]+/).map(n => Number(n))
+    if (parts.length !== 4 || parts.some(n => Number.isNaN(n))) return null
+    return parts
+  }
+
+  const getSvgViewBox = svg => {
+    const attr = parseViewBox(svg.getAttribute('viewBox'))
+    if (attr) return attr
+
+    // Fallback: use bbox to build a viewBox
+    try {
+      const bbox = svg.getBBox()
+      if (bbox && bbox.width && bbox.height) return [bbox.x, bbox.y, bbox.width, bbox.height]
+    } catch (e) {
+      // getBBox may fail on some edge cases; ignore
+    }
+
+    const w = Number(svg.getAttribute('width')) || 0
+    const h = Number(svg.getAttribute('height')) || 0
+    if (w > 0 && h > 0) return [0, 0, w, h]
+    return [0, 0, 100, 100]
+  }
+
+  const setSvgViewBox = (svg, vb) => {
+    svg.setAttribute('viewBox', `${vb[0]} ${vb[1]} ${vb[2]} ${vb[3]}`)
+  }
+
+  const clamp = (v, min, max) => Math.max(min, Math.min(max, v))
+
+  const openSvgInNewTab = ({ source, initViewBox }) => {
+    const getClonedSvg = () => {
+      if (typeof source === 'string') {
+        const template = document.createElement('template')
+        template.innerHTML = source.trim()
+        const svg = template.content.querySelector('svg')
+        return svg ? svg.cloneNode(true) : null
+      }
+      if (source && typeof source.cloneNode === 'function') {
+        return source.cloneNode(true)
+      }
+      return null
+    }
+
+    const clone = getClonedSvg()
+    if (!clone) return
+    if (initViewBox && initViewBox.length === 4) {
+      clone.setAttribute('viewBox', initViewBox.join(' '))
+    }
+    if (!clone.getAttribute('xmlns')) clone.setAttribute('xmlns', 'http://www.w3.org/2000/svg')
+    if (!clone.getAttribute('xmlns:xlink') && clone.outerHTML.includes('xlink:')) {
+      clone.setAttribute('xmlns:xlink', 'http://www.w3.org/1999/xlink')
+    }
+    // inject background to match current theme
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark'
+    const bg = getComputedStyle(document.body).backgroundColor || (isDark ? '#1e1e1e' : '#ffffff')
+    if (!clone.style.background) clone.style.background = bg
+
+    const serializer = new XMLSerializer()
+    const svgSource = serializer.serializeToString(clone)
+    const htmlSource = `<!doctype html><html><head><meta charset="utf-8" />
+      <style>
+        html, body { width: 100%; height: 100%; margin: 0; display: flex; align-items: center; justify-content: center; background: ${bg}; }
+        svg { max-width: 100%; max-height: 100%; height: auto; width: auto; }
+      </style>
+      </head><body>${svgSource}</body></html>`
+    const blob = new Blob([htmlSource], { type: 'text/html;charset=utf-8' })
+    const url = URL.createObjectURL(blob)
+    window.open(url, '_blank', 'noopener')
+    setTimeout(() => URL.revokeObjectURL(url), 30000)
+  }
+
+  const attachMermaidViewerButton = wrap => {
+    let btn = wrap.querySelector('.mermaid-open-btn')
+    if (!btn) {
+      btn = document.createElement('button')
+      btn.type = 'button'
+      btn.className = 'mermaid-open-btn'
+      wrap.appendChild(btn)
+    }
+
+    btn.innerHTML = '<i class="fa fa-search fa-fw" aria-hidden="true"></i>'
+
+    if (!btn.__mermaidViewerBound) {
+      btn.addEventListener('click', e => {
+        e.preventDefault()
+        e.stopPropagation()
+        const svg = wrap.__mermaidOriginalSvg || wrap.querySelector('svg')
+        if (!svg) return
+        const initViewBox = wrap.__mermaidInitViewBox
+        if (typeof svg === 'string') {
+          openSvgInNewTab({ source: svg, initViewBox })
+          return
+        }
+        openSvgInNewTab({ source: svg, initViewBox })
+      })
+      btn.__mermaidViewerBound = true
+    }
+  }
+
+  // Zoom around a point (px, py) in the SVG viewport (in viewBox coordinates)
+  const zoomAtPoint = (vb, factor, px, py) => {
+    const w = vb[2] * factor
+    const h = vb[3] * factor
+    const nx = px - (px - vb[0]) * factor
+    const ny = py - (py - vb[1]) * factor
+    return [nx, ny, w, h]
+  }
+
+  const initMermaidGestures = wrap => {
+    const svg = wrap.querySelector('svg')
+    if (!svg) return
+
+    // Ensure viewBox exists so gestures always work
+    const initVb = getSvgViewBox(svg)
+    wrap.__mermaidInitViewBox = initVb
+    wrap.__mermaidCurViewBox = initVb.slice()
+    setSvgViewBox(svg, initVb)
+
+    // Avoid binding multiple times on themeChange/pjax
+    if (wrap.__mermaidGestureBound) return
+    wrap.__mermaidGestureBound = true
+
+    // Helper: map client (viewport) coordinate -> viewBox coordinate
+    const clientToViewBox = (clientX, clientY) => {
+      const rect = svg.getBoundingClientRect()
+      const vb = wrap.__mermaidCurViewBox || getSvgViewBox(svg)
+      const x = vb[0] + (clientX - rect.left) * (vb[2] / rect.width)
+      const y = vb[1] + (clientY - rect.top) * (vb[3] / rect.height)
+      return { x, y, rect, vb }
+    }
+
+    const state = {
+      pointers: new Map(),
+      startVb: null,
+      startDist: 0,
+      startCenter: null
+    }
+
+    const clampVb = vb => {
+      const init = wrap.__mermaidInitViewBox || vb
+      const minW = init[2] * 0.1
+      const maxW = init[2] * 10
+      const minH = init[3] * 0.1
+      const maxH = init[3] * 10
+      vb[2] = clamp(vb[2], minW, maxW)
+      vb[3] = clamp(vb[3], minH, maxH)
+      return vb
+    }
+
+    const setCurVb = vb => {
+      vb = clampVb(vb)
+      wrap.__mermaidCurViewBox = vb
+      setSvgViewBox(svg, vb)
+    }
+
+    const onPointerDown = e => {
+      // Allow only primary button for mouse
+      if (e.pointerType === 'mouse' && e.button !== 0) return
+      svg.setPointerCapture(e.pointerId)
+      state.pointers.set(e.pointerId, { x: e.clientX, y: e.clientY })
+
+      if (state.pointers.size === 1) {
+        state.startVb = (wrap.__mermaidCurViewBox || getSvgViewBox(svg)).slice()
+      } else if (state.pointers.size === 2) {
+        const pts = [...state.pointers.values()]
+        const dx = pts[0].x - pts[1].x
+        const dy = pts[0].y - pts[1].y
+        state.startDist = Math.hypot(dx, dy)
+        state.startVb = (wrap.__mermaidCurViewBox || getSvgViewBox(svg)).slice()
+        state.startCenter = { x: (pts[0].x + pts[1].x) / 2, y: (pts[0].y + pts[1].y) / 2 }
+      }
+    }
+
+    const onPointerMove = e => {
+      if (!state.pointers.has(e.pointerId)) return
+      state.pointers.set(e.pointerId, { x: e.clientX, y: e.clientY })
+
+      // Pan with 1 pointer
+      if (state.pointers.size === 1 && state.startVb) {
+        const p = [...state.pointers.values()][0]
+        const prev = { x: e.clientX - e.movementX, y: e.clientY - e.movementY }
+        // movementX/Y unreliable on touch, compute from stored last position
+        const last = wrap.__mermaidLastSinglePointer || p
+        const dxClient = p.x - last.x
+        const dyClient = p.y - last.y
+        wrap.__mermaidLastSinglePointer = p
+
+        const { rect } = clientToViewBox(p.x, p.y)
+        const vb = (wrap.__mermaidCurViewBox || getSvgViewBox(svg)).slice()
+        const dx = dxClient * (vb[2] / rect.width)
+        const dy = dyClient * (vb[3] / rect.height)
+        setCurVb([vb[0] - dx, vb[1] - dy, vb[2], vb[3]])
+        return
+      }
+
+      // Pinch zoom with 2 pointers
+      if (state.pointers.size === 2 && state.startVb && state.startDist > 0) {
+        const pts = [...state.pointers.values()]
+        const dx = pts[0].x - pts[1].x
+        const dy = pts[0].y - pts[1].y
+        const dist = Math.hypot(dx, dy)
+        if (!dist) return
+        const factor = state.startDist / dist // dist bigger => zoom in (viewBox smaller)
+
+        const cx = (pts[0].x + pts[1].x) / 2
+        const cy = (pts[0].y + pts[1].y) / 2
+        const centerClient = { x: cx, y: cy }
+
+        const pxy = clientToViewBox(centerClient.x, centerClient.y)
+        const cpx = pxy.x
+        const cpy = pxy.y
+
+        const vb = zoomAtPoint(state.startVb, factor, cpx, cpy)
+        setCurVb(vb)
+      }
+    }
+
+    const onPointerUpOrCancel = e => {
+      state.pointers.delete(e.pointerId)
+      if (state.pointers.size === 0) {
+        state.startVb = null
+        state.startDist = 0
+        state.startCenter = null
+        wrap.__mermaidLastSinglePointer = null
+      } else if (state.pointers.size === 1) {
+        // reset single pointer baseline to avoid jump
+        wrap.__mermaidLastSinglePointer = [...state.pointers.values()][0]
+      }
+    }
+
+    // Wheel zoom (mouse/trackpad)
+    const onWheel = e => {
+      // ctrlKey on mac trackpad pinch; we treat both as zoom
+      e.preventDefault()
+      const delta = e.deltaY
+      const zoomFactor = delta > 0 ? 1.1 : 0.9
+      const { x, y } = clientToViewBox(e.clientX, e.clientY)
+      const vb = (wrap.__mermaidCurViewBox || getSvgViewBox(svg)).slice()
+      setCurVb(zoomAtPoint(vb, zoomFactor, x, y))
+    }
+
+    const onDblClick = () => {
+      const init = wrap.__mermaidInitViewBox
+      if (!init) return
+      wrap.__mermaidCurViewBox = init.slice()
+      setSvgViewBox(svg, init)
+    }
+
+    svg.addEventListener('pointerdown', onPointerDown)
+    svg.addEventListener('pointermove', onPointerMove)
+    svg.addEventListener('pointerup', onPointerUpOrCancel)
+    svg.addEventListener('pointercancel', onPointerUpOrCancel)
+    svg.addEventListener('wheel', onWheel, { passive: false })
+    svg.addEventListener('dblclick', onDblClick)
+  }
+
+  const runMermaid = ele => {
+    window.loadMermaid = true
+    const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'default'
+
+    ele.forEach((item, index) => {
+      const mermaidSrc = item.firstElementChild
+
+      // Clear old render (themeChange/pjax will rerun)
+      const oldSvg = item.querySelector('svg')
+      if (oldSvg) oldSvg.remove()
+      item.__mermaidGestureBound = false
+
+      const config = mermaidSrc.dataset.config ? JSON.parse(mermaidSrc.dataset.config) : {}
+      if (!config.theme) {
+        config.theme = theme
+      }
+      const mermaidThemeConfig = `%%{init: ${JSON.stringify(config)}}%%\n`
+      const mermaidID = `mermaid-${index}`
+      const mermaidDefinition = mermaidThemeConfig + mermaidSrc.textContent
+
+      const renderFn = mermaid.render(mermaidID, mermaidDefinition)
+      const renderMermaid = svg => {
+        mermaidSrc.insertAdjacentHTML('afterend', svg)
+        if (true) initMermaidGestures(item)
+        item.__mermaidOriginalSvg = svg
+        if (true) attachMermaidViewerButton(item)
+      }
+
+
+      // mermaid v9 and v10 compatibility
+      typeof renderFn === 'string' ? renderMermaid(renderFn) : renderFn.then(({ svg }) => renderMermaid(svg))
+    })
+  }
+
+  const codeToMermaid = () => {
+    const codeMermaidEle = document.querySelectorAll('pre > code.mermaid')
+    if (codeMermaidEle.length === 0) return
+
+    codeMermaidEle.forEach(ele => {
+      const preEle = document.createElement('pre')
+      preEle.className = 'mermaid-src'
+      preEle.hidden = true
+      preEle.textContent = ele.textContent
+      const newEle = document.createElement('div')
+      newEle.className = 'mermaid-wrap'
+      newEle.appendChild(preEle)
+      ele.parentNode.replaceWith(newEle)
+    })
+  }
+
+  const loadMermaid = () => {
+    if (false) codeToMermaid()
+    const $mermaid = document.querySelectorAll('#article-container .mermaid-wrap')
+    if ($mermaid.length === 0) return
+
+    const runMermaidFn = () => runMermaid($mermaid)
+    btf.addGlobalFn('themeChange', runMermaidFn, 'mermaid')
+    window.loadMermaid ? runMermaidFn() : btf.getScript('https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js').then(runMermaidFn)
+  }
+
+  btf.addGlobalFn('encrypt', loadMermaid, 'mermaid')
+  window.pjax ? loadMermaid() : document.addEventListener('DOMContentLoaded', loadMermaid)
+})()</script><script>(() => {
+  const isShuoshuo = GLOBAL_CONFIG_SITE.pageType === 'shuoshuo'
+  const option = null
+
+  const getCount = () => {
+    const countELement = document.getElementById('twikoo-count')
+    if(!countELement) return
+    twikoo.getCommentsCount({
+      envId: 'https://twikoo-gvzc.vercel.app',
+      region: '',
+      urls: [window.location.pathname],
+      includeReply: false
+    }).then(res => {
+      countELement.textContent = res[0].count
+    }).catch(err => {
+      console.error(err)
+    })
+  }
+
+  const init = (el = document, path = location.pathname) => {
+    twikoo.init({
+      el: el.querySelector('#twikoo-wrap'),
+      envId: 'https://twikoo-gvzc.vercel.app',
+      region: '',
+      onCommentLoaded: () => {
+        btf.loadLightbox(document.querySelectorAll('#twikoo .tk-content img:not(.tk-owo-emotion)'))
+      },
+      ...option,
+      path: isShuoshuo ? path : (option && option.path) || path
+    })
+
+    GLOBAL_CONFIG_SITE.pageType === 'post' && getCount()
+
+    isShuoshuo && (window.shuoshuoComment.destroyTwikoo = () => {
+      if (el.children.length) {
+        el.innerHTML = ''
+        el.classList.add('no-comment')
+      }
+    })
+  }
+
+  const loadTwikoo = (el, path) => {
+    if (typeof twikoo === 'object') setTimeout(() => init(el, path), 0)
+    else btf.getScript('https://cdn.jsdelivr.net/npm/twikoo/dist/twikoo.all.min.js').then(() => init(el, path))
+  }
+
+  if (isShuoshuo) {
+    'Twikoo' === 'Twikoo'
+      ? window.shuoshuoComment = { loadComment: loadTwikoo }
+      : window.loadOtherComment = loadTwikoo
+    return
+  }
+
+  if ('Twikoo' === 'Twikoo' || !true) {
+    if (true) btf.loadComment(document.getElementById('twikoo-wrap'), loadTwikoo)
+    else loadTwikoo()
+  } else {
+    window.loadOtherComment = loadTwikoo
+  }
+})()</script></div><div class="aplayer no-destroy" data-id="18066081268" data-server="netease" data-type="playlist" data-fixed="true" data-mini="true" data-autoplay="true" data-theme="#49b1f5" data-loop="all" data-order="list" data-preload="auto" data-volume="0.7" data-mutex="true" data-listfolded="true" data-listmaxheight="340px"> </div><script id="canvas_nest" defer="defer" color="0,155,255" opacity="0.5" zIndex="-1" count="60" mobile="false" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/canvas-nest.min.js"></script><script id="click-show-text" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/click-show-text.min.js" data-mobile="false" data-text="富强,民主,文明,和谐,自由,平等,公正,法治" data-fontsize="14px" data-random="true" async="async"></script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js"></script><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/metingjs/dist/Meting.min.js"></script><script>(() => {
+  const destroyAplayer = () => {
+    if (window.aplayers) {
+      for (let i = 0; i < window.aplayers.length; i++) {
+        if (!window.aplayers[i].options.fixed) {
+          window.aplayers[i].destroy()
+        }
+      }
+    }
+  }
+
+  const runMetingJS = () => {
+    typeof loadMeting === 'function' && document.getElementsByClassName('aplayer').length && loadMeting()
+  }
+
+  btf.addGlobalFn('pjaxSend', destroyAplayer, 'destroyAplayer')
+  btf.addGlobalFn('pjaxComplete', loadMeting, 'runMetingJS')
+})()</script><script src="https://cdn.jsdelivr.net/npm/pjax/pjax.min.js" defer="defer"></script><script>document.addEventListener('DOMContentLoaded', () => {
+  const pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+  window.pjax = new Pjax({
+    elements: 'a:not([target="_blank"]):not([href="/html/git-workflow.html"])',
+    selectors: pjaxSelectors,
+    cacheBust: false,
+    analytics: false,
+    scrollRestoration: false
+  })
+
+  const triggerPjaxFn = (val) => {
+    if (!val) return
+    Object.values(val).forEach(fn => {
+      try {
+        fn()
+      } catch (err) {
+        console.debug('Pjax callback failed:', err)
+      }
+    })
+  }
+
+  document.addEventListener('pjax:send', () => {
+    // removeEventListener
+    btf.removeGlobalFnEvent('pjaxSendOnce')
+    btf.removeGlobalFnEvent('themeChange')
+
+    // reset readmode
+    const $bodyClassList = document.body.classList
+    if ($bodyClassList.contains('read-mode')) $bodyClassList.remove('read-mode')
+
+    triggerPjaxFn(window.globalFn.pjaxSend)
+  })
+
+  document.addEventListener('pjax:complete', () => {
+    btf.removeGlobalFnEvent('pjaxCompleteOnce')
+    document.querySelectorAll('script[data-pjax]').forEach(item => {
+      const newScript = document.createElement('script')
+      const content = item.text || item.textContent || item.innerHTML || ""
+      Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+      newScript.appendChild(document.createTextNode(content))
+      item.parentNode.replaceChild(newScript, item)
+    })
+
+    triggerPjaxFn(window.globalFn.pjaxComplete)
+  })
+
+  document.addEventListener('pjax:error', e => {
+    if (e.request.status === 404) {
+      false
+        ? pjax.loadUrl('/404.html')
+        : window.location.href = e.request.responseURL
+    }
+  })
+})</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><i class="fas fa-spinner fa-pulse" id="loading-status" hidden="hidden"></i><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="local-search-input"><input placeholder="搜索文章..." type="text"/></div><hr/><div id="local-search-results"></div><div class="ais-Pagination" id="local-search-pagination" style="display:none;"><ul class="ais-Pagination-list"></ul></div><div id="local-search-stats"></div></div><div id="search-mask"></div><script src="/js/search/local-search.js"></script></div></div></body></html>
