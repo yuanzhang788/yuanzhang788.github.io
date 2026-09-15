@@ -218,29 +218,29 @@
 <p><strong>解决</strong>：如果把图片放到互联网上，任何人都能直接访问和下载，这个问题就完美解决了。这种「别人也能访问到图片」的服务器，我们就叫它<strong>图床</strong>。</p>
 <p>GitHub 仓库 + jsDelivr 免费 CDN，就是一个零成本、稳定的图床方案。</p>
 <h2 id="2-用-GitHub-创建图床服务器"><a href="#2-用-GitHub-创建图床服务器" class="headerlink" title="2. 用 GitHub 创建图床服务器"></a>2. 用 GitHub 创建图床服务器</h2><h3 id="步骤-1：新建仓库"><a href="#步骤-1：新建仓库" class="headerlink" title="步骤 1：新建仓库"></a>步骤 1：新建仓库</h3><p>登录 GitHub，新建一个用于存放图片的公开仓库（仓库需为 <strong>Public</strong>，私有仓库 jsDelivr 无法加速访问）。</p>
-<p><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.nlark.com/yuque/0/2026/png/26718473/1789451723184-0f9acf27-59de-40ad-9760-5d7fffe6d4a0.png" alt="新建仓库"></p>
-<p><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.nlark.com/yuque/0/2026/png/26718473/1789452365932-7f6fc211-b0ef-45b0-9fa8-9aca1a472b24.png" alt="仓库配置"></p>
+<p><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/../assets/%E4%BD%BF%E7%94%A8GitHub%E4%BD%9C%E4%B8%BA%E5%9B%BE%E5%BA%8A-Hexo%E5%8D%9A%E5%AE%A2/1789451723184-0f9acf27-59de-40ad-9760-5d7fffe6d4a0.png" alt="新建仓库"></p>
+<p><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/../assets/%E4%BD%BF%E7%94%A8GitHub%E4%BD%9C%E4%B8%BA%E5%9B%BE%E5%BA%8A-Hexo%E5%8D%9A%E5%AE%A2/1789452365932-7f6fc211-b0ef-45b0-9fa8-9aca1a472b24.png" alt="仓库配置"></p>
 <h3 id="步骤-2：生成-Token-令牌"><a href="#步骤-2：生成-Token-令牌" class="headerlink" title="步骤 2：生成 Token 令牌"></a>步骤 2：生成 Token 令牌</h3><p>为了让 PicGo 能往仓库里上传图片，我们需要生成一个具有 <code>repo</code> 权限的 Personal Access Token。</p>
 <p>进入 GitHub → <strong>Settings</strong> → <strong>Developer settings</strong> → <strong>Personal access tokens</strong> → <strong>Tokens (classic)</strong> → <strong>Generate new token</strong>。</p>
-<p><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.nlark.com/yuque/0/2026/png/26718473/1789452412418-008b862e-34b6-4277-84ef-6de1cd555bd8.png" alt="进入 Token 设置"></p>
-<p><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.nlark.com/yuque/0/2026/png/26718473/1789451907635-998d8dfa-9151-4380-957e-57693454924b.png" alt="勾选 repo 权限"></p>
-<p><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.nlark.com/yuque/0/2026/png/26718473/1789451939346-c6f976ba-131f-44f3-8bf4-fc2da8e861cd.png" alt="设置过期时间"></p>
-<p><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.nlark.com/yuque/0/2026/png/26718473/1789451958909-428c6e54-8962-454e-8f50-2300863ed15e.png" alt="填写 Note"></p>
-<p><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.nlark.com/yuque/0/2026/png/26718473/1789452072893-3523be1d-569e-48c0-9594-1ccbdb522d92.png" alt="生成 Token"></p>
+<p><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/../assets/%E4%BD%BF%E7%94%A8GitHub%E4%BD%9C%E4%B8%BA%E5%9B%BE%E5%BA%8A-Hexo%E5%8D%9A%E5%AE%A2/1789452412418-008b862e-34b6-4277-84ef-6de1cd555bd8.png" alt="进入 Token 设置"></p>
+<p><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/../assets/%E4%BD%BF%E7%94%A8GitHub%E4%BD%9C%E4%B8%BA%E5%9B%BE%E5%BA%8A-Hexo%E5%8D%9A%E5%AE%A2/1789451907635-998d8dfa-9151-4380-957e-57693454924b.png" alt="勾选 repo 权限"></p>
+<p><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/../assets/%E4%BD%BF%E7%94%A8GitHub%E4%BD%9C%E4%B8%BA%E5%9B%BE%E5%BA%8A-Hexo%E5%8D%9A%E5%AE%A2/1789451939346-c6f976ba-131f-44f3-8bf4-fc2da8e861cd.png" alt="设置过期时间"></p>
+<p><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/../assets/%E4%BD%BF%E7%94%A8GitHub%E4%BD%9C%E4%B8%BA%E5%9B%BE%E5%BA%8A-Hexo%E5%8D%9A%E5%AE%A2/1789451958909-428c6e54-8962-454e-8f50-2300863ed15e.png" alt="填写 Note"></p>
+<p><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/../assets/%E4%BD%BF%E7%94%A8GitHub%E4%BD%9C%E4%B8%BA%E5%9B%BE%E5%BA%8A-Hexo%E5%8D%9A%E5%AE%A2/1789452072893-3523be1d-569e-48c0-9594-1ccbdb522d92.png" alt="生成 Token"></p>
 <blockquote>
 <p><strong>务必将令牌保存起来</strong>，放在一个安全的地方，页面关掉后就看不到了。</p>
 </blockquote>
-<p><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.nlark.com/yuque/0/2026/png/26718473/1789452104677-5edaefc6-358f-4d87-a786-c6b457ffc72b.png" alt="复制保存 Token"></p>
+<p><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/../assets/%E4%BD%BF%E7%94%A8GitHub%E4%BD%9C%E4%B8%BA%E5%9B%BE%E5%BA%8A-Hexo%E5%8D%9A%E5%AE%A2/1789452104677-5edaefc6-358f-4d87-a786-c6b457ffc72b.png" alt="复制保存 Token"></p>
 <h3 id="步骤-3：创建-img-分支和该分支下的-img-文件夹（可选）"><a href="#步骤-3：创建-img-分支和该分支下的-img-文件夹（可选）" class="headerlink" title="步骤 3：创建 img 分支和该分支下的 img 文件夹（可选）"></a>步骤 3：创建 img 分支和该分支下的 img 文件夹（可选）</h3><p>为了和代码分离，建议新建一个 <code>img</code> 分支专门存放图片，并在该分支下创建一个 <code>img</code> 文件夹。</p>
-<p><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.nlark.com/yuque/0/2026/png/26718473/1789452442516-791ab82d-1b62-4682-b0e5-293c7cf54e26.png" alt="创建 img 分支"></p>
-<p><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.nlark.com/yuque/0/2026/png/26718473/1789452464591-954dcd88-1899-433d-8574-57237c2a6a52.png" alt="分支列表"></p>
-<p><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.nlark.com/yuque/0/2026/png/26718473/1789452615233-62951e65-87ba-47b3-b316-3b26350b031f.png" alt="切换 img 分支"></p>
-<p><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.nlark.com/yuque/0/2026/png/26718473/1789452651476-2b4863e9-1fc7-491a-a678-97b833e82bc1.png" alt="新建 img 文件夹"></p>
-<p><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.nlark.com/yuque/0/2026/png/26718473/1789452676417-1bb08e26-d015-487f-b4bb-4034c8e7a809.png" alt="上传说明"></p>
-<p><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.nlark.com/yuque/0/2026/png/26718473/1789452692315-2292b87a-1f98-43f0-beb7-c8bd4c037038.png" alt="文件夹创建完成"></p>
+<p><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/../assets/%E4%BD%BF%E7%94%A8GitHub%E4%BD%9C%E4%B8%BA%E5%9B%BE%E5%BA%8A-Hexo%E5%8D%9A%E5%AE%A2/1789452442516-791ab82d-1b62-4682-b0e5-293c7cf54e26.png" alt="创建 img 分支"></p>
+<p><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/../assets/%E4%BD%BF%E7%94%A8GitHub%E4%BD%9C%E4%B8%BA%E5%9B%BE%E5%BA%8A-Hexo%E5%8D%9A%E5%AE%A2/1789452464591-954dcd88-1899-433d-8574-57237c2a6a52.png" alt="分支列表"></p>
+<p><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/../assets/%E4%BD%BF%E7%94%A8GitHub%E4%BD%9C%E4%B8%BA%E5%9B%BE%E5%BA%8A-Hexo%E5%8D%9A%E5%AE%A2/1789452615233-62951e65-87ba-47b3-b316-3b26350b031f.png" alt="切换 img 分支"></p>
+<p><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/../assets/%E4%BD%BF%E7%94%A8GitHub%E4%BD%9C%E4%B8%BA%E5%9B%BE%E5%BA%8A-Hexo%E5%8D%9A%E5%AE%A2/1789452651476-2b4863e9-1fc7-491a-a678-97b833e82bc1.png" alt="新建 img 文件夹"></p>
+<p><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/../assets/%E4%BD%BF%E7%94%A8GitHub%E4%BD%9C%E4%B8%BA%E5%9B%BE%E5%BA%8A-Hexo%E5%8D%9A%E5%AE%A2/1789452676417-1bb08e26-d015-487f-b4bb-4034c8e7a809.png" alt="上传说明"></p>
+<p><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/../assets/%E4%BD%BF%E7%94%A8GitHub%E4%BD%9C%E4%B8%BA%E5%9B%BE%E5%BA%8A-Hexo%E5%8D%9A%E5%AE%A2/1789452692315-2292b87a-1f98-43f0-beb7-c8bd4c037038.png" alt="文件夹创建完成"></p>
 <p>PicGo 客户端下载地址：<a target="_blank" rel="noopener" href="https://github.com/Molunerfinn/picgo/releases">Releases · Molunerfinn&#x2F;PicGo</a></p>
 <h2 id="3-使用-PicGo-软件上传图片"><a href="#3-使用-PicGo-软件上传图片" class="headerlink" title="3. 使用 PicGo 软件上传图片"></a>3. 使用 PicGo 软件上传图片</h2><p>下载并安装 PicGo 后，即可通过软件手动上传图片到 GitHub 仓库。</p>
-<p><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.nlark.com/yuque/0/2026/png/26718473/1789452800641-455a8f91-4d6d-4576-8476-53919b8ca2c6.png" alt="PicGo 主界面"></p>
+<p><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/../assets/%E4%BD%BF%E7%94%A8GitHub%E4%BD%9C%E4%B8%BA%E5%9B%BE%E5%BA%8A-Hexo%E5%8D%9A%E5%AE%A2/1789452800641-455a8f91-4d6d-4576-8476-53919b8ca2c6.png" alt="PicGo 主界面"></p>
 <h3 id="3-2-配置-PicGo"><a href="#3-2-配置-PicGo" class="headerlink" title="3.2 配置 PicGo"></a>3.2 配置 PicGo</h3><p>在 PicGo 的「图床设置 → GitHub 图床」中，需要配置以下基础信息：</p>
 <ul>
 <li><strong>仓库名</strong>：<code>GitHub用户名/仓库名</code>，例如 <code>username/image-bed</code></li>
@@ -253,14 +253,14 @@
 <p>自定义域名建议配置为：<br><code>https://cdn.jsdelivr.net/gh/用户名/仓库名</code><br>或<br><code>https://fastly.jsdelivr.net/gh/用户名/仓库名</code></p>
 <p>这样上传成功后，PicGo 返回的链接就会走 jsDelivr CDN 加速，国内访问更稳更快。</p>
 </blockquote>
-<p><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.nlark.com/yuque/0/2026/png/26718473/1789452935936-29f02d72-ca8f-4e45-b2a6-7f158b18afe6.png" alt="PicGo 图床设置入口"></p>
-<p><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.nlark.com/yuque/0/2026/png/26718473/1789453069655-7077a954-5085-49f2-9443-5ae165091922.png" alt="GitHub 图床配置"></p>
-<p><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.nlark.com/yuque/0/2026/png/26718473/1789453103835-d4978702-3836-49d1-834f-5908e94c48b5.png" alt="填写仓库信息"></p>
-<p><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.nlark.com/yuque/0/2026/png/26718473/1789453128136-50332b67-e29f-4d6f-850f-a89bd2a39ee7.png" alt="填写 Token"></p>
-<p><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.nlark.com/yuque/0/2026/png/26718473/1789453146489-c7c2474e-446d-4514-8a55-f6a5cb1dc1c0.png" alt="自定义域名配置"></p>
-<p><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.nlark.com/yuque/0/2026/png/26718473/1789453176372-91215466-3093-4377-aa06-3562eddc2071.png" alt="配置完成确认"></p>
+<p><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/../assets/%E4%BD%BF%E7%94%A8GitHub%E4%BD%9C%E4%B8%BA%E5%9B%BE%E5%BA%8A-Hexo%E5%8D%9A%E5%AE%A2/1789452935936-29f02d72-ca8f-4e45-b2a6-7f158b18afe6.png" alt="PicGo 图床设置入口"></p>
+<p><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/../assets/%E4%BD%BF%E7%94%A8GitHub%E4%BD%9C%E4%B8%BA%E5%9B%BE%E5%BA%8A-Hexo%E5%8D%9A%E5%AE%A2/1789453069655-7077a954-5085-49f2-9443-5ae165091922.png" alt="GitHub 图床配置"></p>
+<p><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/../assets/%E4%BD%BF%E7%94%A8GitHub%E4%BD%9C%E4%B8%BA%E5%9B%BE%E5%BA%8A-Hexo%E5%8D%9A%E5%AE%A2/1789453103835-d4978702-3836-49d1-834f-5908e94c48b5.png" alt="填写仓库信息"></p>
+<p><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/../assets/%E4%BD%BF%E7%94%A8GitHub%E4%BD%9C%E4%B8%BA%E5%9B%BE%E5%BA%8A-Hexo%E5%8D%9A%E5%AE%A2/1789453128136-50332b67-e29f-4d6f-850f-a89bd2a39ee7.png" alt="填写 Token"></p>
+<p><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/../assets/%E4%BD%BF%E7%94%A8GitHub%E4%BD%9C%E4%B8%BA%E5%9B%BE%E5%BA%8A-Hexo%E5%8D%9A%E5%AE%A2/1789453146489-c7c2474e-446d-4514-8a55-f6a5cb1dc1c0.png" alt="自定义域名配置"></p>
+<p><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/../assets/%E4%BD%BF%E7%94%A8GitHub%E4%BD%9C%E4%B8%BA%E5%9B%BE%E5%BA%8A-Hexo%E5%8D%9A%E5%AE%A2/1789453176372-91215466-3093-4377-aa06-3562eddc2071.png" alt="配置完成确认"></p>
 <h2 id="4-Typora-实现自动上传"><a href="#4-Typora-实现自动上传" class="headerlink" title="4. Typora 实现自动上传"></a>4. Typora 实现自动上传</h2><p>Typora 可以通过调用 PicGo 的接口，在写作时<strong>自动把截图&#x2F;本地图片上传到 GitHub 仓库</strong>，并替换为 CDN 链接，从此不再有「图片传不出去」的烦恼。</p>
-<p><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.nlark.com/yuque/0/2026/png/26718473/1789453224769-77ffb3c0-0916-4b31-b414-ac591ad5083c.png" alt="Typora 偏好设置"></p>
+<p><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/../assets/%E4%BD%BF%E7%94%A8GitHub%E4%BD%9C%E4%B8%BA%E5%9B%BE%E5%BA%8A-Hexo%E5%8D%9A%E5%AE%A2/1789453224769-77ffb3c0-0916-4b31-b414-ac591ad5083c.png" alt="Typora 偏好设置"></p>
 <p>打开 Typora → <strong>偏好设置 → 图像</strong>，做如下配置：</p>
 <ul>
 <li>插入图片时选择「<strong>上传图片</strong>」</li>
@@ -268,12 +268,12 @@
 <li>上传服务选择「<strong>PicGo (app)</strong>」</li>
 <li>PicGo 路径填写本地 PicGo 可执行文件的安装路径</li>
 </ul>
-<p><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.nlark.com/yuque/0/2026/png/26718473/1789453394835-76190385-7063-4653-9dff-314862acd696.png" alt="图像上传设置"></p>
-<p><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.nlark.com/yuque/0/2026/png/26718473/1789453428098-bafadf39-9e72-44f7-8c61-d38ec26ee10d.png" alt="选择上传服务"></p>
-<p><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.nlark.com/yuque/0/2026/png/26718473/1789453412299-23b54615-a834-4b7c-aba6-08e6186b7295.png" alt="PicGo 路径配置"></p>
-<p><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.nlark.com/yuque/0/2026/png/26718473/1789453448822-07a005af-5f12-4156-8efc-29c819e8774e.png" alt="验证上传"></p>
+<p><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/../assets/%E4%BD%BF%E7%94%A8GitHub%E4%BD%9C%E4%B8%BA%E5%9B%BE%E5%BA%8A-Hexo%E5%8D%9A%E5%AE%A2/1789453394835-76190385-7063-4653-9dff-314862acd696.png" alt="图像上传设置"></p>
+<p><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/../assets/%E4%BD%BF%E7%94%A8GitHub%E4%BD%9C%E4%B8%BA%E5%9B%BE%E5%BA%8A-Hexo%E5%8D%9A%E5%AE%A2/1789453428098-bafadf39-9e72-44f7-8c61-d38ec26ee10d.png" alt="选择上传服务"></p>
+<p><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/../assets/%E4%BD%BF%E7%94%A8GitHub%E4%BD%9C%E4%B8%BA%E5%9B%BE%E5%BA%8A-Hexo%E5%8D%9A%E5%AE%A2/1789453412299-23b54615-a834-4b7c-aba6-08e6186b7295.png" alt="PicGo 路径配置"></p>
+<p><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/../assets/%E4%BD%BF%E7%94%A8GitHub%E4%BD%9C%E4%B8%BA%E5%9B%BE%E5%BA%8A-Hexo%E5%8D%9A%E5%AE%A2/1789453448822-07a005af-5f12-4156-8efc-29c819e8774e.png" alt="验证上传"></p>
 <p>配置完成后，可以直接在 Typora 里「右键 → 上传图片」，或使用快捷键验证自动上传是否生效：</p>
-<p><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.nlark.com/yuque/0/2026/png/26718473/1789454168717-69a48a67-989b-49f4-906d-ebfe4be1a976.png" alt="上传成功效果"></p>
+<p><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/../assets/%E4%BD%BF%E7%94%A8GitHub%E4%BD%9C%E4%B8%BA%E5%9B%BE%E5%BA%8A-Hexo%E5%8D%9A%E5%AE%A2/1789454168717-69a48a67-989b-49f4-906d-ebfe4be1a976.png" alt="上传成功效果"></p>
 <h2 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h2><p>至此，一套免费的图床方案就搭建完成了：</p>
 <ol>
 <li><strong>GitHub 公开仓库</strong>负责存图；</li>
